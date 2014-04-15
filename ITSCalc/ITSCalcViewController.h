@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <iAd/iAd.h>
+#import <AudioToolbox/AudioToolbox.h>
 
-@interface ITSCalcViewController : UIViewController
+@interface ITSCalcViewController : UIViewController <ADBannerViewDelegate>
 
 @end
