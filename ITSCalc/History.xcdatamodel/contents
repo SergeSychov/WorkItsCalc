@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13C64" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Buttons" representedClassName="Buttons" syncable="YES">
+        <attribute name="aloweToDelete" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="dateOfDeletting" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="enable" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isMain" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="nameButton" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="program" optional="YES" attributeType="Binary" syncable="YES"/>
+    </entity>
+    <entity name="History" representedClassName="History" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="program" optional="YES" attributeType="Binary" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="History" positionX="-164" positionY="-99" width="128" height="73"/>
+        <element name="Buttons" positionX="-153" positionY="-72" width="128" height="150"/>
+    </elements>
+</model>
