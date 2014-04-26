@@ -396,7 +396,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setCounterForShowingAllertView:(NSInteger)counterForShowingAllertView
 {
     _counterForShowingAllertView = counterForShowingAllertView;
-    if((_counterForShowingAllertView) % 5 == 0){
+    if((_counterForShowingAllertView) % 50 == 0){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ALERT_TITLE_ASSES//@"YOUR OPINION IS IMPORTANT TO ME"
                                                         message:ALERT_MESSAGE_ASSES//@"...should I stay or should I go?"
                                                        delegate:self
@@ -425,6 +425,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self performFetch];
         
     } else if ([title isEqualToString:ALERT_ASSES_ASSES_APLICATION_BUTTON]){
+        NSString *iTunesLink = @"itms-apps://itunes.apple.com/us/app/its-calcc/id864063270?l=ru&ls=1&mt=8";
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:iTunesLink]];
         self.counterForShowingAllertView = -1;
         
     } else if ([title isEqualToString:ALERT_ASSES_NO_BUTTON]){
@@ -796,7 +798,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
     request.predicate = nil;
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-    request.fetchLimit = self.limitInDataBase + 100;//!!!!set this value to allow use set it by settings
+    request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:managedObjectContext
                                                                           sectionNameKeyPath:nil
