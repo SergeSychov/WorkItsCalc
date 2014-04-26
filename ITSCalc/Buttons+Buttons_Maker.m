@@ -25,7 +25,7 @@
     } else {
         newButton = [NSEntityDescription insertNewObjectForEntityForName:@"Buttons" inManagedObjectContext:context];
         newButton.nameButton = obj.nameButton;
-        newButton.position = [NSNumber numberWithInt:obj.position];
+        newButton.position = [NSNumber numberWithInteger:obj.position];
         newButton.aloweToDelete = [NSNumber numberWithBool:obj.alowedTodelete];
         newButton.dateOfDeletting = obj.dateOfDeletting;
         newButton.enable = [NSNumber numberWithBool:obj.enable];
