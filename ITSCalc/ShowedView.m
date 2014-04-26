@@ -311,7 +311,7 @@
     
     self.line.path=linePath.CGPath;
     self.line.strokeColor = color.CGColor;
-    CGPathRetain(linePath.CGPath);
+    //CGPathRetain(linePath.CGPath);
 }
 
 - (void)drawPathWithPoints:(NSArray *)points
@@ -319,7 +319,7 @@
     UIBezierPath *linePath=[UIBezierPath bezierPath];
     linePath.flatness = 3.0;
     
-    int count = [points count];
+    NSInteger count = [points count];
     CGPoint point = [[points objectAtIndex:0] CGPointValue];
     [linePath moveToPoint:point];
 	//CGContextMoveToPoint(currentContext, point.x, point.y);
@@ -338,13 +338,13 @@
     
     self.line.path=linePath.CGPath;
     self.line.strokeColor = color.CGColor;
-    CGPathRetain(linePath.CGPath);
+    //CGPathRetain(linePath.CGPath);
 
 }
 
 - (NSArray *)douglasPeucker:(NSArray *)points epsilon:(float)epsilon
 {
-    int count = [points count];
+    NSInteger count = [points count];
     if(count < 3) {
         return points;
     }
@@ -393,7 +393,7 @@
 
 - (NSArray *)catmullRomSpline:(NSArray *)points segments:(int)segments
 {
-    int count = [points count];
+    NSInteger count = [points count];
     if(count < 4) {
         return points;
     }
@@ -443,7 +443,7 @@
     }
     
     {
-        int i = count-2; // second to last control point
+        NSInteger i = count-2; // second to last control point
         [resultArray addObject:[points objectAtIndex:i]];
         for (int j = 1; j < segments; j++) {
             CGPoint pointIm1 = [[points objectAtIndex:(i - 1)] CGPointValue];
@@ -484,7 +484,7 @@
     
     self.line.path=linePath.CGPath;
     self.line.strokeColor = color.CGColor;
-    CGPathRetain(linePath.CGPath);
+    //CGPathRetain(linePath.CGPath);
     
 }
 
