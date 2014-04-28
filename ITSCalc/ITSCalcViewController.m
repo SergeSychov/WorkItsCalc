@@ -611,7 +611,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
         }
         self.changebleButtonObjs = [buttonsObjs copy];
-        
+        //clear deletted button objs
+        //---
+        self.delettedButtonObjs = [[NSArray alloc] init];
+        //---
+        //
         NSMutableArray *mainButtonObjs = [[NSMutableArray alloc] init];
         
         for(NSInteger i = 0; i < self.mainButtonsStartArray.count; i++){
@@ -1596,6 +1600,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) discardChanging
 {
+    //if there is buttonAsSubview in buttonCollection
+    if(self.buttonsAsSubView){
+        CGRect subFrame = self.subCell.frame;
+        [UIView animateWithDuration:0.1
+                         animations:^{
+                             [self.buttonsAsSubView setFrame:subFrame];
+                             
+                         } completion:^(BOOL finished) {
+                             if(self.findCell){
+                             }
+                             self.subCell.alpha = 1.;
+                             [self.buttonsAsSubView removeFromSuperview];
+                             self.buttonsAsSubView = nil;
+                             NSArray *array = [NSArray arrayWithObject:[self.buttonsCollection indexPathForCell:self.subCell]];
+                             [self.buttonsCollection reloadItemsAtIndexPaths:array];
+                         }];
+    }
+    //
+    
     self.isButtonsCollectionUnderChanging = NO;
     
     [self makeWorkButoonNamesArray];
@@ -2044,8 +2067,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (IBAction)tapCloseCheckButton:(UIButton *)sender
 {
-    if(!self.animationTimer.isValid){
-        //self.buttonsCollection.scrollEnabled = NO;
+    //pasr here
+    //don't allow user to tap this button if there are button as subview in buttoncollection
+    
+    if(!self.buttonsAsSubView && !self.animationTimer.isValid){
+        self.buttonsCollection.scrollEnabled = NO;
         CGPoint necessaryPoint = CGPointMake(sender.bounds.origin.x, sender.bounds.size.height);
         CGPoint buttonsLocation = [sender convertPoint:necessaryPoint toView:self.buttonsCollection];
         NSIndexPath *indexPath = [self.buttonsCollection indexPathForItemAtPoint:buttonsLocation];
@@ -2129,6 +2155,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             }
         }
         [self.buttonsCollection setNeedsDisplay];
+        self.buttonsCollection.scrollEnabled = YES;
     }
 }
 
@@ -2825,7 +2852,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self hideIAdBannerInTime];
             self.heightsOfRows = [mutArray copy];
             //replace row above
-            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:NO];
+            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationBottom];
             
         }
             
@@ -2836,7 +2863,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             [mutArray removeObjectAtIndex:indexPath.row];
             self.heightsOfRows = [mutArray copy];
-            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
         }
             break;
             
@@ -2877,6 +2904,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     [self.bannerContainerView setFrame:bannerRect];
                 }];
                 
+                [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
+                
+                //if(height != wasHeight){
+                    self.heightsOfRows = [mutArray copy];
+                //}
+                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                
             } else {
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:indexPath];
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
@@ -2885,31 +2919,43 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     height = neededRect.size.height + 18;
                     
                 }
+                
+                [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
+                
+                //if(height != wasHeight){
+                    self.heightsOfRows = [mutArray copy];
+               // }
+                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
             
-            
+            /*
             [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
             
             self.heightsOfRows = [mutArray copy];
-            
-            [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            self.historyTable.isNeedToSetOffsetToButton = YES;
+            if(indexPath.row == [mutArray count] -1){
+                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            } else {
+                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }
+            */
+            //self.historyTable.isNeedToSetOffsetToButton = YES;
             
         }
             break;
             
         case NSFetchedResultsChangeMove:
-            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
     }
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.historyTable endUpdates];
     NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-    [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
+    [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
+    [self.historyTable endUpdates];
+    
 }
 
 
@@ -3162,7 +3208,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     [super viewWillDisappear:animated];
     [self setStoryInforamtion];
-    [self.brain clearOperation];
+    //!!!!!!
+    //!!!!!!!!
+    [self.brain clearOperation]; //what is it
+    //!!!!!!!
 }
 
 - (void)viewDidLoad
@@ -3338,7 +3387,24 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void)appWillGoToBackground:(NSNotification *)note
 {
-    // NSLog(@"stopped");
+    //if there is byttonAssubview - delete it
+    if(self.buttonsAsSubView){
+        CGRect subFrame = self.subCell.frame;
+        [UIView animateWithDuration:0.1
+                         animations:^{
+                             [self.buttonsAsSubView setFrame:subFrame];
+                             
+                         } completion:^(BOOL finished) {
+                             if(self.findCell){
+                             }
+                             self.subCell.alpha = 1.;
+                             [self.buttonsAsSubView removeFromSuperview];
+                             self.buttonsAsSubView = nil;
+                             NSArray *array = [NSArray arrayWithObject:[self.buttonsCollection indexPathForCell:self.subCell]];
+                             [self.buttonsCollection reloadItemsAtIndexPaths:array];
+                         }];
+    }
+    
     self.isButtonsCollectionUnderChanging = NO;
     
     [self.testView setTransform:CGAffineTransformMakeRotation(0)];
@@ -3418,13 +3484,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.wasRightShowed = 0;
     
     [self deleteSuperfluousValuesFromManagedDocuments];
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
-    
+   
+    //------
+    //
+    //NSError *error = nil;
+    //[self.managedObjectContext save:&error];
+    //
+    //-------
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [defaults synchronize];
+    
+    [self.buttonsCollection reloadData];
     
     
     
