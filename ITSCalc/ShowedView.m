@@ -109,12 +109,14 @@
     NSMutableAttributedString * countAtrStr = [countStr mutableCopy];
     
     UIFont *font;
+    UIColor *textColor = [UIColor darkTextColor];
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     style.alignment = NSTextAlignmentLeft;
     style.lineHeightMultiple = 0;
     
     [countAtrStr beginEditing];
     NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
+    [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
     [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
     [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
     [countAtrStr endEditing];
@@ -148,6 +150,7 @@
     [resulAttrStr beginEditing];
     wholeRange = NSMakeRange(0, [resulAttrStr length]);
     [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
+    [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
     [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
     [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
     [resulAttrStr endEditing];
@@ -198,10 +201,12 @@
         UIFont *wasFont = [attributes valueForKey:NSFontAttributeName];
         NSNumber *wasOffset = [attributes valueForKey:NSBaselineOffsetAttributeName];
         UIFont *font = [UIFont fontWithName:wasFont.familyName size:wasFont.pointSize * k]; //if there is no needed font
+         UIColor *textColor = [UIColor darkTextColor];
 
         [symbolString beginEditing];
         NSRange wholeRange = NSMakeRange(0, [symbolString length]);
         [symbolString addAttribute:NSFontAttributeName value:font range:wholeRange];
+        [symbolString addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
         [symbolString addAttribute:NSBaselineOffsetAttributeName value:[NSNumber numberWithFloat:[wasOffset floatValue]* k] range:wholeRange];
         [symbolString endEditing];
         [resultString replaceCharactersInRange:NSMakeRange(i, 1) withAttributedString:symbolString];
@@ -234,8 +239,13 @@
 -(NSAttributedString*) changeFontInAttrStr:(NSAttributedString*)attrStr sizeWithSize:(CGFloat)size
 {
     NSMutableAttributedString * attrTextMutCopy = [attrStr mutableCopy];
+    UIColor *textColor = [UIColor darkTextColor];
+    
+
+    
     [attrTextMutCopy beginEditing];
     NSRange wholeRange = NSMakeRange(0, [attrTextMutCopy  length]);
+    [attrTextMutCopy addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
     [attrTextMutCopy  addAttribute:NSFontAttributeName value:[self setFontWithSize:size] range:wholeRange];
     [attrTextMutCopy endEditing];
     
