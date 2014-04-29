@@ -17,15 +17,15 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 
 @property (nonatomic) BOOL isButtonShowed;
-@property (nonatomic,weak) UIButton *deleteButton;
-@property (nonatomic,weak) UIImageView* deleteImage;
+@property (nonatomic,strong) UIButton *deleteButton;
+@property (nonatomic,strong) UIImageView* deleteImage;
 
-@property (nonatomic,weak) UIButton *moreButton;
-@property (nonatomic,weak) UIImageView* moreImage;
+@property (nonatomic,strong) UIButton *moreButton;
+@property (nonatomic,strong) UIImageView* moreImage;
 
-@property (nonatomic,weak) UIView *scrollViewContentView;
-@property (nonatomic, weak) UILabel *datelabel;
-@property (nonatomic, weak) UILabel *programLabel;
+@property (nonatomic,strong) UIView *scrollViewContentView;
+@property (nonatomic, strong) UILabel *datelabel;
+@property (nonatomic, strong) UILabel *programLabel;
 
 @property (nonatomic, strong) CAGradientLayer *backgroundGradient;
 @property (nonatomic, strong) CAGradientLayer *scrollGradientLayer;
@@ -53,12 +53,12 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
         if(selected){
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor], nil];
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor], nil];
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], nil];
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], nil];
             [self.delegate cellDidSelect:self];
         } else {
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
             [self hideButtons];
         }
 }
@@ -90,7 +90,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = self.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
+    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
     [self.layer insertSublayer:gradient atIndex:0];
     self.backgroundGradient = gradient;
     
@@ -101,12 +101,13 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     CAGradientLayer *gradientForScroll = [CAGradientLayer layer];
     gradientForScroll.frame = self.bounds;
-    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
+    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
     [self.scrollViewContentView.layer insertSublayer:gradientForScroll atIndex:0];
     self.scrollGradientLayer = gradientForScroll;
     
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,0,150, 12)];
     [self.scrollViewContentView addSubview:dateLabel];
+    dateLabel.backgroundColor = [UIColor clearColor];
     self.datelabel = dateLabel;
     
     UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
@@ -156,6 +157,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void)drawRect:(CGRect)rect
 {
+    self.contentView.frame = self.bounds;
+    
     self.backgroundGradient.frame = self.bounds;
 
     self.scrollGradientLayer.frame = self.bounds;
@@ -174,12 +177,12 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     
 }
-
+/*
 -(void) layoutSubviews {
 
     [self.datelabel setFrame:CGRectMake(20,0,150, 12)];
 }
-
+*/
 
 -(void)enclosingTableViewDidScroll
 {
