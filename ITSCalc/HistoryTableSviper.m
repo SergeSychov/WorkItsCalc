@@ -30,7 +30,7 @@
     CGContextAddLineToPoint(context, rect.size.width/2 +.5, rect.size.height - ( lineWith) +.5);
     CGContextAddLineToPoint(context, rect.size.width *5/6 +.5, rect.size.height /2 +.5);
     CGContextSetLineCap(context , kCGLineCapRound);
-    CGContextSetRGBStrokeColor(context, 0, 0, 0, 0.5);
+    CGContextSetRGBStrokeColor(context, 0, 0, 0, 0.3);
     CGContextStrokePath(context);  
     
 }
