@@ -23,7 +23,7 @@
 @property (nonatomic, strong) NSString *historyDateString;
 @property (nonatomic) BOOL isCanDrag;
 //thi property allow user recount history sell / alow apeasr recount button
-@property (nonatomic) BOOL wasPurhased;
+//@property (nonatomic) BOOL wasPurhased;
 -(void) showButtons;
 
 @property (nonatomic,weak) id <HistoryTableViewCellDelegate> delegate;

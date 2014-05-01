@@ -219,9 +219,9 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
                      } completion:^(BOOL finished) {
                          // Set up our two buttons
                          //[self.moreButton removeFromSuperview];
-                         if(self.wasPurhased){
+                         //if(self.wasPurhased){
                              self.moreButton = nil;
-                         }
+                        // }
                          //[self.deleteButton removeFromSuperview];
                          
                          self.deleteImage = nil;
@@ -237,7 +237,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     // Set up our two buttons
     //set allowed to show recound button only in purchsed version
-    if(self.wasPurhased){
+    //if(self.wasPurhased){
         UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
         moreButton.backgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
         moreButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth, 0, kCatchWidth / 2.0f, self.bounds.size.height);
@@ -252,7 +252,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         moreImage.contentMode = UIViewContentModeScaleToFill;
         [self.moreButton addSubview:moreImage];
         self.moreImage = moreImage;
-    }
+   // }
     
     
     
@@ -273,7 +273,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     
     CGRect newFrame = self.scrollViewContentView.frame;
-    CGFloat finalOffsetScrollView = self.wasPurhased ? kCatchWidth : kCatchWidth/2;
+    //CGFloat finalOffsetScrollView = self.wasPurhased ? kCatchWidth : kCatchWidth/2;
+    CGFloat finalOffsetScrollView = kCatchWidth;
     newFrame.origin.x = -finalOffsetScrollView -28;
     CGRect finalFrame = newFrame;
     finalFrame.origin.x += 28;
