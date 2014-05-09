@@ -53,12 +53,15 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
         if(selected){
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], nil];
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], nil];
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor],nil];
+
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor], nil];
             [self.delegate cellDidSelect:self];
         } else {
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+
             [self hideButtons];
         }
 }
@@ -90,7 +93,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = self.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
+    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], nil];
+
     [self.layer insertSublayer:gradient atIndex:0];
     self.backgroundGradient = gradient;
     
@@ -101,7 +105,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     CAGradientLayer *gradientForScroll = [CAGradientLayer layer];
     gradientForScroll.frame = self.bounds;
-    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.8 alpha:1] CGColor], nil];
+    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], nil];
+
     [self.scrollViewContentView.layer insertSublayer:gradientForScroll atIndex:0];
     self.scrollGradientLayer = gradientForScroll;
     

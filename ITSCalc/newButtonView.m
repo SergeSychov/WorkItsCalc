@@ -36,7 +36,9 @@
     return _attrbutedTitle;
 }
 
-
+-(void) setButtonColor:(struct Color)buttonColor{
+    _buttonColor = buttonColor;
+}
 
 -(void) setIsTaped:(BOOL)isTaped{
     _isTaped = isTaped;
