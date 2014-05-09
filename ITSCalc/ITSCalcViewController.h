@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <iAd/iAd.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <StoreKit/StoreKit.h>
 
-@interface ITSCalcViewController : UIViewController <ADBannerViewDelegate>
+@interface ITSCalcViewController : UIViewController <ADBannerViewDelegate, SKPaymentTransactionObserver, SKProductsRequestDelegate>
+
 
 @end
+
