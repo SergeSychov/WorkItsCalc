@@ -14,7 +14,7 @@
 @property (nonatomic, strong) NSString* resultString;
 @property (nonatomic) BOOL isFloat;
 @property (nonatomic) int displayLenght;
-@property (nonatomic) int isGradMinutesSecons;//if isn't - 0, if grad - 1, if min - 2, if sec - 3
+
 
 
 @end
@@ -296,9 +296,11 @@
         if([lastObj isKindOfClass:[NSString class]]){
             [copyCradArray removeLastObject];
             if([lastObj isEqualToString:@"″"]){
-                self.isGradMinutesSecons = 2;
+                _isGradMinutesSecons = 2;
+                //self.isGradMinutesSecons = 2;
                 //return previous value
-                self.gradArray = [copyCradArray copy];
+                _gradArray = [copyCradArray copy];
+                //self.gradArray = [copyCradArray copy];
                 str = [self stringFromGrad:self.gradArray];
             } else if ([lastObj isEqualToString:@"′"]){
                 self.isGradMinutesSecons = 1;
