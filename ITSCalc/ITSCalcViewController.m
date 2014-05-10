@@ -492,11 +492,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
 {
     _isBigSizeButtons = isBigSizeButtons;
+    //reset buttons size only when core data available
+    //as exemple don't set in view didload
+    if(self.buttonManagedObjectContext){
 
-    [self makeWorkButoonNamesArray];
-    [self makeAllButtonObjsArray];
-        
-    [self.buttonsCollection reloadData];
+        [self makeWorkButoonNamesArray];
+        [self makeAllButtonObjsArray];
+        [self.buttonsCollection reloadData];
+    }
+    
 
     if(_isBigSizeButtons != self.isBigSizeSwitcher.on){
         [self.isBigSizeSwitcher setOn:_isBigSizeButtons];
@@ -3553,11 +3557,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     id workButtonsNames = [[NSUserDefaults standardUserDefaults] objectForKey:@"preWorkButtonsNames"];
     if(workButtonsNames && [workButtonsNames isKindOfClass:[NSArray class]]){
         self.workButtonsNames = workButtonsNames;
-        [self.buttonsCollection reloadData];
+        //[self.buttonsCollection reloadData];
     } else {
         self.workButtonsNames = nil;
-        [self.buttonsCollection reloadData];
+       // [self.buttonsCollection reloadData];
     }
+    
+    [self makeAllButtonObjsArray];
     
     NSInteger i = 0;
     
@@ -3612,6 +3618,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                              [self.buttonsCollection reloadItemsAtIndexPaths:array];
                          }];
     }
+    
+    //save managed object context
+    NSError *error = nil;
+    [self.managedObjectContext save:&error];
 }
 
 //really enter to background
@@ -3636,10 +3646,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          }];
     }
     
-    self.isButtonsCollectionUnderChanging = NO;
+    //set all views if was in underChanging
+    if(self.isButtonsCollectionUnderChanging){
+        self.isButtonsCollectionUnderChanging = NO;
     
-    [self makeWorkButoonNamesArray];
-    [self.buttonsCollection reloadData];
+        [self makeWorkButoonNamesArray];
+        [self.buttonsCollection reloadData];
+    }
     
     [self.testView setTransform:CGAffineTransformMakeRotation(0)];
     [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
@@ -3721,9 +3734,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.wasRightShowed = 0;
     //!!!!!!
     //!!!!!!!!
-    [self setStoryInforamtion];
+    //[self setStoryInforamtion];
 
-    [self.brain clearOperation]; //what is it
+    //[self.brain clearOperation]; //what is it
     //!!!!!!!
     
      //save managed object context
@@ -3740,7 +3753,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 
 -(void) appWillTerminate
+
+
 {
+    //save managed object context
+    NSError *error = nil;
+    [self.managedObjectContext save:&error];
+    
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     [defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
