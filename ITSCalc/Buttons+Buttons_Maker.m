@@ -40,8 +40,18 @@
     
     for(int i = 0; i < [objArray count]; i++){
         ButtonObject *butObj = objArray[i];
+        
+        //if(!butObj.isMain)
+        //NSLog(@"Button to coreData: %@, %ld", butObj.nameButton, (long)butObj.position);
+        
         [Buttons buttonWithObj:butObj inManageObjectContext:context];
     }
+    //
+    //
+    NSError *error;
+    [context save:&error];
+    //
+    //
 }
 
 +(void) clearContext:(NSManagedObjectContext *)context
