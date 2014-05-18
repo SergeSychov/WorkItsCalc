@@ -306,20 +306,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 
-#pragma mark - BUTTONS COLLECTION
--(void)setIsButtonsCollectionUnderChanging:(BOOL)is
-{
-    _isButtonsCollectionUnderChanging = is;
-    for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
-        ((NewButtonsCollectionViewCell*)cell).isUnderChanging = is;
-    }
-    if(is){
-        self.longPressRecognizer.minimumPressDuration = 0.1;
-    } else {
-        self.longPressRecognizer.minimumPressDuration = 0.5;
-    }
-}
-
 
 #pragma mark SETTINGS VIEW
 
@@ -495,10 +481,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //reset buttons size only when core data available
     //as exemple don't set in view didload
     if(self.buttonManagedObjectContext){
+        //[self.buttonsCollection setUserInteractionEnabled:NO];
 
-        [self makeWorkButoonNamesArray];
-        [self makeAllButtonObjsArray];
+       // [self makeWorkButoonNamesArray];
+       // [self makeAllButtonObjsArray];
+        [self makeTwoArrays];
         [self.buttonsCollection reloadData];
+        //[self.buttonsCollection setUserInteractionEnabled:YES];
+
     }
     
 
@@ -605,17 +595,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setAllButtonObj:(NSArray *)allButtonObj
 {
     _allButtonObj = allButtonObj;
-    [self resaveCoreButtons];
+    //[self resaveCoreButtons];
 }
 
 -(void) resaveCoreButtons
 {
     NSManagedObjectContext *context = self.buttonManagedObjectContext;
-    [context performBlock:^{
+    //[context performBlock:^{
         [Buttons reSaveKeyboardWithArray:self.allButtonObj inManageObjectContext:context];
-        NSError *error;
-        [context save:&error];
-    }];
+       // NSError *error;
+       // [context save:&error];
+  //  }];
 }
 
 -(void) setUpArrays
@@ -663,13 +653,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             btnObj.dateOfDeletting = [NSDate distantFuture];
             
             [mainButtonObjs addObject:btnObj];
-            [buttonsObjs insertObject:btnObj atIndex:index];
+           // [buttonsObjs insertObject:btnObj atIndex:index];
             
         }
-        self.allButtonObj = [buttonsObjs copy];
+        //self.allButtonObj = [buttonsObjs copy];
         self.mainButtonObjs = [mainButtonObjs copy];
         
-        [self makeWorkButoonNamesArray];
+        [self makeTwoArrays];
+        //[self makeWorkButoonNamesArray];
     }
     else {
         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
@@ -711,7 +702,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             butObj.enable = [button.enable boolValue];
             
             [mainButtons addObject:butObj];
-            [allButtons insertObject:butObj atIndex:index];
+           // [allButtons insertObject:butObj atIndex:index];
         }
         self.mainButtonObjs = [mainButtons copy];
         
@@ -731,11 +722,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             butObj.position = [button.position integerValue];
             butObj.enable = [button.enable boolValue];
             
-            [allButtons addObject:butObj];
+            //[allButtons addObject:butObj];
             [delettedButtonObjs addObject:butObj];
         }
-        self.allButtonObj = [allButtons copy];
+       // self.allButtonObj = [allButtons copy];
         self.delettedButtonObjs = [delettedButtonObjs copy];
+        
+        [self makeTwoArrays];
     }
     //if main array from core dont equal main buttons obj from brog/ reload core
 }
@@ -816,6 +809,40 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.buttonsCollection.scrollEnabled = YES;
 }
 
+//make workbuttons array and names array together
+-(void) makeTwoArrays
+{
+    self.buttonsCollection.scrollEnabled = NO;
+    NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
+    NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
+    
+    //make initial array from enable changeble button objects
+    for (int i = 0; i < self.changebleButtonObjs.count; i++){
+        ButtonObject *buttonObj = self.changebleButtonObjs[i];
+       // NSLog(@"Changeble buttons obj %@", buttonObj.nameButton);
+        [workButtonNames addObject:buttonObj.nameButton];
+        [allButtonsArray addObject:self.changebleButtonObjs[i]];
+        
+    }
+    //insert main button objects att position according mainButtonWithStartPosition dictionary
+    for(NSUInteger i = 0; i < self.mainButtonObjs.count; i++){
+        ButtonObject *buttonObj = self.mainButtonObjs[i];
+        NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:buttonObj.nameButton] integerValue];
+        
+        [workButtonNames insertObject:buttonObj.nameButton atIndex:index];
+        [allButtonsArray insertObject:self.mainButtonObjs[i] atIndex:index];
+    }
+    self.workButtonsNames = [workButtonNames copy];
+    
+    //add deleted buttons
+    for (int i = 0; i < self.delettedButtonObjs.count; i++){
+        [allButtonsArray addObject:self.delettedButtonObjs[i]];
+    }
+    
+    self.allButtonObj = [allButtonsArray copy];
+    self.buttonsCollection.scrollEnabled = YES;
+}
+
 -(NSArray*) workButtonsNames
 {
     if(!_workButtonsNames){
@@ -847,7 +874,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setButtonManagedObjectContext:(NSManagedObjectContext *)buttonManagedObjectContext
 {
     _buttonManagedObjectContext = buttonManagedObjectContext;
-    [self.buttonsCollection reloadData];
+     [self.buttonsCollection reloadData];
 }
 
 //delete Flouous history
@@ -1336,7 +1363,33 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
 }
 
+
+#pragma mark - BUTTONS COLLECTION
+-(void)setIsButtonsCollectionUnderChanging:(BOOL)is
+{
+    
+    _isButtonsCollectionUnderChanging = is;
+    
+    /*
+    for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
+        ((NewButtonsCollectionViewCell*)cell).isUnderChanging = is;
+    }
+    */
+    
+    if(is){
+        self.longPressRecognizer.minimumPressDuration = 0.1;
+    } else {
+        self.longPressRecognizer.minimumPressDuration = 0.5;
+    }
+    
+   // [self.buttonsCollection reloadData];
+  
+}
+
+
 #pragma mark - GESTURES and Tap Fix  and delete Button at changeble conditions buttonscollection
+
+
 //long press at display
 - (IBAction)displayLongPress:(UILongPressGestureRecognizer *)sender
 {
@@ -1376,7 +1429,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             //lock interaction
             self.buttonsCollection.userInteractionEnabled = NO;
             self.isButtonsCollectionUnderChanging = YES;
-            [self.buttonsCollection reloadData];
+            //[self.buttonsCollection reloadData];
             
             CGRect historyTableFrame = self.historyTable.frame;
             historyTableFrame.origin.y = - historyTableFrame.size.height;
@@ -1399,16 +1452,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             CGRect settingsViewframe = self.SettingsView.frame;
             settingsViewframe.origin.y = self.displayContainer.frame.size.height;
             
-            /*
-            CGRect settingsViewframe = CGRectMake(-self.mainContainerView.bounds.size.width,
-                                                  self.displayContainer.bounds.size.height,
-                                                  self.mainContainerView.bounds.size.width,
-                                                  self.mainContainerView.bounds.size.height - self.displayContainer.frame.origin.y - self.displayContainer.frame.size.height);
             
-            */
             //allow show settings button only in paid version
             if(self.wasPurshaised) self.settingsButton.hidden = NO;
             self.downButton.hidden = NO;
+            //[self.buttonsCollection reloadData];
             
             [UIView animateWithDuration:.35
                                   delay:0
@@ -1465,6 +1513,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                           self.isSettingsViewOnScreen = YES;
                                                       }];
                                  }
+                                 [self.buttonsCollection reloadData];
                                  //ulock interaction
                                  self.buttonsCollection.userInteractionEnabled = YES;
                                  
@@ -1629,6 +1678,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) discardChanging
 {
+    self.buttonsCollection.scrollEnabled = NO;
     //if there is buttonAsSubview in buttonCollection
     if(self.buttonsAsSubView){
         CGRect subFrame = self.subCell.frame;
@@ -1646,12 +1696,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                              [self.buttonsCollection reloadItemsAtIndexPaths:array];
                          }];
     }
-    //
-    
-    self.isButtonsCollectionUnderChanging = NO;
-    
-    [self makeWorkButoonNamesArray];
-    [self.buttonsCollection reloadData];
+    if(self.isButtonsCollectionUnderChanging){
+        self.isButtonsCollectionUnderChanging = NO;
+        for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
+            ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
+        }
+        
+        //[self makeWorkButoonNamesArray];//???
+        //[self.buttonsCollection reloadData];
+        [self resaveCoreButtons];
+    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
     //NSLog(@"discard");
@@ -1730,7 +1784,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          if(!self.wasPurshaised){
                              [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
                          }
-                         
+                         if(self.isSoundOn){
+                             AudioServicesPlaySystemSound (_blankSoundFileObject);
+                         }
+                         //
+                         [self.buttonsCollection reloadData];
+                         self.buttonsCollection.scrollEnabled = YES;
                      }];
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
@@ -1744,9 +1803,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.wasRightShowed = 0;
     
     //do know why but i need this empty sound to play firs button press without delay
-    if(self.isSoundOn){
-        AudioServicesPlaySystemSound (_blankSoundFileObject);
-    }
+    
 }
 
 - (IBAction)tapFixButton:(UIButton*)sender
@@ -1987,34 +2044,114 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     //here is ok for all buttons
     NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:self.findCell];
-    ButtonObject *buttonObj = [self.allButtonObj objectAtIndex:findPatch.item];
+    ButtonObject *findButtonObj = [self.allButtonObj objectAtIndex:findPatch.item];
+    NSInteger findButtonObjPositionInCoreData = findButtonObj.position;
+    //new position in changeble  array
+    NSInteger indexFindButtonObjInChangebleArray = [self.changebleButtonObjs indexOfObject:findButtonObj];
     
-    NSUInteger finIndexinChangebleArray = [self.changebleButtonObjs indexOfObject:buttonObj];
-    
-    [self moveToFindCell:self.findCell toDataObjectItem:(int)finIndexinChangebleArray];
+    NSIndexPath *subPatch = [self.buttonsCollection indexPathForCell:self.subCell];
+    ButtonObject *subButtonObj = [self.allButtonObj objectAtIndex:subPatch.item];
+    NSInteger subButtonObjPositionInCoreData = subButtonObj.position;
+   
+    if(!self.secondTimer.isValid){
+        
+        NSMutableArray *mutableCahngebleArray = [self.changebleButtonObjs mutableCopy];
+        [mutableCahngebleArray removeObject:subButtonObj];
+        [mutableCahngebleArray insertObject:subButtonObj atIndex:indexFindButtonObjInChangebleArray];
+        self.changebleButtonObjs = [mutableCahngebleArray copy];
+
+        [self moveButtonObjFromPosition:subButtonObjPositionInCoreData toPosition:findButtonObjPositionInCoreData];
+        
+        [self moveCellsFromPatch:subPatch toPatch:findPatch];
+    //NSUInteger finIndexinChangebleArray = [self.changebleButtonObjs indexOfObject:buttonObj];
+    }
+    //[self moveBu:self.findCell toDataObjectItem:finIndexinChangebleArray];
 }
 
 //move buttons view from global subCell to view according data model changeble position
--(void) moveToFindCell: (NewButtonsCollectionViewCell*) findCell toDataObjectItem: (int) findDataIteminChangebleModel
+-(void) moveButtonObjFromPosition:(NSInteger)subPuttonObjPosition toPosition:(NSInteger)finButtonObjPosition
+//-(void) moveToFindCell: (NewButtonsCollectionViewCell*) findCell toDataObjectItem: (NSInteger) findDataIteminChangebleModel
 {
-    if(!self.secondTimer.isValid){
+    if(subPuttonObjPosition > finButtonObjPosition){
+        for(ButtonObject *buttonObj in self.allButtonObj){
+            if(!buttonObj.isMain){
+                if((buttonObj.position < subPuttonObjPosition)&& (buttonObj.position >= finButtonObjPosition)){
+                    buttonObj.position +=1;
+                    //NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
+                } else if (buttonObj.position == subPuttonObjPosition){
+                    buttonObj.position = finButtonObjPosition;
+                }
+            }
+        }
+    }else if (subPuttonObjPosition < finButtonObjPosition){
+        for(ButtonObject *buttonObj in self.allButtonObj){
+            if(!buttonObj.isMain){
+                if((buttonObj.position > subPuttonObjPosition)&& (buttonObj.position <= finButtonObjPosition)){
+                    buttonObj.position -=1;
+                   // NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
+                } else if (buttonObj.position == subPuttonObjPosition){
+                    buttonObj.position = finButtonObjPosition;
+                }
+            }
+        }
+    }
+    [self makeTwoArrays];
+    //NSLog(@"work button obj %@", self.workButtonsNames);
+    
+}
+
+-(void) moveCellsFromPatch:(NSIndexPath*)subPatch toPatch:(NSIndexPath*)findPatch
+{
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    NSIndexPath *patch = [self.buttonsCollection indexPathForCell:self.findCell];
+    
+    if(subPatch.item > findPatch.item){
+        for(NSInteger i = subPatch.item; i >= findPatch.item; i-- ){
+            ButtonObject* changeObject = [self.allButtonObj objectAtIndex:i];
+            if((!changeObject.isMain) && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
+                
+                [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
+        }
+        
+    } else if(subPatch.item < findPatch.item){
+        for(NSInteger i = subPatch.item; i <= findPatch.item; i++ ){
+            ButtonObject * changeObject = [self.allButtonObj objectAtIndex:i];
+            if((!changeObject.isMain)  && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
+                [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
+        }
+        
+    }
+    
+    self.subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
+    self.buttonsToMoveArray = [NSMutableArray arrayWithArray:mutArray];
+    self.secondTimer = [NSTimer scheduledTimerWithTimeInterval:0.04
+                                                        target:self
+                                                      selector:@selector(moveButtonOfArray)
+                                                      userInfo:nil
+                                                       repeats:YES];
+}
+
+/*
+    //if(!self.secondTimer.isValid){
         NSIndexPath *subPatch = [self.buttonsCollection indexPathForCell:self.subCell];
         //ok all
         ButtonObject *subButtonObj =[self.allButtonObj objectAtIndex:subPatch.item];
+        NSInteger wasSubButtonPositionInArray = subButtonObj.position;
         
         NSUInteger subIndexInChangebleArray = [self.changebleButtonObjs indexOfObject:subButtonObj];
         NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
         ButtonObject *findButtonObj = [self.allButtonObj objectAtIndex:findPatch.item];
+        NSInteger wasFindButtonPositionInArray = findButtonObj.position;
         
-        subButtonObj.position = findButtonObj.position;
+        //subButtonObj.position = wasFindButtonPositionInArray;
         
+ 
         //set changeble buttonObj and refresh allObjs
-        NSMutableArray *mutableCangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
-        [mutableCangebleButtonObjs removeObject:subButtonObj];
-        [mutableCangebleButtonObjs insertObject:subButtonObj atIndex:findDataIteminChangebleModel];
-        self.changebleButtonObjs = [mutableCangebleButtonObjs copy];
-        [self makeAllButtonObjsArray];
-        [self makeWorkButoonNamesArray];
+       // NSMutableArray *mutableCangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
+        //[mutableCangebleButtonObjs removeObject:subButtonObj];
+       // [mutableCangebleButtonObjs insertObject:subButtonObj atIndex:findDataIteminChangebleModel];
+       // self.changebleButtonObjs = [mutableCangebleButtonObjs copy];
+ 
         
         NSIndexPath *patch = [self.buttonsCollection indexPathForCell:findCell];//think not necessary - set twise
         NSMutableArray *mutArray = [[NSMutableArray alloc] init];
@@ -2023,14 +2160,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         if(findDataIteminChangebleModel > subIndexInChangebleArray){
             
-            findButtonObj.position = findButtonObj.position-1;
+            //findButtonObj.position = findButtonObj.position-1;
             for(ButtonObject *buttonObj in self.allButtonObj){
-                if((buttonObj.position > subIndexInChangebleArray)&& (buttonObj.position < findDataIteminChangebleModel)){
-                    buttonObj.position = buttonObj.position -1;
+                if((buttonObj.position > wasSubButtonPositionInArray)&& (buttonObj.position <= wasFindButtonPositionInArray)){
+                   NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position -1);
+                   buttonObj.position = buttonObj.position -1;
                 }
             }
+            subButtonObj.position = wasFindButtonPositionInArray;
             
-            for(int i = (int)subPatch.item; i <= findPatch.item; i++ ){
+            
+            for(NSInteger i = subPatch.item; i <= findPatch.item; i++ ){
                 ButtonObject * changeObject = [self.allButtonObj objectAtIndex:i];
                 if((!changeObject.isMain)  && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
                     [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
@@ -2038,12 +2178,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
         } else if(subIndexInChangebleArray > findDataIteminChangebleModel){
             
-            findButtonObj.position = findButtonObj.position+1;
+            //findButtonObj.position = findButtonObj.position+1;
             for(ButtonObject *buttonObj in self.allButtonObj){
-                if((buttonObj.position > subIndexInChangebleArray)&& (buttonObj.position < findDataIteminChangebleModel)){
+                if((buttonObj.position < wasSubButtonPositionInArray)&& (buttonObj.position >= wasFindButtonPositionInArray)){
+                    NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
                     buttonObj.position = buttonObj.position +1;
                 }
             }
+            subButtonObj.position = wasFindButtonPositionInArray;
+            
             for(NSInteger i = subPatch.item; i >= findPatch.item; i-- ){
                 ButtonObject* changeObject = [self.allButtonObj objectAtIndex:i];
                 if((!changeObject.isMain) && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
@@ -2051,6 +2194,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
             }
         }
+        
+        //[self makeAllButtonObjsArray];
+        //[self makeWorkButoonNamesArray];
+        [self makeTwoArrays];
         
         self.subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
         self.buttonsToMoveArray = [NSMutableArray arrayWithArray:mutArray];
@@ -2061,6 +2208,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                            repeats:YES];
     }
 }
+*/
 
 //pan gesture
 //two methodes to delet and redelete buttons with animation
@@ -2150,7 +2298,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 ButtonObject *butObj = self.changebleButtonObjs[i];
                 butObj.alowedTodelete = NO;
             }
-            [self makeAllButtonObjsArray];
+            [self makeTwoArrays];
+            //[self makeAllButtonObjsArray];
             for(int i = 0; i < ([self.changebleButtonObjs  count] + 19); i ++){
                 NSIndexPath * index = [NSIndexPath indexPathForItem:i inSection:0];
                 UICollectionViewCell* cell =[self.buttonsCollection cellForItemAtIndexPath:index];
@@ -2162,7 +2311,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 ButtonObject *butObj = self.changebleButtonObjs[i];
                 butObj.alowedTodelete = YES;
             }
-            [self makeAllButtonObjsArray];
+            [self makeTwoArrays];
+            //[self makeAllButtonObjsArray];
             
             for(int i = 0; i <self.allButtonObj.count; i ++){
                 NSIndexPath * indexToCheck = [NSIndexPath indexPathForItem:i inSection:0];
@@ -2174,7 +2324,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
     }
     
-    [self.buttonsCollection reloadData];
+    //[self.buttonsCollection reloadData];
     _isAllowedToDelete = isAllowedToDelete;
 }
 
@@ -2204,8 +2354,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     
                     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
                     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
-                    [self makeAllButtonObjsArray];
-                    [self makeWorkButoonNamesArray];
+                    
+                    [self makeTwoArrays];
+                    //[self makeAllButtonObjsArray];
+                    //[self makeWorkButoonNamesArray];
                     button.enable = !button.enable;
                     button.dateOfDeletting = [NSDate date];
                     
@@ -2246,8 +2398,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
                     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
                     
-                    [self makeAllButtonObjsArray];
-                    [self makeWorkButoonNamesArray];
+                    [self makeTwoArrays];
+                    //[self makeAllButtonObjsArray];
+                    //[self makeWorkButoonNamesArray];
                     button.enable = !button.enable;
                     button.dateOfDeletting = [NSDate distantFuture];
                     
@@ -2267,7 +2420,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 }
             }
         }
-        [self.buttonsCollection setNeedsDisplay];
+        //[self.buttonsCollection setNeedsDisplay];
+        //[self.buttonsCollection reloadData];
         self.buttonsCollection.scrollEnabled = YES;
     }
 }
@@ -2926,7 +3080,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             CGFloat height = 55;
-            if([self.fetchedResultsController.fetchedObjects count] > 1){
+            if([self.historyTable numberOfRowsInSection:newIndexPath.section]>1){
+            //if([self.fetchedResultsController.fetchedObjects count] > 1){
                 NSIndexPath *patchOfPrevious = [NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:newIndexPath.section];
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:patchOfPrevious];
                 NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
@@ -2999,23 +3154,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     }
                 }
                 
-                /*
-                if((self.histroryTableViewHeight - 50 - height) < 0 ){
-                    self.iAdBannerOriginHeight = self.histroryTableViewHeight - 50 - height;
-                } else {
-                    self.iAdBannerOriginHeight = 0;
-                }
-                //set
-                CGRect bannerRect;
-                if(self.isIAdBaneerAvailable){
-                    bannerRect = CGRectMake(0, self.historyTable.frame.origin.y + self.iAdBannerOriginHeight, self.mainContainerView.bounds.size.width, 50);
-                } else {
-                    bannerRect = CGRectMake(0, self.historyTable.frame.origin.y + self.iAdBannerOriginHeight - 50, self.mainContainerView.bounds.size.width, 50);
-                }
-                [UIView animateWithDuration:0.1 animations:^{
-                    [self.bannerContainerView setFrame:bannerRect];
-                }];
-                */
                 
                 [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
                 
@@ -3035,24 +3173,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 
                 [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
                 
-                //if(height != wasHeight){
-                    self.heightsOfRows = [mutArray copy];
-               // }
+                self.heightsOfRows = [mutArray copy];
+
                 [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
-            
-            /*
-            [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
-            
-            self.heightsOfRows = [mutArray copy];
-            if(indexPath.row == [mutArray count] -1){
-                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            } else {
-                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            }
-            */
-            //self.historyTable.isNeedToSetOffsetToButton = YES;
-            
         }
             break;
             
@@ -3061,6 +3185,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
     }
+    
+    NSError *error = nil;
+    [self.managedObjectContext save:&error];
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
@@ -3125,7 +3252,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    //NSString *strToShare = [self.sharedLabelcounts.text stringByAppendingString:self.testLabel.text];
     
     NSArray *activityItems = [[NSArray alloc] initWithObjects:img, /*strToShare, */nil];
     
@@ -3270,7 +3396,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         NSManagedObjectContext *buttonContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [buttonContext setParentContext:self.managedObjectContext];
         self.buttonManagedObjectContext = buttonContext;
-        [self.buttonsCollection reloadData];
+       // [self.buttonsCollection reloadData];
     }
 }
 
@@ -3454,41 +3580,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 -(void) viewWillAppear:(BOOL)animated{
-    //[self makeWorkButoonNamesArray];
-    //set the main buttons array from program to check main buttons from core
-    //NSMutableArray *mainButtonObjs = [[NSMutableArray alloc] init];
-    /*
-     NSInteger i = 0;
-     
-     while (i < self.mainButtonsStartArray.count) {
-     NSString *name = self.mainButtonsStartArray[i];
-     NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:name] integerValue];
-     id fromWorkButtonNamesArray = [self.workButtonsNames objectAtIndex:index];
-     if([fromWorkButtonNamesArray isKindOfClass:[NSString class]] && ![(NSString*)fromWorkButtonNamesArray isEqualToString:name]){
-     [Buttons clearContext:self.buttonManagedObjectContext];
-     [self setUpArrays];
-     
-     //[self.buttonsCollection reloadData];
-     break;
-     }
-     i+=1;
-     }
-     */
-    
-    
-    //-- may be it can help
-    //
-    //[self setUpArrays];
-    //--------------
-    //property for test purchaised verion
-    //was or not
-    //self.wasPurshaised = NO; //set to user default
-    //then through user default
-    //
-    //-----iAdBanner----
-    //set the availability of iAd banner to zero at start
-    
-    //-----------------------
+
     
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
@@ -3554,6 +3646,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) appWillEnterForeground
 {
     
+    /*
     id workButtonsNames = [[NSUserDefaults standardUserDefaults] objectForKey:@"preWorkButtonsNames"];
     if(workButtonsNames && [workButtonsNames isKindOfClass:[NSArray class]]){
         self.workButtonsNames = workButtonsNames;
@@ -3562,6 +3655,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.workButtonsNames = nil;
        // [self.buttonsCollection reloadData];
     }
+     */
     
     [self makeAllButtonObjsArray];
     
@@ -3581,7 +3675,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             self.allButtonObj = nil;//with obj
             [self setUpArrays];
             
-            [self.buttonsCollection reloadData];
+            //[self.buttonsCollection reloadData];
             break;
         }
         i+=1;
@@ -3620,8 +3714,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     
     //save managed object context
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
+    //NSError *error = nil;
+   // [self.managedObjectContext save:&error];
+    //[self.buttonManagedObjectContext save: &error];
 }
 
 //really enter to background
@@ -3646,12 +3741,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          }];
     }
     
-    //set all views if was in underChanging
+   
+    
     if(self.isButtonsCollectionUnderChanging){
         self.isButtonsCollectionUnderChanging = NO;
-    
-        [self makeWorkButoonNamesArray];
-        [self.buttonsCollection reloadData];
+        
+        for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
+            ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
+        }
+        
+        //[self makeWorkButoonNamesArray];//???
+        //[self.buttonsCollection reloadData];
+        [self resaveCoreButtons];
     }
     
     [self.testView setTransform:CGAffineTransformMakeRotation(0)];
@@ -3740,13 +3841,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //!!!!!!!
     
      //save managed object context
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
+   // NSError *error = nil;
+   // [self.managedObjectContext save:&error];
     //
     //-------
+    [self.buttonsCollection reloadData];
+
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    [defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
+    //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [defaults synchronize];
 }
@@ -3761,7 +3864,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self.managedObjectContext save:&error];
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    [defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
+    //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [defaults synchronize];
 }
