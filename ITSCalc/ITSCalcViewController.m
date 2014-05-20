@@ -31,6 +31,8 @@
 #import "HistoryTableView.h"
 #import "ShowedView.h"
 
+#import "HintView.h"
+
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
 #define Y_OFFSET 2.0f
@@ -47,6 +49,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 //outlets
 //
 //Main container view
+
+@property (weak, nonatomic) HintView *hintView;
 
 @property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 @property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
@@ -121,6 +125,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (nonatomic) int limitInDataBase;
 @property (weak, nonatomic) IBOutlet UIButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
+//add spin activity to show process of purchaising
+@property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
 
 
 
@@ -135,6 +141,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 //Document
 @property (nonatomic, retain) UIDocumentInteractionController *docController;
+@property (nonatomic, strong) UIManagedDocument *doc;
+
 //Fetch controller
 // Causes the fetchedResultsController to refetch the data.
 // You almost certainly never need to call this.
@@ -202,6 +210,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (nonatomic) NSURL *shutterSoundFileURLRef;
 @property (nonatomic) SystemSoundID   shutterSoundFileObject;
+
+//hint vew
+
 
 // Set to YES to get some debugging output in the console.
 @property BOOL debug;
@@ -390,6 +401,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                           otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
         [alert show];
     } else {
+        
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
         [self restorePurchase];
         
@@ -418,9 +430,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                               otherButtonTitles:ALERT_ASSES_ASSES_APLICATION_BUTTON, ALERT_ASSES_REMIND_LATER_BUTTON, nil]; //@"Аssess the application", @"Remind later"
         [alert show];
     }
-    
-    
 }
+
 
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -819,7 +830,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //make initial array from enable changeble button objects
     for (int i = 0; i < self.changebleButtonObjs.count; i++){
         ButtonObject *buttonObj = self.changebleButtonObjs[i];
-       // NSLog(@"Changeble buttons obj %@", buttonObj.nameButton);
         [workButtonNames addObject:buttonObj.nameButton];
         [allButtonsArray addObject:self.changebleButtonObjs[i]];
         
@@ -979,9 +989,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
                         [self setStoryInforamtion];
                         [self.brain clearOperation];
-                        if(self.counterForShowingAllertView != -1){
-                            self.counterForShowingAllertView ++;
-                        }
+                        
                     }
                     self.userIsInTheMidleOfEnteringNumber = YES;
                     self.isProgramInProcess = NO;
@@ -1102,6 +1110,73 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     //check the brackets
                     [self showStringThrouhgmanagerAtEqualPress];
                     [self.brain insertBracket:NO];
+                    //
+                    //show what i can
+                    //
+                    if(25 < self.counterForShowingAllertView < 34){
+                        NSLog(@"counter is %ld", (long)self.counterForShowingAllertView);
+                        switch (self.counterForShowingAllertView) {
+                            case 27:{
+                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
+                                                                          labelRect:self.displayContainer.frame
+                                                                               type:self.counterForShowingAllertView];
+                                hintView.alpha = 0;
+                                [self.mainContainerView addSubview:hintView];
+                                self.hintView = hintView;
+                                [UIView animateWithDuration:0.4
+                                                      delay:0.4
+                                                    options:UIViewAnimationOptionCurveEaseIn
+                                                 animations:^{
+                                                     self.hintView.alpha = 0.95;
+                                                 } completion:^(BOOL finished) {
+                                                     
+                                                 }];
+                            }
+                                break;
+                            case 30 : {
+                                CGRect collectionVisibleRect = self.buttonsCollection.frame;
+                                collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
+                                collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
+                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
+                                                                          labelRect:collectionVisibleRect
+                                                                               type:self.counterForShowingAllertView];
+                                hintView.alpha = 0;
+                                [self.mainContainerView addSubview:hintView];
+                                self.hintView = hintView;
+                                [UIView animateWithDuration:0.4
+                                                      delay:0.4
+                                                    options:UIViewAnimationOptionCurveEaseIn
+                                                 animations:^{
+                                                     self.hintView.alpha = 0.95;
+                                                 } completion:^(BOOL finished) {
+                                                     
+                                                 }];
+                            }
+                                break;
+                            case 33 :{
+                                CGRect collectionVisibleRect = self.buttonsCollection.frame;
+                                collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
+                                collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
+                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
+                                                                          labelRect:collectionVisibleRect
+                                                                               type:self.counterForShowingAllertView];
+                                hintView.alpha = 0;
+                                [self.mainContainerView addSubview:hintView];
+                                self.hintView = hintView;
+                                [UIView animateWithDuration:0.4
+                                                      delay:0.4
+                                                    options:UIViewAnimationOptionCurveEaseIn
+                                                 animations:^{
+                                                     self.hintView.alpha = 0.95;
+                                                 } completion:^(BOOL finished) {
+                                                     
+                                                 }];
+                            }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     
                 }else if ([title isEqualToString:@"∓"]){
                     if(self.userIsInTheMidleOfEnteringNumber){
@@ -1345,6 +1420,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
         }
     }
+    //set counter to show allert view
+    if(self.counterForShowingAllertView != -1){
+        self.counterForShowingAllertView ++;
+    }
 }
 
 -(void) push
@@ -1485,15 +1564,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                          //enable buttons to buy product
                                     self.keyboardDefaultButton.enabled = NO;
                                     [self.keyboardDefaultButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+                                     //start processSpiner
+                                     [self startSpinner];
+                                     //----------------------------
+                                     
                                      //make product request
                                     if([SKPaymentQueue canMakePayments]) {
+                                        
                                         SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
                                         request.delegate = self;
                                              
                                         [request start];
                                         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
                                     } else {
-                                        //NSLog(@"Can't make a payment");
+                                        //if cant make purchaising stop and remove spinner
+                                        [self.processSpinner stopAnimating];
+                                        [self.processSpinner removeFromSuperview];
                                         self.keyboardDefaultButton.titleLabel.textColor = [UIColor grayColor];
                                     }
 
@@ -1702,14 +1788,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
         }
         
-        //[self makeWorkButoonNamesArray];//???
-        //[self.buttonsCollection reloadData];
         [self resaveCoreButtons];
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
-    //NSLog(@"discard");
-    
+
     CGRect historyTableFrame = self.historyTable.frame; //ok
     historyTableFrame.origin.y = 0;
     historyTableFrame.size.height = self.histroryTableViewHeight;//ok
@@ -1734,12 +1817,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     settingsViewframe.origin.y = displayViewFrame.origin.y + displayViewFrame.size.height;
     settingsViewframe.origin.x = - self.mainContainerView.bounds.size.width;
     
-    /*
-    CGRect settingsViewFrame = CGRectMake(-self.mainContainerView.bounds.size.width,
-                                          self.historyTable.frame.size.height + self.display.frame.size.height,
-                                          self.mainContainerView.bounds.size.width,
-                                          self.mainContainerView.bounds.size.height - self.displayContainer.frame.origin.y - self.displayContainer.frame.size.height);
-    */
     
     [UIView animateWithDuration:.3
                           delay:0
@@ -1875,7 +1952,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     if([self.historyTable numberOfRowsInSection:0] >1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        //NSLog(@"selected roow %d",indexPatch.row);
+
        if(!self.selectedRow || (self.selectedRow == [self.historyTable cellForRowAtIndexPath:lastRowPatch])){
             
             [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
@@ -1899,11 +1976,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             dispatch_async(dispatch_get_main_queue(), ^{
                 if((self.buttonsAsSubView.center.y > 0) && ((self.buttonsAsSubView.center.y - self.buttonsCollection.contentOffset.y) <  2.5 *self.subCell.bounds.size.height) && (self.buttonsCollection.contentOffset.y > 0)){
                     self.wasInMoveOffsetSection = YES;
-                    // if(offset > (self.subCell.frame.size.height*4)){
-                    //     blockOffset = self.subCell.frame.size.height*4;
-                    // } else {
+                   
                     blockOffset = self.buttonsCollection.contentOffset.y;
-                    // }
+
                     CGPoint newOffset = self.buttonsCollection.contentOffset;
                     newOffset.y = self.buttonsCollection.contentOffset.y - blockOffset;
                     CGPoint newCenter = self.buttonsAsSubView.center;
@@ -2065,19 +2140,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self moveCellsFromPatch:subPatch toPatch:findPatch];
     //NSUInteger finIndexinChangebleArray = [self.changebleButtonObjs indexOfObject:buttonObj];
     }
-    //[self moveBu:self.findCell toDataObjectItem:finIndexinChangebleArray];
 }
 
 //move buttons view from global subCell to view according data model changeble position
 -(void) moveButtonObjFromPosition:(NSInteger)subPuttonObjPosition toPosition:(NSInteger)finButtonObjPosition
-//-(void) moveToFindCell: (NewButtonsCollectionViewCell*) findCell toDataObjectItem: (NSInteger) findDataIteminChangebleModel
 {
     if(subPuttonObjPosition > finButtonObjPosition){
         for(ButtonObject *buttonObj in self.allButtonObj){
             if(!buttonObj.isMain){
                 if((buttonObj.position < subPuttonObjPosition)&& (buttonObj.position >= finButtonObjPosition)){
                     buttonObj.position +=1;
-                    //NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
                 } else if (buttonObj.position == subPuttonObjPosition){
                     buttonObj.position = finButtonObjPosition;
                 }
@@ -2088,7 +2160,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             if(!buttonObj.isMain){
                 if((buttonObj.position > subPuttonObjPosition)&& (buttonObj.position <= finButtonObjPosition)){
                     buttonObj.position -=1;
-                   // NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
                 } else if (buttonObj.position == subPuttonObjPosition){
                     buttonObj.position = finButtonObjPosition;
                 }
@@ -2096,8 +2167,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
     }
     [self makeTwoArrays];
-    //NSLog(@"work button obj %@", self.workButtonsNames);
-    
 }
 
 -(void) moveCellsFromPatch:(NSIndexPath*)subPatch toPatch:(NSIndexPath*)findPatch
@@ -2131,84 +2200,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                        repeats:YES];
 }
 
-/*
-    //if(!self.secondTimer.isValid){
-        NSIndexPath *subPatch = [self.buttonsCollection indexPathForCell:self.subCell];
-        //ok all
-        ButtonObject *subButtonObj =[self.allButtonObj objectAtIndex:subPatch.item];
-        NSInteger wasSubButtonPositionInArray = subButtonObj.position;
-        
-        NSUInteger subIndexInChangebleArray = [self.changebleButtonObjs indexOfObject:subButtonObj];
-        NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
-        ButtonObject *findButtonObj = [self.allButtonObj objectAtIndex:findPatch.item];
-        NSInteger wasFindButtonPositionInArray = findButtonObj.position;
-        
-        //subButtonObj.position = wasFindButtonPositionInArray;
-        
- 
-        //set changeble buttonObj and refresh allObjs
-       // NSMutableArray *mutableCangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
-        //[mutableCangebleButtonObjs removeObject:subButtonObj];
-       // [mutableCangebleButtonObjs insertObject:subButtonObj atIndex:findDataIteminChangebleModel];
-       // self.changebleButtonObjs = [mutableCangebleButtonObjs copy];
- 
-        
-        NSIndexPath *patch = [self.buttonsCollection indexPathForCell:findCell];//think not necessary - set twise
-        NSMutableArray *mutArray = [[NSMutableArray alloc] init];
-        
-        //change position for all changeble buttons
-        
-        if(findDataIteminChangebleModel > subIndexInChangebleArray){
-            
-            //findButtonObj.position = findButtonObj.position-1;
-            for(ButtonObject *buttonObj in self.allButtonObj){
-                if((buttonObj.position > wasSubButtonPositionInArray)&& (buttonObj.position <= wasFindButtonPositionInArray)){
-                   NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position -1);
-                   buttonObj.position = buttonObj.position -1;
-                }
-            }
-            subButtonObj.position = wasFindButtonPositionInArray;
-            
-            
-            for(NSInteger i = subPatch.item; i <= findPatch.item; i++ ){
-                ButtonObject * changeObject = [self.allButtonObj objectAtIndex:i];
-                if((!changeObject.isMain)  && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
-                    [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
-            }
-            
-        } else if(subIndexInChangebleArray > findDataIteminChangebleModel){
-            
-            //findButtonObj.position = findButtonObj.position+1;
-            for(ButtonObject *buttonObj in self.allButtonObj){
-                if((buttonObj.position < wasSubButtonPositionInArray)&& (buttonObj.position >= wasFindButtonPositionInArray)){
-                    NSLog(@"Change button %@ position %ld to position %ld", buttonObj.nameButton, (long)buttonObj.position, (long)buttonObj.position +1);
-                    buttonObj.position = buttonObj.position +1;
-                }
-            }
-            subButtonObj.position = wasFindButtonPositionInArray;
-            
-            for(NSInteger i = subPatch.item; i >= findPatch.item; i-- ){
-                ButtonObject* changeObject = [self.allButtonObj objectAtIndex:i];
-                if((!changeObject.isMain) && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
-                    
-                    [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
-            }
-        }
-        
-        //[self makeAllButtonObjsArray];
-        //[self makeWorkButoonNamesArray];
-        [self makeTwoArrays];
-        
-        self.subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
-        self.buttonsToMoveArray = [NSMutableArray arrayWithArray:mutArray];
-        self.secondTimer = [NSTimer scheduledTimerWithTimeInterval:0.04
-                                                            target:self
-                                                          selector:@selector(moveButtonOfArray)
-                                                          userInfo:nil
-                                                           repeats:YES];
-    }
-}
-*/
 
 //pan gesture
 //two methodes to delet and redelete buttons with animation
@@ -2626,7 +2617,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(!_heightsOfRows){
         NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
         NSMutableArray *mutArray = [[NSMutableArray alloc] init];
-        if([fetchedObjects count] >1 ){
+         if([fetchedObjects count] > 0){
+        //if([fetchedObjects count] >1 ){
             
             for(int i = 0; i < [fetchedObjects count]; i++){
                 CGFloat height = 55;
@@ -2683,6 +2675,68 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     return _heightsOfRows;
 }
+
+-(void) resetHeightsofRows
+{
+    NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    if([fetchedObjects count] > 0){
+        //if([fetchedObjects count] >1 ){
+        
+        for(int i = 0; i < [fetchedObjects count]; i++){
+            CGFloat height = 55;
+            NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
+            NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+            CGSize neededSize = CGSizeMake(280, 1000);
+            CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                           context:drawContext];
+            if(neededRect.size.height > 42.){
+                height = neededRect.size.height + 13;
+            }
+            
+            if(i == ([fetchedObjects count]-1)){
+                NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]]];
+                
+                neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
+                                                        context:drawContext];
+                //set heigth of first cell according ios screen
+                if(IS_568_SCREEN){
+                    height = 65.;
+                    if(neededRect.size.height > 48.){
+                        height = neededRect.size.height * 1.2 + 13;
+                    }
+                } else {
+                    height = 60.;
+                    if(neededRect.size.height > 43.){
+                        height = neededRect.size.height + 18;
+                    }
+                }
+                //set iAdBanner offset
+                if((self.histroryTableViewHeight - 50 - height) < 0 ){
+                    self.iAdBannerOriginHeight = self.histroryTableViewHeight - 50 - height;
+                } else {
+                    self.iAdBannerOriginHeight = 0;
+                }
+                //set
+                CGRect bannerRect;
+                if(self.isIAdBaneerAvailable){
+                    bannerRect = CGRectMake(0, self.historyTable.frame.origin.y + self.iAdBannerOriginHeight, self.mainContainerView.bounds.size.width, 50);
+                } else {
+                    bannerRect = CGRectMake(0, self.historyTable.frame.origin.y + self.iAdBannerOriginHeight - 50, self.mainContainerView.bounds.size.width, 50);
+                }
+                [UIView animateWithDuration:0.2 animations:^{
+                    [self.bannerContainerView setFrame:bannerRect];
+                }];
+                
+            }
+            [mutArray addObject:[NSNumber numberWithFloat:height]];
+        }
+    } else {
+        
+    }
+    self.heightsOfRows = [mutArray copy];
+}
+
 
 -(NSMutableAttributedString*) getAttributedStringFronFetchForIndexPatch:(NSIndexPath*) indexPath
 {
@@ -2832,7 +2886,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     CGFloat height = 60;
     if([self.heightsOfRows count] > 0){
-        height = [[self.heightsOfRows objectAtIndex:indexPath.row] floatValue];
+        //NSLog(@"from heights - Index patch.row %ld", (long)indexPath.row);
+        //NSLog(@"Heights of rows %@ with counted fetch %ld",  self.heightsOfRows, (long)[self.fetchedResultsController.fetchedObjects count]);
+            height = [[self.heightsOfRows objectAtIndex:indexPath.row] floatValue];
     }
     
     
@@ -2852,6 +2908,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if ([[self.fetchedResultsController sections] count] > 0) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
         rows = [sectionInfo numberOfObjects];
+    }
+    
+    if(rows == 0){
+        self.noticeButton.enabled = NO;
+    } else {
+        self.noticeButton.enabled = YES;
     }
     
     return rows;
@@ -3012,19 +3074,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-            // if (self.debug) NSLog(@"[%@ %@] fetching %@ with predicate: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName, self.fetchedResultsController.fetchRequest.predicate);
+            
         } else {
-            // if (self.debug) NSLog(@"[%@ %@] fetching all %@ (i.e., no predicate)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), self.fetchedResultsController.fetchRequest.entityName);
+
         }
         NSError *error;
-        // BOOL success = [self.fetchedResultsController performFetch:&error];
         [self.fetchedResultsController performFetch:&error];
-        //if (!success) NSLog(@"[%@ %@] performFetch: failed", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-        //if (error) NSLog(@"[%@ %@] %@ (%@)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [error localizedDescription], [error localizedFailureReason]);
+
     } else {
-        // if (self.debug) NSLog(@"[%@ %@] no NSFetchedResultsController (yet?)", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
     }
+    [self resetHeightsofRows];
     [self.historyTable reloadData];
+   // NSLog(@"Heights of rows %@ with counted fetch %ld",  self.heightsOfRows, (long)[self.fetchedResultsController.fetchedObjects count]);
+   // NSLog(@"Number of rows in historyTable  %ld",  (long)[self.historyTable numberOfRowsInSection:0]);
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
@@ -3074,13 +3137,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 	 forChangeType:(NSFetchedResultsChangeType)type
 	  newIndexPath:(NSIndexPath *)newIndexPath
 {
+    //NSLog(@"Index patch.row %ld", (long)indexPath.row);
+   // NSLog(@"New Index patch.row %ld", (long)newIndexPath.row);
+    NSLog(@"Heights of rows %@ with counted fetch %ld",  self.heightsOfRows, (long)[self.fetchedResultsController.fetchedObjects count]);
+    //NSLog(@"Number of rows in historyTable  %ld",  (long)[self.historyTable numberOfRowsInSection:0]);
     switch(type)
     {
         case NSFetchedResultsChangeInsert:{
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             CGFloat height = 55;
-            if([self.historyTable numberOfRowsInSection:newIndexPath.section]>1){
+            if([self.historyTable numberOfRowsInSection:newIndexPath.section]>0){
             //if([self.fetchedResultsController.fetchedObjects count] > 1){
                 NSIndexPath *patchOfPrevious = [NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:newIndexPath.section];
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:patchOfPrevious];
@@ -3186,8 +3253,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             break;
     }
     
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
+    //NSError *error = nil;
+    //[self.managedObjectContext save:&error];
+   
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
@@ -3294,28 +3362,31 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 - (IBAction)tappedNoticeButton:(UIButton *)sender
 {
     //sharing resulr of counting
+    if([self.historyTable numberOfRowsInSection:0] > 0) {
     
-    NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-    if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-    NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
-    NSString *strToShare = atrStrFromString.string;
-    if(strToShare.length >0){
-        if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
-            NSString *lastSymbol = [strToShare substringWithRange:NSMakeRange(strToShare.length -1, 1)];
-            if([lastSymbol isEqualToString: @"="]){
-                NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.display.attributedText.string attributes:self.attributes];
-                [atrStrFromString insertAttributedString:result atIndex:atrStrFromString.length];
+        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+        NSString *strToShare = atrStrFromString.string;
+        if(strToShare.length >0){
+            if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
+                NSString *lastSymbol = [strToShare substringWithRange:NSMakeRange(strToShare.length -1, 1)];
+                if([lastSymbol isEqualToString: @"="]){
+                    NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.display.attributedText.string attributes:self.attributes];
+                    [atrStrFromString insertAttributedString:result atIndex:atrStrFromString.length];
+                }
             }
+        
+        
+            NSArray *activityItems = [[NSArray alloc] initWithObjects:atrStrFromString, nil];
+        
+            UIActivityViewController *activity = [[UIActivityViewController alloc]
+                                                  initWithActivityItems:activityItems
+                                                  applicationActivities:nil];
+            activity.excludedActivityTypes = @[UIActivityTypePostToFacebook, UIActivityTypeAirDrop, UIActivityTypePostToTwitter, UIActivityTypePostToWeibo, UIActivityTypePrint, UIActivityTypePostToFlickr, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypeMessage];
+            [self presentViewController:activity animated:YES completion:nil];
         }
         
-        
-        NSArray *activityItems = [[NSArray alloc] initWithObjects:atrStrFromString, nil];
-        
-        UIActivityViewController *activity = [[UIActivityViewController alloc]
-                                              initWithActivityItems:activityItems
-                                              applicationActivities:nil];
-        activity.excludedActivityTypes = @[UIActivityTypePostToFacebook, UIActivityTypeAirDrop, UIActivityTypePostToTwitter, UIActivityTypePostToWeibo, UIActivityTypePrint, UIActivityTypePostToFlickr, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypeMessage];
-        [self presentViewController:activity animated:YES completion:nil];
     }
     
 }
@@ -3427,6 +3498,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
               if (success) [self documentIsReady: document];
           }];
     }
+    //try to save core data through update document
+    self.doc = document;
+    
     
     [super viewDidLoad];
     [self.historyTable setFrame:CGRectMake(0, 0, self.mainContainerView.bounds.size.width, self.histroryTableViewHeight)];
@@ -3457,6 +3531,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self.cleanButton setImage:[UIImage imageNamed:@"clear60Blue.png"] forState:UIControlStateNormal];
     
     self.noticeButton.hidden = YES;
+    self.noticeButton.enabled = NO;
+    
     self.recountButton.hidden = YES;
     self.recountButton.enabled = NO;
     
@@ -3714,9 +3790,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     
     //save managed object context
-    //NSError *error = nil;
+   // NSError *error = nil;
    // [self.managedObjectContext save:&error];
-    //[self.buttonManagedObjectContext save: &error];
+   // [self.buttonManagedObjectContext save: &error];
+     [self.doc updateChangeCount:UIDocumentChangeDone];
 }
 
 //really enter to background
@@ -3860,8 +3937,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 {
     //save managed object context
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
+    //NSError *error = nil;
+    //[self.managedObjectContext save:&error];
+     [self.doc updateChangeCount:UIDocumentChangeDone];
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
@@ -3896,6 +3974,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [controllerArray addObject:[NSNumber numberWithInteger:self.counterForShowingAllertView]];
     
     [wholeArray addObject:[controllerArray copy]];
+    
+    //[wholeArray addObject:[self.heightsOfRows copy]];
     
     [wholeArray addObject:[self.brain arrayToSaveBrain]];
     
@@ -3988,6 +4068,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         sucsess = NO;
         // NSLog(@"NO brainArray");
     }
+    
+    
+    //set heights of rows array
+    /*
+    id heigthsArray = [wholeArray lastObject];
+    if(heigthsArray && [brainArray isKindOfClass:[NSArray class]]){
+        self.heightsOfRows = [heigthsArray copy];
+        [wholeArray removeLastObject];
+    } else {
+        sucsess = NO;
+         //NSLog(@"NO heighs Array");
+    }
+    */
     
     //set controller
     id controllerArray = [[wholeArray lastObject] mutableCopy];
@@ -4086,8 +4179,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     //------
     //
-    NSError *error = nil;
-    [self.managedObjectContext save:&error];
+   // NSError *error = nil;
+    //[self.managedObjectContext save:&error];
+     [self.doc updateChangeCount:UIDocumentChangeDone];
     //
     //-------
     
@@ -4103,6 +4197,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 - (void)orientationChanged:(NSNotification *)notification
 {
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
+    if(self.hintView){
+        [UIView animateWithDuration:0.2
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseIn
+                         animations:^{
+                             self.hintView.alpha = 0;
+                         } completion:^(BOOL finished) {
+                             [self.hintView removeFromSuperview];
+                         }];
+        
+    }
+    
     if(orient == UIDeviceOrientationLandscapeLeft){
         if(self.wasRightShowed != 1){
             [UIView setAnimationsEnabled:NO];
@@ -4443,8 +4549,27 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     });
 }
 #pragma mark IN-APP PURSHASE
+-(void) startSpinner
+{
+    CGRect spinnerFrame = CGRectMake((self.SettingsView.bounds.size.width -40)/2,
+                                     self.keyboardDefaultButton.frame.origin.y - 40,
+                                     40.,
+                                     40.);
+    
+   // CGRect spinnerFrame = self.keyboardDefaultButton.frame;
+   // spinnerFrame.origin.x = (spinnerFrame.size.width - spinnerFrame.size.height) / 2;
+  //  spinnerFrame.size.width = spinnerFrame.size.height;
+    
+    UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc] initWithFrame:spinnerFrame];
+    [self.SettingsView addSubview:processSpinner];
+    processSpinner.hidesWhenStopped = YES;
+    self.processSpinner = processSpinner;
+    [self.processSpinner startAnimating];
+}
+
 -(void) wasSuccesTransaction
 {
+    //3.
     self.wasPurshaised = YES;
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
@@ -4476,6 +4601,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) buyUnlockKeyboard
 {
+    //2.
+    //add spinner here
+    //[self startSpinner];
     SKPayment *payment = [SKPayment paymentWithProduct:self.product];
     [[SKPaymentQueue defaultQueue] addPayment:payment];
 
@@ -4486,18 +4614,27 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
+
 -(void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
+    //1.
     
     for(SKPaymentTransaction *transaction in queue.transactions){
         if(transaction.transactionState == SKPaymentTransactionStateRestored){
-            [self wasSuccesTransaction];
+            //[self wasSuccesTransaction];
+            
+            //stop and delete spinner
+            //[self.processSpinner stopAnimating];
+           // [self.processSpinner removeFromSuperview];
+            
             break;
         }
     }
     if(queue.transactions.count == 0){
-            [self buyUnlockKeyboard];
+        [self startSpinner];
+        [self buyUnlockKeyboard];
     }
+    
 }
 
 #pragma mark _
@@ -4507,29 +4644,50 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     NSArray *products = response.products;
     if(products.count != 0) {
+        
+        
         self.product = products[0];
         self.keyboardDefaultButton.enabled = YES;
-       // NSLog(@"Product title %@", self.product.localizedTitle);
-       // NSLog(@"Product descriptiom %@", self.product.localizedDescription);
+
     } else {
        // NSLog(@"Product not FUND");
     }
+    //stop and remove process spinner
+    [self.processSpinner stopAnimating];
+    [self.processSpinner removeFromSuperview];
     
 }
 
 
+-(void) request:(SKRequest *)request didFailWithError:(NSError *)error
+{
+    //stop and remove process spinner
+    [self.processSpinner stopAnimating];
+    [self.processSpinner removeFromSuperview];
+}
+
 -(void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
 {
+    //3.
+    
     for(SKPaymentTransaction *transaction in transactions){
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased: [self wasSuccesTransaction];
                // NSLog(@"Succes payment");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                //stop and remove process spinner
+                [self.processSpinner stopAnimating];
+                [self.processSpinner removeFromSuperview];
+                
                 break;
                 
             case SKPaymentTransactionStateRestored: [self wasSuccesTransaction];
                 //NSLog(@"Succes restored");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                //stop and remove process spinner
+                [self.processSpinner stopAnimating];
+                [self.processSpinner removeFromSuperview];
+                
                 break;
                 
             case SKPaymentTransactionStatePurchasing: //NSLog(@"Purchasing in process");
@@ -4539,6 +4697,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             case SKPaymentTransactionStateFailed: ;//NSLog(@"Purchasing faild");;
                 
 
+                //stop and remove process spinner
+                [self.processSpinner stopAnimating];
+                [self.processSpinner removeFromSuperview];
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Transaction failed"
                                                                 message:@""//@"restore initial buttons settings"
                                                                delegate:self
@@ -4551,7 +4712,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 break;
         }
     }
+
 }
+
 
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
