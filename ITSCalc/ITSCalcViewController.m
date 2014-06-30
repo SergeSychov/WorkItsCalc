@@ -5,7 +5,7 @@
 //  Created by Serge Sychov on 15.04.14.
 //  Copyright (c) 2014 Sergey Sychov. All rights reserved.
 //
-
+@import UIKit;
 #import <QuartzCore/QuartzCore.h>
 #import <CoreData/CoreData.h>
 #import <CoreText/CTStringAttributes.h>
@@ -43,7 +43,7 @@
 NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
 
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UICollisionBehaviorDelegate>
 
 
 //outlets
@@ -132,6 +132,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 
 //Showed View
+@property (nonatomic, strong) UIDynamicAnimator *animator;
 @property (weak, nonatomic) IBOutlet UIView *testView;
 @property (weak, nonatomic) IBOutlet ShowedView *viewToPDF;
 @property (weak, nonatomic) IBOutlet UIButton *redPanButton;
@@ -4122,6 +4123,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [super didReceiveMemoryWarning];
 }
 
+-(BOOL) shouldAutorotate
+{
+    return NO;
+}
 
 - (void)orientationChanged:(NSNotification *)notification
 {
@@ -4143,85 +4148,50 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
         
         if(self.wasRightShowed != 1){
-            [UIView setAnimationsEnabled:NO];
-            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-            
             if(!self.isButtonsCollectionUnderChanging){
                 if(self.wasRightShowed == 0){
                     
+                    //strongly think about it
                     [self showCount];
                     
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                    [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.height)/2,
-                                                       -self.testView.bounds.size.width,
-                                                       self.testView.bounds.size.height,
-                                                       self.testView.bounds.size.width)];
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear //UIViewAnimationOptionOverrideInheritedCurve
-                                         animations:^{
-                                             [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                (self.view.frame.size.width - self.testView.bounds.size.height)/2,
-                                                                                self.testView.bounds.size.height,
-                                                                                self.testView.bounds.size.width)];
-                                         } completion:^(BOOL finished) {
-                                             [UIView animateWithDuration:0.1
-                                                                   delay:0
-                                                                 options:UIViewAnimationOptionCurveLinear //UIViewAnimationOptionOverrideInheritedCurve
-                                                              animations:^{
-                                                                  [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                                     (self.view.frame.size.width - self.testView.bounds.size.height)/2 -16,
-                                                                                                     self.testView.bounds.size.height,
-                                                                                                     self.testView.bounds.size.width)];
-                                                              } completion:^(BOOL finished) {
-                                                                  [UIView animateWithDuration:0.1
-                                                                                        delay:0
-                                                                                      options:UIViewAnimationOptionCurveLinear //UIViewAnimationOptionOverrideInheritedCurve
-                                                                                   animations:^{
-                                                                                       [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                                                          (self.view.frame.size.width - self.testView.bounds.size.height)/2,
-                                                                                                                          self.testView.bounds.size.height,
-                                                                                                                          self.testView.bounds.size.width)];
-                                                                                   } completion:^(BOOL finished) {
-                                                                                       
-                                                                                   }];
-                                                              }];
-                                         }];
-                    });
+                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI_2)];
+                    CGRect initialFrame = self.testView.frame;
+                    initialFrame.origin.x = self.view.frame.size.width ;//+ initialFrame.size.width;
+                    initialFrame.origin.y = (self.view.frame.size.height - initialFrame.size.height) / 2;
                     
-                    //add animation
+                    
+                    [self.testView setFrame:initialFrame];
+                    
+                    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                    gravity.gravityDirection = CGVectorMake(-4.0, 0.0);
+                    [animator addBehavior:gravity];
+                    
+                    UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
+                    CGFloat stopX = (self.view.frame.size.width - self.testView.frame.size.width) / 2;
+                    [collisionBehavior addBoundaryWithIdentifier:@"Right"
+                                                       fromPoint:CGPointMake(stopX, 0)
+                                                        toPoint:CGPointMake(stopX, 568)];
+                    [animator addBehavior:collisionBehavior];
+                    
+                    UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
+                    elastic.elasticity = 0.4;
+                    [animator addBehavior:elastic];
+                    
+                    self.animator = animator;
+
                 } else if(self.wasRightShowed == 2){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI)];
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear
-                                         animations:^{
-                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                         } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:0.36
+                                          delay:0
+                                        options:UIViewAnimationOptionCurveLinear
+                                        animations:^{
+                                            [self.testView setTransform:CGAffineTransformMakeRotation(M_PI_2)];
+                                        } completion:^(BOOL finished) {
                                              
-                                         }];
-                    });
-                    //neeed to ad rotation  with animation
+                                        }];
                 }
                 
             } else {
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                });
                 
             }
             self.wasRightShowed = 1;
@@ -4243,87 +4213,51 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         if(self.wasRightShowed != 2){
             
+            //strongly think about it
             [self showCount];
-            
-            [UIView setAnimationsEnabled:NO];
-            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
             
             if(!self.isButtonsCollectionUnderChanging){
                 if(self.wasRightShowed == 0){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                    [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.height)/2,
-                                                       -self.testView.bounds.size.width,
-                                                       self.testView.bounds.size.height,
-                                                       self.testView.bounds.size.width)];
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        //add animation
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear
-                                         animations:^{
-                                             [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                (self.view.frame.size.width - self.testView.bounds.size.height)/2,
-                                                                                self.testView.bounds.size.height,
-                                                                                self.testView.bounds.size.width)];
-                                         } completion:^(BOOL finished) {
-                                             [UIView animateWithDuration:0.1
-                                                                   delay:0
-                                                                 options:UIViewAnimationOptionCurveLinear
-                                                              animations:^{
-                                                                  [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                                     (self.view.frame.size.width - self.testView.bounds.size.height)/2-16,
-                                                                                                     self.testView.bounds.size.height,
-                                                                                                     self.testView.bounds.size.width)];
-                                                              } completion:^(BOOL finished) {
-                                                                  [UIView animateWithDuration:0.1
-                                                                                        delay:0
-                                                                                      options:UIViewAnimationOptionCurveLinear
-                                                                                   animations:^{
-                                                                                       [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                                                                                                          (self.view.frame.size.width - self.testView.bounds.size.height)/2,
-                                                                                                                          self.testView.bounds.size.height,
-                                                                                                                          self.testView.bounds.size.width)];
-                                                                                   } completion:^(BOOL finished) {
-                                                                                       
-                                                                                   }];
-                                                              }];
-                                         }];
-                        
-                    });
+                    [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI_2)];
+                    CGRect initialFrame = self.testView.frame;
+                    initialFrame.origin.x = - initialFrame.size.width;// + initialFrame.size.width;
+                    initialFrame.origin.y = (self.view.frame.size.height - initialFrame.size.height) / 2;
                     
+                    [self.testView setFrame:initialFrame];
                     
+                    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                    gravity.gravityDirection = CGVectorMake(4.0, 0.0);
+                    [animator addBehavior:gravity];
+                    
+                    UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
+                    CGFloat stopX = self.view.frame.size.width - (self.view.frame.size.width - self.testView.frame.size.width) / 2;
+                    [collisionBehavior addBoundaryWithIdentifier:@"Left"
+                                                       fromPoint:CGPointMake(stopX, 0)
+                                                         toPoint:CGPointMake(stopX, 568)];
+                    [animator addBehavior:collisionBehavior];
+                    
+                    UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
+                    elastic.elasticity = 0.4;
+                    [animator addBehavior:elastic];
+                    
+                    self.animator = animator;
+
                 } else if(self.wasRightShowed == 1){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI)];
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear
-                                         animations:^{
-                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                         } completion:^(BOOL finished) {
+                    //[self.testView setTransform:CGAffineTransformMakeRotation(M_PI)];
+                    
+                    [UIView animateWithDuration:0.36
+                                          delay:0
+                                        options:UIViewAnimationOptionCurveLinear
+                                        animations:^{
+                                            [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI_2)];
+                                        } completion:^(BOOL finished) {
                                              
-                                         }];
-                    });                    //neeed to ad rotation  with animation
+                                        }];
                 }
                 
-                
-                
             } else {
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                });
+                
             }
             self.wasRightShowed = 2;
         }
@@ -4331,77 +4265,36 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
     } else if (orient == UIDeviceOrientationPortrait){
         if(self.wasRightShowed != 0){
-            //not was portrait
-            [UIView setAnimationsEnabled:NO];
-            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
             
             if(!self.isButtonsCollectionUnderChanging){
-                //if was not portrait and not changin view
-                if(self.wasRightShowed == 1){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
-                } else if(self.wasRightShowed == 2){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
-                }
-                [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                                   (self.view.frame.size.height -self.testView.bounds.size.height)/2,
-                                                   self.testView.bounds.size.height,
-                                                   self.testView.bounds.size.width)];
-                self.wasRightShowed = 0;
-                //hide
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                    [UIView animateWithDuration:0.36
-                                          delay:0.
-                                        options:UIViewAnimationOptionCurveEaseInOut
-                                     animations:^{
-                                         [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                                                            self.view.frame.size.height,
-                                                                            self.testView.bounds.size.height,
-                                                                            self.testView.bounds.size.width)];
-                                     } completion:^(BOOL finished) {
-                                     }];
-                });
+
+
+                UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                gravity.gravityDirection = CGVectorMake(.0, 4.0);
+                [animator addBehavior:gravity];
                 
-                
+                self.animator = animator;
+
             } else {
                 //if was not portrait and but changin view, just hide restView
-                [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
+                //[self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
                 [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
                                                    self.testView.bounds.size.height,
                                                    self.testView.bounds.size.height,
                                                    self.testView.bounds.size.width)];
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                });
             }
             
         } else {
-            //was in portrait view
-            [UIView setAnimationsEnabled:NO];
-            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
             
-            [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+           // [self.testView setTransform:CGAffineTransformMakeRotation(0)];
             [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
                                                self.testView.bounds.size.height,
                                                self.testView.bounds.size.height,
                                                self.testView.bounds.size.width)];
             
-            int64_t delayInSeconds = 0.05;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                //do something to the button(s)
-                [UIView setAnimationsEnabled:YES];
-            });
-            
         }
+    
         self.wasRightShowed = 0;
         if(self.isSoundOn){
             AudioServicesPlaySystemSound (_blankSoundFileObject);
