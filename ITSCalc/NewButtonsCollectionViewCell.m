@@ -18,6 +18,7 @@
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
 @property (nonatomic) struct Color buttonColor;
 @property (nonatomic) CGRect rectArchive;
+
 @end
 
 @implementation NewButtonsCollectionViewCell

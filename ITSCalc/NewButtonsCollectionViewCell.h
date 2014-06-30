@@ -5,6 +5,7 @@
 //  Created by Serge Sychov on 01.08.13.
 //  Copyright (c) 2013 Sergey Sychov. All rights reserved.
 //
+@import UIKit;
 
 #import <UIKit/UIKit.h>
 #import "newButtonView.h"
