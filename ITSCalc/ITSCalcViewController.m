@@ -337,6 +337,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 #define ALERT_ASSES_ASSES_APLICATION_BUTTON NSLocalizedStringFromTable(@"ALERT_ASSES_ASSES_APLICATION_BUTTON",@"ACalcTryViewControllerTable", @"Аssess the application")
 #define ALERT_ASSES_REMIND_LATER_BUTTON NSLocalizedStringFromTable(@"ALERT_ASSES_REMIND_LATER_BUTTON",@"ACalcTryViewControllerTable", @"Remind later")
 
+#define ALLERT_TITLE_CHANGE_KEYBOARD NSLocalizedStringFromTable(@"ALLERT_TITLE_CHANGE_KEYBOARD",@"ACalcTryViewControllerTableAdditional", @"Change keyboard")
+#define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
+#define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
+
 -(void) setLayOutOfSettingsView
 {
     
@@ -393,19 +397,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (IBAction)defaultKeyboardbuttonTapped:(id)sender
 {
+    UIAlertView *alert;
     if(self.wasPurshaised){
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
+        alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
                                                     message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
                                                    delegate:self
                                           cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
                                           otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
-        [alert show];
-    } else {
         
-        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-        [self restorePurchase];
+    } else {
+        alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
+                                           message:@""
+                                          delegate:self
+                                 cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
+                                 otherButtonTitles: ALLERT_BUTTON_BUY,ALLERT_BUTTON_RESTORE, nil]; //@"Restore"
+        
+        //[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        //[self restorePurchase];
         
     }
+    [alert show];
 }
 
 - (IBAction)clearHistoryButtonTapped:(id)sender
@@ -456,6 +467,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
     } else if ([title isEqualToString:ALERT_ASSES_NO_BUTTON]){
         self.counterForShowingAllertView = -1;
+        
+    } else if ([title isEqualToString:ALLERT_BUTTON_RESTORE]){
+        [self restorePurchase];
+        
+    } else if ([title isEqualToString:ALLERT_BUTTON_BUY]){
+        [self buyUnlockKeyboard];
     }
     
 }
@@ -1732,6 +1749,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) discardChanging
 {
+    //if there is process spiner - remove it from settings view
+    if(self.processSpinner){
+        [self.processSpinner stopAnimating];
+        [self.processSpinner removeFromSuperview];
+    }
+    
     self.buttonsCollection.scrollEnabled = NO;
     //if there is buttonAsSubview in buttonCollection
     if(self.buttonsAsSubView){
@@ -3358,7 +3381,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setViewToPDF:(ShowedView *)viewToPDF
 {
     _viewToPDF = viewToPDF;
-    [self.viewToPDF addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.viewToPDF action:@selector(drawLine:)]];
+   // [self.viewToPDF addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.viewToPDF action:@selector(drawLine:)]];
 }
 
 #pragma mark VIEW LAYOUT
@@ -3556,7 +3579,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
     
     
-    self.testView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"paperTexture.png"]];
+    self.testView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
     
     [self.testView setTransform:CGAffineTransformMakeRotation(0)];
     
@@ -3738,6 +3761,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 //really enter to background
 -(void) appDidEnterBackground
 {
+    //if there is process spiner - remove it from settings view
+    if(self.processSpinner){
+        [self.processSpinner stopAnimating];
+        [self.processSpinner removeFromSuperview];
+    }
+    
    
     //if there is byttonAssubview - delete it
     if(self.buttonsAsSubView){
@@ -4525,10 +4554,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             break;
         }
     }
+    /*
     if(queue.transactions.count == 0){
         [self startSpinner];
         [self buyUnlockKeyboard];
     }
+    */
     
 }
 
