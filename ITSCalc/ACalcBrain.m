@@ -363,7 +363,7 @@
     int priority = 3;
     NSArray *zeroPriorityOperands = [NSArray arrayWithObjects:@"+",@"-", nil];
     NSArray *onePriorityOperands = [NSArray arrayWithObjects:@"÷", @"×", nil];
-    NSArray *twoPriorityOperands = [NSArray arrayWithObjects:@"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ", nil];
+    NSArray *twoPriorityOperands = [NSArray arrayWithObjects:@"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
     if([zeroPriorityOperands containsObject:operand]){
         priority =0;
     } else if([onePriorityOperands containsObject:operand]){
