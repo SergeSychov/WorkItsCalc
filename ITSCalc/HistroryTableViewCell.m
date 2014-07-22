@@ -253,7 +253,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
         UIImageView* moreImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.moreButton.bounds.size.width - 60)/2,
                                                                            (self.moreButton.bounds.size.height - 60)/2, 60, 60)];
-        [moreImage setImage:[UIImage imageNamed:@"Rec.png"]];
+        [moreImage setImage:[UIImage imageNamed:@"Rec2.png"]];
         moreImage.contentMode = UIViewContentModeScaleToFill;
         [self.moreButton addSubview:moreImage];
         self.moreImage = moreImage;
@@ -270,7 +270,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     self.deleteButton = deleteButton;
     UIImageView* deleteImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.deleteButton.bounds.size.width - 60)/2,
                                                                              (self.deleteButton.bounds.size.height - 60)/2, 60, 60)];
-    [deleteImage setImage:[UIImage imageNamed:@"deleteBig.png"]];
+    [deleteImage setImage:[UIImage imageNamed:@"deleteBig2.png"]];
     deleteImage.contentMode = UIViewContentModeScaleToFill;
     
     [self.deleteButton addSubview:deleteImage];

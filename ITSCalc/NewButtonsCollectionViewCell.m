@@ -70,9 +70,17 @@
     if(!self.isUnderChanging){
         
         self.rectArchive = self.cellSubView.frame;
-        [UIView animateWithDuration:0.03 animations:^{
-            self.cellSubView.frame = [self getRect];
-        }];
+        //[UIView animateWithDuration:0.03 animations:^{
+        //    self.cellSubView.frame = [self getRect];
+        //}];
+        [UIView animateWithDuration:0.15
+                              delay:0
+             usingSpringWithDamping:0.5
+              initialSpringVelocity:0.1
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             self.cellSubView.frame = [self getRect];
+                         } completion:nil];
         self.cellSubView.isTaped = YES;
     } else {
         
@@ -87,9 +95,17 @@
 {
     if(!self.isUnderChanging){
         //
-        [UIView animateWithDuration:0.03 animations:^{
-            self.cellSubView.frame = self.rectArchive;
-        }];
+        //[UIView animateWithDuration:0.03 animations:^{
+          //  self.cellSubView.frame = self.rectArchive;
+       // }];
+        [UIView animateWithDuration:0.15
+                              delay:0
+             usingSpringWithDamping:.5
+              initialSpringVelocity:0.1
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             self.cellSubView.frame = self.rectArchive;
+                         } completion:nil];
         
         self.cellSubView.isTaped = NO;
     } else {
@@ -254,13 +270,14 @@
     [super awakeFromNib];
     [self setup];
 }
-/*
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    [self.cellSubView setFrame:CGRectMake(0, 0, rect.size.width -4, rect.size.height - 4)];
     // Drawing code
 }
-*/
+
 
 @end
