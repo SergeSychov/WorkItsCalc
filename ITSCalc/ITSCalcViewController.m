@@ -37,6 +37,7 @@
 #define X_OFFSET 2.0f
 #define Y_OFFSET 2.0f
 #define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
 #define TIME_INTERVAL_FROM_LAST_ALERT 43200. //need to be setted as 12 hours - 43 000;
@@ -268,7 +269,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         //change font size
         NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        style.alignment = NSTextAlignmentLeft;
+        style.alignment = NSTextAlignmentRight;
+        //style.
+        
         
         //Change fontName to Helvetica Neue Light
         NSString *fontName = nil;
@@ -279,7 +282,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 fontName = @"HelveticaNeue-Light";
             }
         }
-        CGFloat fontSize = 17.0;
+        CGFloat fontSize;// = 17.0;
+        
+        
+        if(IS_IPAD){
+            fontSize = 26.0;
+            //style.alignment = NSTextAlignmentCenter;
+        } else {
+            fontSize = 17.0;
+            //style.alignment = NSTextAlignmentLeft;
+        }
         
         UIFont *font; //if there is no needed font
         if(fontName){
@@ -288,7 +300,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             font =[UIFont boldSystemFontOfSize:fontSize];
         }
 
-        _attributes = [[NSDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName,textColor, NSForegroundColorAttributeName, font, NSFontAttributeName, nil];
+        _attributes = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,textColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
     }
     return _attributes;
 }
@@ -351,59 +363,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
 
--(void) setLayOutOfSettingsView
-{
-    
-    CGFloat measure = (self.mainContainerView.bounds.size.height - self.displayContainer.frame.size.height )/ 6;
-    
-    CGRect smallButtonFrame = self.smallButtonView.frame;
-    smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
-    [self.smallButtonView setFrame:smallButtonFrame];
-    
-    CGRect bigButtonFrame = self.bigbuttonView.frame;
-    bigButtonFrame.origin.y = measure - bigButtonFrame.size.height / 2;
-    [self.bigbuttonView setFrame:bigButtonFrame];
-    
-    CGRect buttonsizeSwitcherFrame = self.isBigSizeSwitcher.frame;
-    buttonsizeSwitcherFrame.origin.y = measure - buttonsizeSwitcherFrame.size.height / 2;
-    [self.isBigSizeSwitcher setFrame:buttonsizeSwitcherFrame];
-    
-    CGRect sounSwitcherFrame = self.soundSwitcher.frame;
-    sounSwitcherFrame.origin.y = 2 * measure - sounSwitcherFrame.size.height / 2;
-    [self.soundSwitcher setFrame:sounSwitcherFrame];
-    CGRect sounOffFrame = self.soundOffView.frame;
-    sounOffFrame.origin.y =2 * measure - sounOffFrame.size.height / 2;
-    [self.soundOffView setFrame:sounOffFrame];
-    CGRect soundOnFrame = self.soundOnView.frame;
-    soundOnFrame.origin.y = 2 * measure - soundOnFrame.size.height / 2;
-    [self.soundOnView setFrame:soundOnFrame];
-    
-    CGRect bigDataSwitcher = self.isBigDataBaseSwitcher.frame;
-    bigDataSwitcher.origin.y = 3 * measure - bigDataSwitcher.size.height / 2;
-    [self.isBigDataBaseSwitcher setFrame:bigDataSwitcher];
-    CGRect smallDataFrame = self.smallDataBaseView.frame;
-    smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
-    [self.smallDataBaseView setFrame:smallDataFrame];
-    CGRect bigDataFrame = self.bigDataBaseView.frame;
-    bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
-    [self.bigDataBaseView setFrame:bigDataFrame];
-    
-    CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
-    clearHistoryButtonFrame.origin.y = 4 * measure - clearHistoryButtonFrame.size.height / 2;
-    self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
-    [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
-    
-    CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
-    keyboarddefaultButtonFrame.origin.y = 5 * measure - keyboarddefaultButtonFrame.size.height / 2;
-    [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
-    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    if(self.wasPurshaised){
-        [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-    } else {
-        [self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-    }
-}
 
 - (IBAction)defaultKeyboardbuttonTapped:(id)sender
 {
@@ -2663,11 +2622,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGSize result;
-    if(self.isBigSizeButtons){
-        result = CGSizeMake(76, 46);
-    } else {
-        result = CGSizeMake(60, 40);
-        
+    if(IS_IPAD) {
+        if(self.isBigSizeButtons){
+            result = CGSizeMake(136, 71);
+        } else {
+            result = CGSizeMake(118, 59);
+        }
+    } else { //if it's iPhone ore iPod
+        if(self.isBigSizeButtons){
+            result = CGSizeMake(76, 46);
+        } else {
+            result = CGSizeMake(60, 40);
+        }
     }
     return  result;
 }
@@ -2678,10 +2644,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     insets.bottom = 0;
     insets.left = 0;
     insets.right = 0;
-    if(IS_568_SCREEN){
-        insets.top = 82;
+    if(IS_IPAD) {
+        insets.top = 123;
+        insets.left = 10;
+        insets.right = 10;
     } else {
-        insets.top = 75;
+        if(IS_568_SCREEN){
+            insets.top = 82;
+        } else {
+            insets.top = 75;
+        }
     }
     
     return insets;
@@ -2690,10 +2662,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
     CGFloat linespasing;
-    if(IS_568_SCREEN){
-        linespasing = 4;
+    if(IS_IPAD) {
+        linespasing = 8;
     } else {
-        linespasing = 3;
+        if(IS_568_SCREEN){
+            linespasing = 4;
+        } else {
+            linespasing = 3;
+        }
     }
     return linespasing;
 }
@@ -2709,14 +2685,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
          if([fetchedObjects count] > 0){
             
             for(int i = 0; i < [fetchedObjects count]; i++){
-                CGFloat height = 55;
+                CGFloat height;
+                if(IS_IPAD){ // if iPad
+                    height = 75;
+                } else {
+                    height = 55;
+                }
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
                 NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
                 CGSize neededSize = CGSizeMake(280, 1000);
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                                context:drawContext];
-                if(neededRect.size.height > 42.){
-                    height = neededRect.size.height + 13;
+                if(IS_IPAD){
+                    if(neededRect.size.height > 60.){
+                        height = neededRect.size.height + 15;
+                    }
+                } else {
+                    if(neededRect.size.height > 42.){
+                        height = neededRect.size.height + 13;
+                    }
                 }
                 
                 if(i == ([fetchedObjects count]-1)){
@@ -2726,6 +2713,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                             context:drawContext];
                     
                     //set heigth of first cell according ios screen
+                    if(IS_IPAD){ // if iPad
+                        height = 85.;
+                        if(neededRect.size.height > 60.){
+                            height = neededRect.size.height * 1.2 + 15;
+                        }
+                    } else
                     if(IS_568_SCREEN){
                         height = 65.;
                         if(neededRect.size.height > 48.){
@@ -2756,14 +2749,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         //if([fetchedObjects count] >1 ){
         
         for(int i = 0; i < [fetchedObjects count]; i++){
-            CGFloat height = 55;
+            CGFloat height;
+            if(IS_IPAD){ // if iPad
+                height = 75;
+            } else {
+                height = 55;
+            }
             NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
             NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
             CGSize neededSize = CGSizeMake(280, 1000);
             CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                            context:drawContext];
-            if(neededRect.size.height > 42.){
-                height = neededRect.size.height + 13;
+            if(IS_IPAD){
+                if(neededRect.size.height > 60.){
+                    height = neededRect.size.height + 15;
+                }
+            } else {
+                if(neededRect.size.height > 42.){
+                    height = neededRect.size.height + 13;
+                }
             }
             
             if(i == ([fetchedObjects count]-1)){
@@ -2772,17 +2776,23 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                         context:drawContext];
                 //set heigth of first cell according ios screen
-                if(IS_568_SCREEN){
-                    height = 65.;
-                    if(neededRect.size.height > 48.){
-                        height = neededRect.size.height * 1.2 + 13;
+                if(IS_IPAD){ // if iPad
+                    height = 85.;
+                    if(neededRect.size.height > 60.){
+                        height = neededRect.size.height * 1.2 + 15;
                     }
-                } else {
-                    height = 60.;
-                    if(neededRect.size.height > 43.){
-                        height = neededRect.size.height + 18;
+                } else
+                    if(IS_568_SCREEN){
+                        height = 65.;
+                        if(neededRect.size.height > 48.){
+                            height = neededRect.size.height * 1.2 + 13;
+                        }
+                    } else {
+                        height = 60.;
+                        if(neededRect.size.height > 43.){
+                            height = neededRect.size.height + 18;
+                        }
                     }
-                }
                 
             }
             [mutArray addObject:[NSNumber numberWithFloat:height]];
@@ -3473,10 +3483,88 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 #pragma mark VIEW LAYOUT
+
+-(void) setLayOutOfSettingsView
+{
+    
+    CGFloat measure = (self.mainContainerView.bounds.size.height - self.displayContainer.frame.size.height )/ 6;
+    
+    CGRect smallButtonFrame = self.smallButtonView.frame;
+    smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
+    [self.smallButtonView setFrame:smallButtonFrame];
+    
+    CGRect bigButtonFrame = self.bigbuttonView.frame;
+    bigButtonFrame.origin.y = measure - bigButtonFrame.size.height / 2;
+    [self.bigbuttonView setFrame:bigButtonFrame];
+    
+    CGRect buttonsizeSwitcherFrame = self.isBigSizeSwitcher.frame;
+    buttonsizeSwitcherFrame.origin.y = measure - buttonsizeSwitcherFrame.size.height / 2;
+    [self.isBigSizeSwitcher setFrame:buttonsizeSwitcherFrame];
+    
+    CGRect sounSwitcherFrame = self.soundSwitcher.frame;
+    sounSwitcherFrame.origin.y = 2 * measure - sounSwitcherFrame.size.height / 2;
+    [self.soundSwitcher setFrame:sounSwitcherFrame];
+    CGRect sounOffFrame = self.soundOffView.frame;
+    sounOffFrame.origin.y =2 * measure - sounOffFrame.size.height / 2;
+    [self.soundOffView setFrame:sounOffFrame];
+    CGRect soundOnFrame = self.soundOnView.frame;
+    soundOnFrame.origin.y = 2 * measure - soundOnFrame.size.height / 2;
+    [self.soundOnView setFrame:soundOnFrame];
+    
+    CGRect bigDataSwitcher = self.isBigDataBaseSwitcher.frame;
+    bigDataSwitcher.origin.y = 3 * measure - bigDataSwitcher.size.height / 2;
+    [self.isBigDataBaseSwitcher setFrame:bigDataSwitcher];
+    CGRect smallDataFrame = self.smallDataBaseView.frame;
+    smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
+    [self.smallDataBaseView setFrame:smallDataFrame];
+    CGRect bigDataFrame = self.bigDataBaseView.frame;
+    bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
+    [self.bigDataBaseView setFrame:bigDataFrame];
+    
+    CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
+    clearHistoryButtonFrame.origin.y = 4 * measure - clearHistoryButtonFrame.size.height / 2;
+    self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
+    [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
+    
+    CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
+    keyboarddefaultButtonFrame.origin.y = 5 * measure - keyboarddefaultButtonFrame.size.height / 2;
+    [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
+    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    if(self.wasPurshaised){
+        [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
+    } else {
+        [self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
+    }
+}
+
 -(void) setHeightOfElementAccordingToScreenIPhone
 {
     CGRect buttonsRect = CGRectMake(0, 0, 60, 60);
-    if(IS_568_SCREEN){
+    if(IS_IPAD){
+        //for ipad try through autolayout
+        /*
+        self.histroryTableViewHeight = 182.f;
+        self.labelViewHeight = 108.f;
+        self.lastRowHistoryTableHeight = 85.f;
+        */
+        
+        [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
+        
+        [self.viewToPDF setFrame:CGRectMake(128, 256, 1024, 768)];
+        
+        //need to be changed
+        buttonsRect.origin.x = 60;
+        buttonsRect.origin.y = 176;
+        [self.shareButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.redPanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.bluePanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.cleanButton setFrame:buttonsRect];
+        //else if iPhone
+    } else if(IS_568_SCREEN){
         self.histroryTableViewHeight = 136.f;
         self.labelViewHeight = 72.f;
         self.lastRowHistoryTableHeight = 65.f;
@@ -3537,8 +3625,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
-
-
 - (void)viewDidLoad
 {
     //for testing delegate
@@ -3569,17 +3655,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     
     [super viewDidLoad];
-    [self.historyTable setFrame:CGRectMake(0, 0, self.mainContainerView.bounds.size.width, self.histroryTableViewHeight)];
-    CGRect displayViewFrame = CGRectMake(0,
-                                         self.histroryTableViewHeight,
-                                         self.mainContainerView.bounds.size.width,
-                                         self.labelViewHeight);//self.displayContainer.frame;
-    displayViewFrame.origin.y = self.histroryTableViewHeight;
-    [self.displayContainer setFrame:displayViewFrame];
-    [self.buttonsCollection setFrame:CGRectMake(0,
-                                                self.histroryTableViewHeight,
-                                                self.mainContainerView.bounds.size.width,
-                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    
+    if(!IS_IPAD){ //make ipads in auto layout
+    
+        [self.historyTable setFrame:CGRectMake(0, 0, self.mainContainerView.bounds.size.width, self.histroryTableViewHeight)];
+        CGRect displayViewFrame = CGRectMake(0,
+                                             self.histroryTableViewHeight,
+                                             self.mainContainerView.bounds.size.width,
+                                             self.labelViewHeight);//self.displayContainer.frame;
+        displayViewFrame.origin.y = self.histroryTableViewHeight;
+        [self.displayContainer setFrame:displayViewFrame];
+        [self.buttonsCollection setFrame:CGRectMake(0,
+                                                    self.histroryTableViewHeight,
+                                                    self.mainContainerView.bounds.size.width,
+                                                    self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    }
+    
     
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
@@ -3679,17 +3770,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     
     self.testView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
-    //
-    //!!! try set in didLayoutSubViews
-    /*
-    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-    
-    [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.width)];
-    
-    */
+
     //set to 0 indication of previous rotation, also need at discard changing
     self.wasRightShowed = 0;
     
@@ -3705,10 +3786,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isIAdBaneerAvailable = NO;
         self.isIAdBannerOnScreen = NO;
         //set initial banners frame
-       // [self.bannerContainerView setFrame:CGRectMake(0, self.historyTable.frame.origin.y + self.iAdBannerOriginHeight - 50, self.mainContainerView.bounds.size.width, 50)];
+
         [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, 50)];
         self.bannerRequestCounter = 2;
-        //self.timesRequestToHideIAdBanner = 0; //set the zero times of requests to hide iAdBanner
+
         
     }
     
@@ -3732,9 +3813,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.blankSoundFileURLRef =  [NSURL fileURLWithPath:soundPath];
     // Create a system sound object representing the sound file.
     AudioServicesCreateSystemSoundID  ((__bridge CFURLRef)self.blankSoundFileURLRef, &_blankSoundFileObject);
-    
-    
-    
 }
 
 -(void) viewWillAppear:(BOOL)animated{
@@ -3752,37 +3830,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    
-    //reset from viewDidLoad
-    //-------------------------------------------------------------------------
-    /*
-    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-    
-    [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.width)];
+    if(!IS_IPAD) {//for ipad try to set autolayout
 
-    */
-    //-------------------------------------------------------------------
-    self.displayContainer.frame = CGRectMake(0,
-                                             self.historyTable.bounds.size.height + self.historyTable.frame.origin.y,
-                                             self.mainContainerView.bounds.size.width,
-                                             self.labelViewHeight);
+        self.displayContainer.frame = CGRectMake(0,
+                                                 self.historyTable.bounds.size.height + self.historyTable.frame.origin.y,
+                                                 self.mainContainerView.bounds.size.width,
+                                                 self.labelViewHeight);
+        CGRect sviperRect = self.historyTableSviper.frame;
+        sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
+        sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height;
+        [self.historyTableSviper setFrame:sviperRect];
+    }
+    //--------------------------------------------------------------------------
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
     
     self.settingsBackgroundToolBar.frame = self.SettingsView.frame;
     
     self.display.frame = self.displayContainer.bounds;
-    //set items buttons frames
     
-    CGRect sviperRect = self.historyTableSviper.frame;
-    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
-    sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height;
-    [self.historyTableSviper setFrame:sviperRect];
-    
-    //set size buttonsViews
+    //set size buttonsViews and frames
     struct Color clr;
     clr.r = 0.95;//0.26;
     clr.g = 0.95;//0.57;
@@ -3813,8 +3880,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 //only at real enter in foregraund not at launch
-
-//
 -(void) appWillEnterForeground
 {
     
@@ -3847,8 +3912,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
-    //self.timesRequestToHideIAdBanner = 0;
-    
 }
 
 //possible enter to background, as example iTunes reques
@@ -3873,9 +3936,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     
     //save managed object context
-   // NSError *error = nil;
-   // [self.managedObjectContext save:&error];
-   // [self.buttonManagedObjectContext save: &error];
      [self.doc updateChangeCount:UIDocumentChangeDone];
 }
 
@@ -3907,8 +3967,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          }];
     }
     
-   
-    
     if(self.isButtonsCollectionUnderChanging){
         self.isButtonsCollectionUnderChanging = NO;
         
@@ -3919,86 +3977,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self resaveCoreButtons];
     }
     
-   
-    
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
     [self discardChanging];
-    
-    //[self.testView setTransform:CGAffineTransformMakeRotation(0)];
-    /*
-    [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.width)];
-    
-    [self.testView setFrame:CGRectMake( -self.testView.bounds.size.width,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.height,
-                                       self.testView.bounds.size.width)];
-     */
-    //NSLog(@"discard");
-    /*
-    CGRect historyTableFrame = self.historyTable.frame;
-    historyTableFrame.origin.y = 0;
-    historyTableFrame.size.height = self.histroryTableViewHeight;
-    
-    CGRect displayViewFrame = self.displayContainer.frame;
-    displayViewFrame.origin.y = self.histroryTableViewHeight;
-    
-    CGRect buttonsCollectionViewBounds = self.view.frame;
-    buttonsCollectionViewBounds.origin.y = self.histroryTableViewHeight;
-    buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
-    
-    CGRect sviperRect = self.historyTableSviper.frame;
-    sviperRect.origin.x = (self.view.frame.size.width - self.historyTableSviper.frame.size.width)/2;
-    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height;
-    
-    CGRect settingsViewframe = self.SettingsView.frame;
-    settingsViewframe.origin.y = self.displayContainer.frame.origin.y + self.displayContainer.frame.size.height;
-    settingsViewframe.origin.x = - self.mainContainerView.bounds.size.width;
-    
-    CGPoint histroyContentSizePoint = CGPointMake(0, self.historyTable.contentSize.height - self.histroryTableViewHeight);
-    
-    [self.historyTable setFrame:historyTableFrame];
-    [self.displayContainer setFrame:displayViewFrame];
-    [self.backgroundToolBar setFrame:displayViewFrame];
-    [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
-    [self.buttonsCollection setContentOffset:CGPointZero];
-    
-    [self.SettingsView setFrame:settingsViewframe];
-    [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-    
-    [self.historyTableSviper setFrame:sviperRect];
-    self.historyTableSviper.alpha = 1.;
-    self.display.alpha = 1.;
-    
-    self.settingsBottomButtn.alpha = 0.;
-    self.noticeButton.alpha = 0.;
-    self.recountButton.alpha = 0.;
-    self.upButton.alpha = 0.;
-    self.deleteButton.alpha = 0.;
-    //allow show settings button only in paid version
-    if(self.wasPurshaised) self.settingsButton.alpha = 0.;
-    self.downButton.alpha = 0.;
-    
-    [self.historyTable setContentOffset:histroyContentSizePoint];
-    
-    CGRect rect = self.historyTable.frame;
-    rect.origin.y = self.historyTable.contentSize.height - self.historyTable.frame.size.height;
-    [self.historyTable scrollRectToVisible:rect animated:NO];
-    
-    self.settingsBottomButtn.hidden = YES;
-    self.noticeButton.hidden = YES;
-    self.recountButton.hidden = YES;
-    self.upButton.hidden = YES;
-    self.deleteButton.hidden = YES;
-    //allow show settings button only in paid version
-    if(self.wasPurshaised) self.settingsButton.hidden = YES;
-    self.downButton.hidden = YES;
-    self.isSettingsViewOnScreen = NO;
-    self.isBottomSettingsViewOnScreen = NO;
-    
-    */
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
@@ -4275,6 +4255,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 */
 - (void)orientationChanged:(NSNotification *)notification
 {
+    if(!IS_IPAD){ //exept if it isn't IPad
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
 
     
@@ -4585,6 +4566,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             AudioServicesPlaySystemSound (_blankSoundFileObject);
         }
     }
+    }//exept if it isn't IPad
 }
 
 #pragma mark SHOWING IAd BANNER
