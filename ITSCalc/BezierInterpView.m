@@ -74,7 +74,7 @@
     [self.layer addSublayer:line];
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"BezierViewIsDirtyNotification" object:nil]];
-    NSLog(@"Send durty notification");
+    //NSLog(@"Send durty notification");
     
     UITouch *touch = [touches anyObject];
     pts[0] = [touch locationInView:self];
