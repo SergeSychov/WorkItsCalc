@@ -291,7 +291,7 @@
 
 -(void) setup
 {
-    //self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"paperTexture.png"]];
+    self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
     self.isDurty = NO;
     self.isBluePanOrRed = YES;
     
