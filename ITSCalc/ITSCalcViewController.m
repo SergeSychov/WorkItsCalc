@@ -165,7 +165,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 //set managed obj context specially for buttons
 
 //Buttons arrays
-@property (nonatomic,weak) NSDictionary *mainButtonsStartWithPosition;
+@property (nonatomic,strong) NSDictionary *mainButtonsStartWithPosition;
 @property (nonatomic, weak) NSArray *startArray;
 @property (nonatomic,weak) NSArray *mainButtonsStartArray;
 
@@ -482,7 +482,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //reset buttons size only when core data available
     //as exemple don't set in view didload
     if(self.buttonManagedObjectContext){
-
+        [self setUpMainButtonsStartWithPosition];
         [self makeTwoArrays];
         [self.buttonsCollection reloadData];
     }
@@ -554,9 +554,40 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return mainArray;
 }
 
+-(NSArray*) mainButtonsPositions
+{
+    NSInteger columsNumber = [self numberColumsInCollectionView];
+    NSMutableArray* mutArray = [[NSMutableArray alloc] init];
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(columsNumber - 1 - 1)]];//@"∓"
+    [mutArray addObject:[NSNumber numberWithInteger:(columsNumber - 1)]];//@"C"
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(2*columsNumber - 1 - 3)]];//@"7"
+    [mutArray addObject:[NSNumber numberWithInteger:(2*columsNumber - 1 - 2)]];//@"8"
+    [mutArray addObject:[NSNumber numberWithInteger:(2*columsNumber - 1 - 1)]];//@"9"
+    [mutArray addObject:[NSNumber numberWithInteger:(2*columsNumber - 1)]];//@"÷"
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(3*columsNumber - 1 - 3)]];//@"4"
+    [mutArray addObject:[NSNumber numberWithInteger:(3*columsNumber - 1 - 2)]];//@"5"
+    [mutArray addObject:[NSNumber numberWithInteger:(3*columsNumber - 1 - 1)]];//@"6"
+    [mutArray addObject:[NSNumber numberWithInteger:(3*columsNumber - 1)]];//@"×"
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(4*columsNumber - 1 - 3)]];//@"1"
+    [mutArray addObject:[NSNumber numberWithInteger:(4*columsNumber - 1 - 2)]];//@"2"
+    [mutArray addObject:[NSNumber numberWithInteger:(4*columsNumber - 1 - 1)]];//@"3"
+    [mutArray addObject:[NSNumber numberWithInteger:(4*columsNumber - 1)]];//@"-"
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1 - 3)]];//@"0"
+    [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1 - 2)]];//@"."
+    [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1 - 1)]];//@"⌫"
+    [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1)]];//@"+"
+    
+    [mutArray addObject:[NSNumber numberWithInteger:(6*columsNumber - 1)]];//@"="
 
-//set start arrays work and main
--(NSDictionary*) mainButtonsStartWithPosition
+    return [mutArray copy];
+}
+
+-(void) setUpMainButtonsStartWithPosition
 {
     NSArray *names = [[NSArray alloc] initWithObjects: @"∓",@"C",
                       @"7",@"8",@"9",@"÷",
@@ -565,27 +596,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                       @"0",@".",@"⌫",@"+",
                       @"=",
                       nil];
-    NSArray *positions;
-    if(self.isBigSizeButtons){
-        positions = [[NSArray alloc] initWithObjects:@2,@3,
-                     @4,@5,@6,@7,
-                     @8,@9,@10,@11,
-                     @12,@13,@14,@15,
-                     @16,@17,@18,@19,
-                     @23,
-                     nil];
-    } else {
-        positions = [[NSArray alloc] initWithObjects:@3,@4,
-                     @6,@7,@8,@9,
-                     @11,@12,@13,@14,
-                     @16,@17,@18,@19,
-                     @21,@22,@23,@24,
-                     @29,
-                     nil];
-        
+    _mainButtonsStartWithPosition = [[NSDictionary alloc] initWithObjects:[self mainButtonsPositions]forKeys:names];
+
+}
+
+
+//set start arrays work and main
+-(NSDictionary*) mainButtonsStartWithPosition
+{
+    if(!_mainButtonsStartWithPosition){
+        [self setUpMainButtonsStartWithPosition];
     }
-    NSDictionary *mainButtonswithPositios = [[NSDictionary alloc] initWithObjects:positions forKeys:names];
-    return mainButtonswithPositios;
+    return _mainButtonsStartWithPosition;
 }
 
 -(void) setAllButtonObj:(NSArray *)allButtonObj
@@ -2556,7 +2578,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(self.buttonManagedObjectContext){
         section = 1;
     }
-    
     return section;
 }
 
@@ -2618,15 +2639,28 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 
+
 #pragma mark - UICollectionViewDelegateFlowLayout
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGSize result;
     if(IS_IPAD) {
-        if(self.isBigSizeButtons){
-            result = CGSizeMake(136, 71);
-        } else {
-            result = CGSizeMake(118, 59);
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        if (orientation == UIDeviceOrientationUnknown ||
+            orientation == UIDeviceOrientationFaceUp ||
+            orientation == UIDeviceOrientationFaceDown) {
+            
+            orientation = (UIDeviceOrientation)cachedOrientation;
+        }
+        if(UIDeviceOrientationIsPortrait(orientation)){
+            result = CGSizeMake(140, 83);
+        } else if (UIDeviceOrientationIsLandscape(orientation)){
+            if(self.isBigSizeButtons){
+                result = CGSizeMake(133, 71);
+            } else {
+                result = CGSizeMake(118, 59);
+            }
         }
     } else { //if it's iPhone ore iPod
         if(self.isBigSizeButtons){
@@ -2638,6 +2672,32 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return  result;
 }
 
+-(NSInteger) numberColumsInCollectionView
+{
+    CGFloat oneButtonWidth = [self collectionView:self.buttonsCollection
+                                           layout:self.collectionViewFlowLayout
+                           sizeForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]].width;
+    CGFloat collectionWidth;
+    if(IS_IPAD) {
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        if (orientation == UIDeviceOrientationUnknown ||
+            orientation == UIDeviceOrientationFaceUp ||
+            orientation == UIDeviceOrientationFaceDown) {
+            
+            orientation = (UIDeviceOrientation)cachedOrientation;
+        }
+        if(UIDeviceOrientationIsPortrait(orientation)){
+            collectionWidth = 768;
+        } else if (UIDeviceOrientationIsLandscape(orientation)){
+            collectionWidth = 1024;
+        }
+    } else { //if it's iPhone ore iPod
+        collectionWidth = 320;
+    }
+    return ABS(collectionWidth/oneButtonWidth);
+}
+
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
     UIEdgeInsets insets;
@@ -2645,9 +2705,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     insets.left = 0;
     insets.right = 0;
     if(IS_IPAD) {
-        insets.top = 123;
-        insets.left = 10;
-        insets.right = 10;
+        insets.top = 119;
+        insets.left = 11;
+        insets.right = 11;
     } else {
         if(IS_568_SCREEN){
             insets.top = 82;
@@ -2663,7 +2723,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     CGFloat linespasing;
     if(IS_IPAD) {
-        linespasing = 8;
+        linespasing = 9;
     } else {
         if(IS_568_SCREEN){
             linespasing = 4;
@@ -2727,7 +2787,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     } else {
                         height = 60.;
                         if(neededRect.size.height > 43.){
-                            height = neededRect.size.height + 18;
+                            height = neededRect.size.height *1.2 + 13;
                         }
                     }
                 }
@@ -3214,7 +3274,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         case NSFetchedResultsChangeInsert:{
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
-            CGFloat height = 55;
+            
+            //CGFloat height = 55;
+            CGFloat height;
+            if(IS_IPAD){ // if iPad
+                height = 75;
+            } else {
+                height = 55;
+            }
+            
             if([self.historyTable numberOfRowsInSection:newIndexPath.section]>0){
             //if([self.fetchedResultsController.fetchedObjects count] > 1){
                 NSIndexPath *patchOfPrevious = [NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:newIndexPath.section];
@@ -3223,15 +3291,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 CGSize neededSize = CGSizeMake(280, 1000);
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
-                if(neededRect.size.height > 42.){
-                    height = neededRect.size.height + 18;
+                if(IS_IPAD){
+                    if(neededRect.size.height > 60.){
+                        height = neededRect.size.height + 15;
+                    }
+                } else {
+                    if(neededRect.size.height > 42.){
+                        height = neededRect.size.height + 13;
+                    }
                 }
+                
                 //previous
                 [mutArray removeLastObject];
                 [mutArray addObject:[NSNumber numberWithFloat:height]];
             }
             
             //curent
+            if(IS_IPAD){ // if iPad
+                [mutArray addObject:[NSNumber numberWithFloat:85.]];
+            } else
+
             if(IS_568_SCREEN){
                 [mutArray addObject:[NSNumber numberWithFloat:65.]];
             } else {
@@ -3273,7 +3352,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         case NSFetchedResultsChangeUpdate:{
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
-            CGFloat height = 60;
+            //CGFloat height = 60;
+            CGFloat height;
+            if(IS_IPAD){ // if iPad
+                height = 85;
+            } else {
+                height = 60;
+            }
+
             if(self.heightsOfRows.count > 0){
                 height = [[mutArray objectAtIndex:indexPath.row] floatValue];
                 [mutArray removeObjectAtIndex:indexPath.row];
@@ -3286,6 +3372,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
+                if(IS_IPAD){ // if iPad
+                    height = 85.;
+                    if(neededRect.size.height > 60.){
+                        height = neededRect.size.height * 1.2 + 15;
+                    }
+                } else
+
                 if(IS_568_SCREEN){
                     if(neededRect.size.height > 48.){
                         height = neededRect.size.height + 18;
@@ -3308,9 +3401,28 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:indexPath];
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
+                /*
                 if(neededRect.size.height > 42.){
                     height = neededRect.size.height + 18;
                     
+                }
+                */
+                if(IS_IPAD){ // if iPad
+                    height = 85.;
+                    if(neededRect.size.height > 60.){
+                        height = neededRect.size.height * 1.2 + 15;
+                    }
+                } else
+                    if(IS_568_SCREEN){
+                        height = 65.;
+                        if(neededRect.size.height > 48.){
+                            height = neededRect.size.height * 1.2 + 13;
+                        }
+                    } else {
+                        height = 60.;
+                        if(neededRect.size.height > 43.){
+                            height = neededRect.size.height *1.2 + 13;
+                    }
                 }
                 
                 [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
@@ -3634,18 +3746,44 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //init managed document
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] firstObject];
-    NSString* documentName = @"MyDocument";
-    NSURL *myUrl = [documentsDirectory URLByAppendingPathComponent:documentName];
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:myUrl];
+                                                     inDomains:NSUserDomainMask] lastObject];
+    NSString* documentName = @"MyDocument.sqlite";
+
+    NSURL *storeURL = [documentsDirectory
+                       URLByAppendingPathComponent:documentName];
+    NSError *error = nil;
+    
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"History" withExtension:@"mom"];
+    //NSLog(@"modelURL: %@", modelURL);
+    
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc]
+                                                 initWithManagedObjectModel:model];
+    NSDictionary *storeOptions =
+    @{NSPersistentStoreUbiquitousContentNameKey: @"MyAppCloudStore"};
+    
+    NSPersistentStore *store = [coordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                         configuration:nil
+                                                                   URL:storeURL
+                                                               options:storeOptions
+                                                                 error:&error];
+    NSURL *finaliCloudURL = [store URL];
+    //NSLog(@"finaliCloudURL: %@", finaliCloudURL);
+    
+    NSURL *iCloud = [fileManager URLForUbiquityContainerIdentifier:nil];
+   // NSLog(@"iCloud: %@", iCloud);
+
+    
+    //NSURL *myUrl = [documentsDirectory URLByAppendingPathComponent:documentName];
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:storeURL];
     //question ? the string before the same
-    document = [[UIManagedDocument alloc] initWithFileURL:myUrl];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[myUrl path]]) {
+    //document = [[UIManagedDocument alloc] initWithFileURL:myUrl];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
         [document openWithCompletionHandler:^(BOOL success) {
             if (success) [self documentIsReady: document];
         }];
     } else {
-        [document saveToURL:myUrl forSaveOperation:UIDocumentSaveForCreating
+        [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForCreating
           completionHandler:^(BOOL success) {
               if (success) [self documentIsReady: document];
           }];
@@ -3725,7 +3863,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isResultFromMemory = NO;
         self.isDecCounting = YES;
         self.isBigDataBase = NO;
-        self.isBigSizeButtons = YES;
+        self.isBigSizeButtons = NO;
         self.isSoundOn = YES;
         self.self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
@@ -3763,9 +3901,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                  object:[UIApplication sharedApplication]];
     
     // Request to turn on accelerometer and begin receiving accelerometer events
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification
+    //[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    
+    /*
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationDidChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:[UIDevice currentDevice]];
+     */
+    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
     
     
@@ -3912,6 +4061,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
+
 }
 
 //possible enter to background, as example iTunes reques
@@ -4253,11 +4403,33 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return NO;
 }
 */
+
 - (void)orientationChanged:(NSNotification *)notification
 {
-    if(!IS_IPAD){ //exept if it isn't IPad
+    //exept if it isn't IPad
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
+    if(IS_IPAD){
+        NSLog(@"Device orient:%d", orient);
+        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        NSLog(@"Interface orient:%d", cachedOrientation);
+        if (orient == UIDeviceOrientationUnknown ||
+            orient == UIDeviceOrientationFaceUp ||
+            orient == UIDeviceOrientationFaceDown) {
+            
+            orient = (UIDeviceOrientation)cachedOrientation;
+        }
+        NSLog(@"Now Device orient:%d", orient);
 
+        if((orient <3)!= (self.wasRightShowed <3)) {
+           // [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+            [self setUpMainButtonsStartWithPosition];
+            [self makeTwoArrays];
+            [self.buttonsCollection reloadData];
+        }
+        self.wasRightShowed = orient;
+        
+
+    } else {
     
     if(orient == UIDeviceOrientationLandscapeLeft){
         //if there ara hint view - remove it
