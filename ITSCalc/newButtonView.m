@@ -12,6 +12,8 @@
 #define X_OFFSET = 2.0f
 #define Y_OFFSET = 2.0f
 #define ANGLE_OFFSET = (M_PI_4*0.1f)
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#define IS_NEW_DESIGN NO
 
 @interface newButtonView()
 //@property (nonatomic, strong) UILabel *labelView;
@@ -272,9 +274,16 @@
     CGRect cornerRect;
     UIBezierPath *drawRectPath;
     CGPathRef pathOfRect;
-    self.radiusCorner = self.frame.size.height/ 2.6;
+    CGFloat borderWidth;
+    if(IS_IPAD){
+        self.radiusCorner = self.frame.size.height/ 3.2;
+        
+        borderWidth = self.radiusCorner / 12.2;
+    } else {
+        self.radiusCorner = self.frame.size.height/ 3.2;
 
-    CGFloat borderWidth = self.radiusCorner / 3.2;
+        borderWidth = self.radiusCorner / 12.2;
+    }
 
         //to states of buttons
     CGFloat x = borderWidth /2;
@@ -288,12 +297,19 @@
 
     pathOfRect = drawRectPath.CGPath;
     CGContextAddPath(context, pathOfRect);
-    if((self.buttonColor.r == 0.95) && (self.buttonColor.g == .95)&&(self.buttonColor.b == .95)){
-        
+    if(IS_NEW_DESIGN){
+        CGContextSetRGBFillColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, 0.1);
+         CGContextSetRGBFillColor(context, 1, 1, 1, 0.2);
+        CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, 0.);
+
     } else {
-        CGContextSetRGBFillColor(context, .1, .1, .1, 0.5); //background of button
+        if((self.buttonColor.r == 0.95) && (self.buttonColor.g == .95)&&(self.buttonColor.b == .95)){
+        
+        } else {
+            CGContextSetRGBFillColor(context, .1, .1, .1, 0.5); //background of button
+        }
+        CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, self.buttonColor.a);
     }
-    CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, self.buttonColor.a);
     CGContextDrawPath(context, kCGPathFillStroke);
     
 
