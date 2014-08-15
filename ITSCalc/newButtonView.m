@@ -306,7 +306,7 @@
         if((self.buttonColor.r == 0.95) && (self.buttonColor.g == .95)&&(self.buttonColor.b == .95)){
         
         } else {
-            CGContextSetRGBFillColor(context, .1, .1, .1, 0.5); //background of button
+            CGContextSetRGBFillColor(context, .2, .2, .2, 0.2); //background of button
         }
         CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, self.buttonColor.a);
     }
