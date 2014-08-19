@@ -87,6 +87,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 //History table view
 @property (weak, nonatomic) IBOutlet HistoryTableView *historyTable;
+@property (nonatomic) BOOL isHistoryWholeShowed;
 //property to show is one row from history table is selected
 @property (strong,nonatomic) HistroryTableViewCell *selectedRow;
 //attributes for historyTable
@@ -141,7 +142,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 //Showed View
 @property (nonatomic, strong) UIDynamicAnimator *animator;
-@property (weak, nonatomic) IBOutlet UIView *testView;
+@property (strong, nonatomic) IBOutlet UIView *testView;
 @property (strong, nonatomic) IBOutlet ShowedView *viewToPDF;
 @property (weak, nonatomic) IBOutlet UIButton *redPanButton;
 @property (weak, nonatomic) IBOutlet UIButton *bluePanButton;
@@ -1520,7 +1521,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
             CGRect sviperRect = self.historyTableSviper.frame;
             sviperRect.origin.x = (self.view.frame.size.width - self.historyTableSviper.frame.size.width)/2;
-            sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height;
+            sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
             
             CGRect settingsViewframe = self.SettingsView.frame;
             settingsViewframe.origin.y = self.displayContainer.frame.size.height;
@@ -1874,7 +1875,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     CGRect sviperRect = self.historyTableSviper.frame;
     sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.frame.size.width)/2;
-    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height;
+    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
     
     CGPoint histroyContentSizePoint = CGPointMake(0, self.historyTable.contentSize.height - self.histroryTableViewHeight);
     
@@ -1884,7 +1885,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     } else {
         settingsViewframe.origin.y = displayViewFrame.origin.y + displayViewFrame.size.height;
     }
-    settingsViewframe.origin.x = - self.mainContainerView.bounds.size.width;
+    //settingsViewframe.origin.x = - self.mainContainerView.bounds.size.width;
+    settingsViewframe.origin.x = - settingsViewframe.size.width;
+
     
     
     [UIView animateWithDuration:.3
@@ -1945,6 +1948,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          //
                          [self.buttonsCollection reloadData];
                          self.buttonsCollection.scrollEnabled = YES;
+                         self.isHistoryWholeShowed = NO;
                      }];
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
@@ -1956,6 +1960,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //set to 0 indication of previous rotation, also need at discard changing
     //self.wasRightShowed = 0;
+    
 
     
 }
@@ -1974,6 +1979,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 #pragma mark sviper gesture recognizer
+-(void)setIsHistoryWholeShowed:(BOOL)isHistoryWholeShowed
+{
+    self.historyTableSviper.isShowedButtom = isHistoryWholeShowed;
+}
+
+- (IBAction)sviperRecognizerUp:(UISwipeGestureRecognizer *)sender
+{
+    [self discardChanging];
+}
+
 - (IBAction)sviperRecognizer:(id *)sender
 {
     
@@ -1985,7 +2000,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     historyTableFrame.size.height = displayViewFrame.origin.y;
     
     CGRect sviperRect = self.historyTableSviper.frame;//may be need to be checked
-    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height;
+    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
     
     CGRect buttonsCollectionViewBounds = self.view.frame;
     buttonsCollectionViewBounds.size.height = self.view.frame.size.height;
@@ -1997,7 +2012,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.settingsBottomButtn.hidden = NO;
     self.noticeButton.hidden = NO;
     self.recountButton.hidden = NO;
-    self.upButton.hidden = NO;
+    //setup swiper
+    //self.upButton.hidden = NO;
     self.deleteButton.hidden = NO;
     
     [UIView animateWithDuration:.38
@@ -2011,18 +2027,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          [self.historyTableSviper setFrame:sviperRect];
                          //[self.bannerContainerView setFrame:bannerIAdRect];
                          self.display.alpha = .0;
-                         self.historyTableSviper.alpha = .0;
+                         //self.historyTableSviper.alpha = .0;
                          
                          self.settingsBottomButtn.alpha = 1.;
                          self.noticeButton.alpha = 1;
                          self.recountButton.alpha = 1;
-                         self.upButton.alpha = 1;
+                         //setup swiper up
+                         //self.upButton.alpha = 1;
                          self.deleteButton.alpha = 1;
                          
                          [self.historyTable setContentOffset:histroyContentSizePoint];
                      } completion:^(BOOL finished){
                          
-                         
+                         self.isHistoryWholeShowed = YES;
+
                      }];
     
     if([self.historyTable numberOfRowsInSection:0] >1){
@@ -3490,11 +3508,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
             
             //set new image for that button
+            //go to view didLoad
+            /*
             [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
             [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
+            */
         }
     }
     //NSAttributedString
+}
+
+-(void) setShowedViewInBackground
+{
+    NSAttributedString * count = [[NSAttributedString alloc] initWithString:@""];
+    NSAttributedString *result = [[NSAttributedString alloc] initWithString:@""];
+    
+    [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
 }
 
 //tapped at share button in showed view
@@ -3655,11 +3684,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGRect buttonsRect = CGRectMake(0, 0, 60, 60);
     if(IS_IPAD){
         //for ipad try through autolayout
-        /*
+        
         self.histroryTableViewHeight = 182.f;
         self.labelViewHeight = 108.f;
         self.lastRowHistoryTableHeight = 85.f;
-        */
+        
         
         [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
         
@@ -3739,6 +3768,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (void)viewDidLoad
 {
+
+    //[UIDevice currentDevice]
     //for testing delegate
     //set Hegths of ellement according screen height
     [self setHeightOfElementAccordingToScreenIPhone];
@@ -3962,6 +3993,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.blankSoundFileURLRef =  [NSURL fileURLWithPath:soundPath];
     // Create a system sound object representing the sound file.
     AudioServicesCreateSystemSoundID  ((__bridge CFURLRef)self.blankSoundFileURLRef, &_blankSoundFileObject);
+    //replace from show count
+    [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
+    [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
+    
+    self.isHistoryWholeShowed = NO;
+
 }
 
 -(void) viewWillAppear:(BOOL)animated{
@@ -3987,13 +4024,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                  self.labelViewHeight);
         CGRect sviperRect = self.historyTableSviper.frame;
         sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
-        sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height;
+        sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
         [self.historyTableSviper setFrame:sviperRect];
     }
     //--------------------------------------------------------------------------
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
     
+    CGRect settingsViewRect = CGRectMake(-self.view.frame.size.width,
+                                         0,
+                                         self.mainContainerView.bounds.size.width,
+                                         self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    
+    [self.SettingsView setFrame:settingsViewRect];
     self.settingsBackgroundToolBar.frame = self.SettingsView.frame;
     
     self.display.frame = self.displayContainer.bounds;
@@ -4019,12 +4062,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [self setLayOutOfSettingsView];
     
+    CGFloat yDisplayCenter = self.displayContainer.frame.size.height/2;
+    CGFloat widthdisplay = self.displayContainer.frame.size.width;
+
     if(self.wasPurshaised){
-        self.downButton.center = CGPointMake(223, 36);
+        self.downButton.center = CGPointMake(widthdisplay*2/3, yDisplayCenter);
         
-        self.settingsButton.center = CGPointMake(97, 36);
+        self.settingsButton.center = CGPointMake(widthdisplay/3, yDisplayCenter);
     } else {
-        self.downButton.center = CGPointMake(160, 36);
+        
+        self.downButton.center = CGPointMake(widthdisplay/2, yDisplayCenter);
     }
 }
 
@@ -4054,6 +4101,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
         i+=1;
     }
+    [self performSelectorInBackground:@selector(setShowedViewInBackground) withObject:nil];
+
 }
 
 -(void) appDidGoToForeground: (NSNotification *)note
