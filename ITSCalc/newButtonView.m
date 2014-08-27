@@ -278,7 +278,7 @@
     if(IS_IPAD){
         self.radiusCorner = self.frame.size.height/ 3.2;
         
-        borderWidth = self.radiusCorner / 12.2;
+        borderWidth = self.radiusCorner / 9.2;
     } else {
         self.radiusCorner = self.frame.size.height/ 3.2;
 
