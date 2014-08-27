@@ -13,6 +13,10 @@
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
 #define Y_OFFSET 2.0f
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
+
+
 
 @interface NewButtonsCollectionViewCell() 
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
@@ -69,7 +73,8 @@
 {
     if(!self.isUnderChanging){
         
-        self.rectArchive = self.cellSubView.frame;
+        //self.rectArchive = self.cellSubView.frame;
+        self.rectArchive = self.frame;
         //[UIView animateWithDuration:0.03 animations:^{
         //    self.cellSubView.frame = [self getRect];
         //}];
@@ -79,13 +84,14 @@
               initialSpringVelocity:0.1
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                             self.cellSubView.frame = [self getRect];
+                             //self.cellSubView.frame = [self getRect];
+                             [self setFrame:[self getRect]];
                          } completion:nil];
         self.cellSubView.isTaped = YES;
     } else {
         
-        self.rectArchive = self.cellSubView.frame;
-        
+       // self.rectArchive = self.cellSubView.frame;
+        self.rectArchive = self.frame;
         self.cellSubView.isTaped = YES;
         
     }
@@ -104,12 +110,14 @@
               initialSpringVelocity:0.1
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                             self.cellSubView.frame = self.rectArchive;
+                            // self.cellSubView.frame = self.rectArchive;
+                             self.frame = self.rectArchive;
                          } completion:nil];
         
         self.cellSubView.isTaped = NO;
     } else {
-        self.cellSubView.frame = self.rectArchive;
+       // self.cellSubView.frame = self.rectArchive;
+        self.frame = self.rectArchive;
         self.cellSubView.isTaped = NO;
         
     }
@@ -221,35 +229,66 @@
 //-------------------------------------------------------------------------------------------------
 
 -(CGRect) getRect{
+    CGFloat collectionInsect;
+    if(IS_IPAD) {
+        collectionInsect = 108;
+    } else {
+        if(IS_568_SCREEN){
+            collectionInsect = 72;
+        } else {
+            collectionInsect= 65;
+        }
+    }
     [self.superview bringSubviewToFront:self]; //set cell on the top of collectionView
-    CGPoint originInwindow = [self convertPoint:CGPointZero toView:self.window];
+   // CGPoint originInwindow = [self convertPoint:CGPointZero toView:self.window];
     
-    CGFloat subX = (1- self.incr)*self.frame.size.width /2;
-    CGFloat subY = (1- self.incr)*self.frame.size.height /2;
+    CGFloat subX = self.frame.origin.x - (self.incr -1)*self.frame.size.width /2;
+    CGFloat subY = self.frame.origin.y - (self.incr -1)*self.frame.size.height /2;
     CGFloat subWidth = self.frame.size.width * self.incr;
     CGFloat subHeight = self.frame.size.height * self.incr;
     
 
-    if((originInwindow.x - self.superview.frame.origin.x + subX) < 0){
-        subX = -(originInwindow.x - self.superview.frame.origin.x);
+    if(subX < 0){
+        subX = 0;
     }
-    if((originInwindow.y - self.superview.frame.origin.y -72 + subY) < 0){ //66 - add ofset from collectionView
-        subY = -(originInwindow.y - self.superview.frame.origin.y -72);
+    if((subX+subWidth) > self.superview.bounds.size.width){
+        subX = self.superview.bounds.size.width - subWidth;
     }
-    CGFloat oversize = self.superview.bounds.size.width - (originInwindow.x - self.superview.frame.origin.x + subX + subWidth);
-    if(oversize < 0){
-        subX += oversize;
+    
+    if((subY - collectionInsect) < 0){
+        subY = collectionInsect;
     }
-    oversize = self.superview.bounds.size.height - (originInwindow.y - self.superview.frame.origin.y +subY + subHeight);
-    if(oversize < 0){
-        subY += oversize;
+    
+    if((subY+subHeight) > self.superview.bounds.size.height){
+        subY = self.superview.bounds.size.height - subHeight;
     }
+    
+    /*
+     if((originInwindow.x - self.superview.frame.origin.x + subX) < 0){
+     subX = -(originInwindow.x - self.superview.frame.origin.x);
+     }
+     if((originInwindow.y - self.superview.frame.origin.y -collectionInsect + subY) < 0){ //66 - add ofset from collectionView
+     subY = -(originInwindow.y - self.superview.frame.origin.y -collectionInsect);
+     }
+     CGFloat oversize = self.superview.bounds.size.width - (originInwindow.x - self.superview.frame.origin.x + subX + subWidth);
+     if(oversize < 0){
+     subX += oversize;
+     }
+     oversize = self.superview.bounds.size.height - (originInwindow.y - self.superview.frame.origin.y +subY + subHeight);
+     if(oversize < 0){
+     subY += oversize;
+     }
+     */
     return  CGRectMake(subX, subY, subWidth, subHeight);
 }
 
 -(void) setup
 {
-    self.incr = 2.1;
+    if(IS_IPAD){
+        self.incr = 1.6;
+    } else {
+        self.incr = 2.1;
+    }
     self.closeAndSetButton.hidden = YES;
     self.isEnable = YES;
     self.isAllovedToDelete = self.isEnable; //to set alloved to delete according quantity of buttons in view
