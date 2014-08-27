@@ -36,7 +36,9 @@
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
 #define Y_OFFSET 2.0f
-#define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
+#define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
+
+//#define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
@@ -47,7 +49,7 @@
 NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
 
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UICollisionBehaviorDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate>
 
 
 //outlets
@@ -87,16 +89,24 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 //History table view
 @property (weak, nonatomic) IBOutlet HistoryTableView *historyTable;
-@property (nonatomic) BOOL isHistoryWholeShowed;
+@property (nonatomic) CGFloat isHistoryWholeShowed;
 //property to show is one row from history table is selected
 @property (strong,nonatomic) HistroryTableViewCell *selectedRow;
 //attributes for historyTable
 @property (nonatomic,strong) NSDictionary * attributes;
+
+//items for dynamic draging
+
+@property (weak, nonatomic) IBOutlet UIView *dynamicContainer;
+@property (nonatomic) CGFloat wasDynamicOriginY;
 @property (weak, nonatomic) IBOutlet HistoryTableSviper *historyTableSviper;
-@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *swipeGesturerecognizer;
+//@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *swipeGesturerecognizer;
+@property (nonatomic) CGPoint svipeGestureLocation;
+
+
+
 //for set values of row hight in historyTableView
 @property (nonatomic,strong) NSArray *heightsOfRows;
-
 
 //bool property for paid version
 @property (nonatomic, strong) SKProduct *product;
@@ -518,6 +528,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     return YES;
 }
+
+/*
+-(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+-(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+*/
 
 #pragma mark BUTTONS ARRAYS
 -(NSArray*) startArray
@@ -1416,10 +1438,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [History storyWithProgram:new atDate:lastDay inManageObjectContext:self.managedObjectContext];
         //CHECK HERE!!!!!!!!
         //?? with no rows
+        
+        //don't think it's necessary below
         if([self.historyTable numberOfRowsInSection:0] > 0){
             NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0] -1 inSection:0];
             [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
         }
+        
     }
     //set counter to show allert view
     if(self.counterForShowingAllertView != -1){
@@ -1503,30 +1528,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             //lock interaction
             self.buttonsCollection.userInteractionEnabled = NO;
             self.isButtonsCollectionUnderChanging = YES;
-            //[self.buttonsCollection reloadData];
             
-            CGRect historyTableFrame = self.historyTable.frame;
-            historyTableFrame.origin.y = - historyTableFrame.size.height;
+            CGRect newDynamicFrame = self.dynamicContainer.frame;
+            newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
+            newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
             
             //lift banner on settings screen (need to do if banner visible)
             //CGRect iAdBannerFrame = self.bannerContainerView.frame;
             //iAdBannerFrame.origin.y += - historyTableFrame.size.height;
             
-            CGRect displayViewFrame = self.displayContainer.frame;
-            displayViewFrame.origin.y = 0;
-            
-            CGRect buttonsCollectionViewBounds = self.view.frame;
-            buttonsCollectionViewBounds.size.height = self.view.frame.size.height;
-            buttonsCollectionViewBounds.origin.y = 0;
-            
-            CGRect sviperRect = self.historyTableSviper.frame;
-            sviperRect.origin.x = (self.view.frame.size.width - self.historyTableSviper.frame.size.width)/2;
-            sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
-            
-            CGRect settingsViewframe = self.SettingsView.frame;
-            settingsViewframe.origin.y = self.displayContainer.frame.size.height;
-            
-            
+            CGRect buttonsCollectionViewBounds = self.buttonsCollection.frame;
+            buttonsCollectionViewBounds.size.height = self.mainContainerView.frame.size.height;
+            buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height - self.labelViewHeight;
+
             //allow show settings button only in paid version
             if(self.wasPurshaised) self.settingsButton.hidden = NO;
             self.downButton.hidden = NO;
@@ -1536,21 +1550,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
-                                 [self.historyTable setFrame:historyTableFrame];
-                                 //lift banner on settings screen (need to do if banner visible)
-                                 //if(self.isIAdBaneerAvailable)[self.bannerContainerView setFrame:iAdBannerFrame];
+                                 [self.dynamicContainer setFrame:newDynamicFrame];
                                  if(self.isIAdBaneerAvailable){
                                  [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, 50)];
                                  }
-                                 [self.displayContainer setFrame:displayViewFrame];
-                                 [self.backgroundToolBar setFrame:displayViewFrame];
                                  [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
-                                 [self.historyTableSviper setFrame:sviperRect]; //STOP to checked self.history table HERE!!
-                                 
-                                 [self.SettingsView setFrame:settingsViewframe];
-                                 [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                                 
-                                 
                                  self.display.alpha = .0;
                                  
                                  //allow show settings button only in paid version
@@ -1584,7 +1588,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                      //if no paid version show at moment only setting view
                                      //not allow user change buttons
                                     CGRect settingsViewNewframe = self.SettingsView.frame;
-                                    settingsViewNewframe.origin.y = self.display.bounds.size.height;
+                                    settingsViewNewframe.origin.y = self.displayContainer.frame.origin.y + self.displayContainer.frame.size.height;
                                     [self.SettingsView setFrame:settingsViewNewframe];
                                     [self.settingsBackgroundToolBar setFrame:settingsViewNewframe];
                                      
@@ -1858,34 +1862,23 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
 
-    CGRect historyTableFrame = self.historyTable.frame; //ok
-    historyTableFrame.origin.y = 0;
-    historyTableFrame.size.height = self.histroryTableViewHeight;//ok
+    CGRect dynamicRect = self.dynamicContainer.frame;
+    dynamicRect.size.height = 2*self.mainContainerView.bounds.size.height - self.histroryTableViewHeight - self.labelViewHeight;
+    dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;;
     
     //set banner frame at discarding changin to apropriate hight (according height of last rows)
     //CGRect iAdBannerFrame = self.bannerContainerView.frame;
     //iAdBannerFrame.origin.y = self.iAdBannerOriginHeight;
     
-    CGRect displayViewFrame = self.displayContainer.frame;
-    displayViewFrame.origin.y = self.histroryTableViewHeight;//ok
-    
     CGRect buttonsCollectionViewBounds = self.mainContainerView.bounds;
-    buttonsCollectionViewBounds.origin.y = self.histroryTableViewHeight;
     buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
-    
-    CGRect sviperRect = self.historyTableSviper.frame;
-    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.frame.size.width)/2;
-    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
-    
-    CGPoint histroyContentSizePoint = CGPointMake(0, self.historyTable.contentSize.height - self.histroryTableViewHeight);
-    
+
     CGRect settingsViewframe = self.SettingsView.frame;
     if(self.isBottomSettingsViewOnScreen){
-        settingsViewframe.origin.y = displayViewFrame.origin.y - settingsViewframe.size.height;
+        settingsViewframe.origin.y = self.displayContainer.frame.origin.y - settingsViewframe.size.height;
     } else {
-        settingsViewframe.origin.y = displayViewFrame.origin.y + displayViewFrame.size.height;
+        settingsViewframe.origin.y = self.displayContainer.frame.origin.y + self.displayContainer.frame.size.height;
     }
-    //settingsViewframe.origin.x = - self.mainContainerView.bounds.size.width;
     settingsViewframe.origin.x = - settingsViewframe.size.width;
 
     
@@ -1894,25 +1887,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
-                         [self.historyTable setFrame:historyTableFrame];
+                        // [self.historyTable setFrame:historyTableFrame];
                          //set banner frame at discarding changin to apropriate hight (according height of last rows)
                          //if(self.isIAdBaneerAvailable) [self.bannerContainerView setFrame:iAdBannerFrame];
+                         [self.dynamicContainer setFrame:dynamicRect];
                          
                          if(self.isIAdBannerOnScreen){
                              [self.bannerContainerView setFrame:CGRectMake(0, 0, self.mainContainerView.bounds.size.width, 50)];
                          }
-                        
-                         [self.displayContainer setFrame:displayViewFrame];
-                         [self.backgroundToolBar setFrame:displayViewFrame];
-                         [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
-                         [self.buttonsCollection setContentOffset:CGPointZero];
                          
                          [self.SettingsView setFrame:settingsViewframe];
                          [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                         
-                         [self.historyTableSviper setFrame:sviperRect];
-                         self.historyTableSviper.alpha = 1.;
-                         self.display.alpha = 1.;
                          
                          self.settingsBottomButtn.alpha = 0.;
                          self.noticeButton.alpha = 0.;
@@ -1923,7 +1908,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          if(self.wasPurshaised) self.settingsButton.alpha = 0.;
                          self.downButton.alpha = 0.;
                          
-                         [self.historyTable setContentOffset:histroyContentSizePoint];
+                         self.display.alpha = 1.;
                          
                      } completion:^(BOOL finished){
                          CGRect rect = self.historyTable.frame;
@@ -1948,8 +1933,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          //
                          [self.buttonsCollection reloadData];
                          self.buttonsCollection.scrollEnabled = YES;
-                         self.isHistoryWholeShowed = NO;
+                         self.isHistoryWholeShowed = 0;
                      }];
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+    }
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
@@ -1957,12 +1945,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
         self.historyTable.isNeedToSetOffsetToButton = YES;
     }
-    
-    //set to 0 indication of previous rotation, also need at discard changing
-    //self.wasRightShowed = 0;
-    
 
-    
 }
 
 - (IBAction)tapFixButton:(UIButton*)sender
@@ -1979,81 +1962,256 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 #pragma mark sviper gesture recognizer
--(void)setIsHistoryWholeShowed:(BOOL)isHistoryWholeShowed
+-(void)setIsHistoryWholeShowed:(CGFloat)isHistoryWholeShowed
 {
-    self.historyTableSviper.isShowedButtom = isHistoryWholeShowed;
+    self.historyTableSviper.pattOfDown = isHistoryWholeShowed;
 }
 
-- (IBAction)sviperRecognizerUp:(UISwipeGestureRecognizer *)sender
+
+- (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender
 {
-    [self discardChanging];
-}
+    CGPoint currentSvipeGestureLocation = [sender locationInView:self.view];
+    
+    if(sender.state == UIGestureRecognizerStateBegan){
+        
+        self.svipeGestureLocation = currentSvipeGestureLocation;
+        self.wasDynamicOriginY = self.dynamicContainer.frame.origin.y;
+        
+        self.settingsBottomButtn.hidden = NO;
+        self.noticeButton.hidden = NO;
+        self.recountButton.hidden = NO;
+        self.deleteButton.hidden = NO;
+        
+    } else if (sender.state == UIGestureRecognizerStateChanged){
 
-- (IBAction)sviperRecognizer:(id *)sender
-{
-    
-    CGRect displayViewFrame = self.displayContainer.frame;
-    displayViewFrame.origin.y = self.view.frame.size.height - self.displayContainer.frame.size.height;
-    
-    CGRect historyTableFrame = self.historyTable.frame;//ok
-    historyTableFrame.origin.y = 0;
-    historyTableFrame.size.height = displayViewFrame.origin.y;
-    
-    CGRect sviperRect = self.historyTableSviper.frame;//may be need to be checked
-    sviperRect.origin.y = displayViewFrame.origin.y - self.historyTableSviper.frame.size.height*2/3;
-    
-    CGRect buttonsCollectionViewBounds = self.view.frame;
-    buttonsCollectionViewBounds.size.height = self.view.frame.size.height;
-    buttonsCollectionViewBounds.origin.y = self.view.frame.size.height;
-    
-    CGPoint histroyContentSizePoint = CGPointMake(0, self.historyTable.contentSize.height - historyTableFrame.size.height);//not shure
-    
-
-    self.settingsBottomButtn.hidden = NO;
-    self.noticeButton.hidden = NO;
-    self.recountButton.hidden = NO;
-    //setup swiper
-    //self.upButton.hidden = NO;
-    self.deleteButton.hidden = NO;
-    
-    [UIView animateWithDuration:.38
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         [self.historyTable setFrame:historyTableFrame];
-                         [self.displayContainer setFrame:displayViewFrame];
-                         [self.backgroundToolBar setFrame:displayViewFrame];
-                         [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
-                         [self.historyTableSviper setFrame:sviperRect];
-                         //[self.bannerContainerView setFrame:bannerIAdRect];
-                         self.display.alpha = .0;
-                         //self.historyTableSviper.alpha = .0;
-                         
-                         self.settingsBottomButtn.alpha = 1.;
-                         self.noticeButton.alpha = 1;
-                         self.recountButton.alpha = 1;
-                         //setup swiper up
-                         //self.upButton.alpha = 1;
-                         self.deleteButton.alpha = 1;
-                         
-                         [self.historyTable setContentOffset:histroyContentSizePoint];
-                     } completion:^(BOOL finished){
-                         
-                         self.isHistoryWholeShowed = YES;
-
-                     }];
-    
-    if([self.historyTable numberOfRowsInSection:0] >1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-
-       if(!self.selectedRow || (self.selectedRow == [self.historyTable cellForRowAtIndexPath:lastRowPatch])){
+        CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
+        
+        if(hopeDynamicOriginY > -self.view.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight
+           && hopeDynamicOriginY < 0){
+            CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.frame.size.height);
             
-            [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+            self.display.alpha = opacityMark;
+            self.settingsBottomButtn.alpha =1 - opacityMark;
+            self.noticeButton.alpha = 1 - opacityMark;
+            self.recountButton.alpha = 1 - opacityMark;
+            self.deleteButton.alpha = 1 - opacityMark;
+            self.isHistoryWholeShowed = 1 - opacityMark;
+            
+            CGRect dynamicRect = self.dynamicContainer.frame;
+            dynamicRect.origin.y = hopeDynamicOriginY;
+            [self.dynamicContainer setFrame:dynamicRect];
+            
+            if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
+                CGRect settingsViewframe = self.SettingsView.frame;
+                settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
+                [self.SettingsView setFrame:settingsViewframe];
+                [self.settingsBackgroundToolBar setFrame:settingsViewframe];
+            }
+
+        }
+        //if drag down
+        
+    } else if (sender.state == UIGestureRecognizerStateEnded){
+        
+        CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
+        CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.frame.size.height);
+        if(hopeDynamicOriginY >= -self.view.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight
+           && hopeDynamicOriginY < 0){
+            
+            self.display.alpha = opacityMark;
+            self.settingsBottomButtn.alpha =1 - opacityMark;
+            self.noticeButton.alpha = 1 - opacityMark;
+            self.recountButton.alpha = 1 - opacityMark;
+            self.deleteButton.alpha = 1 - opacityMark;
+            self.isHistoryWholeShowed = 1 - opacityMark;
+            
+            if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
+                CGRect settingsViewframe = self.SettingsView.frame;
+                settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
+                [self.SettingsView setFrame:settingsViewframe];
+                [self.settingsBackgroundToolBar setFrame:settingsViewframe];
+            }
+
+        }
+        
+        if(self.wasDynamicOriginY == -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight) {
+            if(opacityMark < 0.9){
+                [self finishDraggingDownWithVelocity:[sender velocityInView:self.view]];
+            } else {
+                
+                [self finisDraggingUpWithVelocity:[sender velocityInView:self.view]];
+            }
         } else {
-           [self.historyTable selectRowAtIndexPath:[self.historyTable indexPathForCell:self.selectedRow] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-       }
-   }
+            if(opacityMark < 0.1){
+                [self finishDraggingDownWithVelocity:[sender velocityInView:self.view]];
+            } else {
+                
+                [self finisDraggingUpWithVelocity:[sender velocityInView:self.view]];
+            }
+        }
+    }
+    else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
+        NSLog(@"filed or canceled");
+    }
     
+}
+
+-(void) finisDraggingUpWithVelocity:(CGPoint)velocity
+{
+    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
+    
+    velocity.x = 0;
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    dynamicItem.allowsRotation = NO;
+    [dynamicItem addLinearVelocity:velocity forItem:self.dynamicContainer];
+    [animator addBehavior:dynamicItem];
+    
+    CGFloat centerY = self.mainContainerView.frame.size.height - self.dynamicContainer.frame.size.height/2;
+    
+    CGPoint snapPoint = CGPointMake(CGRectGetMidX(self.mainContainerView.frame),
+                                    centerY);
+    
+    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.dynamicContainer snapToPoint:snapPoint];
+    snap.damping = 0.3;
+    
+    __weak typeof (self) weakSelf = self;
+    snap.action = ^{
+        typeof(self) strongSelf = weakSelf;
+        UIView *view = strongSelf.dynamicContainer;
+        
+        CGFloat opacityMark = strongSelf.dynamicContainer.frame.origin.y/(strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height);
+        
+        strongSelf.display.alpha =  opacityMark;
+        strongSelf.settingsBottomButtn.alpha =1- opacityMark;
+        strongSelf.noticeButton.alpha = 1-opacityMark;
+        strongSelf.recountButton.alpha = 1-opacityMark;
+        strongSelf.deleteButton.alpha = 1-opacityMark;
+        strongSelf.isHistoryWholeShowed = 1-opacityMark;
+        
+        CGFloat needY = strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height;
+        
+        if(strongSelf.SettingsView.frame.origin.x > -strongSelf.SettingsView.frame.size.width){
+            CGRect settingsViewframe = strongSelf.SettingsView.frame;
+            settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
+            [strongSelf.SettingsView setFrame:settingsViewframe];
+            [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
+        }
+
+        if(ABS(CGRectGetMidY(strongSelf.dynamicContainer.frame) - centerY) < 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
+           [animator removeAllBehaviors];
+            CGRect dynamicRect = view.frame;
+            dynamicRect.origin.y = needY;
+            [view setFrame:dynamicRect];
+
+            //in any case hide settings view
+            CGRect settingsViewframe = strongSelf.SettingsView.frame;
+            settingsViewframe.origin.x = - settingsViewframe.size.width;
+            [strongSelf.SettingsView setFrame:settingsViewframe];
+            [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
+            strongSelf.isSettingsViewOnScreen = NO;
+            strongSelf.isBottomSettingsViewOnScreen = NO;
+            
+            strongSelf.display.alpha =  1;
+            strongSelf.settingsBottomButtn.alpha =0;
+            strongSelf.noticeButton.alpha = 0;
+            strongSelf.recountButton.alpha = 0;
+            strongSelf.deleteButton.alpha = 0;
+            strongSelf.isHistoryWholeShowed = 0;
+            
+            if(strongSelf.historyTable.contentSize.height < strongSelf.historyTable.frame.size.height){
+
+               [self.historyTable setContentInset:UIEdgeInsetsMake(strongSelf.historyTable.frame.size.height - strongSelf.historyTable.contentSize.height,0, 0, 0)];
+            }
+        }
+        
+    };
+    
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+        self.historyTable.isNeedToSetOffsetToButton = YES;
+    }
+    
+    [animator addBehavior:snap];
+
+    self.animator = animator;
+}
+
+-(void) finishDraggingDownWithVelocity:(CGPoint)velocity
+{
+    
+    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
+    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    gravity.gravityDirection = CGVectorMake(0.0, 4.0);
+    [animator addBehavior:gravity];
+    
+    velocity.x = 0;
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    dynamicItem.allowsRotation = NO;
+    [dynamicItem addLinearVelocity:velocity forItem:self.dynamicContainer];
+    [animator addBehavior:dynamicItem];
+    
+    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    CGFloat stopY = 2* self.mainContainerView.frame.size.height - self.labelViewHeight - self.histroryTableViewHeight;
+    [collision addBoundaryWithIdentifier:@"dynamic"
+                                       fromPoint:CGPointMake(0, stopY)
+                                         toPoint:CGPointMake(self.mainContainerView.frame.size.width, stopY)];
+    
+    __weak typeof (self) weakSelf = self;
+    gravity.action = ^{
+        
+        typeof(self) strongSelf = weakSelf;
+        
+        CGFloat opacityMark = strongSelf.dynamicContainer.frame.origin.y/(strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height);
+        
+        strongSelf.display.alpha = opacityMark;
+        strongSelf.settingsBottomButtn.alpha =1- opacityMark;
+        strongSelf.noticeButton.alpha = 1- opacityMark;
+        strongSelf.recountButton.alpha = 1- opacityMark;
+        strongSelf.deleteButton.alpha = 1- opacityMark;
+        self.isHistoryWholeShowed = 1- opacityMark;
+        
+        if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
+            CGRect settingsViewframe = self.SettingsView.frame;
+            settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
+            [self.SettingsView setFrame:settingsViewframe];
+            [self.settingsBackgroundToolBar setFrame:settingsViewframe];
+        }
+        
+        CGFloat needY = 0;
+        UIView *view = strongSelf.dynamicContainer;
+
+        if(view.frame.origin.y > needY - 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
+            [animator removeAllBehaviors];
+            CGRect dynamicRect = view.frame;
+            dynamicRect.origin.y = needY;
+            [view setFrame:dynamicRect];
+            
+            strongSelf.display.alpha =  0;
+            strongSelf.settingsBottomButtn.alpha =1;
+            strongSelf.noticeButton.alpha = 1;
+            strongSelf.recountButton.alpha = 1;
+            strongSelf.deleteButton.alpha = 1;
+            strongSelf.isHistoryWholeShowed = 1;
+            
+            if(strongSelf.SettingsView.frame.origin.x > -strongSelf.SettingsView.frame.size.width){
+                CGRect settingsViewframe = strongSelf.SettingsView.frame;
+                settingsViewframe.origin.x = 0;
+                [strongSelf.SettingsView setFrame:settingsViewframe];
+                [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
+            }
+            
+            
+        }
+        if(opacityMark > 0.9){
+            [animator removeAllBehaviors];
+            [self finisDraggingUpWithVelocity:[dynamicItem linearVelocityForItem:view]];
+        }
+    };
+    [animator addBehavior:collision];
+    
+    self.animator = animator;
 }
 
 #pragma mark - MOVE BUTTONS Methods
@@ -2722,6 +2880,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     insets.bottom = 0;
     insets.left = 0;
     insets.right = 0;
+
     if(IS_IPAD) {
         insets.top = 119;
         insets.left = 11;
@@ -3237,7 +3396,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     [self resetHeightsofRows];
     [self.historyTable reloadData];
-
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
@@ -3255,6 +3413,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.historyTable reloadData];
         }
     }
+    
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+
+    }
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
+        self.historyTable.isNeedToSetOffsetToButton = YES;
+    }
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
@@ -3271,11 +3440,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [self.historyTable insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+            [self.historyTable insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationBottom];
             break;
             
         case NSFetchedResultsChangeDelete:
-            [self.historyTable deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+            [self.historyTable deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationBottom];
             break;
     }
 }
@@ -3350,7 +3519,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
             self.heightsOfRows = [mutArray copy];
             //replace row above
-            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationBottom];
+            [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             
             
             
@@ -3457,19 +3626,31 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
     }
-    
-    //NSError *error = nil;
-    //[self.managedObjectContext save:&error];
    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     [self.historyTable endUpdates];
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+        /*
+        CGPoint histroyContentSizePoint = CGPointMake(0, -self.historyTable.frame.size.height + self.historyTable.contentSize.height);
+        [self.historyTable setContentOffset:histroyContentSizePoint animated:NO];
+        */
+    }
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+        self.historyTable.isNeedToSetOffsetToButton = YES;
+    }
+    
+    /*
     NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
     [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
     
-    
+    */
 }
 
 
@@ -3774,6 +3955,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //set Hegths of ellement according screen height
     [self setHeightOfElementAccordingToScreenIPhone];
     
+    [self initialLayoutDynamiccontainer];
+    
     //init managed document
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
@@ -3825,21 +4008,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [super viewDidLoad];
     
-    if(!IS_IPAD){ //make ipads in auto layout
-    
-        [self.historyTable setFrame:CGRectMake(0, 0, self.mainContainerView.bounds.size.width, self.histroryTableViewHeight)];
-        CGRect displayViewFrame = CGRectMake(0,
-                                             self.histroryTableViewHeight,
-                                             self.mainContainerView.bounds.size.width,
-                                             self.labelViewHeight);//self.displayContainer.frame;
-        displayViewFrame.origin.y = self.histroryTableViewHeight;
-        [self.displayContainer setFrame:displayViewFrame];
-        [self.buttonsCollection setFrame:CGRectMake(0,
-                                                    self.histroryTableViewHeight,
-                                                    self.mainContainerView.bounds.size.width,
-                                                    self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
-    }
-    
     
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
@@ -3858,20 +4026,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self.cleanButton setImage:[UIImage imageNamed:@"clear60Blue2.png"] forState:UIControlStateNormal];
     
     self.settingsBottomButtn.hidden = YES;
-
+    self.settingsBottomButtn.alpha = 0;
     
     self.noticeButton.hidden = YES;
     self.noticeButton.enabled = NO;
+    self.noticeButton.alpha = 0;
     
     self.recountButton.hidden = YES;
     self.recountButton.enabled = NO;
+    self.recountButton.alpha = 0;
     
     self.upButton.hidden = YES;
+    self.upButton.alpha = 0;
     
     self.deleteButton.hidden = YES;
     self.deleteButton.enabled = NO;
+    self.deleteButton.alpha = 0;
     
     self.settingsButton.hidden = YES;
+    self.settingsButton.alpha = 0;
+    
     self.downButton.hidden = YES;
     
     //set pan gesture delegate
@@ -3997,7 +4171,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
     
-    self.isHistoryWholeShowed = NO;
+    self.isHistoryWholeShowed = 0;
 
 }
 
@@ -4013,21 +4187,40 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
 }
 
--(void) viewDidLayoutSubviews
+-(void) initialLayoutDynamiccontainer
 {
-    [super viewDidLayoutSubviews];
-    if(!IS_IPAD) {//for ipad try to set autolayout
-
-        self.displayContainer.frame = CGRectMake(0,
-                                                 self.historyTable.bounds.size.height + self.historyTable.frame.origin.y,
-                                                 self.mainContainerView.bounds.size.width,
-                                                 self.labelViewHeight);
+   // if(!IS_IPAD) {//for ipad try to set autolayout
+        [self.dynamicContainer setFrame:CGRectMake(0,
+                                                   -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight,
+                                                   self.mainContainerView.frame.size.width,
+                                                   2*self.view.frame.size.height - self.histroryTableViewHeight - self.labelViewHeight )];
+        
+        [self.historyTable setFrame:CGRectMake(0,
+                                               0,
+                                               self.mainContainerView.bounds.size.width,
+                                               self.view.frame.size.height - self.labelViewHeight)];
+        CGRect displayViewFrame = CGRectMake(0,
+                                             self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                             self.mainContainerView.bounds.size.width,
+                                             self.labelViewHeight);//self.displayContainer.frame;
+        
+        [self.displayContainer setFrame:displayViewFrame];
+        [self.buttonsCollection setFrame:CGRectMake(0,
+                                                    self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                                    self.mainContainerView.bounds.size.width,
+                                                    self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+        
+        
         CGRect sviperRect = self.historyTableSviper.frame;
         sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
         sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
         [self.historyTableSviper setFrame:sviperRect];
-    }
-    //--------------------------------------------------------------------------
+    //}
+}
+
+-(void) viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
     
@@ -4108,6 +4301,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) appDidGoToForeground: (NSNotification *)note
 {
     if(self.isSoundOn){
+        //[self initialLayoutDynamiccontainer];
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
 
@@ -4177,26 +4371,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
-    [self discardChanging];
     
-    if([self.historyTable numberOfRowsInSection:0] > 1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-        self.historyTable.isNeedToSetOffsetToButton = YES;
-    }
+    [self discardChanging];
+
     
     [self deleteSuperfluousValuesFromManagedDocuments];
     
-    //set to 0 indication of previous rotation, also need at discard changing
-    //!!!!!!!
-   // self.wasRightShowed = 0;
-    
-     //save managed object context
-   // NSError *error = nil;
-   // [self.managedObjectContext save:&error];
-    //
-    //-------
     [self.buttonsCollection reloadData];
 
     
@@ -4452,22 +4632,107 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return NO;
 }
 */
+-(void) rotateToPortraitViewIPhone
+{
+    if(self.wasRightShowed != 0){
+        [UIView setAnimationsEnabled:NO];
+        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+        } else {
+            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        }
+        
+        if(!self.isButtonsCollectionUnderChanging){
+            
+            if(self.wasRightShowed == 1){
+                [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
+            } else if(self.wasRightShowed == 2){
+                [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
+            }
+            //check if ios 8
+            
+            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+                [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
+                                                   (self.view.frame.size.width -self.testView.bounds.size.height)/2,
+                                                   self.testView.bounds.size.height,
+                                                   self.testView.bounds.size.width)];
+            } else {
+                [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
+                                                   (self.view.frame.size.height -self.testView.bounds.size.height)/2,
+                                                   self.testView.bounds.size.height,
+                                                   self.testView.bounds.size.width)];
+            }
+            
+            
+            
+            self.wasRightShowed = 0;
+            //hide
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                [UIView setAnimationsEnabled:YES];
+                
+                UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                gravity.gravityDirection = CGVectorMake(.0, 4.0);
+                [animator addBehavior:gravity];
+                
+                self.animator = animator;
+            });
+            
+        } else {
+            //if was not portrait and but changin view, just hide restView
+            [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
+            [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
+                                               self.testView.bounds.size.height,
+                                               self.testView.bounds.size.height,
+                                               self.testView.bounds.size.width)];
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                //do something to the button(s)
+                [UIView setAnimationsEnabled:YES];
+            });
+        }
+        
+    } else {
+        //was in portrait view
+        [UIView setAnimationsEnabled:NO];
+        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
+        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        
+        
+        int64_t delayInSeconds = 0.05;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            //do something to the button(s)
+            [UIView setAnimationsEnabled:YES];
+        });
+    }
+    
+    self.wasRightShowed = 0;
+    if(self.isSoundOn){
+        AudioServicesPlaySystemSound (_blankSoundFileObject);
+    }
+
+}
 
 - (void)orientationChanged:(NSNotification *)notification
 {
     //exept if it isn't IPad
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
     if(IS_IPAD){
-        NSLog(@"Device orient:%d", orient);
+
         UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
-        NSLog(@"Interface orient:%d", cachedOrientation);
+
         if (orient == UIDeviceOrientationUnknown ||
             orient == UIDeviceOrientationFaceUp ||
             orient == UIDeviceOrientationFaceDown) {
             
             orient = (UIDeviceOrientation)cachedOrientation;
         }
-        NSLog(@"Now Device orient:%d", orient);
 
         if((orient <3)!= (self.wasRightShowed <3)) {
            // [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
@@ -4692,6 +4957,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         
     } else if (orient == UIDeviceOrientationPortrait){
+        [self rotateToPortraitViewIPhone];
+        
+        /*
         if(self.wasRightShowed != 0){
             [UIView setAnimationsEnabled:NO];
             [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
@@ -4761,16 +5029,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
             [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
             
-            //[self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
-            //try this in ios 8
-            /*
-             [self.testView setFrame:CGRectMake((self.view.frame.size.height - self.testView.bounds.size.width)/2,
-             self.testView.bounds.size.height,
-             self.testView.bounds.size.height,
-             self.testView.bounds.size.width)];
-            */
-             
-
             
             int64_t delayInSeconds = 0.05;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
@@ -4778,14 +5036,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 //do something to the button(s)
                 [UIView setAnimationsEnabled:YES];
             });
-            
-            
         }
     
         self.wasRightShowed = 0;
         if(self.isSoundOn){
             AudioServicesPlaySystemSound (_blankSoundFileObject);
         }
+        */
     }
     }//exept if it isn't IPad
 }
