@@ -14,37 +14,41 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.isShowedButtom = NO;
+        self.pattOfDown = 0;
         // Initialization code
     }
     return self;
 }
 
--(void) setIsShowedButtom:(BOOL)isShowedButtom
+-(void) setPattOfDown:(CGFloat)pattOfDown
 {
-    _isShowedButtom = isShowedButtom;
+    _pattOfDown = pattOfDown;
     [self setNeedsDisplay];
 }
 
 -(void) drawSwipeSymbolInContext:(CGContextRef) context
 {
-    CGFloat thirdPart = self.frame.size.height/3;
+    CGFloat fivePart = self.frame.size.height/5;
     CGRect rect = CGRectMake(self.frame.origin.x,
-                             self.frame.origin.y + thirdPart,
+                             self.frame.origin.y + 2*fivePart,
                              self.frame.size.width,
-                             thirdPart);
+                             fivePart);
     
-    CGFloat lineWith = rect.size.height/4;
+    CGFloat lineWith = rect.size.height/3;
     CGContextSetLineWidth(context, lineWith);
-    CGContextMoveToPoint(context, rect.size.width/6 +.5, rect.size.height /2 +.5 + thirdPart);
+    CGContextMoveToPoint(context, rect.size.width/6 +.5, rect.size.height /2 +.5 + 2*fivePart);
+    
+    CGContextAddLineToPoint(context, rect.size.width/2 +.5, 2*fivePart +.5 + (rect.size.height * (1-  self.pattOfDown)));
+    /*
     if(self.isShowedButtom){
-        CGContextAddLineToPoint(context, rect.size.width/2 +.5,/* rect.size.height */ + (lineWith) +.5 + thirdPart);
+        CGContextAddLineToPoint(context, rect.size33333.width/2 +.5, rect.size.height /2 + thirdPart +.5 + (lineWith) );
     } else {
         CGContextAddLineToPoint(context, rect.size.width/2 +.5, rect.size.height - (lineWith) +.5 + thirdPart);
     }
-    CGContextAddLineToPoint(context, rect.size.width *5/6 +.5, rect.size.height /2 +.5 + thirdPart);
+    */
+    CGContextAddLineToPoint(context, rect.size.width *5/6 +.5, rect.size.height /2 +.5 + 2*fivePart);
     CGContextSetLineCap(context , kCGLineCapRound);
-    CGContextSetRGBStrokeColor(context, 0, 0, 0, 0.3);
+    CGContextSetRGBStrokeColor(context, 0.0, 0., 0., 0.3);
     CGContextStrokePath(context);  
     
 }

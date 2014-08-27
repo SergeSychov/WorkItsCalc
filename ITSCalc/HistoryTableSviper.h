@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface HistoryTableSviper : UIView
-@property (nonatomic) BOOL isShowedButtom;
+@property (nonatomic) CGFloat pattOfDown;
 
 @end
