@@ -12,6 +12,7 @@
 NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"HistoryTableViewCellViewDidBeginScrolingNotification";
 
 #define  kCatchWidth 160
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
 @interface HistroryTableViewCell()
 
@@ -116,6 +117,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     self.datelabel = dateLabel;
     
     UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
+
     programLabel.numberOfLines = 0;
     
     [self.scrollViewContentView addSubview:programLabel];
