@@ -28,6 +28,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 @property (nonatomic, strong) UILabel *datelabel;
 @property (nonatomic, strong) UILabel *programLabel;
 
+@property (nonatomic, strong) UITextView *programTextView;
+
 @property (nonatomic, strong) CAGradientLayer *backgroundGradient;
 @property (nonatomic, strong) CAGradientLayer *scrollGradientLayer;
 
@@ -50,6 +52,52 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     return self;
 }
 
+-(void) setIsCanDrag:(BOOL)isCanDrag
+{
+    if(_isCanDrag != isCanDrag){
+        if(!_isCanDrag){
+            NSAttributedString *historyString = self.programTextView.attributedText;
+            _isCanDrag = isCanDrag;
+            [self setHistoryProgramString:historyString];
+            [self.programTextView removeFromSuperview];
+        } else {
+            NSAttributedString *historyString = self.programLabel.attributedText;
+            _isCanDrag = isCanDrag;
+            [self setHistoryProgramString:historyString];
+            //[self.programLabel removeFromSuperview];
+        }
+    }
+}
+
+-(UILabel*)programLabel
+{
+    if(!_programLabel){
+        UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
+        programLabel.backgroundColor = [UIColor clearColor];
+        
+        programLabel.numberOfLines = 0;
+        
+        [self.scrollViewContentView addSubview:programLabel];
+        self.programLabel = programLabel;
+    }
+    
+    return _programLabel;
+}
+
+-(UITextView*)programTextView
+{
+    if(!_programTextView){
+        CGRect rect = CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12);
+        UITextView *programTextView = [[UITextView alloc]initWithFrame:rect];
+        programTextView.backgroundColor = [UIColor clearColor];
+        [programTextView  setTextContainerInset: UIEdgeInsetsMake(0, 0, 0, 0)];
+        [programTextView setScrollEnabled:NO];
+
+        [self.scrollViewContentView addSubview:programTextView];
+        self.programTextView = programTextView;
+    }
+    return _programTextView;
+}
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
@@ -79,18 +127,31 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void) setHistoryProgramString:(NSAttributedString *)historyProgramString
 {
-    self.programLabel.attributedText = historyProgramString;
+    if(!self.isCanDrag){
+        self.programTextView.attributedText = historyProgramString;
+    } else {
+        self.programLabel.attributedText = historyProgramString;
+    }
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
     CGSize neededSize = CGSizeMake(280, 1000);
     CGRect neededRect = [historyProgramString boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin context:drawContext];
     
-    
-    [self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
+    if(!self.isCanDrag){
+        [self.programTextView setFrame:CGRectMake(20,13,neededRect.size.width +10, neededRect.size.height +7)];
+        //[self.programTextView setBackgroundColor:[UIColor greenColor]];
+       // UIEdgeInsets ins = self.programTextView.textContainerInset;
+       // NSLog(@"container aligment insets top:%f, bottom:%f, left:%f, right:%f", ins.top, ins.bottom, ins.left, ins.right);
+    } else {
+        [self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
+        //[self.programLabel setBackgroundColor:[UIColor blueColor]];
+    }
+    //[self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
     //[self.programLabel drawTextInRect:self.programLabel.bounds];
 }
 
 -(void)setup {
     self.isButtonShowed = NO;
+    //self.isLastCell = NO;
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = self.bounds;
@@ -116,48 +177,24 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     dateLabel.backgroundColor = [UIColor clearColor];
     self.datelabel = dateLabel;
     
-    UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
-
-    programLabel.numberOfLines = 0;
-    
-    [self.scrollViewContentView addSubview:programLabel];
-    self.programLabel = programLabel;
-    
-    
     /*
-    // Set up our two buttons
-    UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    moreButton.backgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
-    moreButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth, 0, kCatchWidth / 2.0f, self.bounds.size.height);
-    [moreButton addTarget:self action:@selector(userPressedMoreButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView insertSubview:moreButton atIndex:0];
-    //[self.contentView addSubview:moreButton];
-    self.moreButton = moreButton;
+    if(self.isLastCell){
+        UITextView *programTextView = [[UITextView alloc]initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
+        programTextView.backgroundColor = [UIColor clearColor];
+        [self.scrollViewContentView addSubview:programTextView];
+        self.programTextView = programTextView;
+        
+    } else {
+        UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
+        
+        programLabel.numberOfLines = 0;
+        
+        [self.scrollViewContentView addSubview:programLabel];
+        self.programLabel = programLabel;
+    }
+     */
     
-    UIImageView* moreImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.moreButton.bounds.size.width - 60)/2,
-                                                                             (self.moreButton.bounds.size.height - 60)/2, 60, 60)];
-    [moreImage setImage:[UIImage imageNamed:@"Rec.png"]];
-    moreImage.contentMode = UIViewContentModeScaleToFill;
-    [self.moreButton addSubview:moreImage];
-    self.moreImage = moreImage;
-    
-    
-    
-    UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    deleteButton.backgroundColor = [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0f];
-    deleteButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth / 2.0f, 0, kCatchWidth / 2.0f, self.bounds.size.height);
-    [deleteButton addTarget:self action:@selector(userPressedDeleteButton:) forControlEvents:UIControlEventTouchDown];
-    [self.contentView insertSubview:deleteButton atIndex:0];
-    //[self.contentView addSubview:deleteButton];
-    self.deleteButton = deleteButton;
-    UIImageView* deleteImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.deleteButton.bounds.size.width - 60)/2,
-                                                                             (self.deleteButton.bounds.size.height - 60)/2, 60, 60)];
-    [deleteImage setImage:[UIImage imageNamed:@"deleteBig.png"]];
-    deleteImage.contentMode = UIViewContentModeScaleToFill;
 
-    [self.deleteButton addSubview:deleteImage];
-    self.deleteImage = deleteImage;
-    */
 
 
     
