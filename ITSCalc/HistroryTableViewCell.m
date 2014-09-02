@@ -51,23 +51,25 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     }
     return self;
 }
-
+/*
 -(void) setIsCanDrag:(BOOL)isCanDrag
 {
     if(_isCanDrag != isCanDrag){
         if(!_isCanDrag){
-            NSAttributedString *historyString = self.programTextView.attributedText;
+           // NSAttributedString *historyString = self.programTextView.attributedText;
             _isCanDrag = isCanDrag;
-            [self setHistoryProgramString:historyString];
+            [self setHistoryProgramString:self.historyProgramString];
+            if(self.programTextView.hidden)
             [self.programTextView removeFromSuperview];
         } else {
-            NSAttributedString *historyString = self.programLabel.attributedText;
+            //NSAttributedString *historyString = self.programLabel.attributedText;
             _isCanDrag = isCanDrag;
-            [self setHistoryProgramString:historyString];
+            [self setHistoryProgramString:self.historyProgramString];
             //[self.programLabel removeFromSuperview];
         }
     }
 }
+*/
 
 -(UILabel*)programLabel
 {
@@ -127,9 +129,17 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void) setHistoryProgramString:(NSAttributedString *)historyProgramString
 {
+    _historyProgramString = historyProgramString;
     if(!self.isCanDrag){
         self.programTextView.attributedText = historyProgramString;
+        [self.programLabel removeFromSuperview];
+        self.programLabel = nil;
+        //if(self.programLabel == nil){
+       //     NSLog(@"label %@", self.programLabel.attributedText.string);
+      //  }
     } else {
+        [self.programTextView removeFromSuperview];
+        self.programTextView = nil;
         self.programLabel.attributedText = historyProgramString;
     }
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
@@ -141,9 +151,11 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         //[self.programTextView setBackgroundColor:[UIColor greenColor]];
        // UIEdgeInsets ins = self.programTextView.textContainerInset;
        // NSLog(@"container aligment insets top:%f, bottom:%f, left:%f, right:%f", ins.top, ins.bottom, ins.left, ins.right);
+        
     } else {
         [self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
         //[self.programLabel setBackgroundColor:[UIColor blueColor]];
+        [self.programLabel drawTextInRect:self.programLabel.bounds];
     }
     //[self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
     //[self.programLabel drawTextInRect:self.programLabel.bounds];
