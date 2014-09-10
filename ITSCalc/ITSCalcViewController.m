@@ -45,11 +45,12 @@
 #define TIME_INTERVAL_FROM_LAST_ALERT 43200. //need to be setted as 12 hours - 43 000;
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
+#define IS_BLACK_MODE NO
 
 NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
 
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate>
 
 
 //outlets
@@ -276,7 +277,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     if(!_attributes){
 
-        UIColor *textColor = [UIColor darkGrayColor]; //color of text
+        UIColor *textColor;
+        if(IS_BLACK_MODE){
+            textColor = [UIColor darkGrayColor]; //color of text
+        } else {
+            textColor = [UIColor grayColor]; //color of text
+        }
         
         //change font size
         NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -298,15 +304,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         if(IS_IPAD){
             fontSize = 26.0;
-            //style.alignment = NSTextAlignmentCenter;
+            style.alignment = NSTextAlignmentRight;
         } else {
             fontSize = 17.0;
-            //style.alignment = NSTextAlignmentLeft;
+            style.alignment = NSTextAlignmentLeft;
         }
-        
+        UIFont *system = [UIFont systemFontOfSize:fontSize];
         UIFont *font; //if there is no needed font
         if(fontName){
-            font = [UIFont fontWithName:fontName size:fontSize];
+            font = [UIFont fontWithName:system.fontName size:fontSize];
         }else {
             font =[UIFont boldSystemFontOfSize:fontSize];
         }
@@ -1140,9 +1146,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     if(25 < self.counterForShowingAllertView < 34){
                         switch (self.counterForShowingAllertView) {
                             case 27:{
-                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
-                                                                          labelRect:self.displayContainer.frame
-                                                                               type:self.counterForShowingAllertView];
+                                HintView *hintView =
+                                [HintView newHintViewWithFrame:self.dynamicContainer.frame
+                                                     labelRect:self.displayContainer.frame
+                                                          type:self.counterForShowingAllertView];
                                 hintView.alpha = 0;
                                 [self.mainContainerView addSubview:hintView];
                                 self.hintView = hintView;
@@ -1150,19 +1157,21 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                       delay:0.4
                                                     options:UIViewAnimationOptionCurveEaseIn
                                                  animations:^{
-                                                     self.hintView.alpha = 0.95;
+                                                     self.hintView.alpha = 0.85;
                                                  } completion:^(BOOL finished) {
                                                      
                                                  }];
                             }
                                 break;
                             case 30 : {
+                                if(!IS_IPAD){
                                 CGRect collectionVisibleRect = self.buttonsCollection.frame;
                                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
                                 collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
-                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
-                                                                          labelRect:collectionVisibleRect
-                                                                               type:self.counterForShowingAllertView];
+                                HintView *hintView =
+                                    [HintView newHintViewWithFrame:self.dynamicContainer.frame
+                                                         labelRect:collectionVisibleRect
+                                                              type:self.counterForShowingAllertView];
                                 hintView.alpha = 0;
                                 [self.mainContainerView addSubview:hintView];
                                 self.hintView = hintView;
@@ -1170,19 +1179,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                       delay:0.4
                                                     options:UIViewAnimationOptionCurveEaseIn
                                                  animations:^{
-                                                     self.hintView.alpha = 0.95;
+                                                     self.hintView.alpha = 0.85;
                                                  } completion:^(BOOL finished) {
                                                      
                                                  }];
                             }
+                            }
                                 break;
                             case 33 :{
+                                
                                 CGRect collectionVisibleRect = self.buttonsCollection.frame;
                                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
                                 collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
-                                HintView *hintView = [HintView newHintViewWithFrame:self.view.frame
-                                                                          labelRect:collectionVisibleRect
-                                                                               type:self.counterForShowingAllertView];
+                                HintView *hintView =
+                                [HintView newHintViewWithFrame:self.dynamicContainer.frame
+                                                     labelRect:collectionVisibleRect
+                                                          type:self.counterForShowingAllertView];
                                 hintView.alpha = 0;
                                 [self.mainContainerView addSubview:hintView];
                                 self.hintView = hintView;
@@ -1190,7 +1202,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                       delay:0.4
                                                     options:UIViewAnimationOptionCurveEaseIn
                                                  animations:^{
-                                                     self.hintView.alpha = 0.95;
+                                                     self.hintView.alpha = 0.85;
                                                  } completion:^(BOOL finished) {
                                                      
                                                  }];
@@ -1851,6 +1863,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                              [self.buttonsCollection reloadItemsAtIndexPaths:array];
                          }];
     }
+
     if(self.isButtonsCollectionUnderChanging){
         self.isButtonsCollectionUnderChanging = NO;
         for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
@@ -1872,6 +1885,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     CGRect buttonsCollectionViewBounds = self.mainContainerView.bounds;
     buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
+    buttonsCollectionViewBounds.origin.y = self.historyTable.bounds.size.height;
 
     CGRect settingsViewframe = self.SettingsView.frame;
     if(self.isBottomSettingsViewOnScreen){
@@ -1899,6 +1913,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          [self.SettingsView setFrame:settingsViewframe];
                          [self.settingsBackgroundToolBar setFrame:settingsViewframe];
                          
+                         [self.buttonsCollection setFrame:buttonsCollectionViewBounds];
+                         
                          self.settingsBottomButtn.alpha = 0.;
                          self.noticeButton.alpha = 0.;
                          self.recountButton.alpha = 0.;
@@ -1911,9 +1927,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          self.display.alpha = 1.;
                          
                      } completion:^(BOOL finished){
-                         CGRect rect = self.historyTable.frame;
-                         rect.origin.y = self.historyTable.contentSize.height - self.historyTable.frame.size.height;
-                         [self.historyTable scrollRectToVisible:rect animated:NO];
+                         //CGRect rect = self.historyTable.frame;
+                         //rect.origin.y = self.historyTable.contentSize.height - self.historyTable.frame.size.height;
+                         //[self.historyTable scrollRectToVisible:rect animated:NO];
                          self.settingsBottomButtn.hidden = YES;
                          self.noticeButton.hidden = YES;
                          self.recountButton.hidden = YES;
@@ -1934,16 +1950,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          [self.buttonsCollection reloadData];
                          self.buttonsCollection.scrollEnabled = YES;
                          self.isHistoryWholeShowed = 0;
+                         
+                        [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
+                         
                      }];
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+    } else {
     }
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-        self.historyTable.isNeedToSetOffsetToButton = YES;
     }
 
 }
@@ -1965,11 +1984,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void)setIsHistoryWholeShowed:(CGFloat)isHistoryWholeShowed
 {
     self.historyTableSviper.pattOfDown = isHistoryWholeShowed;
+    _isHistoryWholeShowed = isHistoryWholeShowed;
 }
 
 
 - (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender
 {
+    if(!self.isButtonsCollectionUnderChanging){
     CGPoint currentSvipeGestureLocation = [sender locationInView:self.view];
     
     if(sender.state == UIGestureRecognizerStateBegan){
@@ -2053,6 +2074,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
         NSLog(@"filed or canceled");
     }
+    }
     
 }
 
@@ -2118,20 +2140,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             strongSelf.deleteButton.alpha = 0;
             strongSelf.isHistoryWholeShowed = 0;
             
+            [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
+            
             if(strongSelf.historyTable.contentSize.height < strongSelf.historyTable.frame.size.height){
+                //strongSelf.historyTable.isNeedToSetOffsetToButton = NO;
 
-               [self.historyTable setContentInset:UIEdgeInsetsMake(strongSelf.historyTable.frame.size.height - strongSelf.historyTable.contentSize.height,0, 0, 0)];
+               [strongSelf.historyTable setContentInset:UIEdgeInsetsMake(strongSelf.historyTable.frame.size.height - strongSelf.historyTable.contentSize.height,0, 0, 0)];
+            } else {
+               // strongSelf.historyTable.isNeedToSetOffsetToButton = YES;
             }
+            if([strongSelf.historyTable numberOfRowsInSection:0] > 1){
+                NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[strongSelf.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+                
+                [strongSelf.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+            }
+
         }
         
     };
     
-    if([self.historyTable numberOfRowsInSection:0] > 1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-        self.historyTable.isNeedToSetOffsetToButton = YES;
-    }
     
     [animator addBehavior:snap];
 
@@ -2189,11 +2216,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [view setFrame:dynamicRect];
             
             strongSelf.display.alpha =  0;
-            strongSelf.settingsBottomButtn.alpha =1;
-            strongSelf.noticeButton.alpha = 1;
-            strongSelf.recountButton.alpha = 1;
-            strongSelf.deleteButton.alpha = 1;
-            strongSelf.isHistoryWholeShowed = 1;
+            strongSelf.settingsBottomButtn.alpha =1.;
+            strongSelf.noticeButton.alpha = 1.;
+            strongSelf.recountButton.alpha = 1.;
+            strongSelf.deleteButton.alpha = 1.;
+            strongSelf.isHistoryWholeShowed = 1.;
             
             if(strongSelf.SettingsView.frame.origin.x > -strongSelf.SettingsView.frame.size.width){
                 CGRect settingsViewframe = strongSelf.SettingsView.frame;
@@ -2204,14 +2231,28 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
             
         }
+        /*
         if(opacityMark > 0.9){
             [animator removeAllBehaviors];
             [self finisDraggingUpWithVelocity:[dynamicItem linearVelocityForItem:view]];
         }
+        */
     };
     [animator addBehavior:collision];
     
     self.animator = animator;
+}
+
+//tap on history sviper
+- (IBAction)tapSviper:(UITapGestureRecognizer *)sender
+{
+    if(!self.isButtonsCollectionUnderChanging){
+        if(self.isHistoryWholeShowed == 1){
+            [self finisDraggingUpWithVelocity:CGPointMake(0, 0)];
+        } else {
+            [self finishDraggingDownWithVelocity:CGPointMake(0, 0)];
+        }
+    }
 }
 
 #pragma mark - MOVE BUTTONS Methods
@@ -2930,16 +2971,21 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 }
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
                 NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-                CGSize neededSize = CGSizeMake(280, 1000);
+                CGSize neededSize;
+                if(IS_IPAD){
+                    neededSize = CGSizeMake(700, 1000);
+                } else {
+                    neededSize = CGSizeMake(280, 1000);
+                }
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                                context:drawContext];
                 if(IS_IPAD){
-                    if(neededRect.size.height > 60.){
-                        height = neededRect.size.height + 15;
+                    if(neededRect.size.height > 55.){
+                        height = neededRect.size.height + 20;
                     }
                 } else {
-                    if(neededRect.size.height > 42.){
-                        height = neededRect.size.height + 13;
+                    if(neededRect.size.height > 39.){
+                        height = neededRect.size.height + 16;
                     }
                 }
                 
@@ -2952,8 +2998,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     //set heigth of first cell according ios screen
                     if(IS_IPAD){ // if iPad
                         height = 85.;
-                        if(neededRect.size.height > 60.){
-                            height = neededRect.size.height * 1.2 + 15;
+                        if(neededRect.size.height*1.2 > 60.){
+                            height = neededRect.size.height * 1.2 + 25;
                         }
                     } else
                     if(IS_568_SCREEN){
@@ -2994,16 +3040,21 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             }
             NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
             NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-            CGSize neededSize = CGSizeMake(280, 1000);
+            CGSize neededSize;
+            if(IS_IPAD){
+                neededSize = CGSizeMake(700, 1000);
+            } else {
+                neededSize = CGSizeMake(280, 1000);
+            }
             CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                            context:drawContext];
             if(IS_IPAD){
-                if(neededRect.size.height > 60.){
-                    height = neededRect.size.height + 15;
+                if(neededRect.size.height > 55.){
+                    height = neededRect.size.height + 20;
                 }
             } else {
-                if(neededRect.size.height > 42.){
-                    height = neededRect.size.height + 13;
+                if(neededRect.size.height > 39.){
+                    height = neededRect.size.height + 16;
                 }
             }
             
@@ -3015,8 +3066,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 //set heigth of first cell according ios screen
                 if(IS_IPAD){ // if iPad
                     height = 85.;
-                    if(neededRect.size.height > 60.){
-                        height = neededRect.size.height * 1.2 + 15;
+                    if(neededRect.size.height*1.2> 60.){
+                        height = neededRect.size.height * 1.2 + 25;
                     }
                 } else
                     if(IS_568_SCREEN){
@@ -3027,7 +3078,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     } else {
                         height = 60.;
                         if(neededRect.size.height > 43.){
-                            height = neededRect.size.height + 18;
+                            height = neededRect.size.height *1.2 + 13;
                         }
                     }
                 
@@ -3136,11 +3187,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         UIFont *font; //if there is no needed font
         if(fontName){
-            font = [UIFont fontWithName:fontName size:wasFont.pointSize*1.1];
+            font = [UIFont fontWithName:[UIFont systemFontOfSize:17].fontName size:wasFont.pointSize*1.1];
         }else {
             font =[UIFont boldSystemFontOfSize:wasFont.pointSize*1.1];
         }
-        UIColor *textColor = [UIColor darkTextColor];
+        UIColor *textColor;
+        if(IS_BLACK_MODE){
+            textColor = [UIColor lightTextColor];
+        } else {
+            textColor = [UIColor darkTextColor];
+        }
         
         [symbolString beginEditing];
         NSRange wholeRange = NSMakeRange(0, [symbolString length]);
@@ -3167,15 +3223,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
             ((HistroryTableViewCell*)cell).isCanDrag = NO;
+            //((HistroryTableViewCell*)cell).isLastCell = YES;
             ((HistroryTableViewCell*)cell).historyDateString = @"";
             ((HistroryTableViewCell*)cell).historyProgramString = [self resizeStrforFirstCell:[resultAtrStr copy]];
-            
+            ((HistroryTableViewCell*)cell).programTextView.delegate = self;
             if(![self.historyTable indexPathForSelectedRow]){
                 [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
             }
         } else {
-            ((HistroryTableViewCell*)cell).historyProgramString = [resultAtrStr copy];
             ((HistroryTableViewCell*)cell).isCanDrag = YES;
+            ((HistroryTableViewCell*)cell).historyProgramString = [resultAtrStr copy];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
             [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
             ((HistroryTableViewCell*)cell).historyDateString = [dateFormatter stringFromDate:story.date];
@@ -3257,6 +3314,46 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
  
 }
 */
+#pragma mark TEXT VIEW DELEGATE
+//hide "past/copy menu
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+    }];
+    return [super canPerformAction:action withSender:sender];
+}
+
+
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    /*
+    if(textView.isFirstResponder){
+        NSRange selectedRangee = textView.selectedRange;
+        selectedRangee.length = selectedRangee.location;
+        selectedRangee.location = 0;
+        NSLog(@"Selected range: %@",[textView.attributedText attributedSubstringFromRange:selectedRangee].string);
+        
+        UITextPosition *newCursorPosition = [textView positionFromPosition:textView.beginningOfDocument offset:selectedRangee.length - 3];
+        UITextRange *newSelectedRange = [textView textRangeFromPosition:newCursorPosition toPosition:newCursorPosition];
+        [textView setSelectedTextRange:newSelectedRange];
+    }
+    */
+    if([textView becomeFirstResponder]){
+        NSRange selectedRangee = textView.selectedRange;
+        selectedRangee.length = selectedRangee.location;
+        selectedRangee.location = 0;
+        NSLog(@"Selected range: %@",[textView.attributedText attributedSubstringFromRange:selectedRangee].string);
+        
+        UITextPosition *newCursorPosition = [textView positionFromPosition:textView.beginningOfDocument offset:selectedRangee.length - 3];
+        UITextRange *newSelectedRange = [textView textRangeFromPosition:newCursorPosition toPosition:newCursorPosition];
+        [textView setSelectedTextRange:newSelectedRange];
+    }
+    
+}
+
+
+
 #pragma mark - HistoryCellDelegate Methods
 
 - (IBAction)historyTableLeftSwipeGesturerecognizer:(UISwipeGestureRecognizer *)sender
@@ -3296,7 +3393,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void)cellDidSelectDelete:(HistroryTableViewCell *)cell
 {
-    self.historyTable.isNeedToSetOffsetToButton = NO;
+    //self.historyTable.isNeedToSetOffsetToButton = NO;
     NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
     
     if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
@@ -3415,14 +3512,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        //self.historyTable.isNeedToSetOffsetToButton = NO;
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
-
+    } else {
+        //self.historyTable.isNeedToSetOffsetToButton = YES;
     }
+    
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
-        self.historyTable.isNeedToSetOffsetToButton = YES;
     }
 }
 
@@ -3446,6 +3545,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         case NSFetchedResultsChangeDelete:
             [self.historyTable deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationBottom];
             break;
+            
+        case NSFetchedResultsChangeMove:
+
+            break;
+            
+        case NSFetchedResultsChangeUpdate:
+            
+            break;
+
     }
 }
 
@@ -3471,27 +3579,36 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             }
             
             if([self.historyTable numberOfRowsInSection:newIndexPath.section]>0){
+                self.historyTable.isNeedToSetOffsetToButton = NO;
             //if([self.fetchedResultsController.fetchedObjects count] > 1){
                 NSIndexPath *patchOfPrevious = [NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:newIndexPath.section];
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:patchOfPrevious];
                 NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-                CGSize neededSize = CGSizeMake(280, 1000);
+                CGSize neededSize;
+                if(IS_IPAD){
+                    neededSize = CGSizeMake(700, 1000);
+                } else {
+                    neededSize = CGSizeMake(280, 1000);
+                }
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
                 if(IS_IPAD){
-                    if(neededRect.size.height > 60.){
-                        height = neededRect.size.height + 15;
+                    if(neededRect.size.height > 55.){
+                        height = neededRect.size.height + 20;
                     }
                 } else {
-                    if(neededRect.size.height > 42.){
-                        height = neededRect.size.height + 13;
+                    if(neededRect.size.height > 39.){
+                        height = neededRect.size.height + 16;
                     }
                 }
                 
                 //previous
                 [mutArray removeLastObject];
                 [mutArray addObject:[NSNumber numberWithFloat:height]];
+            } else {
+                self.historyTable.isNeedToSetOffsetToButton = YES;
             }
+            
             
             //curent
             if(IS_IPAD){ // if iPad
@@ -3528,23 +3645,35 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             break;
             
         case NSFetchedResultsChangeDelete: {
+            self.historyTable.isNeedToSetOffsetToButton = NO;
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             [mutArray removeObjectAtIndex:indexPath.row];
             self.heightsOfRows = [mutArray copy];
-            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+            [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            
+            if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+                self.historyTable.isNeedToSetOffsetToButton = NO;
+                [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+            } else {
+                //self.historyTable.isNeedToSetOffsetToButton = YES;
+
+            }
+            
+            
         }
             break;
             
         case NSFetchedResultsChangeUpdate:{
+            self.historyTable.isNeedToSetOffsetToButton = NO;
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             //CGFloat height = 60;
             CGFloat height;
             if(IS_IPAD){ // if iPad
-                height = 85;
+                height = 75;
             } else {
-                height = 60;
+                height = 55;
             }
 
             if(self.heightsOfRows.count > 0){
@@ -3553,26 +3682,33 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             }
             
             NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-            CGSize neededSize = CGSizeMake(280, 1000);
+            CGSize neededSize;
+            if(IS_IPAD){
+                neededSize = CGSizeMake(700, 1000);
+            } else {
+                neededSize = CGSizeMake(280, 1000);
+            }
             if(indexPath.row == [mutArray count]){
                 NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFronFetchForIndexPatch:indexPath]];
                 
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
                 if(IS_IPAD){ // if iPad
-                    height = 85.;
-                    if(neededRect.size.height > 60.){
-                        height = neededRect.size.height * 1.2 + 15;
+                    height = 85;
+                    if(neededRect.size.height*1.2 > 60){
+                        height = neededRect.size.height * 1.2 + 25;
                     }
                 } else
 
                 if(IS_568_SCREEN){
-                    if(neededRect.size.height > 48.){
-                        height = neededRect.size.height + 18;
+                    height = 60;
+                    if(neededRect.size.height > 43){//48
+                        height = neededRect.size.height * 1.2 + 13;//18
                     }
                 } else {
-                    if(neededRect.size.height > 43.){
-                        height = neededRect.size.height + 18;
+                    height = 55;
+                    if(neededRect.size.height > 40){
+                        height = neededRect.size.height * 1.2 + 13;
                     }
                 }
                 
@@ -3588,27 +3724,24 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:indexPath];
                 CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
                                                                context:drawContext];
-                /*
-                if(neededRect.size.height > 42.){
-                    height = neededRect.size.height + 18;
-                    
-                }
-                */
+
                 if(IS_IPAD){ // if iPad
-                    height = 85.;
-                    if(neededRect.size.height > 60.){
-                        height = neededRect.size.height * 1.2 + 15;
+                    height = 75.;
+                    if(neededRect.size.height > 55.){
+                        height = neededRect.size.height + 20;
                     }
                 } else
                     if(IS_568_SCREEN){
-                        height = 65.;
-                        if(neededRect.size.height > 48.){
-                            height = neededRect.size.height * 1.2 + 13;
+                        height = 55.;//65
+                        if(neededRect.size.height > 39.){//48
+                            //height = neededRect.size.height * 1.2 + 13;
+                            height = neededRect.size.height  + 16;
+
                         }
                     } else {
-                        height = 60.;
-                        if(neededRect.size.height > 43.){
-                            height = neededRect.size.height *1.2 + 13;
+                        height = 55.;
+                        if(neededRect.size.height > 39.){
+                            height = neededRect.size.height + 16;
                     }
                 }
                 
@@ -3622,6 +3755,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             break;
             
         case NSFetchedResultsChangeMove:
+            self.historyTable.isNeedToSetOffsetToButton = NO;
             [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
@@ -3632,19 +3766,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     [self.historyTable endUpdates];
+    //[self.historyTable reloadData];
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+       // self.historyTable.isNeedToSetOffsetToButton = YES;
+
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
-        /*
-        CGPoint histroyContentSizePoint = CGPointMake(0, -self.historyTable.frame.size.height + self.historyTable.contentSize.height);
-        [self.historyTable setContentOffset:histroyContentSizePoint animated:NO];
-        */
+    } else {
+       // self.historyTable.isNeedToSetOffsetToButton = YES;
     }
+
+    
+
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-        self.historyTable.isNeedToSetOffsetToButton = YES;
     }
+    
+
+
+
     
     /*
     NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
@@ -4068,7 +4209,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isResultFromMemory = NO;
         self.isDecCounting = YES;
         self.isBigDataBase = NO;
-        self.isBigSizeButtons = NO;
+        self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
         self.self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
@@ -4081,6 +4222,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     self.historyTable.allowsMultipleSelectionDuringEditing = NO;
     self.historyTable.allowsMultipleSelection = NO;
+    if(IS_BLACK_MODE){
+        [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
+        [self.buttonsCollection setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
+    } else {
+        [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1]];
+    }
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
@@ -4172,6 +4319,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
     
     self.isHistoryWholeShowed = 0;
+    //set other cursor color
+    
+    [[UITextView appearance] setTintColor:[UIColor redColor]];
 
 }
 
@@ -4189,50 +4339,66 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) initialLayoutDynamiccontainer
 {
-   // if(!IS_IPAD) {//for ipad try to set autolayout
-        [self.dynamicContainer setFrame:CGRectMake(0,
-                                                   -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight,
-                                                   self.mainContainerView.frame.size.width,
-                                                   2*self.view.frame.size.height - self.histroryTableViewHeight - self.labelViewHeight )];
+    [self.mainContainerView setFrame:self.view.bounds];
+
+    [self.dynamicContainer setFrame:CGRectMake(0,
+                                                -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight,
+                                                self.mainContainerView.frame.size.width,
+                                                2*self.view.frame.size.height - self.histroryTableViewHeight - self.labelViewHeight )];
+
+    
+    [self.historyTable setFrame:CGRectMake(0,
+                                            0,
+                                            self.mainContainerView.bounds.size.width,
+                                            self.view.frame.size.height - self.labelViewHeight)];
+    CGRect displayViewFrame = CGRectMake(0,
+                                        self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                        self.mainContainerView.bounds.size.width,
+                                        self.labelViewHeight);//self.displayContainer.frame;
         
-        [self.historyTable setFrame:CGRectMake(0,
-                                               0,
-                                               self.mainContainerView.bounds.size.width,
-                                               self.view.frame.size.height - self.labelViewHeight)];
-        CGRect displayViewFrame = CGRectMake(0,
-                                             self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                             self.mainContainerView.bounds.size.width,
-                                             self.labelViewHeight);//self.displayContainer.frame;
-        
-        [self.displayContainer setFrame:displayViewFrame];
-        [self.buttonsCollection setFrame:CGRectMake(0,
-                                                    self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                                    self.mainContainerView.bounds.size.width,
-                                                    self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    [self.displayContainer setFrame:displayViewFrame];
+    self.display.frame = self.displayContainer.bounds;
+    [self.buttonsCollection setFrame:CGRectMake(0,
+                                                self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                                self.mainContainerView.bounds.size.width,
+                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
         
         
-        CGRect sviperRect = self.historyTableSviper.frame;
-        sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
-        sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
-        [self.historyTableSviper setFrame:sviperRect];
+    CGRect sviperRect = self.historyTableSviper.frame;
+    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
+    sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
+    [self.historyTableSviper setFrame:sviperRect];
+    
+    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
+                                         0,
+                                         self.mainContainerView.bounds.size.width,
+                                         self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    
+    [self.SettingsView setFrame:settingsViewRect];
+    
+    
     //}
 }
 
 -(void) viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
+    if(IS_IPAD){
+        [self.mainContainerView setFrame:self.view.bounds];
+    }
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
-    
-    CGRect settingsViewRect = CGRectMake(-self.view.frame.size.width,
+    /*
+    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
                                          0,
                                          self.mainContainerView.bounds.size.width,
                                          self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
     
     [self.SettingsView setFrame:settingsViewRect];
+    */
     self.settingsBackgroundToolBar.frame = self.SettingsView.frame;
     
-    self.display.frame = self.displayContainer.bounds;
+    
     
     //set size buttonsViews and frames
     struct Color clr;
@@ -4772,7 +4938,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             }
             */
             // [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+            if(self.wasRightShowed == 2){
+                //need to bee checked for ios 7
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+            } else {
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+            }
             
             if(!self.isButtonsCollectionUnderChanging){
                 if(self.wasRightShowed == 0){
@@ -4878,7 +5049,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
             }
             */
-            [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+            if(self.wasRightShowed == 1){
+                //need to bee checked for ios 7
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+            } else {
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+            }
+
             //strongly think about it
             
             if(!self.isButtonsCollectionUnderChanging){
@@ -5288,6 +5465,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 
 }
+
 
 
 #pragma mark HELPED FUNCTIONS______________________
