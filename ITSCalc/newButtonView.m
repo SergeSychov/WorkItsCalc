@@ -127,7 +127,14 @@
         if(![_title isEqualToString:title]){
             [self setButtonColorAccordingTitle:title];
             _title = title;
-            UIColor *textColor = [UIColor whiteColor]; //color of text
+            UIColor *textColor = [UIColor colorWithWhite:0.95 alpha:1]; //color of text
+            /*
+            UIColor *textColor = [UIColor colorWithRed:self.buttonColor.r
+                                                 green:self.buttonColor.g
+                                                  blue:self.buttonColor.b
+                                                 alpha:self.buttonColor.a]; //color of text
+             */
+
             CGPoint titleCenter;
             titleCenter.x = self.bounds.size.width/2;
             titleCenter.y = self.bounds.size.height/2;
@@ -199,19 +206,39 @@
     UIFont *font; //if there is no needed font
     
     NSString *fontName = nil;
+    NSString *fondBoldName = nil;
+    
     NSArray *famalyNames  =[UIFont familyNames];
     if([famalyNames containsObject:@"Helvetica Neue"]){
         NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
+       //NSLog(@"Names: %@", fontNames);
+        if([fontNames containsObject:@"HelveticaNeue-Thin"]){
+            fontName = @"HelveticaNeue-Thin";
+        }
         if([fontNames containsObject:@"HelveticaNeue-Light"]){
-            fontName = @"HelveticaNeue-Light";
+            fondBoldName = @"HelveticaNeue-Light";
         }
     }
     
-    if(fontName){
-        font = [UIFont fontWithName:fontName size:size];
-    }else {
-        font =[UIFont boldSystemFontOfSize:size];
+    UIFont *system = [UIFont systemFontOfSize:size];
+   // NSLog(@"Font sys: %@", system);
+    if([system.fontName isEqualToString:@".HelveticaNeueInterface-Regular"]){
+        if(fontName){
+            font = [UIFont fontWithName:fontName size:size];
+        }else {
+            font =[UIFont systemFontOfSize:size];
+        }
+    } else if ([system.fontName isEqualToString:@".HelveticaNeueInterface-MediumP4"]){
+        if(fondBoldName){
+            font = [UIFont fontWithName:fondBoldName size:size];
+        }else {
+            font =[UIFont systemFontOfSize:size];
+        }
+        
+    } else {
+        font =[UIFont systemFontOfSize:size];
     }
+    
     return  font;
 }
 
