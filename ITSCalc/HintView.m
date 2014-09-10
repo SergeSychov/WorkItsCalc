@@ -7,6 +7,8 @@
 //
 
 #import "HintView.h"
+#import <Accelerate/Accelerate.h>
+
 
 @interface HintView()
 @property (nonatomic, strong) UILabel *hintLabel;
@@ -16,7 +18,8 @@
 @end
 @implementation HintView
 
-+(HintView*) newHintViewWithFrame:(CGRect)frame labelRect:(CGRect)labelrect type:(NSInteger)type{
++(HintView*) newHintViewWithFrame:(CGRect)frame labelRect:(CGRect)labelrect type:(NSInteger)type
+{
     HintView* newHintView = [[HintView alloc] initWithFrame:frame];
     newHintView.labelRect = labelrect;
     
@@ -43,7 +46,6 @@
     self.contentMode = UIViewContentModeScaleToFill;
     self.backgroundColor = [UIColor whiteColor];
     
-    
     CGRect labelRect = self.frame;
     labelRect.origin.x +=30.;
     labelRect.size.width -=60.;
@@ -54,7 +56,7 @@
     UILabel *textLabel = [[UILabel alloc] initWithFrame:labelRect];
     textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     textLabel.backgroundColor = [UIColor clearColor];
-    textLabel.textColor = [UIColor darkTextColor];
+    textLabel.textColor = [UIColor colorWithRed:.26 green:0.57 blue:0.7 alpha:1];
     textLabel.font = [UIFont systemFontOfSize:25.];
     textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.numberOfLines = 0;
@@ -128,18 +130,22 @@
         pathOfRect = drawRectPath.CGPath;
         CGContextAddPath(context, pathOfRect);
 
-        CGContextSetRGBStrokeColor(context, 0.5, 0.5, 0.5, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
+        
     }
     
+    CGRect winRct = self.window.frame;
+    CGFloat addY = self.frame.origin.y *(-0.85);
+
     if(self.typeOfHint == 27){
         UIBezierPath *linePath=[UIBezierPath bezierPath];
 
         
-        CGPoint startPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height *2 /3 - 30);
-        CGPoint endPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height *2 /3 -60  -30);
-        CGPoint leftsidePoint = CGPointMake(self.bounds.size.width / 2 -10, self.bounds.size.height *2 /3 -60 -30 +10);
-        CGPoint rightSidePoint = CGPointMake(self.bounds.size.width / 2 + 10, self.bounds.size.height *2 /3 -60 -30 +10);
+        CGPoint startPoint = CGPointMake(winRct.size.width / 2, winRct.size.height *2 /3 - 30 + addY);
+        CGPoint endPoint = CGPointMake(winRct.size.width / 2, winRct.size.height *2 /3 -60  -30 + addY);
+        CGPoint leftsidePoint = CGPointMake(winRct.size.width / 2 -10, winRct.size.height *2 /3 -60 -30 +10 + addY);
+        CGPoint rightSidePoint = CGPointMake(winRct.size.width / 2 + 10, winRct.size.height *2 /3 -60 -30 +10 + addY);
 
         [linePath moveToPoint:startPoint];
         [linePath addLineToPoint:endPoint];
@@ -154,14 +160,14 @@
         
         CGContextAddPath(context, linePatchRef);
         
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
 
     } else if(self.typeOfHint == 30){
         
         
         
-        CGPoint centrPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height *2 / 3 -30);
+        CGPoint centrPoint = CGPointMake(winRct.size.width / 2, winRct.size.height *2 / 3 -30 + addY);
 
         UIBezierPath *arcPatch = [UIBezierPath bezierPathWithArcCenter:centrPoint radius:60 startAngle:0 endAngle:M_PI clockwise:NO];
         
@@ -169,15 +175,15 @@
         CGContextSetLineWidth(context, 3);
         arcPatchRef = arcPatch.CGPath;
         CGContextAddPath(context, arcPatchRef);
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
         
         
         UIBezierPath *linePath=[UIBezierPath bezierPath];
         
-        CGPoint endPoint = CGPointMake(self.bounds.size.width / 2 + 60, self.bounds.size.height *2 / 3 -30 +2);
-        CGPoint leftPoint = CGPointMake(self.bounds.size.width / 2 + 60 -10, self.bounds.size.height *2 / 3 -30 - 10 +2);
-        CGPoint rightPoint = CGPointMake(self.bounds.size.width / 2 + 60 + 10, self.bounds.size.height *2 / 3 -30 - 10 +2);
+        CGPoint endPoint = CGPointMake(winRct.size.width / 2 + 60, winRct.size.height *2 / 3 -30 +2 + addY);
+        CGPoint leftPoint = CGPointMake(winRct.size.width / 2 + 60 -10, winRct.size.height *2 / 3 -30 - 10 +2 + addY);
+        CGPoint rightPoint = CGPointMake(winRct.size.width / 2 + 60 + 10, winRct.size.height *2 / 3 -30 - 10 +2 + addY);
         [linePath moveToPoint:leftPoint];
         // [linePath addQuadCurveToPoint:secondPoint controlPoint:controlPoint];
         [linePath addLineToPoint:endPoint];
@@ -189,15 +195,15 @@
         
         CGContextAddPath(context, linePatchRef);
         
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
         
         
         UIBezierPath *linePathtwo=[UIBezierPath bezierPath];
         
-        CGPoint endPointtwo = CGPointMake(self.bounds.size.width / 2 - 60, self.bounds.size.height *2 / 3 -30 +2);
-        CGPoint leftPointtwo = CGPointMake(self.bounds.size.width / 2 - 60 -10, self.bounds.size.height *2 / 3 -30 - 10 +2);
-        CGPoint rightPointtwo = CGPointMake(self.bounds.size.width / 2 - 60 + 10, self.bounds.size.height *2 / 3 -30 - 10 +2);
+        CGPoint endPointtwo = CGPointMake(winRct.size.width / 2 - 60, winRct.size.height *2 / 3 -30 +2 + addY);
+        CGPoint leftPointtwo = CGPointMake(winRct.size.width / 2 - 60 -10, winRct.size.height *2 / 3 -30 - 10 +2 + addY);
+        CGPoint rightPointtwo = CGPointMake(winRct.size.width / 2 - 60 + 10, winRct.size.height *2 / 3 -30 - 10 +2 + addY);
         [linePathtwo moveToPoint:leftPointtwo];
         // [linePath addQuadCurveToPoint:secondPoint controlPoint:controlPoint];
         [linePathtwo addLineToPoint:endPointtwo];
@@ -209,17 +215,17 @@
         
         CGContextAddPath(context, linePatchReftwo);
         
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
         
     }else if(self.typeOfHint == 33){
         UIBezierPath *linePath=[UIBezierPath bezierPath];
         
         
-        CGPoint startPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height *2 /3 -60 -30);
-        CGPoint endPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height *2 / 3 -30);
-        CGPoint leftsidePoint = CGPointMake(self.bounds.size.width / 2 -10, self.bounds.size.height *2 /3 -30 -10);
-        CGPoint rightSidePoint = CGPointMake(self.bounds.size.width / 2 + 10, self.bounds.size.height *2 /3 -30 - 10);
+        CGPoint startPoint = CGPointMake(winRct.size.width / 2, winRct.size.height *2 /3 -60 -30 + addY);
+        CGPoint endPoint = CGPointMake(winRct.size.width / 2, winRct.size.height *2 / 3 -30 + addY);
+        CGPoint leftsidePoint = CGPointMake(winRct.size.width / 2 -10, winRct.size.height *2 /3 -30 -10 + addY);
+        CGPoint rightSidePoint = CGPointMake(winRct.size.width / 2 + 10, winRct.size.height *2 /3 -30 - 10 + addY);
         
         [linePath moveToPoint:startPoint];
         [linePath addLineToPoint:endPoint];
@@ -234,7 +240,7 @@
         
         CGContextAddPath(context, linePatchRef);
         
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1);
+        CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
     }
     
@@ -248,6 +254,5 @@
     [self drawRoundetRect:context];
     // Drawing code
 }
-
 
 @end
