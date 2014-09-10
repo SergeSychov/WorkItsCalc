@@ -13,8 +13,9 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 #define  kCatchWidth 160
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#define IS_BLACK_MODE NO
 
-@interface HistroryTableViewCell()
+@interface HistroryTableViewCell() <UITextFieldDelegate>
 
 
 @property (nonatomic) BOOL isButtonShowed;
@@ -27,8 +28,6 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 @property (nonatomic,strong) UIView *scrollViewContentView;
 @property (nonatomic, strong) UILabel *datelabel;
 @property (nonatomic, strong) UILabel *programLabel;
-
-@property (nonatomic, strong) UITextView *programTextView;
 
 @property (nonatomic, strong) CAGradientLayer *backgroundGradient;
 @property (nonatomic, strong) CAGradientLayer *scrollGradientLayer;
@@ -43,6 +42,12 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     [self setup];
 }
 
+-(id) initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    return self;
+}
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -51,67 +56,77 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     }
     return self;
 }
-/*
--(void) setIsCanDrag:(BOOL)isCanDrag
-{
-    if(_isCanDrag != isCanDrag){
-        if(!_isCanDrag){
-           // NSAttributedString *historyString = self.programTextView.attributedText;
-            _isCanDrag = isCanDrag;
-            [self setHistoryProgramString:self.historyProgramString];
-            if(self.programTextView.hidden)
-            [self.programTextView removeFromSuperview];
-        } else {
-            //NSAttributedString *historyString = self.programLabel.attributedText;
-            _isCanDrag = isCanDrag;
-            [self setHistoryProgramString:self.historyProgramString];
-            //[self.programLabel removeFromSuperview];
-        }
-    }
-}
-*/
 
--(UILabel*)programLabel
+-(void) makeProgramLabel
 {
-    if(!_programLabel){
-        UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
-        programLabel.backgroundColor = [UIColor clearColor];
-        
-        programLabel.numberOfLines = 0;
-        
-        [self.scrollViewContentView addSubview:programLabel];
-        self.programLabel = programLabel;
+    CGPoint originTextRect = CGPointMake(20, 13);
+    
+    if(IS_IPAD){
+        originTextRect.x = self.frame.size.width - 32;
     }
     
-    return _programLabel;
+    CGRect rect = CGRectMake(originTextRect.x,originTextRect.y,40, 12);
+    UILabel *programLabel = [[UILabel alloc] initWithFrame:rect];
+    programLabel.backgroundColor = [UIColor clearColor];
+    
+    programLabel.numberOfLines = 0;
+    
+    [self.scrollViewContentView addSubview:programLabel];
+    _programLabel = programLabel;
 }
 
--(UITextView*)programTextView
-{
-    if(!_programTextView){
-        CGRect rect = CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12);
-        UITextView *programTextView = [[UITextView alloc]initWithFrame:rect];
-        programTextView.backgroundColor = [UIColor clearColor];
-        [programTextView  setTextContainerInset: UIEdgeInsetsMake(0, 0, 0, 0)];
-        [programTextView setScrollEnabled:NO];
 
-        [self.scrollViewContentView addSubview:programTextView];
-        self.programTextView = programTextView;
+-(void) makeProgramTextView
+{
+    CGPoint originTextRect = CGPointMake(20, 13);
+    
+    if(IS_IPAD){
+        originTextRect.x = self.frame.size.width - 32;
     }
-    return _programTextView;
+    
+    CGRect rect = CGRectMake(originTextRect.x,originTextRect.y,40, 12);
+    UITextView *programTextView = [[UITextView alloc]initWithFrame:rect];
+    programTextView.backgroundColor = [UIColor clearColor];
+    [programTextView  setTextContainerInset: UIEdgeInsetsMake(0, 0, 0, 0)];
+    [programTextView setScrollEnabled:NO];
+    
+    //set textfield without keyboard
+    UIView* dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+    programTextView.inputView = dummyView;
+    
+    [self.scrollViewContentView addSubview:programTextView];
+    _programTextView = programTextView;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
-        if(selected){
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor],nil];
+    CGFloat colorClear;
+    CGFloat colorFirstGradient;
+    CGFloat colorSecondGradient;
+    if(IS_BLACK_MODE){
+        colorClear = 0.1;
+        colorFirstGradient = 0.12;
+        colorSecondGradient = 0.17;
+    } else {
+        colorClear = .9;
+        colorFirstGradient = 0.88;
+        colorSecondGradient = 0.83;
 
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:1 alpha:1] CGColor], (id)[[UIColor colorWithWhite:1 alpha:1] CGColor], nil];
+    }
+    
+    if(selected){
+            
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorClear alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorClear alpha:1] CGColor],nil];
+
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorClear alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorClear alpha:1] CGColor], nil];
+            
             [self.delegate cellDidSelect:self];
         } else {
-            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+            
+            self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:1] CGColor], nil];
 
-            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.95 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.85 alpha:1] CGColor], nil];
+            self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:1] CGColor], nil];
+            
 
             [self hideButtons];
         }
@@ -122,7 +137,11 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 {
     UIFont *font = [UIFont systemFontOfSize:9.];
 
-    [self.datelabel setTextColor:[UIColor darkGrayColor]];
+    if(IS_BLACK_MODE){
+        [self.datelabel setTextColor:[UIColor darkGrayColor]];
+    } else {
+        [self.datelabel setTextColor:[UIColor grayColor]];
+    }
     [self.datelabel  setFont:font];
     self.datelabel.text = historyDateString;
 }
@@ -131,55 +150,79 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 {
     _historyProgramString = historyProgramString;
     if(!self.isCanDrag){
+        if(!self.programTextView) [self makeProgramTextView];
         self.programTextView.attributedText = historyProgramString;
-        [self.programLabel removeFromSuperview];
-        self.programLabel = nil;
-        //if(self.programLabel == nil){
-       //     NSLog(@"label %@", self.programLabel.attributedText.string);
-      //  }
+        if(self.programLabel){
+            [self.programLabel removeFromSuperview];
+            self.programLabel = nil;
+        }
     } else {
-        [self.programTextView removeFromSuperview];
-        self.programTextView = nil;
+        if(!self.programLabel) [self makeProgramLabel];
         self.programLabel.attributedText = historyProgramString;
+        if(self.programTextView){
+            [self.programTextView removeFromSuperview];
+            self.programTextView = nil;
+        }
     }
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-    CGSize neededSize = CGSizeMake(280, 1000);
+    CGSize neededSize;
+    if(IS_IPAD){
+        neededSize = CGSizeMake(700, 1000);
+    } else {
+        neededSize = CGSizeMake(280, 1000);
+
+    }
     CGRect neededRect = [historyProgramString boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin context:drawContext];
+
     
+    CGPoint originTextRect = CGPointMake(20, 13);
     if(!self.isCanDrag){
-        [self.programTextView setFrame:CGRectMake(20,13,neededRect.size.width +10, neededRect.size.height +7)];
-        //[self.programTextView setBackgroundColor:[UIColor greenColor]];
-       // UIEdgeInsets ins = self.programTextView.textContainerInset;
-       // NSLog(@"container aligment insets top:%f, bottom:%f, left:%f, right:%f", ins.top, ins.bottom, ins.left, ins.right);
+        if(IS_IPAD){
+            originTextRect.x = self.frame.size.width - neededRect.size.width - 10 - 20;
+        }
+        [self.programTextView setFrame:CGRectMake(originTextRect.x,originTextRect.y,neededRect.size.width +10, neededRect.size.height +7)];
         
     } else {
-        [self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
-        //[self.programLabel setBackgroundColor:[UIColor blueColor]];
-        [self.programLabel drawTextInRect:self.programLabel.bounds];
+        if(IS_IPAD){
+            originTextRect.x = self.frame.size.width - neededRect.size.width - 20;
+        }
+        [self.programLabel setFrame:CGRectMake(originTextRect.x,originTextRect.y,neededRect.size.width, neededRect.size.height)];
     }
-    //[self.programLabel setFrame:CGRectMake(20,13,neededRect.size.width, neededRect.size.height)];
-    //[self.programLabel drawTextInRect:self.programLabel.bounds];
 }
 
 -(void)setup {
     self.isButtonShowed = NO;
-    //self.isLastCell = NO;
+    
+    CGFloat colorClear;
+    CGFloat colorFirstGradient;
+    CGFloat colorSecondGradient;
+    if(IS_BLACK_MODE){
+        colorClear = 0.1;
+        colorFirstGradient = 0.12;
+        colorSecondGradient = 0.17;
+    } else {
+        colorClear = .9;
+        colorFirstGradient = 0.88;
+        colorSecondGradient = 0.83;
+        
+    }
+
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = self.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], nil];
+    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:1] CGColor], nil];
 
     [self.layer insertSublayer:gradient atIndex:0];
     self.backgroundGradient = gradient;
     
     UIView *scrollViewContentView = [[UIView alloc] initWithFrame:self.bounds];
-    scrollViewContentView.backgroundColor = [UIColor colorWithWhite:.8 alpha:1.0];
+    scrollViewContentView.backgroundColor = [UIColor colorWithWhite:colorFirstGradient alpha:1.0];
     [self.contentView addSubview:scrollViewContentView];
     self.scrollViewContentView = scrollViewContentView;
     
     CAGradientLayer *gradientForScroll = [CAGradientLayer layer];
     gradientForScroll.frame = self.bounds;
-    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0.7 alpha:1] CGColor], (id)[[UIColor colorWithWhite:0.9 alpha:1] CGColor], nil];
+    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:1] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:1] CGColor], nil];
 
     [self.scrollViewContentView.layer insertSublayer:gradientForScroll atIndex:0];
     self.scrollGradientLayer = gradientForScroll;
@@ -188,27 +231,6 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     [self.scrollViewContentView addSubview:dateLabel];
     dateLabel.backgroundColor = [UIColor clearColor];
     self.datelabel = dateLabel;
-    
-    /*
-    if(self.isLastCell){
-        UITextView *programTextView = [[UITextView alloc]initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
-        programTextView.backgroundColor = [UIColor clearColor];
-        [self.scrollViewContentView addSubview:programTextView];
-        self.programTextView = programTextView;
-        
-    } else {
-        UILabel *programLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,13,self.bounds.size.width - 40, self.bounds.size.height - 12)];
-        
-        programLabel.numberOfLines = 0;
-        
-        [self.scrollViewContentView addSubview:programLabel];
-        self.programLabel = programLabel;
-    }
-     */
-    
-
-
-
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enclosingTableViewDidScroll) name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
 }
@@ -220,6 +242,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     self.backgroundGradient.frame = self.bounds;
 
     self.scrollGradientLayer.frame = self.bounds;
+    
+    [self setHistoryProgramString:self.historyProgramString];
 
    // [self.deleteButton setFrame:CGRectMake(self.bounds.size.width - kCatchWidth / 2.0f, 0, kCatchWidth / 2.0f, self.bounds.size.height)];
     //[self.deleteImage setFrame:CGRectMake((self.deleteButton.bounds.size.width - 60)/2,
@@ -353,5 +377,8 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
                      }];
     
 }
+#define textView delegate
+
+
 
 @end
