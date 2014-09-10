@@ -10,6 +10,7 @@
 #define DIGITS_LIMIT 10.
 #define BASE_LINE  0
 #define BUTTON_HEIGHT 60.f
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
 @interface DisplayLabel()
 
@@ -64,7 +65,52 @@
 }
 -(void) setup
 {
-    UIFont *font = [UIFont systemFontOfSize:13.];
+    UIFont *font; //if there is no needed font
+    CGFloat size;
+    if(IS_IPAD){
+        size = 93;
+    } else {
+        size = 50;
+    }
+    
+    NSString *fontName = nil;
+    NSString *fondBoldName = nil;
+    
+    NSArray *famalyNames  =[UIFont familyNames];
+    if([famalyNames containsObject:@"Helvetica Neue"]){
+        NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
+        NSLog(@"Names: %@", fontNames);
+        if([fontNames containsObject:@"HelveticaNeue-Thin"]){
+            fontName = @"HelveticaNeue-Thin";
+        }
+        if([fontNames containsObject:@"HelveticaNeue-Light"]){
+            fondBoldName = @"HelveticaNeue-Light" ;
+        }
+    }
+    
+    UIFont *system = [UIFont systemFontOfSize:size];
+    // NSLog(@"Font sys: %@", system);
+    if([system.fontName isEqualToString:@".HelveticaNeueInterface-Regular"]){
+        if(fontName){
+            font = [UIFont fontWithName:fontName size:size];
+        }else {
+            font =[UIFont systemFontOfSize:size];
+        }
+    } else if ([system.fontName isEqualToString:@".HelveticaNeueInterface-MediumP4"]){
+        if(fondBoldName){
+            font = [UIFont fontWithName:fondBoldName size:size];
+        }else {
+            font =[UIFont systemFontOfSize:size];
+        }
+        
+    } else {
+        font =[UIFont systemFontOfSize:size];
+    }
+    
+    self.font = font;
+    
+    
+    font = [UIFont systemFontOfSize:13.];
     
     UILabel *decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 32,15)];
     [decRadLabel setTextColor:[UIColor whiteColor]];
