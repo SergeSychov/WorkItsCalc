@@ -11,7 +11,7 @@
 @implementation HistoryTableView
 -(void) setup
 {
-    self.isNeedToSetOffsetToButton = YES;
+    self.isNeedToSetOffsetToButton = NO;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -33,13 +33,17 @@
 
 -(void) setContentSize:(CGSize)contentSize{
     [super setContentSize:contentSize];
+    
     if(self.isNeedToSetOffsetToButton){
+     
         if(contentSize.height >0){
             CGRect rect = self.frame;
             rect.origin.y = self.contentSize.height - self.frame.size.height;
             [self scrollRectToVisible:rect animated:YES];
         }
+      
     }
+    
 }
 
 
