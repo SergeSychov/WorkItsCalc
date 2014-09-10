@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Sergey Sychov. All rights reserved.
 //
 
+#define IS_BLACK_MODE NO
 #import "HistoryTableSviper.h"
 
 @implementation HistoryTableSviper
@@ -48,8 +49,12 @@
     */
     CGContextAddLineToPoint(context, rect.size.width *5/6 +.5, rect.size.height /2 +.5 + 2*fivePart);
     CGContextSetLineCap(context , kCGLineCapRound);
-    CGContextSetRGBStrokeColor(context, 0.0, 0., 0., 0.3);
-    CGContextStrokePath(context);  
+    if(IS_BLACK_MODE){
+        CGContextSetRGBStrokeColor(context, 0.9, 0.9, 0.9, 0.3);
+    } else {
+        CGContextSetRGBStrokeColor(context, 0.0, 0., 0., 0.3);
+    }
+    CGContextStrokePath(context);
     
 }
 // Only override drawRect: if you perform custom drawing.
