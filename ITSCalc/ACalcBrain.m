@@ -354,6 +354,7 @@
     if(n < 0) {
         return NAN;
     } else {
+        if(n > 200.) n = 200;
         return (n==0 ? 1 : n*[ACalcBrain factorial:(n-1)]);
     }
 }
