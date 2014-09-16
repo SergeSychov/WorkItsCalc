@@ -4088,6 +4088,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
+-(void)cloudDidChange
+{
+    NSLog(@"cloud Did Change");
+}
+-(void)cloudWillChange
+{
+     NSLog(@"cloud will Change");
+}
+-(void)cloudContentChange
+{
+     NSLog(@"content did chnage");
+}
+
+#define SharedFileName   @"MyDocument"
+#define PrivateName     @"iCloud.com.sychov.ItsCalc"
+
 - (void)viewDidLoad
 {
 
@@ -4095,21 +4111,45 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //for testing delegate
     //set Hegths of ellement according screen height
     [self setHeightOfElementAccordingToScreenIPhone];
-    
     [self initialLayoutDynamiccontainer];
+    
     
     //init managed document
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
                                                      inDomains:NSUserDomainMask] lastObject];
-    NSString* documentName = @"MyDocument.sqlite";
-
+    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
+    
     NSURL *storeURL = [documentsDirectory
                        URLByAppendingPathComponent:documentName];
+    
+    NSURL *cloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: PrivateName];
+    
+    
+                       /*
+
+    NSURL *cloudURL = [[CloudHelper ubiquityDataURLForContainer:nil] URLByAppendingPathComponent:PrivateName];
+    [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:container];
+         id currentiCloudToken = fileManager.ubiquityIdentityToken;
+    if (currentiCloudToken) {
+        NSData *newTokenData =
+        [NSKeyedArchiver archivedDataWithRootObject: currentiCloudToken];
+        [[NSUserDefaults standardUserDefaults]
+         setObject: newTokenData
+         forKey: @"iCloud.com.sychov.ItsCalc.UbiquityIdentityToken"];
+    } else {
+        [[NSUserDefaults standardUserDefaults]removeObjectForKey: @"iCloud.com.sychov.ItsCalc.UbiquityIdentityToken"];
+    }
+     */
+    
+    //NSURL *documentsDirectory = [fileManager URLForUbiquityContainerIdentifier:nil];
+    
+
+   /*
     NSError *error = nil;
     
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"History" withExtension:@"mom"];
-    //NSLog(@"modelURL: %@", modelURL);
+    NSLog(@"modelURL: %@", modelURL);
     
     NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc]
@@ -4122,15 +4162,23 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                                    URL:storeURL
                                                                options:storeOptions
                                                                  error:&error];
+    
     NSURL *finaliCloudURL = [store URL];
-    //NSLog(@"finaliCloudURL: %@", finaliCloudURL);
-    
-    NSURL *iCloud = [fileManager URLForUbiquityContainerIdentifier:nil];
-   // NSLog(@"iCloud: %@", iCloud);
+    NSLog(@"finaliCloudURL: %@", finaliCloudURL);
+    */
 
+    NSURL *iCloud = [fileManager URLForUbiquityContainerIdentifier:nil];
+    NSLog(@"iCloud: %@", iCloud);
     
+
+    NSLog(@"Store URL: %@", storeURL);
     //NSURL *myUrl = [documentsDirectory URLByAppendingPathComponent:documentName];
     UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:storeURL];
+    
+    NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption: @YES,
+                              NSInferMappingModelAutomaticallyOption:@YES};
+    document.persistentStoreOptions = options;
+    
     //question ? the string before the same
     //document = [[UIManagedDocument alloc] initWithFileURL:myUrl];
     if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
@@ -4145,10 +4193,29 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     //try to save core data through update document
     self.doc = document;
+    [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:^(BOOL success) {
+        NSLog(@"Saving");
+    }];//saveToURL:forSaveOperation:completionHandler:
+
     
     
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudDidChange)
+                                                   name:NSPersistentStoreCoordinatorStoresDidChangeNotification
+                                                 object:nil];
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudWillChange)
+                                                   name:NSPersistentStoreCoordinatorStoresWillChangeNotification
+                                                 object:nil];
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudContentChange)
+                                                   name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
+                                                 object:nil];
+
     
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
