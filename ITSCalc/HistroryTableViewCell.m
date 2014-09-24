@@ -89,6 +89,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     programTextView.backgroundColor = [UIColor clearColor];
     [programTextView  setTextContainerInset: UIEdgeInsetsMake(0, 0, 0, 0)];
     [programTextView setScrollEnabled:NO];
+    //[programTextView setUserInteractionEnabled:NO];
     
     //set textfield without keyboard
     UIView* dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
@@ -135,8 +136,14 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void) setHistoryDateString:(NSString *)historyDateString
 {
-    UIFont *font = [UIFont systemFontOfSize:9.];
+    UIFont *font;
+    if(IS_IPAD){
+        font = [UIFont systemFontOfSize:15.];
 
+    } else {
+        font = [UIFont systemFontOfSize:9.];
+    }
+    
     if(IS_BLACK_MODE){
         [self.datelabel setTextColor:[UIColor darkGrayColor]];
     } else {
@@ -227,7 +234,14 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     [self.scrollViewContentView.layer insertSublayer:gradientForScroll atIndex:0];
     self.scrollGradientLayer = gradientForScroll;
     
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,0,150, 12)];
+    CGRect labelFrame;
+    if(IS_IPAD){
+        labelFrame = CGRectMake(20, 0, 150, 18);
+    } else {
+        labelFrame = CGRectMake(20, 0, 150, 12);
+
+    }
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:labelFrame];
     [self.scrollViewContentView addSubview:dateLabel];
     dateLabel.backgroundColor = [UIColor clearColor];
     self.datelabel = dateLabel;
@@ -298,13 +312,16 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
                          [self.scrollViewContentView setFrame:self.bounds];
                      } completion:^(BOOL finished) {
                          // Set up our two buttons
-                         //[self.moreButton removeFromSuperview];
+                         //[self.moreImage removeFromSuperview];
+                         //[self.deleteImage removeFromSuperview];
                          //if(self.wasPurhased){
-                             self.moreButton = nil;
+                         //[self.moreButton removeFromSuperview];
+                         //[self.deleteButton removeFromSuperview];
+                         //self.deleteImage = nil;
                         // }
                          //[self.deleteButton removeFromSuperview];
                          
-                         self.deleteImage = nil;
+                         //self.moreImage = nil;
                      }];
     
 
@@ -318,38 +335,46 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     // Set up our two buttons
     //set allowed to show recound button only in purchsed version
     //if(self.wasPurhased){
-        UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        moreButton.backgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
-        moreButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth, 0, kCatchWidth / 2.0f, self.bounds.size.height);
-        [moreButton addTarget:self action:@selector(userPressedMoreButton:) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView insertSubview:moreButton atIndex:0];
-        //[self.contentView addSubview:moreButton];
-        self.moreButton = moreButton;
+    if(!self.moreButton){
+        self.moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.moreButton addTarget:self action:@selector(userPressedMoreButton:) forControlEvents:UIControlEventTouchUpInside];
+        self.moreButton.backgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
+        [self.contentView insertSubview:self.moreButton atIndex:0];
+        self.moreImage = [[UIImageView alloc] init];
+        self.moreImage.contentMode = UIViewContentModeScaleToFill;
+        [self. moreImage setImage:[UIImage imageNamed:@"Rec2.png"]];
+        [self.moreButton addSubview:self.moreImage];
+            }
     
-        UIImageView* moreImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.moreButton.bounds.size.width - 60)/2,
+        self.moreButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth, 0, kCatchWidth / 2.0f, self.bounds.size.height);
+    
+        //[self.contentView addSubview:moreButton];
+        //self.moreButton = moreButton;
+    
+        [self.moreImage setFrame:CGRectMake((self.moreButton.bounds.size.width - 60)/2,
                                                                            (self.moreButton.bounds.size.height - 60)/2, 60, 60)];
-        [moreImage setImage:[UIImage imageNamed:@"Rec2.png"]];
-        moreImage.contentMode = UIViewContentModeScaleToFill;
-        [self.moreButton addSubview:moreImage];
-        self.moreImage = moreImage;
    // }
     
     
     
-    UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    deleteButton.backgroundColor = [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0f];
-    deleteButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth / 2.0f, 0, kCatchWidth / 2.0f, self.bounds.size.height);
-    [deleteButton addTarget:self action:@selector(userPressedDeleteButton:) forControlEvents:UIControlEventTouchDown];
-    [self.contentView insertSubview:deleteButton atIndex:0];
+    if(!self.deleteButton){
+        self.deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.deleteButton.backgroundColor = [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0f];
+        
+    [self.deleteButton addTarget:self action:@selector(userPressedDeleteButton:) forControlEvents:UIControlEventTouchDown];
+    [self.contentView insertSubview:self.deleteButton atIndex:0];
+        [self.contentView insertSubview:self.moreButton atIndex:0];
+        self.deleteImage = [[UIImageView alloc] init];
+        self.deleteImage.contentMode = UIViewContentModeScaleToFill;
+        [self. deleteImage setImage:[UIImage imageNamed:@"deleteBig2.png"]];
+        [self.deleteButton addSubview:self.deleteImage];
     //[self.contentView addSubview:deleteButton];
-    self.deleteButton = deleteButton;
-    UIImageView* deleteImage = [[UIImageView alloc] initWithFrame:CGRectMake((self.deleteButton.bounds.size.width - 60)/2,
-                                                                             (self.deleteButton.bounds.size.height - 60)/2, 60, 60)];
-    [deleteImage setImage:[UIImage imageNamed:@"deleteBig2.png"]];
-    deleteImage.contentMode = UIViewContentModeScaleToFill;
+    }
     
-    [self.deleteButton addSubview:deleteImage];
-    self.deleteImage = deleteImage;
+    self.deleteButton.frame = CGRectMake(self.bounds.size.width - kCatchWidth / 2.0f, 0, kCatchWidth / 2.0f, self.bounds.size.height);
+    
+    [self.deleteImage setFrame:CGRectMake((self.deleteButton.bounds.size.width - 60)/2,
+                                                                             (self.deleteButton.bounds.size.height - 60)/2, 60, 60)];
     
     
     CGRect newFrame = self.scrollViewContentView.frame;
