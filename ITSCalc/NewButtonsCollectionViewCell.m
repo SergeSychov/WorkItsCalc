@@ -247,6 +247,9 @@
     CGFloat subWidth = self.frame.size.width * self.incr;
     CGFloat subHeight = self.frame.size.height * self.incr;
     
+    //CGFloat collect = self.collectionViewOffset.y;
+    CGFloat collectionYOffset = [self.delegate buttonCollectionOffset];
+    
 
     if(subX < 0){
         subX = 0;
@@ -255,12 +258,12 @@
         subX = self.superview.bounds.size.width - subWidth;
     }
     
-    if((subY - collectionInsect) < 0){
-        subY = collectionInsect;
+    if((subY - collectionInsect - collectionYOffset) < 0){
+        subY = collectionInsect + collectionYOffset;
     }
     
-    if((subY+subHeight) > self.superview.bounds.size.height){
-        subY = self.superview.bounds.size.height - subHeight;
+    if((subY+subHeight - collectionYOffset) > self.superview.bounds.size.height){
+        subY = self.superview.bounds.size.height - subHeight + collectionYOffset;
     }
     
     /*

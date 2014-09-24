@@ -7,14 +7,21 @@
 //
 @import UIKit;
 
+
 #import <UIKit/UIKit.h>
 #import "newButtonView.h"
+
+@class NewButtonsCollectionViewCell;
+
+@protocol ButtonCellSource <NSObject>
+-(CGFloat) buttonCollectionOffset;
+@end
 
 @interface NewButtonsCollectionViewCell : UICollectionViewCell //<SetingCellFrameDelegate>
 //@property (weak, nonatomic) IBOutlet newButton *cellButton;
 @property (weak, nonatomic) IBOutlet UIButton *closeAndSetButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
-@property (nonatomic) CGPoint collectionViewOffset;
+//@property (nonatomic) CGPoint collectionViewOffset;
 @property (nonatomic,strong) NSString* name;
 @property (nonatomic) BOOL isUnderChanging;//is there buttons in underchangeble condition
 @property (nonatomic) BOOL isEnable; //is button normaly enabled
@@ -27,4 +34,7 @@
 
 -(void) myTouchBegan;
 -(void) myTouchEnded;
+
+@property (nonatomic,weak) id <ButtonCellSource> delegate;
+
 @end
