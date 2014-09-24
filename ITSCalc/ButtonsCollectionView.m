@@ -17,6 +17,11 @@
 
 @implementation ButtonsCollectionView
 
+-(CGFloat) buttonCollectionOffset
+{
+    return self.contentOffset.y;
+}
+
 /*
 
 // Only override drawRect: if you perform custom drawing.

@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-//#import "newButton.h"
+#import "NewButtonsCollectionViewCell.h"
 
 
-@interface ButtonsCollectionView : UICollectionView
+@interface ButtonsCollectionView : UICollectionView <ButtonCellSource>
 
 //-(void) moveCellViewFromPosition: (NSIndexPath*) fromPatch toPosition:(NSIndexPath*) toPatch;
 
