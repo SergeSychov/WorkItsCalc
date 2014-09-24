@@ -174,6 +174,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong)NSManagedObjectContext *buttonManagedObjectContext;
+@property (nonatomic,strong) NSURL * storeURL;
+//@property (nonatomic, strong) NSURL* cloudURL;
 //set managed obj context specially for buttons
 
 //Buttons arrays
@@ -902,6 +904,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
     request.predicate = nil;
+    //NSData *nullData = [NSKeyedArchiver archivedDataWithRootObject:[[NSArray alloc]init]];
+    //request.predicate = [NSPredicate predicateWithFormat:@"program != %@",nullData];
+    
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
     request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
@@ -929,6 +934,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
     }
 }
+
+//delete empty program from fetch
+-(void) deleteEmptyProgram
+{
+    NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
+    for(NSInteger i = 0; i < ([fetchedObjects count]-1); i++){
+        History *story = [self.fetchedResultsController objectAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        NSArray *programFromHistory = [NSKeyedUnarchiver unarchiveObjectWithData:story.program];
+        if([programFromHistory count] == 0){
+            [self.managedObjectContext deleteObject:story];
+        }
+    }
+}
+
 
 
 
@@ -1620,7 +1639,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                  [self.buttonsCollection reloadData];
                                  //ulock interaction
                                  self.buttonsCollection.userInteractionEnabled = YES;
-                                 
                              }];
         } else {
             //1. fix button postion
@@ -2072,7 +2090,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
     }
     else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
-        NSLog(@"filed or canceled");
+       // NSLog(@"filed or canceled");
     }
     }
     
@@ -2250,6 +2268,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         if(self.isHistoryWholeShowed == 1){
             [self finisDraggingUpWithVelocity:CGPointMake(0, 0)];
         } else {
+            self.display.alpha =  0.99;
+            self.settingsBottomButtn.hidden = NO;
+            self.settingsBottomButtn.alpha =.01;
+            
+            self.noticeButton.hidden = NO;
+            self.noticeButton.alpha = .01;
+            
+            self.recountButton.hidden = NO;
+            self.recountButton.alpha = .01;
+            
+            self.deleteButton.hidden = NO;
+            self.deleteButton.alpha = .01;
+            
+            self.isHistoryWholeShowed = .01;
             [self finishDraggingDownWithVelocity:CGPointMake(0, 0)];
         }
     }
@@ -2806,13 +2838,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(UICollectionViewCell*) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Button" forIndexPath:indexPath];
+    ((NewButtonsCollectionViewCell *)cell).delegate = (ButtonsCollectionView*)collectionView;
+    
     if([cell isKindOfClass:[NewButtonsCollectionViewCell class]]){
         NSInteger item = indexPath.item;
         if(self.isButtonsCollectionUnderChanging){
             ButtonObject *button = [self.allButtonObj objectAtIndex:item];
             
             
-            ((NewButtonsCollectionViewCell *)cell).collectionViewOffset = self.buttonsCollection.contentOffset; //nessesary for pressed button view
+           // ((NewButtonsCollectionViewCell *)cell).collectionViewOffset = self.buttonsCollection.contentOffset; //nessesary for pressed button view
             ((NewButtonsCollectionViewCell*)cell).isEnable = button.enable;
             ((NewButtonsCollectionViewCell*)cell).isChangeble = !button.isMain;
             ((NewButtonsCollectionViewCell*)cell).isUnderChanging = self.isButtonsCollectionUnderChanging;
@@ -2834,7 +2868,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
         } else {
             NSString* nameFromModel = [self.workButtonsNames objectAtIndex:item];
-            ((NewButtonsCollectionViewCell *)cell).collectionViewOffset = self.buttonsCollection.contentOffset; //nessesary for pressed button view
+            //((NewButtonsCollectionViewCell *)cell).collectionViewOffset = self.buttonsCollection.contentOffset; //nessesary for pressed button view
             
             if([nameFromModel isEqualToString:@"."]){
                 ((NewButtonsCollectionViewCell *)cell).name = [self point];
@@ -3004,13 +3038,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     } else
                     if(IS_568_SCREEN){
                         height = 65.;
-                        if(neededRect.size.height > 48.){
-                            height = neededRect.size.height * 1.2 + 13;
+                        if(neededRect.size.height*1.2 > 48.){
+                            height = neededRect.size.height * 1.2 + 17;
                         }
                     } else {
                         height = 60.;
-                        if(neededRect.size.height > 43.){
-                            height = neededRect.size.height *1.2 + 13;
+                        if(neededRect.size.height*1.2 > 43.){
+                            height = neededRect.size.height *1.2 + 17;
                         }
                     }
                 }
@@ -3072,13 +3106,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 } else
                     if(IS_568_SCREEN){
                         height = 65.;
-                        if(neededRect.size.height > 48.){
-                            height = neededRect.size.height * 1.2 + 13;
+                        if(neededRect.size.height*1.2 > 48.){
+                            height = neededRect.size.height * 1.2 + 17;
                         }
                     } else {
                         height = 60.;
-                        if(neededRect.size.height > 43.){
-                            height = neededRect.size.height *1.2 + 13;
+                        if(neededRect.size.height*1.2 > 43.){
+                            height = neededRect.size.height *1.2 + 17;
                         }
                     }
                 
@@ -3343,7 +3377,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         NSRange selectedRangee = textView.selectedRange;
         selectedRangee.length = selectedRangee.location;
         selectedRangee.location = 0;
-        NSLog(@"Selected range: %@",[textView.attributedText attributedSubstringFromRange:selectedRangee].string);
+       // NSLog(@"Selected range: %@",[textView.attributedText attributedSubstringFromRange:selectedRangee].string);
         
         UITextPosition *newCursorPosition = [textView positionFromPosition:textView.beginningOfDocument offset:selectedRangee.length - 3];
         UITextRange *newSelectedRange = [textView textRangeFromPosition:newCursorPosition toPosition:newCursorPosition];
@@ -3474,6 +3508,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
         }
     }
+    [self showCount];
 }
 
 #pragma mark - FETCHING
@@ -3491,6 +3526,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     } else {
 
     }
+    //[self deleteEmptyProgram];
     [self resetHeightsofRows];
     [self.historyTable reloadData];
 }
@@ -3701,14 +3737,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 } else
 
                 if(IS_568_SCREEN){
-                    height = 60;
-                    if(neededRect.size.height > 43){//48
-                        height = neededRect.size.height * 1.2 + 13;//18
+                    height = 65;
+                    if(neededRect.size.height*1.2 > 48){//48
+                        height = neededRect.size.height * 1.2 + 17;//18
                     }
                 } else {
-                    height = 55;
-                    if(neededRect.size.height > 40){
-                        height = neededRect.size.height * 1.2 + 13;
+                    height = 60;
+                    if(neededRect.size.height*1.2 > 43){
+                        height = neededRect.size.height * 1.2 + 17;
                     }
                 }
                 
@@ -3797,8 +3833,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 #pragma mark SHOW VIEW
 
+
 -(void) showCount
 {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSAttributedString * count;
+        NSAttributedString *result;
+
     if([self.historyTable numberOfRowsInSection: 0] >0){
         NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
         if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
@@ -3816,8 +3857,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
         
         if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
-            NSAttributedString * count;
-            NSAttributedString *result;
             NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
             if(equalRange.location == NSNotFound){
                 count = [atrStrFromString copy];
@@ -3827,7 +3866,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
             }
             
-            [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
             
             //set new image for that button
             //go to view didLoad
@@ -3838,14 +3876,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
     }
     //NSAttributedString
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
+
+        });
+        });
 }
 
 -(void) setShowedViewInBackground
 {
-    NSAttributedString * count = [[NSAttributedString alloc] initWithString:@""];
-    NSAttributedString *result = [[NSAttributedString alloc] initWithString:@""];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSAttributedString * count = [[NSAttributedString alloc] initWithString:@""];
+        NSAttributedString *result = [[NSAttributedString alloc] initWithString:@""];
+        
+        [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
+    });
     
-    [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
 }
 
 //tapped at share button in showed view
@@ -3999,6 +4045,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     } else {
         [self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
     }
+
 }
 
 -(void) setHeightOfElementAccordingToScreenIPhone
@@ -4087,7 +4134,48 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
     }
 }
+#pragma mark ICLOUD SETUP
+-(void) setupICloud
+{
+    //init managed document
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                     inDomains:NSUserDomainMask] lastObject];
+    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
+    
+    NSURL *storeURL = [documentsDirectory
+                       URLByAppendingPathComponent:documentName];
+    
+   // NSURL *cloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: documentName];
+    
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:storeURL];
+    
+    /*
+    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
+                              NSPersistentStoreUbiquitousContentURLKey: cloudURL,
+                              NSMigratePersistentStoresAutomaticallyOption: @YES,
+                              NSInferMappingModelAutomaticallyOption:@YES};
+    document.persistentStoreOptions = options;
+    */
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
+        [document openWithCompletionHandler:^(BOOL success) {
+            if (success) [self documentIsReady: document];
+        }];
+    } else {
+        [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForCreating
+          completionHandler:^(BOOL success) {
+              if (success) [self documentIsReady: document];
+          }];
+    }
+    
+    //try to save core data through update document
+    self.doc = document;
+    self.storeURL = storeURL;
+    //self.cloudURL = cloudURL;
+}
 
+/*
 -(void)cloudDidChange
 {
     NSLog(@"cloud Did Change");
@@ -4096,14 +4184,94 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
      NSLog(@"cloud will Change");
 }
--(void)cloudContentChange
+#pragma mark Courtesy of Apple. Thank you Apple
+// Merge the iCloud changes into the managed context
+- (void)mergeiCloudChanges: (NSDictionary*)userInfo
+                forContext: (NSManagedObjectContext*)managedObjectContext
+{
+    @autoreleasepool
+    
+    {
+        NSMutableDictionary *localUserInfo =
+        [NSMutableDictionary dictionary];
+        
+        // Handle the invalidations
+        NSSet* allInvalidations =
+        [userInfo objectForKey:NSInvalidatedAllObjectsKey];
+        NSString* materializeKeys[] = { NSDeletedObjectsKey
+            }; //,NSInsertedObjectsKey
+        if (nil == allInvalidations)
+        {
+            int c = (sizeof(materializeKeys) / sizeof(NSString*));
+            for (int i = 0; i < c; i++)
+            {
+                NSSet* set = [userInfo objectForKey:materializeKeys[i]];
+                if ([set count] > 0)
+                {
+                    NSMutableSet* objectSet = [NSMutableSet set];
+                    for (NSManagedObjectID* moid in set)
+                        [objectSet addObject:[managedObjectContext
+                                              objectWithID:moid]];
+                    [localUserInfo setObject:objectSet
+                                      forKey:materializeKeys[i]];
+                }
+            }
+            // Handle the updated and refreshed Items
+            NSString* noMaterializeKeys[] = { NSUpdatedObjectsKey,
+                NSRefreshedObjectsKey, NSInvalidatedObjectsKey };
+            c = (sizeof(noMaterializeKeys) / sizeof(NSString*));
+            
+            for (int i = 0; i < 2; i++)
+            {
+                NSSet* set = [userInfo objectForKey:noMaterializeKeys[i]];
+                if ([set count] > 0)
+                {
+                    NSMutableSet* objectSet = [NSMutableSet set];
+                    for (NSManagedObjectID* moid in set)
+                    {
+                        NSManagedObject* realObj =
+                        [managedObjectContext
+                         objectRegisteredForID:moid];
+                        if (realObj)
+                            [objectSet addObject:realObj];
+                    }
+                    [localUserInfo setObject:objectSet
+                                      forKey:noMaterializeKeys[i]];
+                }
+            }
+            // Fake a save to merge the changes
+            NSNotification *fakeSave = [NSNotification
+                                        notificationWithName:
+                                        NSManagedObjectContextDidSaveNotification
+                                        object:self userInfo:localUserInfo];
+            [managedObjectContext
+             mergeChangesFromContextDidSaveNotification:fakeSave];
+        }
+        else
+            [localUserInfo setObject:allInvalidations
+                              forKey:NSInvalidatedAllObjectsKey];
+        
+        [managedObjectContext processPendingChanges];
+        [self performSelectorOnMainThread:@selector(performFetch)
+                               withObject:nil waitUntilDone:NO];
+    }
+}
+
+-(void)cloudContentChange:(NSNotification*) notification
 {
      NSLog(@"content did chnage");
+    //if(self.doc.documentState == UIDocumentStateChangedNotification)
+    //[self performFetch];
+    NSLog(@"Documentstate: %u", self.doc.documentState);
+    
+    NSDictionary* userInfo = [notification userInfo];
+    [self.managedObjectContext performBlock:^{
+        [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
 }
 
 #define SharedFileName   @"MyDocument"
 #define PrivateName     @"iCloud.com.sychov.ItsCalc"
-
+*/
 - (void)viewDidLoad
 {
 
@@ -4113,7 +4281,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self setHeightOfElementAccordingToScreenIPhone];
     [self initialLayoutDynamiccontainer];
     
-    
+    [self setupICloud];
+
+    /*
+
     //init managed document
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
@@ -4126,7 +4297,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     NSURL *cloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: PrivateName];
     
     
-                       /*
 
     NSURL *cloudURL = [[CloudHelper ubiquityDataURLForContainer:nil] URLByAppendingPathComponent:PrivateName];
     [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:container];
@@ -4165,7 +4335,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     NSURL *finaliCloudURL = [store URL];
     NSLog(@"finaliCloudURL: %@", finaliCloudURL);
-    */
 
     NSURL *iCloud = [fileManager URLForUbiquityContainerIdentifier:nil];
     NSLog(@"iCloud: %@", iCloud);
@@ -4196,11 +4365,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:^(BOOL success) {
         NSLog(@"Saving");
     }];//saveToURL:forSaveOperation:completionHandler:
+    */
 
     
     
     [super viewDidLoad];
-    
+    /*
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(cloudDidChange)
                                                    name:NSPersistentStoreCoordinatorStoresDidChangeNotification
@@ -4212,9 +4382,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                  object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudContentChange)
+                                               selector:@selector(cloudContentChange:)
                                                    name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
                                                  object:nil];
+     */
 
     
     UIGraphicsBeginImageContext(self.view.bounds.size);
@@ -4527,15 +4698,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
         i+=1;
     }
-    [self performSelectorInBackground:@selector(setShowedViewInBackground) withObject:nil];
+    //[self performSelectorInBackground:@selector(setShowedViewInBackground) withObject:nil];
 
 }
 
 -(void) appDidGoToForeground: (NSNotification *)note
 {
+   // [self setupICloud];
     if(self.isSoundOn){
         //[self initialLayoutDynamiccontainer];
         AudioServicesPlaySystemSound (_blankSoundFileObject);
+    }
+    if([self.historyTable numberOfRowsInSection: 0]>0){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable     numberOfRowsInSection: 0] -1 inSection:0];
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
 
 }
@@ -5016,7 +5192,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 if(self.wasRightShowed == 0){
                     
                     //strongly think about it
-                    [self showCount];
+                   // [self showCount];
                     
                     [self.testView setTransform:CGAffineTransformMakeRotation(0)];
 
@@ -5128,7 +5304,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             if(!self.isButtonsCollectionUnderChanging){
                 if(self.wasRightShowed == 0){
                 //strongly think about it
-                [self showCount];
+                //[self showCount];
                 
                 [self.testView setTransform:CGAffineTransformMakeRotation(0)];
                 
