@@ -79,7 +79,6 @@
     NSArray *famalyNames  =[UIFont familyNames];
     if([famalyNames containsObject:@"Helvetica Neue"]){
         NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
-        NSLog(@"Names: %@", fontNames);
         if([fontNames containsObject:@"HelveticaNeue-Thin"]){
             fontName = @"HelveticaNeue-Thin";
         }
