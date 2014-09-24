@@ -22,7 +22,11 @@
     
     
     if(!matches || error || ([matches count] > 1)){
-    } else {
+        
+    } else if ([matches count]){
+        //history = [matches firstObject];
+    }
+    else {
         history = [NSEntityDescription insertNewObjectForEntityForName:@"History" inManagedObjectContext:context];
         
         history.program = [NSKeyedArchiver archivedDataWithRootObject:program];
