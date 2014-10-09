@@ -143,6 +143,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (weak, nonatomic) IBOutlet UIImageView *bigDataBaseView;
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) int limitInDataBase;
+
+
+@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
+@property (nonatomic) BOOL isiCloudInUse;
+@property (nonatomic) BOOL fristLunchWithicloudAvailable;
+//need to set iClouds images whole & empty
+
+
+
 @property (weak, nonatomic) IBOutlet UIButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
 //add spin activity to show process of purchaising
@@ -161,7 +170,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (weak, nonatomic) IBOutlet UIButton *shareButton;
 
 //Document
-@property (nonatomic, retain) UIDocumentInteractionController *docController;
+//@property (nonatomic, retain) UIDocumentInteractionController *docController;
 @property (nonatomic, strong) UIManagedDocument *doc;
 
 //Fetch controller
@@ -174,8 +183,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong)NSManagedObjectContext *buttonManagedObjectContext;
+@property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic,strong) NSURL * storeURL;
-//@property (nonatomic, strong) NSURL* cloudURL;
+@property (nonatomic, strong) NSURL *localStoreUrl;
+@property (nonatomic, strong) NSURL* iCloudURL;
 //set managed obj context specially for buttons
 
 //Buttons arrays
@@ -465,6 +476,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
     } else if ([title isEqualToString:ALLERT_BUTTON_BUY]){
         [self buyUnlockKeyboard];
+        
+    } else if ([title isEqualToString:@"USE_ICLOUD"]){
+        self.isiCloudInUse = YES;
     }
     
 }
@@ -903,9 +917,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
-    request.predicate = nil;
+    //request.predicate = nil;
     //NSData *nullData = [NSKeyedArchiver archivedDataWithRootObject:[[NSArray alloc]init]];
-    //request.predicate = [NSPredicate predicateWithFormat:@"program != %@",nullData];
+    request.predicate = [NSPredicate predicateWithFormat:@"date != %@",[NSDate distantPast]];
     
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
     request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
@@ -1162,9 +1176,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     //
                     //show what i can
                     //
-                    if(25 < self.counterForShowingAllertView < 34){
+                    if(self.counterForShowingAllertView > 26){
+                        if(self.fristLunchWithicloudAvailable){
+                            [self askUserForiCloudStorage];
+                        }
+                    }
+                    if(25 < self.counterForShowingAllertView < 37){
                         switch (self.counterForShowingAllertView) {
-                            case 27:{
+                            case 30:{
                                 HintView *hintView =
                                 [HintView newHintViewWithFrame:self.dynamicContainer.frame
                                                      labelRect:self.displayContainer.frame
@@ -1182,7 +1201,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                  }];
                             }
                                 break;
-                            case 30 : {
+                            case 33 : {
                                 if(!IS_IPAD){
                                 CGRect collectionVisibleRect = self.buttonsCollection.frame;
                                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
@@ -1205,7 +1224,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                             }
                             }
                                 break;
-                            case 33 :{
+                            case 36 :{
                                 
                                 CGRect collectionVisibleRect = self.buttonsCollection.frame;
                                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
@@ -3125,10 +3144,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.heightsOfRows = [mutArray copy];
 }
 
-
 -(NSMutableAttributedString*) getAttributedStringFronFetchForIndexPatch:(NSIndexPath*) indexPath
 {
-    History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return [self getAttributedStringFromStory:[self.fetchedResultsController objectAtIndexPath:indexPath]];
+}
+
+-(NSMutableAttributedString*) getAttributedStringFromStory:(History*) story
+{
+   // History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
     NSString *resultString = @"";
@@ -3516,9 +3539,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-            
+            NSLog(@"Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
         } else {
-
+            NSLog(@"No predicate");
         }
         NSError *error;
         [self.fetchedResultsController performFetch:&error];
@@ -3600,9 +3623,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 	 forChangeType:(NSFetchedResultsChangeType)type
 	  newIndexPath:(NSIndexPath *)newIndexPath
 {
+    NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
+    NSLog(@"IndexPatc %ld", (long)indexPath.row);
+    NSLog(@"Fetced obj %ld", (long) [self.fetchedResultsController.fetchedObjects count]);
+    NSLog(@"HeightofRowArray obj %ld", (long) [self.heightsOfRows count]);
+
     switch(type)
     {
         case NSFetchedResultsChangeInsert:{
+            
+            NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
+            NSLog(@"IndexPatc %ld", (long)indexPath.row);
+            NSLog(@"Fetced obj %ld", (long) [self.fetchedResultsController.fetchedObjects count]);
+            NSLog(@"HeightofRowArray obj %ld", (long) [self.heightsOfRows count]);
+
             
             NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
             
@@ -3613,6 +3647,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             } else {
                 height = 55;
             }
+            NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
+            NSLog(@"IndexPatc %ld", (long)indexPath.row);
             
             if([self.historyTable numberOfRowsInSection:newIndexPath.section]>0){
                 self.historyTable.isNeedToSetOffsetToButton = NO;
@@ -3836,35 +3872,34 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) showCount
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+   // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSAttributedString * count;
         NSAttributedString *result;
 
-    if([self.historyTable numberOfRowsInSection: 0] >0){
-        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-        if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
-        if(atrStrFromString.length >0){
-            if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
+        if([self.historyTable numberOfRowsInSection: 0] >0){
+            NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+            if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+            NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+            if(atrStrFromString.length >0){
+                if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
                 
-                
-                NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
-                if([lastSymbol isEqualToString: @"="]){
-                    [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
+                    NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
+                    if([lastSymbol isEqualToString: @"="]){
+                        [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
+                    }
                 }
-            }
             
-        }
-        
-        if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
-            NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
-            if(equalRange.location == NSNotFound){
-                count = [atrStrFromString copy];
-                result = [[NSAttributedString alloc] initWithString:@""];
-            } else {
-                count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
-                result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
             }
+        
+            if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
+                NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
+                if(equalRange.location == NSNotFound){
+                    count = [atrStrFromString copy];
+                    result = [[NSAttributedString alloc] initWithString:@""];
+                } else {
+                    count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
+                    result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
+                }
             
             
             //set new image for that button
@@ -3873,16 +3908,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
             [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
             */
+            }
+        
         }
-    }
     //NSAttributedString
-        dispatch_async(dispatch_get_main_queue(), ^{
+      //  dispatch_async(dispatch_get_main_queue(), ^{
             [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
 
-        });
-        });
+      //  });
+  //  });
 }
-
+/*
 -(void) setShowedViewInBackground
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -3893,7 +3929,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     });
     
 }
-
+*/
 //tapped at share button in showed view
 - (IBAction)tapeShareButton:(id)sender
 {
@@ -3996,7 +4032,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) setLayOutOfSettingsView
 {
     
-    CGFloat measure = (self.mainContainerView.bounds.size.height - self.displayContainer.frame.size.height )/ 6;
+    CGFloat measure = (self.mainContainerView.bounds.size.height - self.displayContainer.frame.size.height )/ 7;
     
     CGRect smallButtonFrame = self.smallButtonView.frame;
     smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
@@ -4030,14 +4066,27 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
     [self.bigDataBaseView setFrame:bigDataFrame];
     
+    CGRect iCloudSwitcherRect = self.isiCloudUseSwitcher.frame;
+    iCloudSwitcherRect.origin.y = 4 * measure - iCloudSwitcherRect.size.height / 2;
+    [self.isiCloudUseSwitcher setFrame:iCloudSwitcherRect];
+    
+    /*
+    CGRect smallDataFrame = self.smallDataBaseView.frame;
+    smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
+    [self.smallDataBaseView setFrame:smallDataFrame];
+    CGRect bigDataFrame = self.bigDataBaseView.frame;
+    bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
+    [self.bigDataBaseView setFrame:bigDataFrame];
+    */
+    
     CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
-    clearHistoryButtonFrame.origin.y = 4 * measure - clearHistoryButtonFrame.size.height / 2;
+    clearHistoryButtonFrame.origin.y = 5 * measure - clearHistoryButtonFrame.size.height / 2;
     self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
     [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
     
     CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
-    keyboarddefaultButtonFrame.origin.y = 5 * measure - keyboarddefaultButtonFrame.size.height / 2;
+    keyboarddefaultButtonFrame.origin.y = 6 * measure - keyboarddefaultButtonFrame.size.height / 2;
     [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
     self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     if(self.wasPurshaised){
@@ -4135,143 +4184,515 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 #pragma mark ICLOUD SETUP
--(void) setupICloud
+-(void) migrateDataToNewStorage:(NSURL*) newStorageURL
 {
-    //init managed document
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
-    
-    NSURL *storeURL = [documentsDirectory
-                       URLByAppendingPathComponent:documentName];
-    
-   // NSURL *cloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: documentName];
-    
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:storeURL];
-    
+    NSLog(@"Need to migrate to URL %@", newStorageURL);
+}
+
+
+
+-(void) iCloudAccountChanged:(NSNotification*)notification
+{
+    NSLog(@"Storage did change");
+}
+
+-(void)cloudDidChange:(NSNotification*)notification
+{
+    NSLog(@"cloud Did Change %@", notification);// %@", [notification userInfo]);
+}
+-(void)cloudWillChange:(NSNotification*)notification
+{
+    NSLog(@"cloud will Change");
+    //[self.doc.managedObjectContext reset];
+    //NSDictionary* userInfo = [notification userInfo];
+   // NSLog(@"user info:%@", userInfo);
     /*
-    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
-                              NSPersistentStoreUbiquitousContentURLKey: cloudURL,
-                              NSMigratePersistentStoresAutomaticallyOption: @YES,
-                              NSInferMappingModelAutomaticallyOption:@YES};
-    document.persistentStoreOptions = options;
+    [self.managedObjectContext performBlock:^{
+        [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];
+    }];
+     */
+}
+
+-(void)cloudContentChange:(NSNotification*) notification
+{
+    NSLog(@"content did chnage %@", notification);
+
+    //[self performFetch];
+    NSLog(@"Documentstate: %u", self.doc.documentState);
+    [self.doc.managedObjectContext performBlock:^{
+        [self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    }];
+    //[self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    //[self performSelectorOnMainThread:@selector(performFetch)
+     //                      withObject:nil waitUntilDone:NO];
+    //[self.doc.managedObjectContext processPendingChanges];
+    
+
+
+     //NSDictionary* userInfo = [notification userInfo];
+     //NSLog(@"user info:%@", userInfo);
+
+    /*
+     [self.managedObjectContext performBlock:^{
+     [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
     */
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
+}
+
+-(void) setStoreNotifications
+{
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudDidChange:)
+                                                   name:NSPersistentStoreCoordinatorStoresDidChangeNotification
+                                                 object:nil];
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudWillChange:)
+                                                   name:NSPersistentStoreCoordinatorStoresWillChangeNotification
+                                                 object:nil];
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(cloudContentChange:)
+                                                   name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
+                                                 object:nil];
+}
+
+-(void) removeStoreNotification
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSPersistentStoreCoordinatorStoresDidChangeNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSPersistentStoreCoordinatorStoresWillChangeNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
+                                                  object:nil];
+
+}
+
+
+ #pragma mark Courtesy of Apple. Thank you Apple
+ // Merge the iCloud changes into the managed context
+ - (void)mergeiCloudChanges: (NSDictionary*)userInfo forContext: (NSManagedObjectContext*)managedObjectContext
+ {
+ @autoreleasepool
+     
+     {
+         NSMutableDictionary *localUserInfo =
+         [NSMutableDictionary dictionary];
+ 
+         // Handle the invalidations
+         NSSet* allInvalidations =
+         [userInfo objectForKey:NSInvalidatedAllObjectsKey];
+         NSString* materializeKeys[] = { NSDeletedObjectsKey
+         ,NSInsertedObjectsKey}; 
+    if (nil == allInvalidations){
+        int c = (sizeof(materializeKeys) / sizeof(NSString*));
+        for (int i = 0; i < c; i++){
+            NSSet* set = [userInfo objectForKey:materializeKeys[i]];
+            if ([set count] > 0){
+                NSMutableSet* objectSet = [NSMutableSet set];
+                for (NSManagedObjectID* moid in set){
+                    if([moid isKindOfClass:[History class]]){
+                        History *story = (History*)moid;
+                        NSLog(@"HistoryObjData: %@",[self getAttributedStringFromStory:story]);
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+                        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+                        NSLog(@"HistoryObjDate: %@,", [dateFormatter stringFromDate:story.date]);
+                    }
+                    [objectSet addObject:[managedObjectContext objectWithID:moid]];
+                }
+                [localUserInfo setObject:objectSet
+                                  forKey:materializeKeys[i]];
+            }
+        }
+        // Handle the updated and refreshed Items
+        NSString* noMaterializeKeys[] = { NSUpdatedObjectsKey,
+            NSRefreshedObjectsKey, NSInvalidatedObjectsKey };
+        c = (sizeof(noMaterializeKeys) / sizeof(NSString*));
+ 
+        for (int i = 0; i < 2; i++){
+            NSSet* set = [userInfo objectForKey:noMaterializeKeys[i]];
+            if ([set count] > 0){
+                NSMutableSet* objectSet = [NSMutableSet set];
+                for (NSManagedObjectID* moid in set){
+                    if([moid isKindOfClass:[History class]]){
+                        History *story = (History*)moid;
+                        NSLog(@"HistoryObjData: %@",[self getAttributedStringFromStory:story]);
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+                        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+                        NSLog(@"HistoryObjDate: %@,", [dateFormatter stringFromDate:story.date]);
+                    }
+
+                    NSManagedObject* realObj =[managedObjectContext objectRegisteredForID:moid];
+                    if (realObj)[objectSet addObject:realObj];
+                }
+                [localUserInfo setObject:objectSet
+                                  forKey:noMaterializeKeys[i]];
+            }
+        }
+        // Fake a save to merge the changes
+        NSNotification *fakeSave = [NSNotification notificationWithName:NSManagedObjectContextDidSaveNotification
+                                                                 object:self userInfo:localUserInfo];
+        [managedObjectContext mergeChangesFromContextDidSaveNotification:fakeSave];
+    }
+    else {
+        NSLog(@"Allinvalidations");
+        [localUserInfo setObject:allInvalidations
+                          forKey:NSInvalidatedAllObjectsKey];
+
+    }
+ 
+    [managedObjectContext processPendingChanges];
+    [self performSelectorOnMainThread:@selector(performFetch)
+                           withObject:nil waitUntilDone:NO];
+     }
+ }
+ /*
+ -(void)cloudContentChange:(NSNotification*) notification
+ {
+ NSLog(@"content did chnage");
+ //if(self.doc.documentState == UIDocumentStateChangedNotification)
+ //[self performFetch];
+ NSLog(@"Documentstate: %u", self.doc.documentState);
+ 
+ NSDictionary* userInfo = [notification userInfo];
+ [self.managedObjectContext performBlock:^{
+ [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
+ }
+ */
+ #define SharedFileName   @"MyDocument"
+ #define PrivateName     @"iCloud.com.sychov.ItsCalc"
+
+#pragma mark CHANGE_STORAGE
+
+-(void) migrateToiCloudstorage:(BOOL)isiCloud
+{
+    if(self.doc){
+
+        NSPersistentStoreCoordinator *pcs =[self.doc.managedObjectContext persistentStoreCoordinator];
+        
+        NSPersistentStore *store = [pcs.persistentStores objectAtIndex:0];
+        NSLog(@"Current store URL %@", [store URL]);
+
+        if(isiCloud){
+            NSLog(@"Migrate to iCloud");
+            NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
+            UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.storeURL];
+            
+            NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
+                                      NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
+                                      NSMigratePersistentStoresAutomaticallyOption: @YES,
+                                      NSInferMappingModelAutomaticallyOption:@YES};
+            document.persistentStoreOptions = options;
+            [self setStoreNotifications];
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
+                [document openWithCompletionHandler:^(BOOL success) {
+                    if (success) {
+                        NSPersistentStore *newStore= [document.managedObjectContext.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+                        NSLog(@"New store URL %@", [newStore URL]);
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            NSError* error;
+                            [pcs migratePersistentStore:store
+                                                  toURL:newStore.URL
+                                                options:options
+                                               withType:store.type
+                                                  error:&error];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self documentIsReady:document];
+                                self.doc = document;
+                            });
+
+                        });
+
+                    }
+                }];
+            } else {
+                [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
+                  completionHandler:^(BOOL success) {
+                      if (success){
+                          NSPersistentStore *newStore= [document.managedObjectContext.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+                          NSLog(@"New store URL %@", [newStore URL]);
+                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                              NSError* error;
+                              [pcs migratePersistentStore:store
+                                                    toURL:newStore.URL
+                                                  options:options
+                                                 withType:store.type
+                                                    error:&error];
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [self documentIsReady:document];
+                                  self.doc = document;
+                              });
+                              
+                          });
+                      }
+                    }];
+            }
+            
+        } else {
+            NSLog(@"Migrate to local");
+            
+            UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.localStoreUrl];
+            NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption: @YES,
+                                      NSInferMappingModelAutomaticallyOption:@YES,
+                                      NSPersistentStoreRemoveUbiquitousMetadataOption: @YES};//INPORTANT FROM ICLOUD
+            document.persistentStoreOptions = options;
+            
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[self.localStoreUrl path]]) {
+                [document openWithCompletionHandler:^(BOOL success) {
+                    if (success) {
+                        NSPersistentStore *newStore= [document.managedObjectContext.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+                        NSLog(@"New store URL %@", [newStore URL]);
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            NSError* error;
+                            [pcs migratePersistentStore:store
+                                                  toURL:newStore.URL
+                                                options:options
+                                               withType:store.type
+                                                  error:&error];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self documentIsReady:document];
+                                self.doc = document;
+                                [self removeStoreNotification];
+                            });
+                            
+                        });
+                        
+                    }
+                }];
+            } else {
+                [document saveToURL:self.localStoreUrl forSaveOperation:UIDocumentSaveForCreating
+                  completionHandler:^(BOOL success) {
+                      if (success){
+                          NSPersistentStore *newStore= [document.managedObjectContext.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+                          NSLog(@"New store URL %@", [newStore URL]);
+                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                              NSError* error;
+                              [pcs migratePersistentStore:store
+                                                    toURL:newStore.URL
+                                                  options:options
+                                                 withType:store.type
+                                                    error:&error];
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [self documentIsReady:document];
+                                  self.doc = document;
+                                  [self removeStoreNotification];
+                              });
+                              
+                          });
+                      }
+                  }];
+            }
+        }
+    }
+}
+
+
+-(void) userDidChangeStorage:(BOOL)isiCloudInUse
+{
+    [self migrateToiCloudstorage:isiCloudInUse];
+}
+
+- (IBAction)isiCloudSwitch:(UISwitch *)sender
+{
+    if(sender.isOn){
+        self.isiCloudInUse = YES;
+    } else {
+        self.isiCloudInUse = NO;
+    }
+}
+
+-(void) setIsiCloudInUse:(BOOL)isiCloudInUse
+{
+    if(_isiCloudInUse != isiCloudInUse){
+        [self userDidChangeStorage:isiCloudInUse];
+    }
+    
+    _isiCloudInUse = isiCloudInUse;
+    if(_isiCloudInUse != self.isiCloudUseSwitcher.on) {
+        [self.isiCloudUseSwitcher setOn:_isiCloudInUse];
+        
+    }
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:isiCloudInUse]
+                                             forKey:@"userUseiCloud"];
+}
+
+
+
+-(void) askUserForiCloudStorage
+{
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperationWithBlock:^{
+        id currentiCloudToken = [[NSFileManager defaultManager] ubiquityIdentityToken];
+        NSOperationQueue *mainqeue = [NSOperationQueue mainQueue];
+        [mainqeue addOperationWithBlock:^{
+            if (currentiCloudToken) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"CHOOSE_STORAGE"
+                                                                message: @"SHOUD_STORAGE_BE_IN_ICLOUD"
+                                                               delegate:self
+                                                      cancelButtonTitle:@"LOCAL_ONLY"
+                                                      otherButtonTitles:@"USE_ICLOUD", nil];
+                [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:NO]
+                                                         forKey:@"firstLuanchValueStorage"];
+                self.fristLunchWithicloudAvailable = NO;
+                [alert show];
+            }
+
+        }];
+        
+    }];
+    
+}
+
+#pragma mark SETUP_STORAGE
+
+-(NSURL*) localStoreUrl
+{
+    if(!_localStoreUrl){
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                         inDomains:NSUserDomainMask] lastObject];
+        NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
+        
+        _localStoreUrl =  [documentsDirectory URLByAppendingPathComponent:documentName];
+    }
+    return _localStoreUrl;
+}
+
+
+-(NSURL*)storeURL
+{
+    if(!_storeURL){
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                     inDomains:NSUserDomainMask] lastObject];
+        NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
+    
+        _storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+    }
+    return _storeURL;
+}
+
+-(NSURL*)iCloudURL
+{
+    if(!_iCloudURL){
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
+        _iCloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: documentName];
+
+    }
+    return _iCloudURL;
+}
+
+-(void) setupLocalUIManagedDocument
+{
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.localStoreUrl];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
         [document openWithCompletionHandler:^(BOOL success) {
-            if (success) [self documentIsReady: document];
+            if (success){
+                [self documentIsReady: document];
+            }
         }];
     } else {
-        [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForCreating
+        [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
           completionHandler:^(BOOL success) {
-              if (success) [self documentIsReady: document];
+              if (success) {
+                  [self documentIsReady: document];
+              }
           }];
     }
     
     //try to save core data through update document
     self.doc = document;
-    self.storeURL = storeURL;
-    //self.cloudURL = cloudURL;
+    
 }
 
-/*
--(void)cloudDidChange
+-(void) setupiCloudUIManagedDocument
 {
-    NSLog(@"cloud Did Change");
-}
--(void)cloudWillChange
-{
-     NSLog(@"cloud will Change");
-}
-#pragma mark Courtesy of Apple. Thank you Apple
-// Merge the iCloud changes into the managed context
-- (void)mergeiCloudChanges: (NSDictionary*)userInfo
-                forContext: (NSManagedObjectContext*)managedObjectContext
-{
-    @autoreleasepool
+    //init managed document
+    NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.storeURL];
     
-    {
-        NSMutableDictionary *localUserInfo =
-        [NSMutableDictionary dictionary];
-        
-        // Handle the invalidations
-        NSSet* allInvalidations =
-        [userInfo objectForKey:NSInvalidatedAllObjectsKey];
-        NSString* materializeKeys[] = { NSDeletedObjectsKey
-            }; //,NSInsertedObjectsKey
-        if (nil == allInvalidations)
-        {
-            int c = (sizeof(materializeKeys) / sizeof(NSString*));
-            for (int i = 0; i < c; i++)
-            {
-                NSSet* set = [userInfo objectForKey:materializeKeys[i]];
-                if ([set count] > 0)
-                {
-                    NSMutableSet* objectSet = [NSMutableSet set];
-                    for (NSManagedObjectID* moid in set)
-                        [objectSet addObject:[managedObjectContext
-                                              objectWithID:moid]];
-                    [localUserInfo setObject:objectSet
-                                      forKey:materializeKeys[i]];
-                }
+    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
+                              NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
+                              NSMigratePersistentStoresAutomaticallyOption: @YES,
+                              NSInferMappingModelAutomaticallyOption:@YES};
+    document.persistentStoreOptions = options;
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
+        [document openWithCompletionHandler:^(BOOL success) {
+            if (success) {
+              [self documentIsReady: document];
+                NSPersistentStoreCoordinator* psc = document.managedObjectContext.persistentStoreCoordinator;
+                NSPersistentStore *ps = [psc.persistentStores lastObject];
+                NSLog(@"Store URL %@", [ps URL]);
             }
-            // Handle the updated and refreshed Items
-            NSString* noMaterializeKeys[] = { NSUpdatedObjectsKey,
-                NSRefreshedObjectsKey, NSInvalidatedObjectsKey };
-            c = (sizeof(noMaterializeKeys) / sizeof(NSString*));
-            
-            for (int i = 0; i < 2; i++)
-            {
-                NSSet* set = [userInfo objectForKey:noMaterializeKeys[i]];
-                if ([set count] > 0)
-                {
-                    NSMutableSet* objectSet = [NSMutableSet set];
-                    for (NSManagedObjectID* moid in set)
-                    {
-                        NSManagedObject* realObj =
-                        [managedObjectContext
-                         objectRegisteredForID:moid];
-                        if (realObj)
-                            [objectSet addObject:realObj];
-                    }
-                    [localUserInfo setObject:objectSet
-                                      forKey:noMaterializeKeys[i]];
-                }
-            }
-            // Fake a save to merge the changes
-            NSNotification *fakeSave = [NSNotification
-                                        notificationWithName:
-                                        NSManagedObjectContextDidSaveNotification
-                                        object:self userInfo:localUserInfo];
-            [managedObjectContext
-             mergeChangesFromContextDidSaveNotification:fakeSave];
-        }
-        else
-            [localUserInfo setObject:allInvalidations
-                              forKey:NSInvalidatedAllObjectsKey];
+        }];
+    } else {
+        [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
+          completionHandler:^(BOOL success) {
+              if (success){
+                  [self documentIsReady: document];
+                  NSPersistentStoreCoordinator* psc = document.managedObjectContext.persistentStoreCoordinator;
+                  NSPersistentStore *ps = [psc.persistentStores lastObject];
+                  NSLog(@"Store URL %@", [ps URL]);
+
+              }
+          }];
+    }
+    //try to save core data through update document
+    self.doc = document;
+
+    [self setStoreNotifications];
+}
+
+
+-(void) setupStorage
+{
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(iCloudAccountChanged:)
+                                                 name:NSUbiquityIdentityDidChangeNotification
+                                               object:nil];
+    
+    if(self.isiCloudInUse){
         
-        [managedObjectContext processPendingChanges];
-        [self performSelectorOnMainThread:@selector(performFetch)
-                               withObject:nil waitUntilDone:NO];
+        [self setupiCloudUIManagedDocument];
+        
+    } else { //set up Local Storage
+        //init managed document
+        
+        [self setupLocalUIManagedDocument];
+        
     }
 }
 
--(void)cloudContentChange:(NSNotification*) notification
+-(void) checkForiCloud
 {
-     NSLog(@"content did chnage");
-    //if(self.doc.documentState == UIDocumentStateChangedNotification)
-    //[self performFetch];
-    NSLog(@"Documentstate: %u", self.doc.documentState);
-    
-    NSDictionary* userInfo = [notification userInfo];
-    [self.managedObjectContext performBlock:^{
-        [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
+    id currentiCloudToken = [[NSFileManager defaultManager] ubiquityIdentityToken];
+    if(currentiCloudToken){
+        NSData *newTokenData = [NSKeyedArchiver archivedDataWithRootObject:currentiCloudToken];
+        [[NSUserDefaults standardUserDefaults]
+         setObject:newTokenData
+         forKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
+        self.isiCloudUseSwitcher.enabled = YES;
+        
+    } else {
+        [[NSUserDefaults standardUserDefaults]
+         removeObjectForKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
+        self.isiCloudInUse = NO;
+        self.isiCloudUseSwitcher.enabled = NO;
+    }
 }
 
-#define SharedFileName   @"MyDocument"
-#define PrivateName     @"iCloud.com.sychov.ItsCalc"
-*/
+#pragma mark VIEW_DID_LOAD
 - (void)viewDidLoad
 {
 
@@ -4281,8 +4702,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self setHeightOfElementAccordingToScreenIPhone];
     [self initialLayoutDynamiccontainer];
     
-    [self setupICloud];
+    //check the first launch with available iCloud
+    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"firstLuanchValueStorage"]){
+        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:YES]
+                                                 forKey:@"firstLuanchValueStorage"];
+        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:NO]
+                                                 forKey:@"userUseiCloud"];
 
+        self.fristLunchWithicloudAvailable = YES;
+        self.isiCloudInUse = NO;
+    } else {
+        self.fristLunchWithicloudAvailable = [[[NSUserDefaults standardUserDefaults] objectForKey:@"firstLuanchValueStorage"] boolValue];
+        self.isiCloudInUse = [[[NSUserDefaults standardUserDefaults]
+                              objectForKey:@"userUseiCloud"] boolValue];
+    }
+    //[self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
+    //[self setupStorage];
     /*
 
     //init managed document
@@ -4315,78 +4750,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //NSURL *documentsDirectory = [fileManager URLForUbiquityContainerIdentifier:nil];
     
 
-   /*
-    NSError *error = nil;
-    
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"History" withExtension:@"mom"];
-    NSLog(@"modelURL: %@", modelURL);
-    
-    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-    NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc]
-                                                 initWithManagedObjectModel:model];
-    NSDictionary *storeOptions =
-    @{NSPersistentStoreUbiquitousContentNameKey: @"MyAppCloudStore"};
-    
-    NSPersistentStore *store = [coordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                                         configuration:nil
-                                                                   URL:storeURL
-                                                               options:storeOptions
-                                                                 error:&error];
-    
-    NSURL *finaliCloudURL = [store URL];
-    NSLog(@"finaliCloudURL: %@", finaliCloudURL);
 
-    NSURL *iCloud = [fileManager URLForUbiquityContainerIdentifier:nil];
-    NSLog(@"iCloud: %@", iCloud);
-    
-
-    NSLog(@"Store URL: %@", storeURL);
-    //NSURL *myUrl = [documentsDirectory URLByAppendingPathComponent:documentName];
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:storeURL];
-    
-    NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption: @YES,
-                              NSInferMappingModelAutomaticallyOption:@YES};
-    document.persistentStoreOptions = options;
-    
-    //question ? the string before the same
-    //document = [[UIManagedDocument alloc] initWithFileURL:myUrl];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
-        [document openWithCompletionHandler:^(BOOL success) {
-            if (success) [self documentIsReady: document];
-        }];
-    } else {
-        [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForCreating
-          completionHandler:^(BOOL success) {
-              if (success) [self documentIsReady: document];
-          }];
-    }
-    //try to save core data through update document
-    self.doc = document;
-    [document saveToURL:storeURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:^(BOOL success) {
-        NSLog(@"Saving");
-    }];//saveToURL:forSaveOperation:completionHandler:
-    */
 
     
     
     [super viewDidLoad];
-    /*
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudDidChange)
-                                                   name:NSPersistentStoreCoordinatorStoresDidChangeNotification
-                                                 object:nil];
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudWillChange)
-                                                   name:NSPersistentStoreCoordinatorStoresWillChangeNotification
-                                                 object:nil];
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudContentChange:)
-                                                   name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
-                                                 object:nil];
-     */
-
     
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
@@ -4449,7 +4817,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isBigDataBase = NO;
         self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
-        self.self.lastShowAllertViewDate = [NSDate date];
+        //self.self.lastShowAllertViewDate = [NSDate date];
+        self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
         
         [self.displayRam clearRam];
@@ -4704,7 +5073,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) appDidGoToForeground: (NSNotification *)note
 {
-   // [self setupICloud];
+    // [self setupICloud];
+    [self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
+    [self setupStorage];
+    
+   
     if(self.isSoundOn){
         //[self initialLayoutDynamiccontainer];
         AudioServicesPlaySystemSound (_blankSoundFileObject);
@@ -4739,6 +5112,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //save managed object context
      [self.doc updateChangeCount:UIDocumentChangeDone];
+    /*
+    [self.doc closeWithCompletionHandler:^(BOOL success) {
+        if(success){
+            NSLog(@"Doc closed successly");
+        } else {
+            NSLog(@"Doc closes not success");
+
+        }
+    }];
+     */
 }
 
 //really enter to background
@@ -4804,6 +5187,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //NSError *error = nil;
     //[self.managedObjectContext save:&error];
      [self.doc updateChangeCount:UIDocumentChangeDone];
+    /*
+    [self.doc closeWithCompletionHandler:^(BOOL success) {
+        if(success){
+            NSLog(@"Doc closed successly");
+        } else {
+            NSLog(@"Doc closes not success");
+        }
+
+    }];
+    */
+
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
@@ -4940,7 +5334,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         } else {
             sucsess = NO;
         }
-        
+
         if(top && [top isKindOfClass:[NSNumber class]]){
             self.isSoundOn = [top boolValue];
             [controllerArray removeLastObject];
@@ -5006,7 +5400,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
         
         if(top && [top isKindOfClass:[NSDate class]]){
-            self.self.lastShowAllertViewDate = top;
+            // self.self.lastShowAllertViewDate = top;
+            self.lastShowAllertViewDate = top;
         } else {
             sucsess = NO;
         }
