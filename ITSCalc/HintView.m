@@ -90,13 +90,13 @@
 {
     _typeOfHint = typeOfHint;
     switch (typeOfHint) {
-        case 27:
+        case 30:
             self.hintLabel.text = ASK_TO_TOUCH_DISPLAY;//@"Touch and hold to copy to clipboard";
             break;
-        case 30:
+        case 33:
             self.hintLabel.text = ASK_TO_ROTATE_DEVICE;//@"Rotate to see counting";
             break;
-        case 33:
+        case 36:
             self.hintLabel.text = ASK_TO_TOUCH_KEYBOARD;//@"Touch and hold to change keyboard";
             break;
             
@@ -108,7 +108,7 @@
 
 -(void) drawRoundetRect:(CGContextRef)context
 {
-    if(self.typeOfHint == 33 || self.typeOfHint == 27){
+    if(self.typeOfHint == 36 || self.typeOfHint == 30){
         CGRect cornerRect;
         UIBezierPath *drawRectPath;
         CGPathRef pathOfRect;
@@ -138,7 +138,7 @@
     CGRect winRct = self.window.frame;
     CGFloat addY = self.frame.origin.y *(-0.85);
 
-    if(self.typeOfHint == 27){
+    if(self.typeOfHint == 30){//27
         UIBezierPath *linePath=[UIBezierPath bezierPath];
 
         
@@ -163,7 +163,7 @@
         CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
 
-    } else if(self.typeOfHint == 30){
+    } else if(self.typeOfHint == 33){//30
         
         
         
@@ -218,7 +218,7 @@
         CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
         
-    }else if(self.typeOfHint == 33){
+    }else if(self.typeOfHint == 36){//33
         UIBezierPath *linePath=[UIBezierPath bezierPath];
         
         
