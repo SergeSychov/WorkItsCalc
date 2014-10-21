@@ -105,10 +105,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (nonatomic) CGPoint svipeGestureLocation;
 
 
-
-//for set values of row hight in historyTableView
-@property (nonatomic,strong) NSArray *heightsOfRows;
-
 //bool property for paid version
 @property (nonatomic, strong) SKProduct *product;
 
@@ -180,6 +176,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 //  (so if the objects in the context change, you do not need to call performFetch
 //   since the NSFetchedResultsController will notice and update the table automatically).
 // This will also automatically be called if you change the fetchedResultsController @property.
+@property (nonatomic,strong) NSArray* lastRowDataArray;
+
+//for set values of row hight in historyTableView
+@property (nonatomic,strong) NSArray *heightsOfRows;
+//need for manage at controller changes
+//for adding new heights value at didChangeController
+@property (nonatomic,strong) NSDictionary *heigthsOfNewRowsAccordingNewObjs;
+//set for delleting indexis at didChangeController
+@property (nonatomic,strong) NSIndexSet *deletedIndexesSet;
+
+
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong)NSManagedObjectContext *buttonManagedObjectContext;
@@ -335,6 +342,21 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return _attributes;
 }
 
+-(NSDictionary*) heigthsOfNewRowsAccordingNewObjs
+{
+    if(!_heigthsOfNewRowsAccordingNewObjs){
+        _heigthsOfNewRowsAccordingNewObjs = [[NSDictionary alloc] init];
+    }
+    return _heigthsOfNewRowsAccordingNewObjs;
+}
+
+-(NSIndexSet*) deletedIndexesSet
+{
+    if(!_deletedIndexesSet){
+        _deletedIndexesSet = [[NSIndexSet alloc] init];
+    }
+    return _deletedIndexesSet;
+}
 
 #pragma mark COUNTING METHODS AND PROPERTIES
 -(void) setIsDecCounting:(BOOL)isDecCounting
@@ -367,6 +389,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     _userIsInTheMidleOfEnteringNumber = userIsInTheMidleOfEnteringNumber;
     if(userIsInTheMidleOfEnteringNumber) self.isResultFromMemory = NO;
 }
+
 
 
 
@@ -913,8 +936,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    _managedObjectContext = managedObjectContext;
-    
+    _managedObjectContext = [self removeDuplicateRecordsFromHistoryContext:managedObjectContext];    
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
     //request.predicate = nil;
@@ -930,10 +952,57 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
 }
 
+-(NSManagedObjectContext*)removeDuplicateRecordsFromHistoryContext:(NSManagedObjectContext*) internalContext
+{
+    //choose u uniq property for button - Name
+    NSManagedObjectContext *context = internalContext;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+    
+    NSError *error;
+    NSArray *matches = [context executeFetchRequest:request error:&error];
+    
+    //choose winner
+    History *prevObject;
+    for(History *duplicate in matches){
+        if([duplicate.date isEqualToDate:prevObject.date]){
+            [context deleteObject:prevObject];
+            prevObject = duplicate;
+        } else {
+            prevObject = duplicate;
+        }
+    }
+    return context;
+}
+
 -(void) setButtonManagedObjectContext:(NSManagedObjectContext *)buttonManagedObjectContext
 {
-    _buttonManagedObjectContext = buttonManagedObjectContext;
+    _buttonManagedObjectContext =[self removeDuplicateRecordsFromContext:buttonManagedObjectContext];
      [self.buttonsCollection reloadData];
+}
+
+-(NSManagedObjectContext*)removeDuplicateRecordsFromContext:(NSManagedObjectContext*) internalContext
+{
+    //choose u uniq property for button - Name
+    NSManagedObjectContext *context = internalContext;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"nameButton" ascending:YES]];
+    
+    NSError *error;
+    NSArray *matches = [context executeFetchRequest:request error:&error];
+    
+    //choose winner
+    Buttons *prevObject;
+    for(Buttons *duplicate in matches){
+        if([duplicate.nameButton isEqualToString:prevObject.nameButton]){
+            [context deleteObject:prevObject];
+            prevObject = duplicate;
+        } else {
+            prevObject = duplicate;
+        }
+    }
+    
+    return context;
 }
 
 //delete Flouous history
@@ -1383,6 +1452,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) showStringThrouhgmanagerAtEqualPress
 {
+  
     if(self.brain.isOpenBracets){
         [self showStringThruManageDocument];
     } else {
@@ -1404,22 +1474,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         if(!self.brain.isOpenBracets){
             [muttableOutputArray addObject:@" ="];
         }
-        
-        if([self.historyTable numberOfRowsInSection:0] >0){
-            History *currentStory = [self.fetchedResultsController objectAtIndexPath:
-                                     [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0] -1
-                                                        inSection:0]];
-            currentStory.program = [NSKeyedArchiver archivedDataWithRootObject:[muttableOutputArray copy]];
-        } else {
-            //make currentStory
-            [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
-        }
+        self.lastRowDataArray = [muttableOutputArray copy];
+        /*
+        NSIndexPath *lasRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
+        [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lasRow]
+                                 withRowAnimation:UITableViewRowAnimationAutomatic];
+        */
+
     }
 }
 
 -(void) showStringThruManageDocument
 {
-    NSDate *currDate = [NSDate date];
+   // NSDate *currDate = [NSDate date];
     NSArray *deepProgram = [self.brain.deepProgram copy];
     NSArray *deepArgu = [self.brain.deepArgu copy];
     
@@ -1436,15 +1503,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //and the same for result
     [muttableOutputArray addObject:emptyArray];
     
-    if([self.historyTable numberOfRowsInSection:0] >0){
-        History *currentStory = [self.fetchedResultsController objectAtIndexPath:
-                                 [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0] -1
-                                                    inSection:0]];
-        currentStory.program = [NSKeyedArchiver archivedDataWithRootObject:[muttableOutputArray copy]];
-    } else {
-        //make currentStory
-        [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
-    }
+    self.lastRowDataArray = [muttableOutputArray copy];
+
+   // NSIndexPath *lasRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
+    /*
+    [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lasRow]
+                             withRowAnimation:UITableViewRowAnimationNone];
+    */
+    
 }
 
 -(void) setStoryInforamtion
@@ -1470,22 +1536,31 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [muttableOutputArray addObject:deepProgram];
         [muttableOutputArray addObject:deepArgu];
         [muttableOutputArray addObject:[NSNumber numberWithDouble:[self.brain count]]];
-        
-        if([self.historyTable numberOfRowsInSection:0] >0){
+        /*
+        if([self.historyTable numberOfRowsInSection:0] >1){ //>0
             History *currentStory = [self.fetchedResultsController objectAtIndexPath:
                                      [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0] -1
                                                         inSection:0]];
             currentStory.date = currDate;
             currentStory.program = [NSKeyedArchiver archivedDataWithRootObject:[muttableOutputArray copy]];
         } else {
+         
             //make currentStory
             [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
         }
+        */
+        //create new object in manageddoc with empty array
+        [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
         
         //create new object in manageddoc with empty array
-        NSDate *lastDay = [NSDate distantFuture];
+       // NSDate *lastDay = [NSDate distantFuture];
         NSArray *new = [[NSArray alloc] init];
-        [History storyWithProgram:new atDate:lastDay inManageObjectContext:self.managedObjectContext];
+        self.lastRowDataArray = new;
+        NSIndexPath *lasRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
+        /*
+        [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lasRow]
+                                 withRowAnimation:UITableViewRowAnimationNone];
+        //[History storyWithProgram:new atDate:lastDay inManageObjectContext:self.managedObjectContext];
         //CHECK HERE!!!!!!!!
         //?? with no rows
         
@@ -1494,6 +1569,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0] -1 inSection:0];
             [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
         }
+        */
         
     }
     //set counter to show allert view
@@ -3007,98 +3083,72 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 
 #pragma mark - UITABLE VIEW DATA SOURSE DELEGATE
-
--(NSArray*) heightsOfRows
+-(void) resetHeightOfFirstCell
 {
-    if(!_heightsOfRows){
-        NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
-        NSMutableArray *mutArray = [[NSMutableArray alloc] init];
-         if([fetchedObjects count] > 0){
-            
-            for(int i = 0; i < [fetchedObjects count]; i++){
-                CGFloat height;
-                if(IS_IPAD){ // if iPad
-                    height = 75;
-                } else {
-                    height = 55;
-                }
-                NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
-                NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-                CGSize neededSize;
-                if(IS_IPAD){
-                    neededSize = CGSizeMake(700, 1000);
-                } else {
-                    neededSize = CGSizeMake(280, 1000);
-                }
-                CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
-                                                               context:drawContext];
-                if(IS_IPAD){
-                    if(neededRect.size.height > 55.){
-                        height = neededRect.size.height + 20;
-                    }
-                } else {
-                    if(neededRect.size.height > 39.){
-                        height = neededRect.size.height + 16;
-                    }
-                }
-                
-                if(i == ([fetchedObjects count]-1)){
-                    NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]]];
-                    
-                    neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
-                                                            context:drawContext];
-                    
-                    //set heigth of first cell according ios screen
-                    if(IS_IPAD){ // if iPad
-                        height = 85.;
-                        if(neededRect.size.height*1.2 > 60.){
-                            height = neededRect.size.height * 1.2 + 25;
-                        }
-                    } else
-                    if(IS_568_SCREEN){
-                        height = 65.;
-                        if(neededRect.size.height*1.2 > 48.){
-                            height = neededRect.size.height * 1.2 + 17;
-                        }
-                    } else {
-                        height = 60.;
-                        if(neededRect.size.height*1.2 > 43.){
-                            height = neededRect.size.height *1.2 + 17;
-                        }
-                    }
-                }
-                [mutArray addObject:[NSNumber numberWithFloat:height]];
-            }
-        } else {
-            
-        }
-        _heightsOfRows = [mutArray copy];
+    NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
+    
+    NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFromArray:self.lastRowDataArray]];
+    NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+    CGSize neededSize;
+    if(IS_IPAD){
+        neededSize = CGSizeMake(700, 1000);
+    } else {
+        neededSize = CGSizeMake(280, 1000);
     }
-    return _heightsOfRows;
+    CGFloat height;
+    
+    CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:drawContext];
+    
+    //set heigth of first cell according ios screen
+    if(IS_IPAD){ // if iPad
+        height = 85.;
+        if(neededRect.size.height*1.2 > 60.){
+            height = neededRect.size.height * 1.2 + 25;
+        }
+    } else if(IS_568_SCREEN){
+        height = 65.;
+        if(neededRect.size.height*1.2 > 48.){
+            height = neededRect.size.height * 1.2 + 17;
+        }
+    } else {
+        height = 60.;
+        if(neededRect.size.height*1.2 > 43.){
+            height = neededRect.size.height *1.2 + 17;
+        }
+    }
+    [mutArray removeLastObject];
+    [mutArray addObject:[NSNumber numberWithFloat:height]];
+    self.heightsOfRows = [mutArray copy];
+
 }
 
--(void) resetHeightsofRows
+-(NSArray*) makeHeightsOfRowsArray
 {
     NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    
+    NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+    CGSize neededSize;
+    if(IS_IPAD){
+        neededSize = CGSizeMake(700, 1000);
+    } else {
+        neededSize = CGSizeMake(280, 1000);
+    }
+    CGFloat height;
+    
+    
     if([fetchedObjects count] > 0){
-        //if([fetchedObjects count] >1 ){
         
         for(int i = 0; i < [fetchedObjects count]; i++){
-            CGFloat height;
             if(IS_IPAD){ // if iPad
                 height = 75;
             } else {
                 height = 55;
             }
             NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]];
-            NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-            CGSize neededSize;
-            if(IS_IPAD){
-                neededSize = CGSizeMake(700, 1000);
-            } else {
-                neededSize = CGSizeMake(280, 1000);
-            }
+            
+            
             CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                            context:drawContext];
             if(IS_IPAD){
@@ -3111,37 +3161,56 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 }
             }
             
-            if(i == ([fetchedObjects count]-1)){
-                NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFronFetchForIndexPatch:[NSIndexPath indexPathForItem:i inSection:0]]];
-                
-                neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
-                                                        context:drawContext];
-                //set heigth of first cell according ios screen
-                if(IS_IPAD){ // if iPad
-                    height = 85.;
-                    if(neededRect.size.height*1.2> 60.){
-                        height = neededRect.size.height * 1.2 + 25;
-                    }
-                } else
-                    if(IS_568_SCREEN){
-                        height = 65.;
-                        if(neededRect.size.height*1.2 > 48.){
-                            height = neededRect.size.height * 1.2 + 17;
-                        }
-                    } else {
-                        height = 60.;
-                        if(neededRect.size.height*1.2 > 43.){
-                            height = neededRect.size.height *1.2 + 17;
-                        }
-                    }
-                
-            }
             [mutArray addObject:[NSNumber numberWithFloat:height]];
+            
+            
         }
     } else {
         
     }
-    self.heightsOfRows = [mutArray copy];
+    //set height for first row not from coreData
+    if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init]; //if no array till now
+    NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFromArray:self.lastRowDataArray]];
+    
+    CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:drawContext];
+    
+    //set heigth of first cell according ios screen
+    if(IS_IPAD){ // if iPad
+        height = 85.;
+        if(neededRect.size.height*1.2 > 60.){
+            height = neededRect.size.height * 1.2 + 25;
+        }
+    } else if(IS_568_SCREEN){
+        height = 65.;
+        if(neededRect.size.height*1.2 > 48.){
+            height = neededRect.size.height * 1.2 + 17;
+        }
+    } else {
+        height = 60.;
+        if(neededRect.size.height*1.2 > 43.){
+            height = neededRect.size.height *1.2 + 17;
+        }
+    }
+    
+    [mutArray addObject:[NSNumber numberWithFloat:height]];
+    
+    return [mutArray copy];
+    
+}
+
+-(NSArray*) heightsOfRows
+{
+    if(!_heightsOfRows){
+        _heightsOfRows = [self makeHeightsOfRowsArray];
+
+    }
+    return _heightsOfRows;
+}
+
+-(void) resetHeightsofRows
+{
+    self.heightsOfRows = [self makeHeightsOfRowsArray];
 }
 
 -(NSMutableAttributedString*) getAttributedStringFronFetchForIndexPatch:(NSIndexPath*) indexPath
@@ -3149,11 +3218,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return [self getAttributedStringFromStory:[self.fetchedResultsController objectAtIndexPath:indexPath]];
 }
 
+
 -(NSMutableAttributedString*) getAttributedStringFromStory:(History*) story
+{
+    return [self getAttributedStringFromArray:[NSKeyedUnarchiver unarchiveObjectWithData:story.program]];
+}
+
+
+-(NSMutableAttributedString*) getAttributedStringFromArray:(NSArray*) array
 {
    // History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
+    NSMutableArray *programFromHistory = [array mutableCopy];
     NSString *resultString = @"";
     id result = [programFromHistory lastObject];
     if(result){
@@ -3267,13 +3343,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return [resultString copy];
 }
 
+
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [self.historyTable dequeueReusableCellWithIdentifier:@"HistoryCell"];
     if([cell isKindOfClass:[HistroryTableViewCell class]]){
-        History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        //History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        NSMutableAttributedString * resultAtrStr = [self getAttributedStringFronFetchForIndexPatch:indexPath];
+       // NSMutableAttributedString * resultAtrStr = [self getAttributedStringFronFetchForIndexPatch:indexPath];
         
         
         ((HistroryTableViewCell*)cell).delegate = self;
@@ -3282,12 +3359,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             ((HistroryTableViewCell*)cell).isCanDrag = NO;
             //((HistroryTableViewCell*)cell).isLastCell = YES;
             ((HistroryTableViewCell*)cell).historyDateString = @"";
+            if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
+            NSAttributedString *resultAtrStr = [self getAttributedStringFromArray:self.lastRowDataArray];
             ((HistroryTableViewCell*)cell).historyProgramString = [self resizeStrforFirstCell:[resultAtrStr copy]];
             ((HistroryTableViewCell*)cell).programTextView.delegate = self;
-            if(![self.historyTable indexPathForSelectedRow]){
-                [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
-            }
+            //if(![self.historyTable indexPathForSelectedRow]){
+             //  [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
+           //}
         } else {
+           // NSIndexPath *needPatch = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:indexPath.section];
+            NSIndexPath *needPatch = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+            History *story = [self.fetchedResultsController objectAtIndexPath:needPatch];
+            
+            NSMutableAttributedString * resultAtrStr = [self getAttributedStringFronFetchForIndexPatch:indexPath];
             ((HistroryTableViewCell*)cell).isCanDrag = YES;
             ((HistroryTableViewCell*)cell).historyProgramString = [resultAtrStr copy];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
@@ -3312,21 +3396,26 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger sections = [[self.fetchedResultsController sections] count];
+    NSInteger sections;
+    if([[self.fetchedResultsController sections] count] > 0){
+        sections = [[self.fetchedResultsController sections] count];
+    } else {
+      sections = 1 ;
+    }
     return sections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     //return one more rows than in fatched result controller
-    NSInteger rows = 0;
+    NSInteger rows = 1;
     
     if ([[self.fetchedResultsController sections] count] > 0) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
-        rows = [sectionInfo numberOfObjects];
+        rows = [sectionInfo numberOfObjects]+1;
     }
     
-    if(rows == 0){
+    if(rows == 1){
         self.noticeButton.enabled = NO;
     } else {
         self.noticeButton.enabled = YES;
@@ -3345,32 +3434,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         return NO;
     }
 }
-
-/*
--(void) scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    //think it not necessary now
-    //need set very first row "WELCOME
-    
-    if([scrollView isKindOfClass:[HistoryTableView class]]){
-        if(self.isIAdBaneerAvailable) [self hideIAdBaner];
-        
-    }
- 
-
-}
-
--(void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    //think it not necessary now
-    //need set very first row "WELCOME
-    
-    if([scrollView isKindOfClass:[HistoryTableView class]]){
-        if(self.isIAdBaneerAvailable) [self showIAdBannerInTime];
-    }
- 
-}
-*/
 #pragma mark TEXT VIEW DELEGATE
 //hide "past/copy menu
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -3384,18 +3447,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-    /*
-    if(textView.isFirstResponder){
-        NSRange selectedRangee = textView.selectedRange;
-        selectedRangee.length = selectedRangee.location;
-        selectedRangee.location = 0;
-        NSLog(@"Selected range: %@",[textView.attributedText attributedSubstringFromRange:selectedRangee].string);
-        
-        UITextPosition *newCursorPosition = [textView positionFromPosition:textView.beginningOfDocument offset:selectedRangee.length - 3];
-        UITextRange *newSelectedRange = [textView textRangeFromPosition:newCursorPosition toPosition:newCursorPosition];
-        [textView setSelectedTextRange:newSelectedRange];
-    }
-    */
+
     if([textView becomeFirstResponder]){
         NSRange selectedRangee = textView.selectedRange;
         selectedRangee.length = selectedRangee.location;
@@ -3552,6 +3604,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //[self deleteEmptyProgram];
     [self resetHeightsofRows];
     [self.historyTable reloadData];
+    [self moveHistoryTableContentToRightPosition];
+
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
@@ -3570,11 +3624,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         }
     }
     
+    /*
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
-        //self.historyTable.isNeedToSetOffsetToButton = NO;
+
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
     } else {
-        //self.historyTable.isNeedToSetOffsetToButton = YES;
+
     }
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
@@ -3582,12 +3637,34 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
     }
+    */
 }
 
+#pragma mark - WORK WITH LAST ROW
+-(void) setLastRowDataArray:(NSArray *)lastRowDataArray
+{
+    [self.historyTable beginUpdates];
+    _lastRowDataArray = lastRowDataArray;
+    [self resetHeightOfFirstCell];
+    NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
+    [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
+                             withRowAnimation:UITableViewRowAnimationFade];
+    [self.historyTable endUpdates];
+
+    [self moveHistoryTableContentToRightPosition];
+}
+
+
 #pragma mark - NSFetchedResultsControllerDelegate
+//what I need to change array
+//NSDictionary new heights according number of added row
+//NSset Deleted obj
+
+
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
     [self.historyTable beginUpdates];
+    //make dictionary heights according number of row
 }
 
 - (void)controller:(NSFetchedResultsController *)controller
@@ -3595,6 +3672,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 		   atIndex:(NSUInteger)sectionIndex
 	 forChangeType:(NSFetchedResultsChangeType)type
 {
+    
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
@@ -3623,22 +3701,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 	 forChangeType:(NSFetchedResultsChangeType)type
 	  newIndexPath:(NSIndexPath *)newIndexPath
 {
-    NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
-    NSLog(@"IndexPatc %ld", (long)indexPath.row);
-    NSLog(@"Fetced obj %ld", (long) [self.fetchedResultsController.fetchedObjects count]);
-    NSLog(@"HeightofRowArray obj %ld", (long) [self.heightsOfRows count]);
-
+    
+    NSLog(@"IndexPatch - %ld", (long)indexPath.row);
+    NSLog(@"NewIndexPatch - %ld", (long)newIndexPath.row);
     switch(type)
     {
         case NSFetchedResultsChangeInsert:{
-            
-            NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
-            NSLog(@"IndexPatc %ld", (long)indexPath.row);
-            NSLog(@"Fetced obj %ld", (long) [self.fetchedResultsController.fetchedObjects count]);
-            NSLog(@"HeightofRowArray obj %ld", (long) [self.heightsOfRows count]);
 
             
-            NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
+           // NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
+            NSMutableDictionary *mutDiction = [self.heigthsOfNewRowsAccordingNewObjs mutableCopy];
             
             //CGFloat height = 55;
             CGFloat height;
@@ -3647,52 +3719,30 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             } else {
                 height = 55;
             }
-            NSLog(@"NewIndexPatch %ld", (long)newIndexPath.row);
-            NSLog(@"IndexPatc %ld", (long)indexPath.row);
-            
-            if([self.historyTable numberOfRowsInSection:newIndexPath.section]>0){
-                self.historyTable.isNeedToSetOffsetToButton = NO;
-            //if([self.fetchedResultsController.fetchedObjects count] > 1){
-                NSIndexPath *patchOfPrevious = [NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:newIndexPath.section];
-                NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:patchOfPrevious];
-                NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-                CGSize neededSize;
-                if(IS_IPAD){
-                    neededSize = CGSizeMake(700, 1000);
-                } else {
-                    neededSize = CGSizeMake(280, 1000);
-                }
-                CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
-                                                               context:drawContext];
-                if(IS_IPAD){
-                    if(neededRect.size.height > 55.){
-                        height = neededRect.size.height + 20;
-                    }
-                } else {
-                    if(neededRect.size.height > 39.){
-                        height = neededRect.size.height + 16;
-                    }
-                }
-                
-                //previous
-                [mutArray removeLastObject];
-                [mutArray addObject:[NSNumber numberWithFloat:height]];
-            } else {
-                self.historyTable.isNeedToSetOffsetToButton = YES;
-            }
-            
-            
-            //curent
-            if(IS_IPAD){ // if iPad
-                [mutArray addObject:[NSNumber numberWithFloat:85.]];
-            } else
 
-            if(IS_568_SCREEN){
-                [mutArray addObject:[NSNumber numberWithFloat:65.]];
+            NSAttributedString *insertProgramStr = [self getAttributedStringFronFetchForIndexPatch:newIndexPath];
+            NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+            CGSize neededSize;
+            
+            if(IS_IPAD){
+                neededSize = CGSizeMake(700, 1000);
             } else {
-                [mutArray addObject:[NSNumber numberWithFloat:60.]];
+                neededSize = CGSizeMake(280, 1000);
+            }
+            CGRect neededRect = [insertProgramStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
+                                                           context:drawContext];
+            if(IS_IPAD){
+                if(neededRect.size.height > 55.){
+                    height = neededRect.size.height + 20;
+                }
+            } else {
+                if(neededRect.size.height > 39.){
+                    height = neededRect.size.height + 16;
+                }
             }
             
+            [mutDiction setObject:[NSNumber numberWithFloat:height] forKey:newIndexPath];
+
             //exactly here the place to show banner with delay
             if(!self.wasPurshaised){
                 //check banner show counter
@@ -3705,12 +3755,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                      self.bannerRequestCounter++;
                 }
             }
-            
-            self.heightsOfRows = [mutArray copy];
+            self.heigthsOfNewRowsAccordingNewObjs = [mutDiction copy];
             //replace row above
+            
+            //change heere or not shure
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-            
-            
             
         }
             
@@ -3718,111 +3767,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
         case NSFetchedResultsChangeDelete: {
             self.historyTable.isNeedToSetOffsetToButton = NO;
-            
-            NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
-            [mutArray removeObjectAtIndex:indexPath.row];
-            self.heightsOfRows = [mutArray copy];
+            NSMutableIndexSet *mutSet = [self.deletedIndexesSet mutableCopy];
             [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            
-            if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
-                self.historyTable.isNeedToSetOffsetToButton = NO;
-                [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
-            } else {
-                //self.historyTable.isNeedToSetOffsetToButton = YES;
-
-            }
-            
+            [mutSet addIndex:indexPath.row];
+            self.deletedIndexesSet = [mutSet copy];
             
         }
             break;
             
         case NSFetchedResultsChangeUpdate:{
-            self.historyTable.isNeedToSetOffsetToButton = NO;
-            
-            NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
-            //CGFloat height = 60;
-            CGFloat height;
-            if(IS_IPAD){ // if iPad
-                height = 75;
-            } else {
-                height = 55;
-            }
 
-            if(self.heightsOfRows.count > 0){
-                height = [[mutArray objectAtIndex:indexPath.row] floatValue];
-                [mutArray removeObjectAtIndex:indexPath.row];
-            }
-            
-            NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-            CGSize neededSize;
-            if(IS_IPAD){
-                neededSize = CGSizeMake(700, 1000);
-            } else {
-                neededSize = CGSizeMake(280, 1000);
-            }
-            if(indexPath.row == [mutArray count]){
-                NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFronFetchForIndexPatch:indexPath]];
-                
-                CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
-                                                               context:drawContext];
-                if(IS_IPAD){ // if iPad
-                    height = 85;
-                    if(neededRect.size.height*1.2 > 60){
-                        height = neededRect.size.height * 1.2 + 25;
-                    }
-                } else
-
-                if(IS_568_SCREEN){
-                    height = 65;
-                    if(neededRect.size.height*1.2 > 48){//48
-                        height = neededRect.size.height * 1.2 + 17;//18
-                    }
-                } else {
-                    height = 60;
-                    if(neededRect.size.height*1.2 > 43){
-                        height = neededRect.size.height * 1.2 + 17;
-                    }
-                }
-                
-                
-                [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
-                
-                //if(height != wasHeight){
-                    self.heightsOfRows = [mutArray copy];
-                //}
-                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                
-            } else {
-                NSAttributedString* stringInCell = [self getAttributedStringFronFetchForIndexPatch:indexPath];
-                CGRect neededRect = [stringInCell boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin//NSStringDrawingUsesFontLeading
-                                                               context:drawContext];
-
-                if(IS_IPAD){ // if iPad
-                    height = 75.;
-                    if(neededRect.size.height > 55.){
-                        height = neededRect.size.height + 20;
-                    }
-                } else
-                    if(IS_568_SCREEN){
-                        height = 55.;//65
-                        if(neededRect.size.height > 39.){//48
-                            //height = neededRect.size.height * 1.2 + 13;
-                            height = neededRect.size.height  + 16;
-
-                        }
-                    } else {
-                        height = 55.;
-                        if(neededRect.size.height > 39.){
-                            height = neededRect.size.height + 16;
-                    }
-                }
-                
-                [mutArray insertObject:[NSNumber numberWithFloat:height] atIndex:indexPath.row];
-                
-                self.heightsOfRows = [mutArray copy];
-
-                [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            }
         }
             break;
             
@@ -3837,8 +3791,46 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
+    
+    NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
+    
+    //if there are new objs insert heights of rows
+    if(self.heigthsOfNewRowsAccordingNewObjs.count > 0){
+        NSMutableDictionary *mutDiction = [self.heigthsOfNewRowsAccordingNewObjs mutableCopy];
+        //in loop find smalest row and insert at that index
+        while(mutDiction.count > 0){
+            NSArray *allKeys = [mutDiction allKeys];
+            NSIndexPath *keyForSmalestIndex = allKeys.firstObject;
+            NSInteger smalestIndex = keyForSmalestIndex.row ;
+            for(NSInteger i=1; i < allKeys.count; i++){
+                NSIndexPath* currentPatch = [allKeys objectAtIndex:i];
+                if(currentPatch.row < smalestIndex){
+                    
+                    keyForSmalestIndex = currentPatch;
+                    smalestIndex = currentPatch.row;
+                }
+            }
+            [mutArray insertObject:[mutDiction objectForKey:keyForSmalestIndex] atIndex:smalestIndex];
+            [mutDiction removeObjectForKey:keyForSmalestIndex];
+        }
+        self.heigthsOfNewRowsAccordingNewObjs = [mutDiction copy];
+    }
+    
+    //if there are deleted objs delete heights of rows
+    if(self.deletedIndexesSet.count >0){
+        [mutArray removeObjectsAtIndexes:self.deletedIndexesSet];
+        self.deletedIndexesSet = [[NSIndexSet alloc] init];
+    }
+    
+    self.heightsOfRows = [mutArray copy];
+    
     [self.historyTable endUpdates];
     //[self.historyTable reloadData];
+    
+    //!! Set that at history class!!!
+    //------------------------------------------------------------
+    [self moveHistoryTableContentToRightPosition];
+    /*
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
        // self.historyTable.isNeedToSetOffsetToButton = YES;
 
@@ -3855,6 +3847,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
     }
     
+    */
 
 
 
@@ -3866,6 +3859,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     */
 }
 
+-(void)moveHistoryTableContentToRightPosition
+{
+    
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        // self.historyTable.isNeedToSetOffsetToButton = YES;
+        
+        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+    } else {
+        // self.historyTable.isNeedToSetOffsetToButton = YES;
+    }
+    
+    
+    
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+    }
+}
 
 #pragma mark SHOW VIEW
 
@@ -3878,8 +3890,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
         if([self.historyTable numberOfRowsInSection: 0] >0){
             NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-            if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-            NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+            NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+            if(!indexPath){
+                indexPath = lastRowPatch;
+            }
+            NSMutableAttributedString *atrStrFromString;
+            if(indexPath.row == lastRowPatch.row){
+                if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
+                atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
+            } else {
+                atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+            }
             if(atrStrFromString.length >0){
                 if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
                 
@@ -3900,36 +3921,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
                     result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
                 }
-            
-            
-            //set new image for that button
-            //go to view didLoad
-            /*
-            [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
-            [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
-            */
+
             }
         
         }
-    //NSAttributedString
-      //  dispatch_async(dispatch_get_main_queue(), ^{
-            [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
+    [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
 
-      //  });
-  //  });
 }
-/*
--(void) setShowedViewInBackground
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSAttributedString * count = [[NSAttributedString alloc] initWithString:@""];
-        NSAttributedString *result = [[NSAttributedString alloc] initWithString:@""];
-        
-        [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
-    });
-    
-}
-*/
+
 //tapped at share button in showed view
 - (IBAction)tapeShareButton:(id)sender
 {
@@ -3986,7 +3985,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
         NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
         if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        NSMutableAttributedString *atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+        NSMutableAttributedString *atrStrFromString;
+        if(indexPath.row == ([self.historyTable numberOfRowsInSection:0]-1)){
+            atrStrFromString =  [[self getAttributedStringFromArray:self.lastRowDataArray] mutableCopy];
+        } else {
+            atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+        }
         NSString *strToShare = atrStrFromString.string;
         if(strToShare.length >0){
             if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
@@ -4184,6 +4188,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 #pragma mark ICLOUD SETUP
+
 -(void) migrateDataToNewStorage:(NSURL*) newStorageURL
 {
     NSLog(@"Need to migrate to URL %@", newStorageURL);
@@ -4198,46 +4203,59 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void)cloudDidChange:(NSNotification*)notification
 {
-    NSLog(@"cloud Did Change %@", notification);// %@", [notification userInfo]);
+    NSLog(@"cloud Did Change");// %@", notification);// %@", [notification userInfo]);
 }
+
 -(void)cloudWillChange:(NSNotification*)notification
 {
     NSLog(@"cloud will Change");
-    //[self.doc.managedObjectContext reset];
-    //NSDictionary* userInfo = [notification userInfo];
-   // NSLog(@"user info:%@", userInfo);
-    /*
+
     [self.managedObjectContext performBlock:^{
-        [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];
+        if([self.doc.managedObjectContext hasChanges]){
+            NSError *saveError;
+            if(![self.doc.managedObjectContext save: &saveError]){
+                NSLog(@"Save error: %@", saveError);
+            }
+        } else {
+            [self.doc.managedObjectContext reset];
+        }
+        [self performSelectorOnMainThread:@selector(performFetch)
+                              withObject:nil waitUntilDone:NO];
+        [self.doc.managedObjectContext processPendingChanges];
+
     }];
-     */
+    
+}
+
+-(void) performBlockContext
+{
+    [self.managedObjectContext performBlock:^{
+        if([self.doc.managedObjectContext hasChanges]){
+            NSError *saveError;
+            if(![self.doc.managedObjectContext save: &saveError]){
+                NSLog(@"Save error: %@", saveError);
+            }
+        } else {
+            [self.doc.managedObjectContext reset];
+        }
+        [self performSelectorOnMainThread:@selector(performFetch)
+                               withObject:nil waitUntilDone:NO];
+        [self.doc.managedObjectContext processPendingChanges];
+        
+    }];
 }
 
 -(void)cloudContentChange:(NSNotification*) notification
 {
     NSLog(@"content did chnage %@", notification);
-
-    //[self performFetch];
-    NSLog(@"Documentstate: %u", self.doc.documentState);
     [self.doc.managedObjectContext performBlock:^{
         [self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+        
     }];
-    //[self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-    //[self performSelectorOnMainThread:@selector(performFetch)
-     //                      withObject:nil waitUntilDone:NO];
-    //[self.doc.managedObjectContext processPendingChanges];
-    
 
-
-     //NSDictionary* userInfo = [notification userInfo];
-     //NSLog(@"user info:%@", userInfo);
-
-    /*
-     [self.managedObjectContext performBlock:^{
-     [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
-    */
     
 }
+
 
 -(void) setStoreNotifications
 {
@@ -4275,81 +4293,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
  #pragma mark Courtesy of Apple. Thank you Apple
  // Merge the iCloud changes into the managed context
- - (void)mergeiCloudChanges: (NSDictionary*)userInfo forContext: (NSManagedObjectContext*)managedObjectContext
- {
- @autoreleasepool
-     
-     {
-         NSMutableDictionary *localUserInfo =
-         [NSMutableDictionary dictionary];
- 
-         // Handle the invalidations
-         NSSet* allInvalidations =
-         [userInfo objectForKey:NSInvalidatedAllObjectsKey];
-         NSString* materializeKeys[] = { NSDeletedObjectsKey
-         ,NSInsertedObjectsKey}; 
-    if (nil == allInvalidations){
-        int c = (sizeof(materializeKeys) / sizeof(NSString*));
-        for (int i = 0; i < c; i++){
-            NSSet* set = [userInfo objectForKey:materializeKeys[i]];
-            if ([set count] > 0){
-                NSMutableSet* objectSet = [NSMutableSet set];
-                for (NSManagedObjectID* moid in set){
-                    if([moid isKindOfClass:[History class]]){
-                        History *story = (History*)moid;
-                        NSLog(@"HistoryObjData: %@",[self getAttributedStringFromStory:story]);
-                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-                        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
-                        NSLog(@"HistoryObjDate: %@,", [dateFormatter stringFromDate:story.date]);
-                    }
-                    [objectSet addObject:[managedObjectContext objectWithID:moid]];
-                }
-                [localUserInfo setObject:objectSet
-                                  forKey:materializeKeys[i]];
-            }
-        }
-        // Handle the updated and refreshed Items
-        NSString* noMaterializeKeys[] = { NSUpdatedObjectsKey,
-            NSRefreshedObjectsKey, NSInvalidatedObjectsKey };
-        c = (sizeof(noMaterializeKeys) / sizeof(NSString*));
- 
-        for (int i = 0; i < 2; i++){
-            NSSet* set = [userInfo objectForKey:noMaterializeKeys[i]];
-            if ([set count] > 0){
-                NSMutableSet* objectSet = [NSMutableSet set];
-                for (NSManagedObjectID* moid in set){
-                    if([moid isKindOfClass:[History class]]){
-                        History *story = (History*)moid;
-                        NSLog(@"HistoryObjData: %@",[self getAttributedStringFromStory:story]);
-                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-                        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
-                        NSLog(@"HistoryObjDate: %@,", [dateFormatter stringFromDate:story.date]);
-                    }
-
-                    NSManagedObject* realObj =[managedObjectContext objectRegisteredForID:moid];
-                    if (realObj)[objectSet addObject:realObj];
-                }
-                [localUserInfo setObject:objectSet
-                                  forKey:noMaterializeKeys[i]];
-            }
-        }
-        // Fake a save to merge the changes
-        NSNotification *fakeSave = [NSNotification notificationWithName:NSManagedObjectContextDidSaveNotification
-                                                                 object:self userInfo:localUserInfo];
-        [managedObjectContext mergeChangesFromContextDidSaveNotification:fakeSave];
-    }
-    else {
-        NSLog(@"Allinvalidations");
-        [localUserInfo setObject:allInvalidations
-                          forKey:NSInvalidatedAllObjectsKey];
-
-    }
- 
-    [managedObjectContext processPendingChanges];
-    [self performSelectorOnMainThread:@selector(performFetch)
-                           withObject:nil waitUntilDone:NO];
-     }
- }
  /*
  -(void)cloudContentChange:(NSNotification*) notification
  {
@@ -4371,12 +4314,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) migrateToiCloudstorage:(BOOL)isiCloud
 {
     if(self.doc){
-
+        [self.doc updateChangeCount:UIDocumentChangeDone];
         NSPersistentStoreCoordinator *pcs =[self.doc.managedObjectContext persistentStoreCoordinator];
         
         NSPersistentStore *store = [pcs.persistentStores objectAtIndex:0];
         NSLog(@"Current store URL %@", [store URL]);
-
+        
         if(isiCloud){
             NSLog(@"Migrate to iCloud");
             NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
@@ -4405,9 +4348,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                 [self documentIsReady:document];
                                 self.doc = document;
                             });
-
+                            
                         });
-
+                        
                     }
                 }];
             } else {
@@ -4430,7 +4373,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                               
                           });
                       }
-                    }];
+                  }];
             }
             
         } else {
@@ -4594,17 +4537,21 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.localStoreUrl];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.localStoreUrl path]]) {
         [document openWithCompletionHandler:^(BOOL success) {
             if (success){
                 [self documentIsReady: document];
+            } else {
+                NSLog(@"Not succes with open");
             }
         }];
     } else {
-        [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
+        [document saveToURL:self.localStoreUrl forSaveOperation:UIDocumentSaveForCreating
           completionHandler:^(BOOL success) {
               if (success) {
                   [self documentIsReady: document];
+              } else {
+                  NSLog(@"Not succes with open");
               }
           }];
     }
@@ -4696,6 +4643,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 - (void)viewDidLoad
 {
 
+
     //[UIDevice currentDevice]
     //for testing delegate
     //set Hegths of ellement according screen height
@@ -4716,43 +4664,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isiCloudInUse = [[[NSUserDefaults standardUserDefaults]
                               objectForKey:@"userUseiCloud"] boolValue];
     }
-    //[self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
-    //[self setupStorage];
-    /*
-
-    //init managed document
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
-    
-    NSURL *storeURL = [documentsDirectory
-                       URLByAppendingPathComponent:documentName];
-    
-    NSURL *cloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: PrivateName];
-    
-    
-
-    NSURL *cloudURL = [[CloudHelper ubiquityDataURLForContainer:nil] URLByAppendingPathComponent:PrivateName];
-    [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:container];
-         id currentiCloudToken = fileManager.ubiquityIdentityToken;
-    if (currentiCloudToken) {
-        NSData *newTokenData =
-        [NSKeyedArchiver archivedDataWithRootObject: currentiCloudToken];
-        [[NSUserDefaults standardUserDefaults]
-         setObject: newTokenData
-         forKey: @"iCloud.com.sychov.ItsCalc.UbiquityIdentityToken"];
-    } else {
-        [[NSUserDefaults standardUserDefaults]removeObjectForKey: @"iCloud.com.sychov.ItsCalc.UbiquityIdentityToken"];
+    [self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
+    if(self.isiCloudInUse){
+        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateKVStoreItems:)
+                                                     name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                                   object:store];
+        
+        [store setString:@"Test" forKey:@"Test"];
+        [store synchronize];
     }
-     */
-    
-    //NSURL *documentsDirectory = [fileManager URLForUbiquityContainerIdentifier:nil];
-    
+    [self setupStorage];
 
-
-
-    
     
     [super viewDidLoad];
     
@@ -4798,31 +4722,48 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //set pan gesture delegate
     self.moveButtonsPanGestureRecognizer.delegate = self;
     self.isThreadInWork = NO;
+    //key value iCloudStorage
+    if([self extractKeyValuesFromStorage]){
+        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+        [self showStringThruManageDocument];
+    } else {
+        [self.displayRam clearRam];//to key value
+        [self.display showString:[self.displayRam addSymbol:@0]];//to key value
+        
+        self.display.firstMemoryLabel.text = @"";//to key value
+        self.display.secondMemoryLabel.text = @"";//to key value
+        self.display.decRadLabel.text = @"DEG";//to key value
+        self.userIsInTheMidleOfEnteringNumber = YES;//to key value
+        self.isProgramInProcess = NO;//to key value
+        self.isStronglyArgu = NO;//to key value
+        self.isResultFromMemory = NO;//to key value
+        self.isDecCounting = YES;//to key value
+    }
     
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
     if(userDefault && [self extractFromUserDefault:userDefault]){
-        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
-        [self showStringThruManageDocument];
+        //[self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+        //[self showStringThruManageDocument];
     } else {
         //memory label
-        self.display.firstMemoryLabel.text = @"";
-        self.display.secondMemoryLabel.text = @"";
-        self.display.decRadLabel.text = @"DEG";
-        self.userIsInTheMidleOfEnteringNumber = YES;
-        self.isProgramInProcess = NO;
-        self.isStronglyArgu = NO;
-        self.isResultFromMemory = NO;
-        self.isDecCounting = YES;
+       // self.display.firstMemoryLabel.text = @"";//to key value
+       // self.display.secondMemoryLabel.text = @"";//to key value
+        //self.display.decRadLabel.text = @"DEG";//to key value
+       // self.userIsInTheMidleOfEnteringNumber = YES;//to key value
+       // self.isProgramInProcess = NO;//to key value
+       // self.isStronglyArgu = NO;//to key value
+       // self.isResultFromMemory = NO;//to key value
+       // self.isDecCounting = YES;//to key value
         self.isBigDataBase = NO;
         self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
-        //self.self.lastShowAllertViewDate = [NSDate date];
+        self.self.lastShowAllertViewDate = [NSDate date];
         self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
         
-        [self.displayRam clearRam];
-        [self.display showString:[self.displayRam addSymbol:@0]];
+       // [self.displayRam clearRam];//to key value
+       // [self.display showString:[self.displayRam addSymbol:@0]];//to key value
     }
     self.isSettingsViewOnScreen = NO;
     self.isBottomSettingsViewOnScreen = NO;
@@ -5041,9 +4982,68 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
+- (void)updateKVStoreItems:(NSNotification*)notification {
+    // Get the list of keys that changed.
+    NSLog(@"keyStore did chnage %@", notification);
+    NSDictionary* userInfo = [notification userInfo];
+    NSNumber* reasonForChange = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangeReasonKey];
+    NSInteger reason = -1;
+    
+    // If a reason could not be determined, do not update anything.
+    if (!reasonForChange)
+        return;
+    
+    // Update only for changes from the server.
+    reason = [reasonForChange integerValue];
+    if ((reason == NSUbiquitousKeyValueStoreServerChange) ||
+        (reason == NSUbiquitousKeyValueStoreInitialSyncChange)) {
+        // If something is changing externally, get the changes
+        // and update the corresponding keys locally.
+        NSArray* changedKeys = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangedKeysKey];
+        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+        NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+        
+        // This loop assumes you are using the same key names in both
+        // the user defaults database and the iCloud key-value store
+        for (NSString* key in changedKeys) {
+            id value = [store objectForKey:key];
+            [userDefaults setObject:value forKey:key];
+        }
+    }
+}
+
 //only at real enter in foregraund not at launch
 -(void) appWillEnterForeground
 {
+    if(self.isiCloudInUse){
+        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateKVStoreItems:)
+                                                     name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                                   object:store];
+        [store setString:@"Test" forKey:@"Test"];
+        
+        [store synchronize];
+    }
+    
+    
+    //[self extractKeyValuesFromStorage];
+    if([self extractKeyValuesFromStorage]){
+        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+        [self showStringThruManageDocument];
+    } else {
+        [self.displayRam clearRam];//to key value
+        [self.display showString:[self.displayRam addSymbol:@0]];//to key value
+        
+        self.display.firstMemoryLabel.text = @"";//to key value
+        self.display.secondMemoryLabel.text = @"";//to key value
+        self.display.decRadLabel.text = @"DEG";//to key value
+        self.userIsInTheMidleOfEnteringNumber = YES;//to key value
+        self.isProgramInProcess = NO;//to key value
+        self.isStronglyArgu = NO;//to key value
+        self.isResultFromMemory = NO;//to key value
+        self.isDecCounting = YES;//to key value
+    }
     
     [self makeAllButtonObjsArray];
     
@@ -5073,10 +5073,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) appDidGoToForeground: (NSNotification *)note
 {
-    // [self setupICloud];
-    [self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
-    [self setupStorage];
-    
    
     if(self.isSoundOn){
         //[self initialLayoutDynamiccontainer];
@@ -5170,11 +5166,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self deleteSuperfluousValuesFromManagedDocuments];
     
     [self.buttonsCollection reloadData];
-
     
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
+    [self setKeyValuesFromStorage];
     [defaults synchronize];
 }
 
@@ -5198,7 +5194,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }];
     */
 
-    
+    [self setKeyValuesFromStorage];
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
@@ -5213,7 +5209,180 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [super viewWillDisappear:animated];
 
 }
+#pragma mark KEY VALUE STORAGE
+-(void) setKeyValuesFromStorage
+{
+    NSMutableArray *wholeArray = [[NSMutableArray alloc] init];
+    NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
+    
+    [controllerArray addObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber]];//to key value
+    [controllerArray addObject:[NSNumber numberWithBool:self.isProgramInProcess]];//to key value
+    [controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];//to key value
+    [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];//to key value
+    [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];//to key value
+    
+    [wholeArray addObject:[controllerArray copy]];
+    
+    [wholeArray addObject:[self.brain arrayToSaveBrain]]; //to key value
+    
+    NSMutableArray *displayRamArray = [[NSMutableArray alloc] init]; //to key value
+    [displayRamArray addObject:self.displayRam.firstMemoryStack];//to key value
+    [displayRamArray addObject:self.displayRam.secondMemoryStack];//to key value
+    [displayRamArray addObject:self.displayRam.gradArray];//to key value
+    [displayRamArray addObject:self.displayRam.resultNumber];//to key value
+    [wholeArray addObject:[displayRamArray copy]];//to key value
+    if(self.isiCloudInUse){
+        NSUbiquitousKeyValueStore *kvStore = [NSUbiquitousKeyValueStore defaultStore];
+        [kvStore setObject:[wholeArray copy] forKey:@"keyValuesArray"];
+        [kvStore synchronize];
+        
+    }
+    
+        NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
+        //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
+        [defaults setObject:[wholeArray copy] forKey:@"keyValuesArray"];
+        [defaults synchronize];
+    
+}
 
+-(BOOL) extractKeyValuesFromStorage
+{
+    BOOL sucsess = YES;
+    id userDefault;
+    //if(self.isiCloudInUse){
+   //     NSUbiquitousKeyValueStore *kvStore = [NSUbiquitousKeyValueStore defaultStore];
+    //    [kvStore synchronize];
+    //    userDefault = [kvStore objectForKey:@"keyValuesArray"];
+   // } else {
+        userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"keyValuesArray"];
+  //  }
+    
+    if(userDefault && [userDefault isKindOfClass:[NSArray class]]){
+        NSMutableArray *wholeArray = [userDefault mutableCopy];
+    
+        //extract disaply
+        id displayRamArray = [[wholeArray lastObject] mutableCopy];
+        DisplayRam *newDisplayRam = [[DisplayRam alloc] init];
+        newDisplayRam.delegate = self;
+        if(displayRamArray && [displayRamArray isKindOfClass:[NSArray class]]){
+            id top = [displayRamArray lastObject];
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                newDisplayRam.resultNumber = top;
+                [displayRamArray removeLastObject];
+                top = [displayRamArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSArray class]]){
+                newDisplayRam.gradArray = top;
+                [displayRamArray removeLastObject];
+                top = [displayRamArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSArray class]]){
+                newDisplayRam.secondMemoryStack = top;
+                //set the memory mark
+                NSArray* test = [top copy];
+                if([test count] > 0) {
+                    self.display.secondMemoryLabel.text = @"MI";
+                } else {
+                    self.display.secondMemoryLabel.text = @"";
+                }
+                [displayRamArray removeLastObject];
+                top = [displayRamArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSArray class]]){
+                newDisplayRam.firstMemoryStack = top;
+                //set the memory mark
+                NSArray* test = [top copy];
+                if([test count] > 0) {
+                    self.display.firstMemoryLabel.text = @"M";
+                } else {
+                    self.display.firstMemoryLabel.text = @"";
+                }
+            
+            } else {
+                return  NO;
+            }
+            self.displayRam = newDisplayRam;
+        
+            [wholeArray removeLastObject];
+        
+        } else {
+            return  NO;
+        }
+    
+        //set brain
+        id brainArray = [wholeArray lastObject];
+        if(brainArray && [brainArray isKindOfClass:[NSArray class]]){
+            self.brain = [ACalcBrain brainFromSavedArray:brainArray];
+            [wholeArray removeLastObject];
+        } else {
+            return  NO;
+        }
+    
+    //set controller
+        id controllerArray = [[wholeArray lastObject] mutableCopy];
+        if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
+        
+            id top = [controllerArray lastObject];
+        
+        
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.isResultFromMemory = [top boolValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.isDecCounting = [top boolValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.isStronglyArgu = [top boolValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.isProgramInProcess = [top boolValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+        
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.userIsInTheMidleOfEnteringNumber = [top boolValue];
+
+            } else {
+                return  NO;
+            }
+
+        
+        } else {
+            return  NO;
+        }
+    } else {
+        return NO;
+    }
+
+    return sucsess;
+}
 
 #pragma mark FOR USER DEFAULT
 -(NSArray*) arrayToUserDefault
@@ -5222,11 +5391,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
     [controllerArray addObject:self.lastShowAllertViewDate];
-    [controllerArray addObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isProgramInProcess]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];
+    //[controllerArray addObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber]];//to key value
+    //[controllerArray addObject:[NSNumber numberWithBool:self.isProgramInProcess]];//to key value
+    //[controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];//to key value
+   // [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];//to key value
+   // [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];//to key value
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];
@@ -5236,14 +5405,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //[wholeArray addObject:[self.heightsOfRows copy]];
     
-    [wholeArray addObject:[self.brain arrayToSaveBrain]];
+    //[wholeArray addObject:[self.brain arrayToSaveBrain]]; //to key value
     
-    NSMutableArray *displayRamArray = [[NSMutableArray alloc] init];
-    [displayRamArray addObject:self.displayRam.firstMemoryStack];
-    [displayRamArray addObject:self.displayRam.secondMemoryStack];
-    [displayRamArray addObject:self.displayRam.gradArray];
-    [displayRamArray addObject:self.displayRam.resultNumber];
-    [wholeArray addObject:[displayRamArray copy]];
+   // NSMutableArray *displayRamArray = [[NSMutableArray alloc] init]; //to key value
+    //[displayRamArray addObject:self.displayRam.firstMemoryStack];//to key value
+   // [displayRamArray addObject:self.displayRam.secondMemoryStack];//to key value
+    //[displayRamArray addObject:self.displayRam.gradArray];//to key value
+   // [displayRamArray addObject:self.displayRam.resultNumber];//to key value
+    //[wholeArray addObject:[displayRamArray copy]];//to key value
     
     return [wholeArray copy];
     //settings for
@@ -5253,7 +5422,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     BOOL sucsess = YES;
     NSMutableArray *wholeArray = [array mutableCopy];
-    
+    /*
     //extract disaply
     id displayRamArray = [[wholeArray lastObject] mutableCopy];
     DisplayRam *newDisplayRam = [[DisplayRam alloc] init];
@@ -5320,7 +5489,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     } else {
         sucsess = NO;
     }
-    
+    */
     //set controller
     id controllerArray = [[wholeArray lastObject] mutableCopy];
     if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
@@ -5332,7 +5501,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [controllerArray removeLastObject];
             top = [controllerArray lastObject];
         } else {
-            sucsess = NO;
+            return NO;
         }
 
         if(top && [top isKindOfClass:[NSNumber class]]){
@@ -5340,7 +5509,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [controllerArray removeLastObject];
             top = [controllerArray lastObject];
         } else {
-            sucsess = NO;
+            return NO;
         }
         
         if(top && [top isKindOfClass:[NSNumber class]]){
@@ -5348,7 +5517,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [controllerArray removeLastObject];
             top = [controllerArray lastObject];
         } else {
-            sucsess = NO;
+            return NO;
         }
         
         if(top && [top isKindOfClass:[NSNumber class]]){
@@ -5356,9 +5525,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [controllerArray removeLastObject];
             top = [controllerArray lastObject];
         } else {
-            sucsess = NO;
+            return NO;
         }
-        
+        /*
         if(top && [top isKindOfClass:[NSNumber class]]){
             self.isResultFromMemory = [top boolValue];
             [controllerArray removeLastObject];
@@ -5398,16 +5567,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         } else {
             sucsess = NO;
         }
-        
+        */
         if(top && [top isKindOfClass:[NSDate class]]){
             // self.self.lastShowAllertViewDate = top;
             self.lastShowAllertViewDate = top;
         } else {
-            sucsess = NO;
+            return NO;
         }
         
     } else {
-        sucsess = NO;
+        return NO;
     }
     
     return sucsess;
@@ -5423,6 +5592,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //
     //-------
     
+    [self setKeyValuesFromStorage];
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [defaults synchronize];
