@@ -90,87 +90,91 @@
 
 -(void) setShowedViewWithCountedStr:(NSAttributedString*)countStr resultStr:(NSAttributedString*)resStr andBluePan:(BOOL)isBluePan
 {
-    //set the instance of pan color
-    self.isBluePanOrRed = isBluePan;
-    self.isDurty = NO;
-    //clear painted view
-    [self.paintedView removeFromSuperview];
-    BezierInterpView *paintedView = [[BezierInterpView alloc] initWithFrame:self.bounds];
-    paintedView.backgroundColor = [UIColor clearColor];
-    [self addSubview:paintedView];
-    self.paintedView = paintedView;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //set the instance of pan color
+        self.isBluePanOrRed = isBluePan;
+        self.isDurty = NO;
+        //clear painted view
+        [self.paintedView removeFromSuperview];
+        BezierInterpView *paintedView = [[BezierInterpView alloc] initWithFrame:self.bounds];
+        paintedView.backgroundColor = [UIColor clearColor];
+        [self addSubview:paintedView];
+        self.paintedView = paintedView;
     
-    //set count text attributes
-    NSMutableAttributedString * countAtrStr = [countStr mutableCopy];
+        //set count text attributes
+        NSMutableAttributedString * countAtrStr = [countStr mutableCopy];
     
-    UIFont *font;
-    UIColor *textColor = [UIColor darkTextColor];
-    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    style.alignment = NSTextAlignmentLeft;
-    style.lineHeightMultiple = 0;
+        UIFont *font;
+        UIColor *textColor = [UIColor darkTextColor];
+        NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        style.alignment = NSTextAlignmentLeft;
+        style.lineHeightMultiple = 0;
     
-    [countAtrStr beginEditing];
-    NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
-    [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-    [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
-    [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
-    [countAtrStr endEditing];
-    //set drawing rect for counted rect
-    NSInteger preferedSize = 48;
-    countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
+        [countAtrStr beginEditing];
+        NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
+        [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [countAtrStr endEditing];
+        //set drawing rect for counted rect
+        NSInteger preferedSize = 48;
+        countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
     
-    NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-    CGSize neededSize = CGSizeMake(self.bounds.size.width - 90 - 20,1000);
-    CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+        NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+        CGSize neededSize = CGSizeMake(self.bounds.size.width - 90 - 20,1000);
+        CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                   context:drawContext];
     
-    while (neededRect.size.height > self.bounds.size.height - 20- 96) {
-        preferedSize = preferedSize - 2;
-        countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
-        neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
-                                                      context:drawContext];
-    }
+        while (neededRect.size.height > self.bounds.size.height - 20- 96) {
+            preferedSize = preferedSize - 2;
+            countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
+            neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                        context:drawContext];
+        }
 
-    neededRect.origin.y = self.bounds.size.height - RES_STRING_HEIGHT - 20 - neededRect.size.height;
-    neededRect.origin.x = 90;
+        neededRect.origin.y = self.bounds.size.height - RES_STRING_HEIGHT - 20 - neededRect.size.height;
+        neededRect.origin.x = 90;
     
-    self.count = countAtrStr;
-    self.rectForCountedString = neededRect;
+        self.count = countAtrStr;
+        self.rectForCountedString = neededRect;
     
-    //set result str
-    NSMutableAttributedString * resulAttrStr = [resStr mutableCopy];
-    font = [self setFontWithSize:72.];
-    style.alignment = NSTextAlignmentRight;
-    style.lineHeightMultiple = 1.;
-    [resulAttrStr beginEditing];
-    wholeRange = NSMakeRange(0, [resulAttrStr length]);
-    [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
-    [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-    [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
-    [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
-    [resulAttrStr endEditing];
+        //set result str
+        NSMutableAttributedString * resulAttrStr = [resStr mutableCopy];
+        font = [self setFontWithSize:72.];
+        style.alignment = NSTextAlignmentRight;
+        style.lineHeightMultiple = 1.;
+        [resulAttrStr beginEditing];
+        wholeRange = NSMakeRange(0, [resulAttrStr length]);
+        [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
+        [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [resulAttrStr endEditing];
     
-    NSInteger resultStringSize = 72;
+        NSInteger resultStringSize = 72;
     
-    CGRect resRect = CGRectMake(90,
-                                self.bounds.size.height - RES_STRING_HEIGHT - 20,
-                                self.bounds.size.width - 90 - 20,
-                                RES_STRING_HEIGHT);
+        CGRect resRect = CGRectMake(90,
+                                    self.bounds.size.height - RES_STRING_HEIGHT - 20,
+                                    self.bounds.size.width - 90 - 20,
+                                    RES_STRING_HEIGHT);
     
-    CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+        CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+                                                             context:drawContext];
+        while(neededResultRect.size.width > (resRect.size.width -10)){
+            resultStringSize = resultStringSize - 2;
+            resulAttrStr = [[self resizeAttrString:[resulAttrStr copy] withHeight:resultStringSize] mutableCopy];
+            neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
                                                           context:drawContext];
-    while(neededResultRect.size.width > (resRect.size.width -10)){
-        resultStringSize = resultStringSize - 2;
-        resulAttrStr = [[self resizeAttrString:[resulAttrStr copy] withHeight:resultStringSize] mutableCopy];
-        neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
-                                                      context:drawContext];
     
-    }
+        }
 
-    self.result = resulAttrStr;
-    self.rectForResultString = resRect;
-    [self setNeedsDisplay];
- 
+        self.result = resulAttrStr;
+        self.rectForResultString = resRect;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self setNeedsDisplay];
+            });
+    
+        });
 }
 
 -(NSAttributedString*) resizeAttrString:(NSAttributedString*)inputStr withHeight:(CGFloat)height;
