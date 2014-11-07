@@ -303,7 +303,7 @@
     CGPathRef pathOfRect;
     CGFloat borderWidth;
     if(IS_IPAD){
-        self.radiusCorner = self.frame.size.height/ 2.7;
+        self.radiusCorner = self.frame.size.height/ 3.;
         
         borderWidth = self.radiusCorner / 4.9;//9.2;
     } else {
