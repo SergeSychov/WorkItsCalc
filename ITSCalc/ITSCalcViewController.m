@@ -189,7 +189,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,strong)NSManagedObjectContext *buttonManagedObjectContext;
+@property (nonatomic,strong) NSManagedObjectContext *buttonManagedObjectContext;
 @property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic,strong) NSURL * storeURL;
 @property (nonatomic, strong) NSURL *localStoreUrl;
@@ -1664,11 +1664,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             
             CGRect newDynamicFrame = self.dynamicContainer.frame;
             newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
-            newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
             
-            //lift banner on settings screen (need to do if banner visible)
-            //CGRect iAdBannerFrame = self.bannerContainerView.frame;
-            //iAdBannerFrame.origin.y += - historyTableFrame.size.height;
+            //if self.isButtonsCollectionUnderChanging = YES;
+            newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
+
             
             CGRect buttonsCollectionViewBounds = self.buttonsCollection.frame;
             buttonsCollectionViewBounds.size.height = self.mainContainerView.frame.size.height;
@@ -1997,7 +1996,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
     CGRect dynamicRect = self.dynamicContainer.frame;
     dynamicRect.size.height = 2*self.mainContainerView.bounds.size.height - self.histroryTableViewHeight - self.labelViewHeight;
-    dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;;
+    
+    //initial origin
+    dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
     
     //set banner frame at discarding changin to apropriate hight (according height of last rows)
     //CGRect iAdBannerFrame = self.bannerContainerView.frame;
@@ -2325,7 +2326,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [self.SettingsView setFrame:settingsViewframe];
             [self.settingsBackgroundToolBar setFrame:settingsViewframe];
         }
-        
+        //if self.isHistoryWholeShowed = 1.;
         CGFloat needY = 0;
         UIView *view = strongSelf.dynamicContainer;
 
@@ -2998,13 +2999,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     CGSize result;
     if(IS_IPAD) {
+        //replace here
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        //UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
         if (orientation == UIDeviceOrientationUnknown ||
             orientation == UIDeviceOrientationFaceUp ||
             orientation == UIDeviceOrientationFaceDown) {
             
-            orientation = (UIDeviceOrientation)cachedOrientation;
+            if(self.wasRightShowed){
+                orientation = self.wasRightShowed;
+            } else {
+                orientation = UIDeviceOrientationLandscapeRight;
+            }
         }
         if(UIDeviceOrientationIsPortrait(orientation)){
             result = CGSizeMake(140, 83);
@@ -3032,13 +3038,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                            sizeForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]].width;
     CGFloat collectionWidth;
     if(IS_IPAD) {
+        
+        //replace here
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        //UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
         if (orientation == UIDeviceOrientationUnknown ||
             orientation == UIDeviceOrientationFaceUp ||
             orientation == UIDeviceOrientationFaceDown) {
             
-            orientation = (UIDeviceOrientation)cachedOrientation;
+            if(self.wasRightShowed){
+                orientation = self.wasRightShowed;
+            } else {
+                orientation = UIDeviceOrientationLandscapeRight;
+            }
         }
         if(UIDeviceOrientationIsPortrait(orientation)){
             collectionWidth = 768;
@@ -4116,8 +4128,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGRect buttonsRect = CGRectMake(0, 0, 60, 60);
     if(IS_IPAD){
         //for ipad try through autolayout
+        //copy from here
+        if(self.view.bounds.size.height > self.view.bounds.size.width){
+            self.histroryTableViewHeight = 267.f;
+        } else {
+            self.histroryTableViewHeight = 182.f;
+        }
+
         
-        self.histroryTableViewHeight = 182.f;
+        
         self.labelViewHeight = 108.f;
         self.lastRowHistoryTableHeight = 85.f;
         
@@ -4257,12 +4276,18 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void)cloudContentChange:(NSNotification*) notification
 {
-   // NSLog(@"content did chnage %@", notification);
+    NSLog(@"content did chnage %@", notification);
 
     if([notification.description containsString:@"Buttons"]){
        // NSLog(@"Buttons was changed");
-        [self setUpArrays];
-        [self.buttonsCollection reloadData];
+        [self.doc.managedObjectContext performBlock:^{
+            [self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+            self.buttonManagedObjectContext = [self removeDuplicateRecordsFromContext:self.doc.managedObjectContext];
+            [self setUpArrays];
+            [self.buttonsCollection reloadData];
+            
+        }];
+        
     } else {
       //  NSLog(@"Button didn't changed");
     }
@@ -4314,25 +4339,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 }
 
-
- #pragma mark Courtesy of Apple. Thank you Apple
- // Merge the iCloud changes into the managed context
- /*
- -(void)cloudContentChange:(NSNotification*) notification
- {
- NSLog(@"content did chnage");
- //if(self.doc.documentState == UIDocumentStateChangedNotification)
- //[self performFetch];
- NSLog(@"Documentstate: %u", self.doc.documentState);
- 
- NSDictionary* userInfo = [notification userInfo];
- [self.managedObjectContext performBlock:^{
- [self mergeiCloudChanges:userInfo forContext:self.managedObjectContext];}];
- }
- */
- #define SharedFileName   @"MyDocument"
- #define PrivateName     @"iCloud.com.sychov.ItsCalc"
-
 #pragma mark CHANGE_STORAGE
 
 -(void) migrateToiCloudstorage:(BOOL)isiCloud
@@ -4343,78 +4349,52 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         UIManagedDocument *oldDoc = self.doc;
         
         NSPersistentStore *store = [pcs.persistentStores objectAtIndex:0];
-       // NSLog(@"Current store URL %@", [store URL]);
         
         if(isiCloud){
-          //  NSLog(@"Migrate to iCloud");
-
-            NSDictionary *localOptions = @{
-                                           NSPersistentStoreRemoveUbiquitousMetadataOption:@YES,
-                                           NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                           NSInferMappingModelAutomaticallyOption:@YES};
             
-            NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
+            NSString* documentName = @"MyCloudDocument";
             NSDictionary *ubiquityOptions = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
                                               NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
                                               NSMigratePersistentStoresAutomaticallyOption:@YES,
                                               NSInferMappingModelAutomaticallyOption:@YES};
             
-            //[[NSFileManager defaultManager] removeItemAtURL:self.storeURL error:nil];
             UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.storeURL];
             document.persistentStoreOptions = ubiquityOptions;
 
-            
-            
             if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
                 [document openWithCompletionHandler:^(BOOL success) {
                     if (success) {
                         NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
                         NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                        NSURL *newStoresURL = newStore.URL;
                         
-                    //Now remove the existing store
-                      //  NSError *removeStoreError;
-                     //   if([pcs removePersistentStore:newStore error:&removeStoreError]){
-                     //   id sourceStore = [pcs addPersistentStoreWithType:NSSQLiteStoreType
-                     //                                               configuration:nil
-                     //                                                         URL:store.URL
-                     //                                                     options:localOptions
-                      //                                                      error:nil];
-                     //   if(!sourceStore){
-                     //       NSLog(@" failed to add old store");
-                     //   } else {
-                     //       NSLog(@"add store sucesseful");
-                        
-                        
-                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    NSError* error;
-                                    id migrationSuccess = [pcs migratePersistentStore:store
-                                                                                     toURL:newStore.URL
-                                                                                   options:ubiquityOptions
-                                                                                  withType:store.type
-                                                                                     error:&error];
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        [self documentIsReady:document];
-                                        self.doc = document;
-                                        [self setStoreNotifications];
-                                        
-                                        [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                            if(!success){
-                                              //  NSLog(@"Close old document not sucesseful");
-                                            } else {
-                                               // NSLog(@"Close old sucesseful");
-                                            }
-                                            NSError *removeFileError;
-                                            [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:&removeFileError];
-                                        }];
-                                        
-                                        
-                                    });
-                                    
-                                });
-                        //    }
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            NSError* error;
+                            [pcs migratePersistentStore:store
+                                                  toURL:newStore.URL
+                                                options:ubiquityOptions
+                                               withType:store.type
+                                                  error:&error];
                             
-                      // }
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self documentIsReady:document];
+                                self.doc = document;
+                                [self setStoreNotifications];
+                                        
+                                [oldDoc closeWithCompletionHandler:^(BOOL success) {
+                                    if(!success){
+                                    //  NSLog(@"Close old document not sucesseful");
+                                    } else {
+                                        // NSLog(@"Close old sucesseful");
+                                    }
+                                    NSError *removeFileError;
+                                    [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:&removeFileError];
+                                }];
+                                        
+                                        
+                            });
+                                    
+                        });
+
                     }
                 }];
 
@@ -4424,30 +4404,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                       if (success) {
                           NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
                           NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                          NSURL *newStoresURL = newStore.URL;
-                          
-                           //Now remove the existing store
-                         // NSError *removeStoreError;
-                         // if([pcs removePersistentStore:newStore error:&removeStoreError]){
-                         //     id sourceStore = [pcs addPersistentStoreWithType:NSSQLiteStoreType
-                           //                                           configuration:nil
-                           //                                                     URL:store.URL
-                           //                                                 options:localOptions
-                           //                                                   error:nil];
-                           //   if(!sourceStore){
-                           //       NSLog(@" failed to add old store");
-                           //   } else {
-                           //       NSLog(@"add store sucesseful");
-                            
-                        
-                          
+
                           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                               NSError* error;
-                              id migrationSuccess = [pcs migratePersistentStore:store
-                                                                          toURL:newStore.URL
-                                                                        options:ubiquityOptions
-                                                                       withType:store.type
-                                                                          error:&error];
+                              [pcs migratePersistentStore:store
+                                                    toURL:newStore.URL
+                                                  options:ubiquityOptions
+                                                 withType:store.type
+                                                    error:&error];
+                              
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [self documentIsReady:document];
                                   self.doc = document;
@@ -4461,21 +4426,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                           NSError *removeFileError;
                                           [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:&removeFileError];
                                       }
-                                  }];
+                                }];
                                   
                                   
-                              });
+                            });
                               
-                          });
-                     //   }
-                          
-                      // }
+                        });
+
                       }
                   }];
             }
             
         } else {
-            //NSLog(@"Migrate to local");
+
             NSDictionary *localOptions = @{NSPersistentStoreRemoveUbiquitousMetadataOption:@YES,
                                            NSMigratePersistentStoresAutomaticallyOption:@YES,
                                            NSInferMappingModelAutomaticallyOption:@YES};
@@ -4504,7 +4467,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     if (success) {
                         NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
                         NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                        NSURL *newStoresURL = newStore.URL;
                         
                         // Now remove the existing store
                         NSError *removeStoreError;
@@ -4522,10 +4484,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                     NSError *error;
                                 
-                                    id migrationSuccess = [newCoord migratePersistentStore:sourceStore
-                                                                                 toURL:newStore.URL
-                                                                               options:localOptions
-                                                                              withType:NSSQLiteStoreType error:&error];
+                                    [newCoord migratePersistentStore:sourceStore
+                                                               toURL:newStore.URL
+                                                             options:localOptions
+                                                            withType:NSSQLiteStoreType
+                                                               error:&error];
+                                    
                                     dispatch_async(dispatch_get_main_queue(), ^{
                                         [self documentIsReady:document];
                                         self.doc = document;
@@ -4543,30 +4507,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
                             }
                         }
-                        
-                        /*
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            NSError* error;
-                            [pcs migratePersistentStore:store
-                                                  toURL:newStore.URL
-                                                options:options
-                                               withType:store.type
-                                                  error:&error];
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self documentIsReady:document];
-                                self.doc = document;
-                                [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                    if(!success){
-                                        NSLog(@"Close old document not sucesseful");
-                                    } else {
-                                        NSLog(@"Close old sucesseful");
-                                    }
-                                }];
-                            });
-                            
-                        });
-                        
-                    }*/
                     
                     }
                 }];
@@ -4577,7 +4517,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                           if (success) {
                               NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
                               NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                              NSURL *mewStoresURL = newStore.URL;
                               
                               // Now remove the existing store
                               NSError *removeStoreError;
@@ -4595,10 +4534,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                           NSError *error;
                                           
-                                          id migrationSuccess = [newCoord migratePersistentStore:sourceStore
-                                                                                           toURL:newStore.URL
-                                                                                         options:localOptions
-                                                                                        withType:NSSQLiteStoreType error:&error];
+                                         [newCoord migratePersistentStore:sourceStore
+                                                                    toURL:newStore.URL
+                                                                  options:localOptions
+                                                                 withType:NSSQLiteStoreType
+                                                                    error:&error];
+                                          
                                           dispatch_async(dispatch_get_main_queue(), ^{
                                               [self documentIsReady:document];
                                               self.doc = document;
@@ -4616,32 +4557,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                       
                                   }
                               }
-
-                          /*
-                          NSPersistentStore *newStore= [document.managedObjectContext.persistentStoreCoordinator.persistentStores objectAtIndex:0];
-                          NSLog(@"New store URL %@", [newStore URL]);
-                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                              NSError* error;
-                              [pcs migratePersistentStore:store
-                                                    toURL:newStore.URL
-                                                  options:options
-                                                 withType:store.type
-                                                    error:&error];
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [self documentIsReady:document];
-                                  self.doc = document;
-                                  [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                      if(!success){
-                                          NSLog(@"Close old document not sucesseful");
-                                      } else {
-                                          NSLog(@"Close old sucesseful");
-                                      }
-                                  }];
-                              });
-                              
-                          });
-                          */
-                          
                           }
                       }
                   }];
@@ -4798,9 +4713,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [document openWithCompletionHandler:^(BOOL success) {
             if (success) {
               [self documentIsReady: document];
-                NSPersistentStoreCoordinator* psc = document.managedObjectContext.persistentStoreCoordinator;
-                NSPersistentStore *ps = [psc.persistentStores lastObject];
-               // NSLog(@"Store URL %@", [ps URL]);
+
             }
         }];
     } else {
@@ -4808,10 +4721,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
           completionHandler:^(BOOL success) {
               if (success){
                   [self documentIsReady: document];
-                  NSPersistentStoreCoordinator* psc = document.managedObjectContext.persistentStoreCoordinator;
-                  NSPersistentStore *ps = [psc.persistentStores lastObject];
-                //  NSLog(@"Store URL %@", [ps URL]);
-
               }
           }];
     }
@@ -4831,14 +4740,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                object:nil];
     
     if(self.isiCloudInUse){
-        
         [self setupiCloudUIManagedDocument];
-        
     } else { //set up Local Storage
-        //init managed document
-        
         [self setupLocalUIManagedDocument];
-        
     }
 }
 
@@ -4964,28 +4868,16 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
     if(userDefault && [self extractFromUserDefault:userDefault]){
-        //[self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
-        //[self showStringThruManageDocument];
+
     } else {
-        //memory label
-       // self.display.firstMemoryLabel.text = @"";//to key value
-       // self.display.secondMemoryLabel.text = @"";//to key value
-        //self.display.decRadLabel.text = @"DEG";//to key value
-       // self.userIsInTheMidleOfEnteringNumber = YES;//to key value
-       // self.isProgramInProcess = NO;//to key value
-       // self.isStronglyArgu = NO;//to key value
-       // self.isResultFromMemory = NO;//to key value
-       // self.isDecCounting = YES;//to key value
         self.isBigDataBase = NO;
         self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
         self.self.lastShowAllertViewDate = [NSDate date];
         self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
-        
-       // [self.displayRam clearRam];//to key value
-       // [self.display showString:[self.displayRam addSymbol:@0]];//to key value
     }
+    
     self.isSettingsViewOnScreen = NO;
     self.isBottomSettingsViewOnScreen = NO;
     
@@ -5022,18 +4914,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                  object:[UIApplication sharedApplication]];
     
     // Request to turn on accelerometer and begin receiving accelerometer events
-    //[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
-    
-    /*
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationDidChanged:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:[UIDevice currentDevice]];
-     */
     
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
@@ -5100,6 +4985,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
+
    // self.timesRequestToHideIAdBanner = 0;
     [self.buttonsCollection reloadData];
     [super viewWillAppear:animated];
@@ -5108,18 +4994,32 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) initialLayoutDynamiccontainer
 {
-    [self.mainContainerView setFrame:self.view.bounds];
+    [self initialLayoutDynamicContainerWithSize:self.view.bounds.size];
 
+}
+
+
+-(void) initialLayoutDynamicContainerWithSize:(CGSize)size
+{
+    CGRect rect = CGRectMake(0, 0, size.width, size.height);
+    [self.mainContainerView setFrame:rect];
+    
+    if(size.height > size.width){
+        self.histroryTableViewHeight = 267.f;
+    } else {
+        self.histroryTableViewHeight = 182.f;
+    }
+    
     [self.dynamicContainer setFrame:CGRectMake(0,
                                                 -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight,
                                                 self.mainContainerView.frame.size.width,
-                                                2*self.view.frame.size.height - self.histroryTableViewHeight - self.labelViewHeight )];
+                                                2*size.height - self.histroryTableViewHeight - self.labelViewHeight )];
 
     
     [self.historyTable setFrame:CGRectMake(0,
                                             0,
                                             self.mainContainerView.bounds.size.width,
-                                            self.view.frame.size.height - self.labelViewHeight)];
+                                            size.height - self.labelViewHeight)];
     CGRect displayViewFrame = CGRectMake(0,
                                         self.mainContainerView.frame.size.height - self.labelViewHeight,
                                         self.mainContainerView.bounds.size.width,
@@ -5127,6 +5027,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         
     [self.displayContainer setFrame:displayViewFrame];
     self.display.frame = self.displayContainer.bounds;
+    self.backgroundToolBar.frame = self.displayContainer.frame;
     [self.buttonsCollection setFrame:CGRectMake(0,
                                                 self.mainContainerView.frame.size.height - self.labelViewHeight,
                                                 self.mainContainerView.bounds.size.width,
@@ -5148,12 +5049,72 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //}
 }
+-(void) changeLayoutDynamicContainerWithSize:(CGSize)size
+{
+    CGRect rect = CGRectMake(0, 0, size.width, size.height);
+    
+    [self.mainContainerView setFrame:rect];
+    
+    if(size.height > size.width){
+        self.histroryTableViewHeight = 267.f;
+    } else {
+        self.histroryTableViewHeight = 182.f;
+    }
+    
+    //set origin.y for dynamicContainer
+    CGFloat originYDynamicContainer;
+    if(self.isButtonsCollectionUnderChanging){
+       originYDynamicContainer = -self.mainContainerView.frame.size.height + self.labelViewHeight;
+    } else if (self.isHistoryWholeShowed == 1){
+        originYDynamicContainer = 0;
+    } else {//initial setting
+        originYDynamicContainer = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
+    }
+    
+    [self.dynamicContainer setFrame:CGRectMake(0,
+                                               originYDynamicContainer,
+                                               self.mainContainerView.frame.size.width,
+                                               2*size.height - self.histroryTableViewHeight - self.labelViewHeight )];
+    
+    
+    [self.historyTable setFrame:CGRectMake(0,
+                                           0,
+                                           self.mainContainerView.bounds.size.width,
+                                           size.height - self.labelViewHeight)];
+    CGRect displayViewFrame = CGRectMake(0,
+                                         self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                         self.mainContainerView.bounds.size.width,
+                                         self.labelViewHeight);//self.displayContainer.frame;
+    
+    [self.displayContainer setFrame:displayViewFrame];
+    self.display.frame = self.displayContainer.bounds;
+    self.backgroundToolBar.frame = self.displayContainer.frame;
+    [self.buttonsCollection setFrame:CGRectMake(0,
+                                                self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                                self.mainContainerView.bounds.size.width,
+                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    
+    
+    CGRect sviperRect = self.historyTableSviper.frame;
+    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
+    sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
+    [self.historyTableSviper setFrame:sviperRect];
+    
+    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
+                                         0,
+                                         self.mainContainerView.bounds.size.width,
+                                         self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    
+    [self.SettingsView setFrame:settingsViewRect];
+    
+}
+
 
 -(void) viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
     if(IS_IPAD){
-        [self.mainContainerView setFrame:self.view.bounds];
+        //[self.mainContainerView setFrame:self.view.bounds];
     }
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
@@ -5251,7 +5212,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //[self extractKeyValuesFromStorage];
     if([self extractKeyValuesFromStorage]){
         [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
-        //[self showStringThruManageDocument];
     } else {
         [self.displayRam clearRam];//to key value
         [self.display showString:[self.displayRam addSymbol:@0]];//to key value
@@ -5329,16 +5289,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //save managed object context
      [self.doc updateChangeCount:UIDocumentChangeDone];
-    /*
-    [self.doc closeWithCompletionHandler:^(BOOL success) {
-        if(success){
-            NSLog(@"Doc closed successly");
-        } else {
-            NSLog(@"Doc closes not success");
 
-        }
-    }];
-     */
 }
 
 //really enter to background
@@ -5381,7 +5332,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
     
-    [self rotateToPortraitViewIPhone];
+    if(!IS_IPAD)[self rotateToPortraitViewIPhone];
     [self discardChanging];
 
     
@@ -5401,33 +5352,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 
 {
-    //save managed object context
-    //NSError *error = nil;
-    //[self.managedObjectContext save:&error];
-     [self.doc updateChangeCount:UIDocumentChangeDone];
-    /*
-    [self.doc closeWithCompletionHandler:^(BOOL success) {
-        if(success){
-            NSLog(@"Doc closed successly");
-        } else {
-            NSLog(@"Doc closes not success");
-        }
+    [self.doc updateChangeCount:UIDocumentChangeDone];
 
-    }];
-    */
 
     [self setKeyValuesFromStorage];
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [defaults synchronize];
 }
 
 -(void) viewWillDisappear:(BOOL)animated
 {
-    //[[NSNotificationCenter defaultCenter] removeObserver:self];
-   // [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    
     [super viewWillDisappear:animated];
 
 }
@@ -5472,13 +5407,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     BOOL sucsess = YES;
     id userDefault;
-    //if(self.isiCloudInUse){
-   //     NSUbiquitousKeyValueStore *kvStore = [NSUbiquitousKeyValueStore defaultStore];
-    //    [kvStore synchronize];
-    //    userDefault = [kvStore objectForKey:@"keyValuesArray"];
-   // } else {
-        userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"keyValuesArray"];
-  //  }
+
+    userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"keyValuesArray"];
+
     
     if(userDefault && [userDefault isKindOfClass:[NSArray class]]){
         NSMutableArray *wholeArray = [userDefault mutableCopy];
@@ -5623,11 +5554,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
     [controllerArray addObject:self.lastShowAllertViewDate];
-    //[controllerArray addObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber]];//to key value
-    //[controllerArray addObject:[NSNumber numberWithBool:self.isProgramInProcess]];//to key value
-    //[controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];//to key value
-   // [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];//to key value
-   // [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];//to key value
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];
@@ -5635,94 +5561,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [wholeArray addObject:[controllerArray copy]];
     
-    //[wholeArray addObject:[self.heightsOfRows copy]];
-    
-    //[wholeArray addObject:[self.brain arrayToSaveBrain]]; //to key value
-    
-   // NSMutableArray *displayRamArray = [[NSMutableArray alloc] init]; //to key value
-    //[displayRamArray addObject:self.displayRam.firstMemoryStack];//to key value
-   // [displayRamArray addObject:self.displayRam.secondMemoryStack];//to key value
-    //[displayRamArray addObject:self.displayRam.gradArray];//to key value
-   // [displayRamArray addObject:self.displayRam.resultNumber];//to key value
-    //[wholeArray addObject:[displayRamArray copy]];//to key value
-    
     return [wholeArray copy];
-    //settings for
 }
 
 -(BOOL) extractFromUserDefault:(NSArray*) array
 {
     BOOL sucsess = YES;
     NSMutableArray *wholeArray = [array mutableCopy];
-    /*
-    //extract disaply
-    id displayRamArray = [[wholeArray lastObject] mutableCopy];
-    DisplayRam *newDisplayRam = [[DisplayRam alloc] init];
-    newDisplayRam.delegate = self;
-    if(displayRamArray && [displayRamArray isKindOfClass:[NSArray class]]){
-        id top = [displayRamArray lastObject];
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            newDisplayRam.resultNumber = top;
-            [displayRamArray removeLastObject];
-            top = [displayRamArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSArray class]]){
-            newDisplayRam.gradArray = top;
-            [displayRamArray removeLastObject];
-            top = [displayRamArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSArray class]]){
-            newDisplayRam.secondMemoryStack = top;
-            //set the memory mark
-            NSArray* test = [top copy];
-            if([test count] > 0) {
-                self.display.secondMemoryLabel.text = @"MI";
-            } else {
-                self.display.secondMemoryLabel.text = @"";
-            }
-            [displayRamArray removeLastObject];
-            top = [displayRamArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSArray class]]){
-            newDisplayRam.firstMemoryStack = top;
-            //set the memory mark
-            NSArray* test = [top copy];
-            if([test count] > 0) {
-                self.display.firstMemoryLabel.text = @"M";
-            } else {
-                self.display.firstMemoryLabel.text = @"";
-            }
-
-        } else {
-            sucsess = NO;
-        }
-        self.displayRam = newDisplayRam;
-        
-        [wholeArray removeLastObject];
-        
-    } else {
-        sucsess = NO;
-    }
-    
-    //set brain
-    id brainArray = [wholeArray lastObject];
-    if(brainArray && [brainArray isKindOfClass:[NSArray class]]){
-        self.brain = [ACalcBrain brainFromSavedArray:brainArray];
-        [wholeArray removeLastObject];
-    } else {
-        sucsess = NO;
-    }
-    */
-    //set controller
+        //set controller
     id controllerArray = [[wholeArray lastObject] mutableCopy];
     if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
         
@@ -5759,47 +5605,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         } else {
             return NO;
         }
-        /*
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isResultFromMemory = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isDecCounting = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isStronglyArgu = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isProgramInProcess = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.userIsInTheMidleOfEnteringNumber = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            sucsess = NO;
-        }
-        */
+       
         if(top && [top isKindOfClass:[NSDate class]]){
             // self.self.lastShowAllertViewDate = top;
             self.lastShowAllertViewDate = top;
@@ -5816,13 +5622,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 - (void)didReceiveMemoryWarning
 {
-    //------
-    //
-   // NSError *error = nil;
-    //[self.managedObjectContext save:&error];
-     [self.doc updateChangeCount:UIDocumentChangeDone];
-    //
-    //-------
+
+    [self.doc updateChangeCount:UIDocumentChangeDone];
+
     
     [self setKeyValuesFromStorage];
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
@@ -5832,22 +5634,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [super didReceiveMemoryWarning];
 }
 
-/*
--(BOOL) shouldAutorotate
-{
-    return NO;
-}
-*/
 -(void) rotateToPortraitViewIPhone
 {
     if(self.wasRightShowed != 0){
         [UIView setAnimationsEnabled:NO];
         [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-        //if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        //    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-        //} else {
+
         [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-        //}
+
         
         if(!self.isButtonsCollectionUnderChanging){
             
@@ -5856,15 +5650,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             } else if(self.wasRightShowed == 2){
                 [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
             }
-            //check if ios 8
-            /*
-             if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-             [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-             (self.view.frame.size.width -self.testView.bounds.size.height)/2,
-             self.testView.bounds.size.height,
-             self.testView.bounds.size.width)];
-             } else {
-             */
+
             [self.testView setFrame:CGRectMake((self.view.frame.size.width -self.testView.bounds.size.width)/2,
                                                (self.view.frame.size.height -self.testView.bounds.size.height)/2,
                                                self.testView.bounds.size.height,
@@ -5925,30 +5711,49 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
+-(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    NSLog(@"View will transition to size width-%f, heigth-%f", size.width, size.height);
+    [self setUpMainButtonsStartWithPosition];
+    [self makeTwoArrays];
+    [self.buttonsCollection reloadData];
+    [self changeLayoutDynamicContainerWithSize:size];  
+    [self moveHistoryTableContentToRightPosition];
+}
+
 - (void)orientationChanged:(NSNotification *)notification
 {
     //exept if it isn't IPad
     //exept if it isn't IPad
+   // NSLog(@"Orientation notification %@", notification);
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
     if(IS_IPAD){
+        /*
         
-        UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
+        //UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
         
         if (orient == UIDeviceOrientationUnknown ||
             orient == UIDeviceOrientationFaceUp ||
             orient == UIDeviceOrientationFaceDown) {
             
-            orient = (UIDeviceOrientation)cachedOrientation;
+            if(self.wasRightShowed){
+            orient = self.wasRightShowed;
+            } else {
+                orient = UIDeviceOrientationLandscapeRight;
+            }
         }
         
-        if((orient <3)!= (self.wasRightShowed <3)) {
+        //if((orient <3)!= (self.wasRightShowed <3)) {
+        if(orient != self.wasRightShowed ) {
             // [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+            [self initialLayoutDynamiccontainer];
+            [self moveHistoryTableContentToRightPosition];
             [self setUpMainButtonsStartWithPosition];
             [self makeTwoArrays];
             [self.buttonsCollection reloadData];
         }
         self.wasRightShowed = orient;
-        
+        */
         
     } else {
         
@@ -6207,12 +6012,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             //self.isIAdBaneerAvailable = NO;
         } else {
             if([self.historyTable numberOfRowsInSection:0] > 2){
-        
-              //  self.bannerContainerView.hidden = NO;
-              //  [UIView beginAnimations:nil context:nil];
-               // [UIView setAnimationDuration:0.4];
-             //   [banner setAlpha:1];
-             //   [UIView commitAnimations];
             
                 self.isIAdBaneerAvailable = YES;
             }
@@ -6222,16 +6021,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) bannerView:(ADBannerView *)banner didFailToReceiveAdWithError:(NSError *)error
 {
-    /*
-    if([self.historyTable numberOfRowsInSection:0] > 2){
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.4];
-       // [self.bannerContainerView setFrame:CGRectMake(0,self.historyTable.frame.origin.y + self.iAdBannerOriginHeight-50,self.mainContainerView.bounds.size.width , 50)];
-        [banner setAlpha:0];
-        [UIView commitAnimations];
-        self.bannerContainerView.hidden = YES;
-        self.isIAdBaneerAvailable = NO;
-    }*/
     self.isIAdBaneerAvailable = NO;
     if(self.isIAdBannerOnScreen){
         [self hideIAdBanner];
@@ -6374,6 +6163,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 
                 break;
                 
+            case SKPaymentTransactionStateDeferred:
+                
+                break;
+            
             case SKPaymentTransactionStatePurchasing: //NSLog(@"Purchasing in process");
 
                 break;
