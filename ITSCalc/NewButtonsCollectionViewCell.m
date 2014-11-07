@@ -288,7 +288,7 @@
 -(void) setup
 {
     if(IS_IPAD){
-        self.incr = 1.6;
+        self.incr = 1.8;
     } else {
         self.incr = 2.1;
     }
