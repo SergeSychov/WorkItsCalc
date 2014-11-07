@@ -108,22 +108,37 @@
     
     self.font = font;
     
+    UILabel *decRadLabel;
+    UILabel *firstMemoryLabel;
+    UILabel *secondMemoryLabel;
     
-    font = [UIFont systemFontOfSize:13.];
+    if(IS_IPAD){
+        font = [UIFont systemFontOfSize:19.];
+        decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 0, 48,22)];
+        firstMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(72, 0, 27,22)];
+        secondMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(117, 0, 27,22)];
+    } else {
+        font = [UIFont systemFontOfSize:13.];
+        decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 32,15)];
+        firstMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(48, 0, 18,15)];
+        secondMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(78, 0, 18,15)];
+    }
     
-    UILabel *decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 32,15)];
+    
+    
+    
     [decRadLabel setTextColor:[UIColor whiteColor]];
     [decRadLabel setFont:font];
     [self addSubview:decRadLabel];
     self.decRadLabel = decRadLabel;
     
-    UILabel *firstMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(48, 0, 18,15)];
+    
     [firstMemoryLabel setTextColor:[UIColor whiteColor]];
     [firstMemoryLabel setFont:font];
     [self addSubview:firstMemoryLabel];
     self.firstMemoryLabel = firstMemoryLabel;
     
-    UILabel *secondMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(78, 0, 18,15)];
+    
     [secondMemoryLabel setTextColor:[UIColor whiteColor]];
     [secondMemoryLabel setFont:font];
     [self addSubview:secondMemoryLabel];
