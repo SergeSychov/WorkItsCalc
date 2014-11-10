@@ -61,6 +61,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 @property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
+@property (nonatomic) BOOL willBePortraitRotated;
 //necessary height of element for 3,5" screen
 @property (nonatomic) CGFloat histroryTableViewHeight;
 @property (nonatomic) CGFloat labelViewHeight;
@@ -2330,7 +2331,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         CGFloat needY = 0;
         UIView *view = strongSelf.dynamicContainer;
 
-        if(view.frame.origin.y > needY - 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
+        if(view.frame.origin.y > needY - 3 && ABS([dynamicItem linearVelocityForItem:view].y) < 0.01){
             [animator removeAllBehaviors];
             CGRect dynamicRect = view.frame;
             dynamicRect.origin.y = needY;
@@ -3000,6 +3001,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGSize result;
     if(IS_IPAD) {
         //replace here
+        /*
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         //UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
         if (orientation == UIDeviceOrientationUnknown ||
@@ -3021,6 +3023,34 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                 result = CGSizeMake(118, 59);
             }
         }
+        
+        
+        
+        if(self.view.bounds.size.height > self.view.bounds.size.width){
+            result = CGSizeMake(140, 83);
+        } else {
+            if(self.isBigSizeButtons){
+                result = CGSizeMake(133, 71);
+            } else {
+                result = CGSizeMake(118, 59);
+            }
+        }
+        */
+        if(self.willBePortraitRotated){
+            if(self.isBigSizeButtons){
+                result = CGSizeMake(140, 83);
+            } else {
+                result = CGSizeMake(117, 72);
+            }
+            //result = CGSizeMake(140, 83);
+        } else {
+            if(self.isBigSizeButtons){
+                result = CGSizeMake(133, 71);
+            } else {
+                result = CGSizeMake(118, 59);
+            }
+        }
+        
     } else { //if it's iPhone ore iPod
         if(self.isBigSizeButtons){
             result = CGSizeMake(76, 46);
@@ -3039,6 +3069,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGFloat collectionWidth;
     if(IS_IPAD) {
         
+        /*
         //replace here
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         //UIInterfaceOrientation cachedOrientation = [self interfaceOrientation];
@@ -3057,6 +3088,22 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         } else if (UIDeviceOrientationIsLandscape(orientation)){
             collectionWidth = 1024;
         }
+         
+        
+        
+        //may be heere need work with intens for landscape view Ipad
+        if(self.view.bounds.size.height > self.view.bounds.size.width){
+            collectionWidth = 768;
+        } else {
+            collectionWidth = 1024;
+        }
+        */
+        
+        if(self.willBePortraitRotated){
+            collectionWidth = 768;
+        } else {
+            collectionWidth = 1024;
+        }
     } else { //if it's iPhone ore iPod
         collectionWidth = 320;
     }
@@ -3072,8 +3119,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
     if(IS_IPAD) {
         insets.top = 119;
-        insets.left = 11;
         insets.right = 11;
+        insets.left = 11;
+        
     } else {
         if(IS_568_SCREEN){
             insets.top = 82;
@@ -4998,16 +5046,25 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 }
 
+//this function need to send message about changing iPad rotation
+-(void) setWillBePortraitRotated:(BOOL)willBePortraitRotated
+{
+    _willBePortraitRotated = willBePortraitRotated;
+    self.displayRam.isIpadPortraitView = willBePortraitRotated;
+}
 
 -(void) initialLayoutDynamicContainerWithSize:(CGSize)size
 {
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     [self.mainContainerView setFrame:rect];
-    
-    if(size.height > size.width){
-        self.histroryTableViewHeight = 267.f;
-    } else {
-        self.histroryTableViewHeight = 182.f;
+    if(IS_IPAD){
+        if(size.height > size.width){
+            self.histroryTableViewHeight = 267.f;
+            self.willBePortraitRotated = YES;
+        } else {
+            self.histroryTableViewHeight = 182.f;
+            self.willBePortraitRotated = NO;
+        }
     }
     
     [self.dynamicContainer setFrame:CGRectMake(0,
@@ -5051,14 +5108,20 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 -(void) changeLayoutDynamicContainerWithSize:(CGSize)size
 {
+    if(self.animator){
+        self.animator = nil;
+    }
+    
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     
     [self.mainContainerView setFrame:rect];
     
-    if(size.height > size.width){
-        self.histroryTableViewHeight = 267.f;
-    } else {
-        self.histroryTableViewHeight = 182.f;
+    if(IS_IPAD){
+        if(self.willBePortraitRotated){
+            self.histroryTableViewHeight = 267.f;
+        } else {
+            self.histroryTableViewHeight = 182.f;
+        }
     }
     
     //set origin.y for dynamicContainer
@@ -5100,12 +5163,28 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
     [self.historyTableSviper setFrame:sviperRect];
     
-    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
+    CGRect settingsViewRect = self.SettingsView.frame;
+    if(settingsViewRect.origin.x == 0){
+        settingsViewRect = CGRectMake(0,
+                                      0,
+                                      self.mainContainerView.bounds.size.width,
+                                      self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    } else {
+    
+        settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
                                          0,
                                          self.mainContainerView.bounds.size.width,
                                          self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    }
     
     [self.SettingsView setFrame:settingsViewRect];
+    [self setLayOutOfSettingsView];
+    
+    CGRect mainRect = self.mainContainerView.frame;
+    NSLog(@"Main rect or.x-%f, or.y-%f, wdth-%f, hght-%f", mainRect.origin.x, mainRect.origin.y, mainRect.size.width, mainRect.size.height);
+    CGRect dynRect = self.dynamicContainer.frame;
+    NSLog(@"Dyn rect or.x-%f, or.y-%f, wdth-%f, hght-%f", dynRect.origin.x, dynRect.origin.y, dynRect.size.width, dynRect.size.height);
+    
     
 }
 
@@ -5416,8 +5495,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
         //extract disaply
         id displayRamArray = [[wholeArray lastObject] mutableCopy];
-        DisplayRam *newDisplayRam = [[DisplayRam alloc] init];
-        newDisplayRam.delegate = self;
+        
+        DisplayRam *newDisplayRam;
+        if(!self.displayRam){
+            newDisplayRam = [[DisplayRam alloc] init];
+            newDisplayRam.delegate = self;
+        }else {
+            newDisplayRam = self.displayRam;
+        }
+        
         if(displayRamArray && [displayRamArray isKindOfClass:[NSArray class]]){
             id top = [displayRamArray lastObject];
             if(top && [top isKindOfClass:[NSNumber class]]){
@@ -5714,6 +5800,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     NSLog(@"View will transition to size width-%f, heigth-%f", size.width, size.height);
+    if(size.height > size.width){
+        self.willBePortraitRotated = YES;
+    } else {
+        self.willBePortraitRotated = NO;
+    }
+    [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
     [self setUpMainButtonsStartWithPosition];
     [self makeTwoArrays];
     [self.buttonsCollection reloadData];
