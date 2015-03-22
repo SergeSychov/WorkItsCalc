@@ -5434,10 +5434,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                2*size.height - self.histroryTableViewHeight - self.labelViewHeight )];
     
     
-    [self.historyTable setFrame:CGRectMake(0,
-                                           0,
-                                           self.mainContainerView.bounds.size.width,
-                                           size.height - self.labelViewHeight)];
+   
     CGRect displayViewFrame = CGRectMake(0,
                                          self.mainContainerView.frame.size.height - self.labelViewHeight,
                                          self.mainContainerView.bounds.size.width,
@@ -5455,10 +5452,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self setDisplayButtonsLayout:displaySize];
     }
 
-    [self.buttonsCollection setFrame:CGRectMake(0,
-                                                displayViewFrame.origin.y,
-                                                size.width,
-                                                self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
+
     /*
     CGRect mainRect = self.dynamicContainer.frame;
     
@@ -5498,11 +5492,29 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     //CGRect mRect = CGRectMake(0, 0, size.width, size.height);
     [self setLayOutOfSettingsView:settingsViewRect];
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        // self.historyTable.isNeedToSetOffsetToButton = YES;
+        
+        [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0, 0, 0)];
+    } else {
+        [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0,0,0)];        // self.historyTable.isNeedToSetOffsetToButton = YES;
+    }
     
-    //CGRect mainRect = self.mainContainerView.frame;
-    //NSLog(@"Main rect or.x-%f, or.y-%f, wdth-%f, hght-%f", mainRect.origin.x, mainRect.origin.y, mainRect.size.width, mainRect.size.height);
-    //CGRect dynRect = self.dynamicContainer.frame;
-   // NSLog(@"Dyn rect or.x-%f, or.y-%f, wdth-%f, hght-%f", dynRect.origin.x, dynRect.origin.y, dynRect.size.width, dynRect.size.height);
+    [self.historyTable setFrame:CGRectMake(0,
+                                           0,
+                                           self.mainContainerView.bounds.size.width,
+                                           size.height - self.labelViewHeight)];
+    [self.buttonsCollection setFrame:CGRectMake(0,
+                                                displayViewFrame.origin.y,
+                                                size.width,
+                                                self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
+    
+    
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+    }
     
     
 }
