@@ -54,7 +54,7 @@
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
-#define TIME_INTERVAL_FROM_LAST_ALERT 86400.//for one day 43200. //need to be setted as 12 hours - 43 000;
+#define TIME_INTERVAL_FROM_LAST_ALERT 400.//86400.//for one day 43200. //need to be setted as 12 hours - 43 000;
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 #define IS_BLACK_MODE NO
@@ -1381,7 +1381,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                             [self askUserForiCloudStorage];
                         }
                     }
-                    if(25 < self.counterForShowingAllertView < 37){
+                    if((25 < self.counterForShowingAllertView) && (self.counterForShowingAllertView < 37)){
                         
                         [self showHintViewAccordingCounter];
 
@@ -4044,14 +4044,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    
     NSArray *activityItems = [[NSArray alloc] initWithObjects:img, /*strToShare, */nil];
     
     UIActivityViewController *activity = [[UIActivityViewController alloc]
                                           initWithActivityItems:activityItems
                                           applicationActivities:nil];
+    //very important for ipad!!!
+    if(IS_IPAD){
+        activity.popoverPresentationController.sourceView = self.view;
+    }
+
     activity.excludedActivityTypes = @[UIActivityTypePostToFacebook, UIActivityTypeAirDrop, UIActivityTypePostToTwitter, UIActivityTypePostToWeibo, UIActivityTypePrint, UIActivityTypePostToFlickr, UIActivityTypeAssignToContact];
     [self presentViewController:activity animated:YES completion:nil];
+    
     //activity.
     
 }
@@ -5296,6 +5301,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     if(IS_IPAD){
         self.testView.hidden = YES;
     }
+    
+    //check app version
+    //!!!
+    //-------------------------
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+    
+    NSString *str = [NSString stringWithFormat:@"%@, Version %@ (%@)",
+                     appDisplayName, majorVersion, minorVersion];
+    NSLog(str);
+    //_____________________________
     
     //[[UITextView appearance] setTintColor:[UIColor redColor]];
 
