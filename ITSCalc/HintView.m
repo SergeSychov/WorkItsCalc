@@ -129,7 +129,7 @@
     
         pathOfRect = drawRectPath.CGPath;
         CGContextAddPath(context, pathOfRect);
-
+        CGContextSetLineCap(context, kCGLineCapRound);
         CGContextSetRGBStrokeColor(context, 0.26, 0.57, 0.7, 1);
         CGContextDrawPath(context, kCGPathStroke);
         

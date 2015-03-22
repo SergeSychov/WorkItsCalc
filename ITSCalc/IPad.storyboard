@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B23" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="ZRh-ac-cg8">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+    </dependencies>
+    <scenes>
+        <!--Calc View Controller-->
+        <scene sceneID="RhQ-19-oad">
+            <objects>
+                <viewController id="ZRh-ac-cg8" customClass="ITSCalcViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Heg-qj-uIu">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view autoresizesSubviews="NO" contentMode="redraw" id="icA-ej-95m" userLabel="Main Container View">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" placeholderIntrinsicWidth="1024" placeholderIntrinsicHeight="768" id="QdK-Jh-DpN" userLabel="DynamicView">
+                                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <subviews>
+                                            <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="redraw" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="FqA-0F-RxO" customClass="ButtonsCollectionView">
+                                                <rect key="frame" x="0.0" y="-9" width="1024" height="1000"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                <gestureRecognizers/>
+                                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="20" minimumInteritemSpacing="6" id="EV7-33-AWO">
+                                                    <size key="itemSize" width="60" height="40"/>
+                                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                                    <inset key="sectionInset" minX="6" minY="123" maxX="6" maxY="0.0"/>
+                                                </collectionViewFlowLayout>
+                                                <cells>
+                                                    <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="redraw" restorationIdentifier="Button" reuseIdentifier="Button" id="YWt-ty-279" customClass="NewButtonsCollectionViewCell">
+                                                        <rect key="frame" x="0.0" y="82" width="60" height="40"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                                            <rect key="frame" x="0.0" y="0.0" width="60" height="40"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <subviews>
+                                                                <view contentMode="redraw" id="zie-cv-PMY" customClass="newButtonView">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="56" height="36"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                </view>
+                                                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Vec-uc-0R6" customClass="CloseSetButton">
+                                                                    <rect key="frame" x="36" y="-9" width="28" height="28"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                                    <connections>
+                                                                        <action selector="tapCloseCheckButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="mzl-4V-tLB"/>
+                                                                    </connections>
+                                                                </button>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        </view>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <connections>
+                                                            <outlet property="cellSubView" destination="zie-cv-PMY" id="ytt-xx-TUc"/>
+                                                            <outlet property="closeAndSetButton" destination="Vec-uc-0R6" id="0WG-WN-sm2"/>
+                                                        </connections>
+                                                    </collectionViewCell>
+                                                </cells>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="ZRh-ac-cg8" id="D2C-Lm-8cY"/>
+                                                    <outlet property="delegate" destination="ZRh-ac-cg8" id="2zo-Lh-aF9"/>
+                                                    <outletCollection property="gestureRecognizers" destination="wh5-du-vYB" appends="YES" id="qm2-JX-DEF"/>
+                                                    <outletCollection property="gestureRecognizers" destination="5gi-VP-12z" appends="YES" id="2mp-by-WIy"/>
+                                                    <outletCollection property="gestureRecognizers" destination="6hN-KF-gg9" appends="YES" id="6Im-hU-MtX"/>
+                                                </connections>
+                                            </collectionView>
+                                            <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" rowHeight="1" sectionHeaderHeight="1" sectionFooterHeight="1" id="GsC-gp-efy" customClass="HistoryTableView">
+                                                <rect key="frame" x="-352" y="193" width="1024" height="182"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                <gestureRecognizers/>
+                                                <color key="separatorColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="sectionIndexBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                <prototypes>
+                                                    <tableViewCell clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="redraw" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="HistoryCell" rowHeight="1" id="TiH-0X-LiT" customClass="HistroryTableViewCell">
+                                                        <rect key="frame" x="0.0" y="1" width="320" height="1"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="redraw" tableViewCell="TiH-0X-LiT" id="tKO-ho-Bnc">
+                                                            <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        </tableViewCellContentView>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <gestureRecognizers/>
+                                                    </tableViewCell>
+                                                </prototypes>
+                                                <sections/>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="ZRh-ac-cg8" id="qIX-ZH-CaC"/>
+                                                    <outlet property="delegate" destination="ZRh-ac-cg8" id="9Gr-Yf-Hgo"/>
+                                                    <outletCollection property="gestureRecognizers" destination="8Gi-Ts-qUF" appends="YES" id="F2Q-SP-lZG"/>
+                                                    <outletCollection property="gestureRecognizers" destination="79t-Qy-bTn" appends="YES" id="PiR-Cs-T1p"/>
+                                                </connections>
+                                            </tableView>
+                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="eTD-n8-gIL">
+                                                <rect key="frame" x="-352" y="230" width="1024" height="44"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <items/>
+                                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </toolbar>
+                                            <view contentMode="scaleToFill" id="fdm-BC-FvU" userLabel="displayContainer">
+                                                <rect key="frame" x="-352" y="230" width="1024" height="108"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <subviews>
+                                                    <button hidden="YES" opaque="NO" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="40P-9k-c1k" userLabel="settingBottomButton" customClass="SettingButton">
+                                                        <rect key="frame" x="10" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <connections>
+                                                            <action selector="tapSettingsBotomButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="4iY-Ee-gQ4"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="RCC-gr-YIR" userLabel="noticeButton" customClass="ShareButton">
+                                                        <rect key="frame" x="70" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="tappedNoticeButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="wpE-nZ-7df"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="leV-L2-QBg" userLabel="noticeRealButton" customClass="NoticeButton">
+                                                        <rect key="frame" x="70" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="tappedRealNoticeButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="pnj-Rg-rpx"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="KzA-0T-Kqa" userLabel="recountButton" customClass="recBut">
+                                                        <rect key="frame" x="190" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="pressedSelectedButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="lqX-2j-W0Z"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="oNe-PZ-EJw" userLabel="upButton">
+                                                        <rect key="frame" x="130" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="tapFixButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="cEV-Na-r0o"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="LyF-sn-08m" userLabel="deleteButton" customClass="DelButton">
+                                                        <rect key="frame" x="250" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="pressedDeleteButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="IHR-zF-4PC"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="f0B-st-hnP" userLabel="settingsButton" customClass="SettingButton">
+                                                        <rect key="frame" x="67" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="tapSettingsButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="J7g-Zt-POe"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="gTc-3z-h6e" userLabel="downButton" customClass="DownButton">
+                                                        <rect key="frame" x="193" y="6" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <accessibility key="accessibilityConfiguration">
+                                                            <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
+                                                        </accessibility>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="tapFixButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="tys-x2-ASU"/>
+                                                        </connections>
+                                                    </button>
+                                                    <label opaque="NO" clipsSubviews="YES" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="none" adjustsFontSizeToFit="NO" id="Ng0-pM-QXM" customClass="DisplayLabel">
+                                                        <rect key="frame" x="12" y="0.0" width="1000" height="108"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <attributedString key="attributedText">
+                                                            <fragment content="44448888.888">
+                                                                <attributes>
+                                                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                                    <font key="NSFont" size="93" name="HelveticaNeue-Thin"/>
+                                                                    <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="truncatingTail" baseWritingDirection="natural" paragraphSpacingBefore="2" tighteningFactorForTruncation="0.050000004470348358"/>
+                                                                </attributes>
+                                                            </fragment>
+                                                        </attributedString>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                <gestureRecognizers/>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="LT6-cL-t6t" appends="YES" id="1xB-ty-sPf"/>
+                                                </connections>
+                                            </view>
+                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="XvS-CO-Fai" userLabel="Settings BackGtrround Toolbar">
+                                                <rect key="frame" x="-352" y="262" width="1024" height="44"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <items/>
+                                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </toolbar>
+                                            <view contentMode="redraw" id="UvP-6h-unv" userLabel="Settings View">
+                                                <rect key="frame" x="-352" y="36" width="1024" height="496"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" minimumScaleFactor="0.5" id="qfw-l6-aQs" userLabel="ButtonSwitchName">
+                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="e04-kk-Kbe" userLabel="Switch Button Size">
+                                                        <rect key="frame" x="485" y="26" width="51" height="31"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="isBigSizeButtonSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="wsa-0w-TCt"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="Xnb-w3-eAw" userLabel="SoundSwitchName">
+                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="zY3-F2-Vsw" userLabel="Switch Sound">
+                                                        <rect key="frame" x="485" y="124" width="51" height="31"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="isSoundSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="gCJ-LW-bez"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" minimumFontSize="9" id="l24-ap-jTI" userLabel="ArchiveSwitchName">
+                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="bGb-xU-5Sc" userLabel="Switch History Size">
+                                                        <rect key="frame" x="485" y="222" width="51" height="31"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="switchIsBigDataBase:" destination="ZRh-ac-cg8" eventType="valueChanged" id="wK5-cs-joe"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="7Uh-AB-sS4" userLabel="iCloudSwitchName">
+                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="aDs-Eq-LF9" userLabel="Switch iCloud">
+                                                        <rect key="frame" x="485" y="235" width="51" height="31"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="isiCloudSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="h9u-oE-feR"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <view contentMode="redraw" id="yE3-so-aAt" userLabel="View Small Button">
+                                                        <rect key="frame" x="54" y="24" width="56" height="36"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="redraw" id="jLs-Mj-5cS" userLabel="View Big Button">
+                                                        <rect key="frame" x="202" y="20" width="74" height="44"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="redraw" id="4fx-ib-I80" userLabel="archiveSmallView" customClass="ArchiveSizeView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="MSt-0K-xU6" userLabel="archiveBigView" customClass="ArchiveSizeView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="3Ky-Ah-GYj" userLabel="soundOffView" customClass="SoundView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="T4T-Rc-BEl" userLabel="soundOnView" customClass="SoundView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="RB9-KR-DwU" userLabel="cloudOnViiew" customClass="CloudView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="gSF-cN-pVw" userLabel="cloudOfView" customClass="CloudView">
+                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                    </view>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="bkY-Bc-tBY">
+                                                        <rect key="frame" x="20" y="294" width="280" height="32"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal" title="clear history">
+                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="clearHistoryButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="SDq-d4-sEa"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="1Lb-2c-SkK">
+                                                        <rect key="frame" x="20" y="347" width="280" height="30"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal" title="set keyboard default">
+                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="defaultKeyboardbuttonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="R16-bP-d1u"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" id="a8n-VM-Sxh" customClass="HistoryTableSviper">
+                                                <rect key="frame" x="130" y="239" width="60" height="90"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                <gestureRecognizers/>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="AEH-eW-RnX" appends="YES" id="F85-Yj-Rh1"/>
+                                                    <outletCollection property="gestureRecognizers" destination="yah-cl-hqQ" appends="YES" id="XRk-Q0-wMv"/>
+                                                </connections>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="kC1-se-Fex" userLabel="Container Banner">
+                                        <rect key="frame" x="0.0" y="-66" width="768" height="66"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="d44-Vp-Ufb">
+                                                <rect key="frame" x="0.0" y="0.0" width="1024" height="66"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="ZRh-ac-cg8" id="Kaz-KG-g9n"/>
+                                                </connections>
+                                            </adBannerView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="ukj-4N-jsK" userLabel="Notice View">
+                                <rect key="frame" x="-1280" y="-42" width="1280" height="1280"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" id="z2E-fu-k2u" userLabel="ViewToPDF" customClass="ShowedView">
+                                        <rect key="frame" x="42" y="166" width="568" height="320"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <gestureRecognizers/>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="HZt-EU-Qjn" userLabel="Button_Red">
+                                        <rect key="frame" x="60" y="256" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" image="redPanUnselected2.png"/>
+                                        <connections>
+                                            <action selector="tapRedPanButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="he3-Zp-LHS"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="fIb-WZ-yUS" userLabel="Button_BackToCalc" customClass="CalcButton">
+                                        <rect key="frame" x="610" y="610" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <connections>
+                                            <action selector="tappedBackToCalcButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="KyQ-RY-tJu"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Hoj-F3-CZb" userLabel="Button_Share" customClass="ShareButton">
+                                        <rect key="frame" x="60" y="176" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <connections>
+                                            <action selector="tapeShareButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="NUZ-Yu-iwj"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="pNA-d7-7ay" userLabel="Button_Clear" customClass="CleanButton">
+                                        <rect key="frame" x="60" y="416" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <connections>
+                                            <action selector="tapClearButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="xuZ-1O-Ku2"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KFC-Oe-UII" userLabel="Button_Blue">
+                                        <rect key="frame" x="60" y="336" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" image="bluePanSelected2.png"/>
+                                        <connections>
+                                            <action selector="tabBluePanButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="ahV-sj-crG"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="iPad"/>
+                    <connections>
+                        <outlet property="SettingsView" destination="UvP-6h-unv" id="IGQ-mN-Cku"/>
+                        <outlet property="archiveSwitcherLabel" destination="l24-ap-jTI" id="CDb-qB-lbV"/>
+                        <outlet property="archivesizeBigView" destination="MSt-0K-xU6" id="rpb-5l-Tgd"/>
+                        <outlet property="archsizeViewSmall" destination="4fx-ib-I80" id="e9y-ZN-VuD"/>
+                        <outlet property="backToCalcButton" destination="fIb-WZ-yUS" id="odL-Ls-G1j"/>
+                        <outlet property="backgroundToolBar" destination="eTD-n8-gIL" id="Jyk-Ms-677"/>
+                        <outlet property="bannerContainerView" destination="kC1-se-Fex" id="YHo-Ar-LTu"/>
+                        <outlet property="bigbuttonView" destination="jLs-Mj-5cS" id="vkL-0y-j7u"/>
+                        <outlet property="bluePanButton" destination="KFC-Oe-UII" id="GMK-0c-tYi"/>
+                        <outlet property="buttonSwitcherLabel" destination="qfw-l6-aQs" id="csl-6l-Og2"/>
+                        <outlet property="buttonsCollection" destination="FqA-0F-RxO" id="SeM-IW-jQv"/>
+                        <outlet property="cleanButton" destination="pNA-d7-7ay" id="MD7-0M-ep2"/>
+                        <outlet property="clearHistoryButton" destination="bkY-Bc-tBY" id="2rX-49-KW9"/>
+                        <outlet property="cloudOffView" destination="gSF-cN-pVw" id="q0R-62-X9I"/>
+                        <outlet property="cloudOnView" destination="RB9-KR-DwU" id="YPv-Ej-E7E"/>
+                        <outlet property="collectionViewFlowLayout" destination="EV7-33-AWO" id="r0E-bR-1wt"/>
+                        <outlet property="deleteButton" destination="LyF-sn-08m" id="ppm-sg-eh1"/>
+                        <outlet property="display" destination="Ng0-pM-QXM" id="ot2-uW-SN9"/>
+                        <outlet property="displayContainer" destination="fdm-BC-FvU" id="qFt-GD-882"/>
+                        <outlet property="downButton" destination="gTc-3z-h6e" id="NbY-WY-Cji"/>
+                        <outlet property="dynamicContainer" destination="QdK-Jh-DpN" id="P5W-cU-mal"/>
+                        <outlet property="historyTable" destination="GsC-gp-efy" id="8aT-Ef-f89"/>
+                        <outlet property="historyTableSviper" destination="a8n-VM-Sxh" id="2Xm-9B-sYM"/>
+                        <outlet property="iAdBanner" destination="d44-Vp-Ufb" id="hFP-Us-Sht"/>
+                        <outlet property="iCloudSwitcherName" destination="7Uh-AB-sS4" id="yxc-Xb-vfI"/>
+                        <outlet property="isBigDataBaseSwitcher" destination="bGb-xU-5Sc" id="GZR-0i-eTl"/>
+                        <outlet property="isBigSizeSwitcher" destination="e04-kk-Kbe" id="iJa-Qe-9BP"/>
+                        <outlet property="isiCloudUseSwitcher" destination="aDs-Eq-LF9" id="DtW-10-wGd"/>
+                        <outlet property="keyboardDefaultButton" destination="1Lb-2c-SkK" id="x2c-yY-g9k"/>
+                        <outlet property="longPressRecognizer" destination="wh5-du-vYB" id="xNV-Yg-zUi"/>
+                        <outlet property="mainContainerView" destination="icA-ej-95m" id="u51-qu-m7h"/>
+                        <outlet property="moveButtonsPanGestureRecognizer" destination="6hN-KF-gg9" id="TSn-IZ-vl0"/>
+                        <outlet property="noticeButton" destination="RCC-gr-YIR" id="CFR-B5-lvn"/>
+                        <outlet property="noticeRealButton" destination="leV-L2-QBg" id="tsS-06-N4R"/>
+                        <outlet property="recountButton" destination="KzA-0T-Kqa" id="Cf0-Kb-rr0"/>
+                        <outlet property="redPanButton" destination="HZt-EU-Qjn" id="hJR-Dh-H2t"/>
+                        <outlet property="settingsBackgroundToolBar" destination="XvS-CO-Fai" id="Ner-9t-13e"/>
+                        <outlet property="settingsBottomButtn" destination="40P-9k-c1k" id="mnZ-Ri-ByV"/>
+                        <outlet property="settingsButton" destination="f0B-st-hnP" id="Gi1-0z-GU4"/>
+                        <outlet property="shareButton" destination="Hoj-F3-CZb" id="WPN-Qo-84F"/>
+                        <outlet property="smallButtonView" destination="yE3-so-aAt" id="Vq5-r8-mli"/>
+                        <outlet property="soundOff" destination="3Ky-Ah-GYj" id="Ijq-Zu-9BG"/>
+                        <outlet property="soundOn" destination="T4T-Rc-BEl" id="h3k-YJ-BNp"/>
+                        <outlet property="soundSwitcher" destination="zY3-F2-Vsw" id="EqD-bZ-Fqf"/>
+                        <outlet property="soundSwitcherLabel" destination="Xnb-w3-eAw" id="7yL-gS-9ea"/>
+                        <outlet property="testView" destination="ukj-4N-jsK" id="KL5-e8-p30"/>
+                        <outlet property="upButton" destination="oNe-PZ-EJw" id="bXv-fC-b6u"/>
+                        <outlet property="viewToPDF" destination="z2E-fu-k2u" id="sW9-Pu-1Uf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QNx-0C-YRO" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="wh5-du-vYB">
+                    <connections>
+                        <action selector="longPress:" destination="ZRh-ac-cg8" id="Dry-9g-NsJ"/>
+                    </connections>
+                </pongPressGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="6hN-KF-gg9">
+                    <connections>
+                        <action selector="moveButtonToNewPosition:" destination="ZRh-ac-cg8" id="WE3-At-1Ys"/>
+                    </connections>
+                </panGestureRecognizer>
+                <tapGestureRecognizer cancelsTouchesInView="NO" delaysTouchesEnded="NO" id="5gi-VP-12z">
+                    <connections>
+                        <action selector="tabButtonsCollection:" destination="ZRh-ac-cg8" id="14o-xe-b1S"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="79t-Qy-bTn" userLabel="Swipe Gesture Recognizer_historyTbaleLeft">
+                    <connections>
+                        <action selector="historyTableLeftSwipeGesturerecognizer:" destination="ZRh-ac-cg8" id="qqX-md-9J5"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="8Gi-Ts-qUF" userLabel="Swipe Gesture Recognizer_historyTableRight">
+                    <connections>
+                        <action selector="historyTableRightSwipeGestureRecognizer:" destination="ZRh-ac-cg8" id="ZBK-37-KQN"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="LT6-cL-t6t" userLabel="Long Press At Display">
+                    <connections>
+                        <action selector="displayLongPress:" destination="ZRh-ac-cg8" id="klA-Xf-iLW"/>
+                    </connections>
+                </pongPressGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="AEH-eW-RnX" userLabel="Drag Sviper Gesture Recognizer">
+                    <connections>
+                        <action selector="dragSviperGesturRecognizer:" destination="ZRh-ac-cg8" id="NvQ-en-zCD"/>
+                    </connections>
+                </panGestureRecognizer>
+                <tapGestureRecognizer id="yah-cl-hqQ">
+                    <connections>
+                        <action selector="tapSviper:" destination="ZRh-ac-cg8" id="fTk-fW-T2r"/>
+                    </connections>
+                </tapGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="325.86666666666667" y="-57.746666666666663"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="bluePanSelected2.png" width="543" height="543"/>
+        <image name="redPanUnselected2.png" width="543" height="543"/>
+    </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>

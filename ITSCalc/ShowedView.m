@@ -10,7 +10,15 @@
 #import "BezierInterpView.h"
 #import "cmyk.h"
 
-#define RES_STRING_HEIGHT 96.f
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+
+#define RES_RECT_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 196.f : 96.f)
+#define RES_STRING_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 176.f : 72.f)
+#define COUNT_STRING_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 88.f : 48.f)
+#define STRING_INDENT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 150.f : 90.f)
+
+
+#define PAD_STRING ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? @"YES IPAD" : @"NOT IPAD")
 
 @interface ShowedView()
 
@@ -90,7 +98,9 @@
 
 -(void) setShowedViewWithCountedStr:(NSAttributedString*)countStr resultStr:(NSAttributedString*)resStr andBluePan:(BOOL)isBluePan
 {
+    //NSLog(PAD_STRING);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
         //set the instance of pan color
         self.isBluePanOrRed = isBluePan;
         self.isDurty = NO;
@@ -117,30 +127,30 @@
         [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
         [countAtrStr endEditing];
         //set drawing rect for counted rect
-        NSInteger preferedSize = 48;
+        NSInteger preferedSize = COUNT_STRING_HEIGHT;//88;//48;
         countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
     
         NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-        CGSize neededSize = CGSizeMake(self.bounds.size.width - 90 - 20,1000);
+        CGSize neededSize = CGSizeMake(self.bounds.size.width - STRING_INDENT - 20,1000);
         CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                   context:drawContext];
     
-        while (neededRect.size.height > self.bounds.size.height - 20- 96) {
+        while (neededRect.size.height > self.bounds.size.height - 20- RES_RECT_HEIGHT) {
             preferedSize = preferedSize - 2;
             countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:preferedSize] mutableCopy];
             neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                         context:drawContext];
         }
 
-        neededRect.origin.y = self.bounds.size.height - RES_STRING_HEIGHT - 20 - neededRect.size.height;
-        neededRect.origin.x = 90;
+        neededRect.origin.y = self.bounds.size.height - RES_RECT_HEIGHT - 20 - neededRect.size.height;
+        neededRect.origin.x = STRING_INDENT;
     
         self.count = countAtrStr;
         self.rectForCountedString = neededRect;
     
         //set result str
         NSMutableAttributedString * resulAttrStr = [resStr mutableCopy];
-        font = [self setFontWithSize:72.];
+        font = [self setFontWithSize:RES_STRING_HEIGHT]; //72
         style.alignment = NSTextAlignmentRight;
         style.lineHeightMultiple = 1.;
         [resulAttrStr beginEditing];
@@ -151,12 +161,12 @@
         [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
         [resulAttrStr endEditing];
     
-        NSInteger resultStringSize = 72;
+        NSInteger resultStringSize = RES_STRING_HEIGHT;//176;//72;
     
-        CGRect resRect = CGRectMake(90,
-                                    self.bounds.size.height - RES_STRING_HEIGHT - 20,
-                                    self.bounds.size.width - 90 - 20,
-                                    RES_STRING_HEIGHT);
+        CGRect resRect = CGRectMake(STRING_INDENT,
+                                    self.bounds.size.height - RES_RECT_HEIGHT - 20,
+                                    self.bounds.size.width - STRING_INDENT - 20,
+                                    RES_RECT_HEIGHT);
     
         CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
                                                              context:drawContext];
@@ -305,6 +315,7 @@
     [self addSubview:paintedView];
     self.paintedView = paintedView;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(DurtyBezierView) name:@"BezierViewIsDirtyNotification" object:nil];
+    
     
 }
 
