@@ -28,8 +28,8 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-    //[self addMaskLayerWithRect: rect];
+    NSLog(@"Draw rect");
 }
-*/
+ */
 
 @end

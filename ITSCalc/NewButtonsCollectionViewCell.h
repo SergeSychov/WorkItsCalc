@@ -10,6 +10,7 @@
 
 #import <UIKit/UIKit.h>
 #import "newButtonView.h"
+#import "CloseSetButton.h"
 
 @class NewButtonsCollectionViewCell;
 
@@ -19,7 +20,7 @@
 
 @interface NewButtonsCollectionViewCell : UICollectionViewCell //<SetingCellFrameDelegate>
 //@property (weak, nonatomic) IBOutlet newButton *cellButton;
-@property (weak, nonatomic) IBOutlet UIButton *closeAndSetButton;
+@property (weak, nonatomic) IBOutlet CloseSetButton *closeAndSetButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
 //@property (nonatomic) CGPoint collectionViewOffset;
 @property (nonatomic,strong) NSString* name;
@@ -27,6 +28,9 @@
 @property (nonatomic) BOOL isEnable; //is button normaly enabled
 @property (nonatomic) BOOL isChangeble; //is button can change;
 @property (nonatomic) BOOL isAllovedToDelete; //is button alloved to be hiden
+
+@property (nonatomic) BOOL isIpadPortraitView;
+
 //for buttons animation
 -(BOOL) isShakeAnimationRunning;
 -(void) startShakeAnimation;

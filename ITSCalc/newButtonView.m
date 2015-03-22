@@ -65,6 +65,7 @@
     self.isOnsuperView = NO;
     self.symbolsToMakeBigger = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=",@"-"/*,@"∓"*/, nil];//, @"-"
     self.pointsToMakeBigger = [NSArray arrayWithObjects: @".", @",", nil];
+    self.clipsToBounds = NO;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -316,7 +317,7 @@
     CGFloat x = borderWidth /2;
     CGFloat y = borderWidth /2;
     CGFloat width = self.bounds.size.width - borderWidth;
-    CGFloat height = self.bounds.size.height - borderWidth;
+    CGFloat height = self.bounds.size.height -borderWidth;
     cornerRect = CGRectMake(x,y,width,height);
         
     drawRectPath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(self.radiusCorner - borderWidth)];
@@ -342,14 +343,12 @@
 
 }
 
-    
 - (void)drawRect:(CGRect)rect
 {
 
     CGContextRef context = UIGraphicsGetCurrentContext();
     [self drawButtonViewInContext:context];
-    [self drawTitle:rect];
-    
+    [self drawTitle:rect];    
 
     //CALayer * viewLayer = self.layer;
     CGSize  shadowOffset;

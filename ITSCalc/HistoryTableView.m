@@ -36,11 +36,11 @@
     
     if(self.isNeedToSetOffsetToButton){
      
-        if(contentSize.height >0){
+        //if(contentSize.height >0){
             CGRect rect = self.frame;
             rect.origin.y = self.contentSize.height - self.frame.size.height;
             [self scrollRectToVisible:rect animated:YES];
-        }
+       // }
       
     }
     

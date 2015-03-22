@@ -129,10 +129,12 @@
     if(_isEnable != isEnable){
         _isEnable = isEnable;
         if(isEnable){
-            [self.closeAndSetButton setImage:[UIImage imageNamed:@"close_3.png"] forState:UIControlStateNormal];
+            self.closeAndSetButton.isClose = YES;
+            //[self.closeAndSetButton setImage:[UIImage imageNamed:@"close_3.png"] forState:UIControlStateNormal];
 
         } else {
-            [self.closeAndSetButton setImage:[UIImage imageNamed:@"check_3.png"] forState:UIControlStateNormal];
+            self.closeAndSetButton.isClose = NO;
+           // [self.closeAndSetButton setImage:[UIImage imageNamed:@"check_3.png"] forState:UIControlStateNormal];
 
         }
     }
@@ -230,9 +232,16 @@
 
 -(CGRect) getRect{
     CGFloat collectionInsect;
+
     if(IS_IPAD) {
-        collectionInsect = 108;
+
+        if(self.isIpadPortraitView){
+            collectionInsect = 118;
+        } else {
+            collectionInsect = 108;
+        }
     } else {
+
         if(IS_568_SCREEN){
             collectionInsect = 72;
         } else {
@@ -318,8 +327,21 @@
 - (void)drawRect:(CGRect)rect
 {
     [self.cellSubView setFrame:CGRectMake(0, 0, rect.size.width -4, rect.size.height - 4)];
+
+    CGFloat closeCheckWidth;
+    if(IS_IPAD) {
+        closeCheckWidth = 36.;
+    } else {
+        closeCheckWidth = 28.;
+
+    }
+    [self.closeAndSetButton setFrame:CGRectMake(rect.size.width-closeCheckWidth*2/3-4,
+                                                -closeCheckWidth/3-4,
+                                                closeCheckWidth, closeCheckWidth)];
     // Drawing code
 }
+
+
 
 
 @end
