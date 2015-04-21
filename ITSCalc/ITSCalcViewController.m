@@ -44,6 +44,8 @@
 #import "NoticeButton.h"
 #import "DelButton.h"
 #import "DownButton.h"
+#import "AboutViewController.h"
+
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -54,8 +56,12 @@
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
+//important
 #define TIME_INTERVAL_FROM_LAST_ALERT 40.//86400.//for one day 43200. //need to be setted as 12 hours - 43 000;
-#define FREE_TRIAL_PERIOD 2592000. // for thirtee trial period
+
+//important
+#define FREE_TRIAL_PERIOD 2592000. // for thirtee days trial period
+
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 #define IS_BLACK_MODE NO
@@ -124,7 +130,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (nonatomic, strong) SKProduct *product;
 
 @property (nonatomic) BOOL wasPurshaised;
+
 @property (nonatomic) BOOL isTrialPeriod;
+@property (nonatomic) NSInteger daysLastShowedTrialPeriod;// ask user after 10, 20, 25, 29 to buy whole version
 //iAd banner
 @property (weak, nonatomic) IBOutlet UIView *bannerContainerView;
 @property (weak, nonatomic) IBOutlet ADBannerView *iAdBanner;
@@ -477,7 +485,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 - (IBAction)defaultKeyboardbuttonTapped:(id)sender
 {
     UIAlertView *alert;
-    if(self.wasPurshaised){
+    if(self.wasPurshaised || self.isTrialPeriod){
         alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
                                                     message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
                                                    delegate:self
@@ -1391,6 +1399,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                         [self showHintViewAccordingCounter];
 
                     }
+                    //show about view
+                    int64_t delayInSeconds = 0.05;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                                
+                    [self showAboutView];
+                    });
                     
                 }else if ([title isEqualToString:@"∓"]){
                     if(self.userIsInTheMidleOfEnteringNumber){
@@ -1712,7 +1727,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height - self.labelViewHeight;
 
             //allow show settings button only in paid version
-            if(self.wasPurshaised) self.settingsButton.hidden = NO;
+            if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = NO;
             self.downButton.hidden = NO;
             //[self.buttonsCollection reloadData];
             
@@ -1735,12 +1750,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                  self.display.alpha = .0;
                                  
                                  //allow show settings button only in paid version
-                                 if(self.wasPurshaised) self.settingsButton.alpha = 1.;
+                                 if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 1.;
                                  self.downButton.alpha = 1.;
                                  
                              } completion:^(BOOL finihed){
                                 
-                                 if(!self.wasPurshaised){
+                                 if(!(self.wasPurshaised|| self.isTrialPeriod)){
                                          //enable buttons to buy product
                                     self.keyboardDefaultButton.enabled = NO;
                                     [self.keyboardDefaultButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
@@ -1922,7 +1937,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self.SettingsView setFrame:settingsViewframe];
         [self.settingsBackgroundToolBar setFrame:settingsViewframe];
         
-        if(!self.wasPurshaised){
+        if(!self.wasPurshaised || self.isTrialPeriod){
             //enable buttons to buy product
             self.keyboardDefaultButton.enabled = NO;
             [self.keyboardDefaultButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
@@ -2107,7 +2122,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          self.upButton.alpha = 0.;
                          self.deleteButton.alpha = 0.;
                          //allow show settings button only in paid version
-                         if(self.wasPurshaised) self.settingsButton.alpha = 0.;
+                         if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 0.;
                          self.downButton.alpha = 0.;
                          
                          self.display.alpha = 1.;
@@ -2123,14 +2138,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                          self.upButton.hidden = YES;
                          self.deleteButton.hidden = YES;
                          //allow show settings button only in paid version
-                         if(self.wasPurshaised) self.settingsButton.hidden = YES;
+                         if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = YES;
                          self.downButton.hidden = YES;
                          self.isSettingsViewOnScreen = NO;
                          self.isBottomSettingsViewOnScreen = NO;
                          self.SettingsView.hidden = YES;
                          self.settingsBackgroundToolBar.hidden = YES;
                          
-                         if(!self.wasPurshaised){
+                         //think about it
+                         if(!(self.wasPurshaised|| self.isTrialPeriod) ){
                              [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
                          }
                          if(self.isSoundOn){
@@ -4423,7 +4439,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
     
     self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    if(self.wasPurshaised){
+    if(self.wasPurshaised || self.isTrialPeriod){
         [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
     } else {
         [self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
@@ -5597,7 +5613,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGFloat yDisplayCenter = self.displayContainer.frame.size.height/2;
     CGFloat widthdisplay = self.displayContainer.frame.size.width;
 
-    if(self.wasPurshaised){
+    if(self.wasPurshaised || self.isTrialPeriod){
         self.downButton.center = CGPointMake(widthdisplay*2/3, yDisplayCenter);
         
         self.settingsButton.center = CGPointMake(widthdisplay/3, yDisplayCenter);
@@ -5797,7 +5813,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [defaults synchronize];
 }
 
-
 -(void) appWillTerminate
 
 
@@ -5816,6 +5831,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [super viewWillDisappear:animated];
 
 }
+#pragma mark ABOUT VIEW
+-(void) showAboutView
+{
+    AboutViewController *aboutController = [[AboutViewController alloc] initWithController:self];
+    [self presentViewController:aboutController animated:NO completion:^{
+        nil;
+    }];
+}
+
 #pragma mark KEY VALUE STORAGE
 -(void) setKeyValuesFromStorage
 {
