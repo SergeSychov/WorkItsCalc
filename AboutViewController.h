@@ -7,15 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "LogoView.h"
+#import "AppearedViewController.h"
 
-@interface AboutViewController : UIViewController
 
--(id)initWithController:(UIViewController*)controller;
+@interface AboutViewController : AppearedViewController
 
-@property (nonatomic,weak) UIView* copiedView;
-@property (nonatomic, weak) LogoView* mainView;
+-(id)initWithController:(UIViewController*)controller daysLeft:(NSInteger)days;
+
 @property (nonatomic) NSInteger daysNumber;
+
+@property (nonatomic,weak) NSString* trialTextString;
+@property (nonatomic,weak) NSString* continueString;
+@property (nonatomic,weak) NSString* buyString;
+@property (nonatomic,weak) NSString* moreString;
+@property (nonatomic,weak) NSString* daysString;
 
 
 @end

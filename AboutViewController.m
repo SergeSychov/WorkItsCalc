@@ -7,19 +7,19 @@
 //
 
 #import "AboutViewController.h"
-#import "LogoView.h"
-#import "OnlyLogoView.h"
+#import "LogoTextView.h"
+#import "AdditionViewController.h"
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#define INDENT 20.0f
 
 
 @interface AboutViewController ()
 
 @property (nonatomic, weak) UIImageView *logoView;
-@property (nonatomic, weak) UILabel *appName;
+@property (nonatomic,weak) LogoTextView *logoTextView;
 @property (nonatomic, weak) UILabel *appRight;
 @property (nonatomic,weak) UILabel *trialText;
-@property (nonatomic,weak) UILabel *trialPeriod;
 @property (nonatomic, weak) UIButton *infoButton;
 
 @property (nonatomic,weak) UILabel *lost;
@@ -27,425 +27,304 @@
 @property (nonatomic,weak) UILabel *lostDays;
 
 
-@property (nonatomic, weak) UIButton *cancelButton;
+@property (nonatomic, weak) UIButton *continueButton;
 @property (nonatomic, weak) UIButton *buyButton;
-@property (nonatomic) BOOL direction;
+
+@property (nonatomic) CGSize mainFontSize;
+@property (nonatomic) CGSize secondFontSize;
 
 @end
 
 @implementation AboutViewController
--(BOOL) prefersStatusBarHidden
+
+# pragma mark LAZY INITIALIZATION
+//lazy initialization
+-(NSString*) trialTextString
 {
-    return YES;
+    if(!_trialTextString){
+        if(self.daysNumber <0){
+            _trialTextString = @"Триал период завершен. Дополнительные возможности будут отключены.";
+        } else {
+            _trialTextString = @"тестируйте преимущества дополнительных функций";
+        }
+    }
+    
+    return _trialTextString;
 }
+
+-(NSString*) continueString
+{
+    if(!_continueString){
+        if(self.daysNumber < 0){
+            _continueString = @"продолжить";
+        } else {
+            _continueString = @"продолжить триал период";
+        }
+    }
+    return _continueString;
+}
+
+-(NSString*) buyString
+{
+    if(!_buyString){
+        _buyString = @"приобрести дополнения";
+    }
+    return _buyString;
+}
+
+-(NSString*) moreString
+{
+    if(!_moreString){
+        _moreString = @"еще";
+    }
+    return _moreString;
+}
+
+-(NSString*) daysString
+{
+    if(!_daysString){
+        _daysString = @"дней";
+    }
+    return _daysString;
+}
+
 -(NSInteger)  daysNumber {
-    
-    return 30;
+    if(!_daysNumber){
+        _daysNumber = 30;
+    }
+    return _daysNumber;
 }
 
-- (UIImage *)imageFromLayer:(CALayer *)layer
-{
-    UIGraphicsBeginImageContext([layer frame].size);
-    [layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return outputImage;
-}
+-(id)initWithController:(UIViewController*)controller daysLeft:(NSInteger)days{
 
--(UIView*)viewFromParentController:(UIViewController*)controller
-{
-    CGRect needFrame = controller.view.frame;
-    
-    UIView *newview = [[UIView alloc] initWithFrame:needFrame];
-    newview.layer.contents = (id)[self imageFromLayer:controller.view.layer].CGImage;
-    
-    return newview;
-}
-
--(id)initWithController:(UIViewController*)controller
-{
-    self = [super init];
+    self = [super initWithController:controller];
     if(self){
-        self.copiedView = [self viewFromParentController:controller];
-        [self.view addSubview:self.copiedView];
-        _direction = YES;
-        
+        //self.copiedView = [self viewFromParentController:controller];
+        self.daysNumber = days;
+        //_appearensFromTop = YES;
     }
     
     return self;
 }
 
-
--(void) userPressedMoreButton:(id)sender
+#pragma mark PRESSED ACTION
+-(void) userPressedInfoButton:(id)sender
 {
-
-}
-
-
-
--(LogoView*) mainView
-{
-    if(!_mainView){
-        
-        //logo view
-        LogoView *mainView = [[LogoView alloc] initWithFrame:self.view.bounds];
-        mainView.alpha = 0.;
-        
-        //app name label
-        CGRect appNameRect = CGRectMake(100,
-                                        0,
-                                        self.view.bounds.size.width - 200,
-                                        self.view.bounds.size.height/10);
-        UILabel *appNameLabel = [[UILabel alloc] initWithFrame:appNameRect];
-        appNameLabel.center = CGPointMake(self.view.center.x, self.view.center.y*3/4);
-        
-        UIFont *font = [UIFont systemFontOfSize:36];;
-        UIColor *textColor = [UIColor whiteColor];
-        NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        style.alignment = NSTextAlignmentCenter;
-        style.lineHeightMultiple = 0;
-        
-        NSDictionary *attributes = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,textColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
-        
-        NSAttributedString *stringItsCalc = [[NSAttributedString alloc] initWithString:@"Its Calc" attributes:attributes];
-        [appNameLabel setAttributedText:stringItsCalc];
-
-        [appNameLabel setBackgroundColor:[UIColor clearColor]];
-        [mainView addSubview:appNameLabel];
-        _appName = appNameLabel;
-        
+    NSLog(@"User Press Info Button");
+    AdditionViewController *additionController = [[AdditionViewController alloc] initWithController:self];
+    self.appearens = NO;
+    additionController.direction = YES;
+    additionController.mainViewBackGroundColor = self.mainViewBackGroundColor;
     
-        //trialPeriod
-        CGFloat bottomOfAppName = self.appName.frame.origin.y + self.appName.frame.size.height -10 ;
-        UILabel *trialPeriod = [[UILabel alloc] initWithFrame:CGRectMake(20,
-                                                                            bottomOfAppName,
-                                                                            self.view.bounds.size.width - 40, self.appName.frame.size.height/4)];
-        font = [UIFont systemFontOfSize:12];
-        textColor = [UIColor whiteColor];
-        NSMutableParagraphStyle *styleTwo = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        styleTwo.alignment = NSTextAlignmentCenter;
-        styleTwo.lineHeightMultiple = 0;
-        
-        
-        NSDictionary *attributesTrial = [[NSDictionary alloc] initWithObjectsAndKeys:[styleTwo copy], NSParagraphStyleAttributeName,textColor, NSForegroundColorAttributeName, font, NSFontAttributeName , @2.8, NSKernAttributeName, nil];
-        
-        NSAttributedString *returnStr = [[NSAttributedString alloc] initWithString:@"trial period" attributes:attributesTrial];
-
-
-        [trialPeriod setAttributedText:returnStr];
-        trialPeriod.font = [UIFont systemFontOfSize:17 weight:0.1];
-        trialPeriod.adjustsFontSizeToFitWidth = YES;
-        _trialPeriod = trialPeriod;
-        
-        [mainView addSubview:trialPeriod];
-        
-        //app logo
-        CGFloat logoHeight = self.appName.frame.origin.y - 40;
-
-        CGRect logoRect = CGRectMake((self.view.bounds.size.width - logoHeight)/2,
-                                     20,
-                                     logoHeight,
-                                     logoHeight);
-        UIImageView *logoView = [[UIImageView alloc] initWithFrame:logoRect];
-        logoView.image = [UIImage imageNamed:@"Logo.png"];
-        [logoView setBackgroundColor:[UIColor clearColor]];
-        [mainView addSubview:logoView];
-        self.logoView = logoView;
-
-        //trial text
-        //CGFloat bottomOfAppName = self.appName.frame.origin.y + self.appName.frame.size.height;
-        UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        infoButton.tintColor = [UIColor whiteColor];
-
-        CGFloat yCenterTwoLbels = (appNameLabel.center.y+trialPeriod.center.y)/2;
-        [infoButton setCenter:CGPointMake(appNameLabel.frame.origin.x +appNameLabel.frame.size.width + 1.5* infoButton.frame.size.width ,
-                                              yCenterTwoLbels)];
-       
-        
-        UILabel *trialTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(15,
-                                                                           bottomOfAppName + 15,
-                                                                            self.view.bounds.size.width - 40, logoHeight/2)];
-        [trialTextLabel setText:@"Испытывайте преимущества полной версии приложения"];
-        trialTextLabel.font = [UIFont systemFontOfSize:40 weight:0.1];
-        trialTextLabel.adjustsFontSizeToFitWidth = YES;
-        trialTextLabel.numberOfLines = 0;
-        trialTextLabel.textAlignment = NSTextAlignmentCenter;
-        trialTextLabel.textColor = [UIColor whiteColor];
-        _trialText = trialTextLabel;
-        [mainView addSubview:trialTextLabel];
-
-        _infoButton = infoButton;
-        [mainView addSubview:infoButton];
-        
-        
-        //copyRight
-        
-        CGRect appRightRect = CGRectMake(10,
-                                         self.view.bounds.size.height-25,
-                                         self.view.bounds.size.width-20,
-                                         20);
-        UILabel *appRightLabel = [[UILabel alloc] initWithFrame:appRightRect];
-        [appRightLabel setText:@"Copyright (c) 2015 Serge Sychov. All rights reserved."];
-        
-        appRightLabel.textAlignment = NSTextAlignmentCenter;
-        appRightLabel.textColor = [UIColor whiteColor];
-        [appRightLabel setBackgroundColor:[UIColor clearColor]];
-        appRightLabel.font = [UIFont systemFontOfSize:17 weight:.1];
-        
-        appRightLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-        appRightLabel.adjustsFontSizeToFitWidth = YES;
-        [mainView addSubview:appRightLabel];
-        _appRight = appRightLabel;
-        
-        //buttons
-        
-        CGFloat buttonWidth = (self.view.bounds.size.width)/2 - 10;
-        
-        font = [UIFont systemFontOfSize:20];
-        textColor = [UIColor whiteColor];
-        NSMutableParagraphStyle *buttonStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        buttonStyle.alignment = NSTextAlignmentCenter;
-        //buttonStyle.lineHeightMultiple = 0;
-        //buttonStyle.lineBreakMode = NSLineBreakByWordWrapping;
-        
-        NSDictionary *buttonAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:[buttonStyle copy], NSParagraphStyleAttributeName,textColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
-        
-        NSAttributedString *continueString = [[NSAttributedString alloc] initWithString:@"продолжить триал период" attributes:buttonAttributes];
-        NSAttributedString *buyString = [[NSAttributedString alloc] initWithString:@"получить полную версию" attributes:buttonAttributes];
-        
-        NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-        CGSize needSize = CGSizeMake(buttonWidth, 1000);
-        CGRect needRectForcontinueString = [continueString boundingRectWithSize:needSize options:NSStringDrawingUsesLineFragmentOrigin context:drawContext];
-        CGRect needRectForBuyString = [buyString boundingRectWithSize:needSize options:NSStringDrawingUsesFontLeading context:drawContext];
-        
-        //choose maximum of two heights
-        CGFloat buttonHeight = (needRectForcontinueString.size.height > needRectForBuyString.size.height)? needRectForcontinueString.size.height : needRectForBuyString.size.height;
-        
-        
-        CGFloat buttonOriginY = appRightLabel.frame.origin.y - buttonHeight - 15;
-
-        UIButton *buyButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        buyButton.contentMode = UIViewContentModeRedraw;
-        [buyButton setFrame:CGRectMake(5,
-                                          buttonOriginY,
-                                          buttonWidth,
-                                          buttonHeight)];
-        
-        buyButton.tintColor = [UIColor whiteColor];
-        [buyButton addTarget:self action:@selector(userPressedCancelButton:) forControlEvents:UIControlEventTouchUpInside];
-        buyButton.backgroundColor = [UIColor clearColor];
-        [buyButton setTitle:[buyString string] forState:UIControlStateNormal];
-        buyButton.titleLabel.numberOfLines = 0;
-        buyButton.titleLabel.font = font;
-        buyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        [mainView addSubview:buyButton];
-        _buyButton = buyButton;
-        
-        UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        cancelButton.contentMode = UIViewContentModeRedraw;
-        [cancelButton setFrame:CGRectMake(self.view.center.x + 5,buttonOriginY,
-                                       buttonWidth,
-                                       buttonHeight)];
-        
-        cancelButton.tintColor = [UIColor whiteColor];
-        [cancelButton addTarget:self action:@selector(userPressedCancelButton:) forControlEvents:UIControlEventTouchUpInside];
-        cancelButton.backgroundColor = [UIColor clearColor];
-        [cancelButton setTitle:[continueString string] forState:UIControlStateNormal];
-        cancelButton.titleLabel.numberOfLines = 0;
-        cancelButton.titleLabel.font = font;
-        cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        [mainView addSubview:cancelButton];
-        _cancelButton = cancelButton;
-        
-        //add days information
-        //1. findon therd part buttom of trail Text - top of buttons
-        CGFloat bottomOfTrialText = trialTextLabel.frame.origin.y + trialTextLabel.frame.size.height;
-        CGFloat thirdPart = (buyButton.frame.origin.y - bottomOfTrialText)/3;
-        CGPoint centerDaysNumber = CGPointMake(self.view.center.x,bottomOfTrialText + 3*thirdPart/2);
-        CGFloat heightOfDays = thirdPart*1.3;
-        
-        UILabel * days = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, heightOfDays, heightOfDays)];
-        [days setCenter:centerDaysNumber];
-        days.text= [@(self.daysNumber) stringValue];
-        days.textAlignment = NSTextAlignmentCenter;
-        days.font = [UIFont systemFontOfSize:heightOfDays/1.1];
-        days.textColor = [UIColor whiteColor];
-        [mainView addSubview:days];
-        _days = days;
-        
-        //@property (nonatomic,weak) UILabel *lost;
-        CGFloat lostAndDaysLabelsWidth = centerDaysNumber.x - 15 - 1.5 * days.bounds.size.width/2;
-        
-        UILabel *lost = [[UILabel alloc] initWithFrame:CGRectMake(15,
-                                                                  centerDaysNumber.y - heightOfDays/4,
-                                                                  lostAndDaysLabelsWidth,
-                                                                  heightOfDays/2)];
-        
-        UILabel *lostDays = [[UILabel alloc] initWithFrame:CGRectMake(days.frame.origin.x+2.5*days.frame.size.width/2,
-                                                                      centerDaysNumber.y - heightOfDays/4,
-                                                                      lostAndDaysLabelsWidth,
-                                                                      heightOfDays/2)];
-        lost.text = @"еще";
-        lostDays.text = @"дней";
-        
-        lost.textAlignment = NSTextAlignmentCenter;
-        lostDays.textAlignment = NSTextAlignmentCenter;
-        
-        lost.font = [UIFont systemFontOfSize:heightOfDays/2.2];
-        lostDays.font = [UIFont systemFontOfSize:heightOfDays/2.2];
-        
-        lost.textColor = [UIColor whiteColor];
-        lostDays.textColor = [UIColor whiteColor];
-        
-        [mainView addSubview:lost];
-        _lost = lost;
-        [mainView addSubview:lostDays];
-        _lostDays = lostDays;
-        
-        
-       // @property (nonatomic,weak) UILabel *lostDays;
-        
-
-        [self.view insertSubview:mainView atIndex:1];
-        _mainView = mainView;
-    }
-    
-    return _mainView;
-}
-
-
--(void) setCopiedView:(UIView *)copiedView
-{
-    _copiedView = copiedView;
-    [self.view setNeedsDisplay];
-    
-}
-
-- (void) viewDidAppear:(BOOL)animated
-{
-    if(self.direction){
-        [self.mainView setFrame:self.view.frame];
-        [self.logoView setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.trialPeriod setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.trialText setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.cancelButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.buyButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.appName setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.appRight setTransform:CGAffineTransformMakeScale(8., 8.)];
-        
-        [self.infoButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.lost setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.days setTransform:CGAffineTransformMakeScale(8., 8.)];
-        [self.lostDays setTransform:CGAffineTransformMakeScale(8., 8.)];
-
-        UIViewAnimationOptions option = UIViewAnimationOptionBeginFromCurrentState;
-        
-        [UIView animateWithDuration: 0.4
-                              delay: 0
-                            options: option
-                         animations:^{
-                             
-                             // self.copiedView.transform = CGAffineTransformScale(CGAffineTransformIdentity, .9, .9);
-                             [self.copiedView setTransform:CGAffineTransformMakeScale(0.8, 0.8)];//(.8, .8)];
-                             [self.logoView setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.trialPeriod setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.trialText setTransform:CGAffineTransformMakeScale(1., 1.)];
-
-                             [self.cancelButton setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.buyButton setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.appName setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.appRight setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             
-                             [self.infoButton setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.lost setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.days setTransform:CGAffineTransformMakeScale(1., 1.)];
-                             [self.lostDays setTransform:CGAffineTransformMakeScale(1., 1.)];
-
-                             self.mainView.alpha = 1;
-                             //self.blurView.alpha = 1.;
-                         }
-                         completion:^(BOOL finished) { }
-         ];
-        
-    }
-    
-}
--(void) dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
-{
-    [UIView animateWithDuration: 0.3
-                          delay: 0
-                        options: UIViewAnimationOptionOverrideInheritedCurve
-                     animations:^{
-                         
-                         // self.copiedView.transform = CGAffineTransformScale(CGAffineTransformIdentity, .9, .9);
-                         [self.copiedView setTransform:CGAffineTransformMakeScale(1., 1.)];
-                         [self.logoView setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.trialPeriod setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.trialText setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.cancelButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.buyButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.appName setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.appRight setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         
-                         [self.infoButton setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.lost setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.days setTransform:CGAffineTransformMakeScale(8., 8.)];
-                         [self.lostDays setTransform:CGAffineTransformMakeScale(8., 8.)];
-
-                         
-                         self.mainView.alpha = 0.;
-                         //self.blurView.alpha = 0.;
-                         
-                     }
-                     completion:^(BOOL finished) { [super dismissViewControllerAnimated:NO completion:completion];}];
-    
-}
-
--(void) userPressedCancelButton:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:^{
+    [self presentViewController:additionController animated:NO completion:^{
         nil;
     }];
 }
 
--(void)viewDidLayoutSubviews{
-    /*
-    //[self.copiedView setFrame:self.view.bounds];
-    [self.mainView setFrame:self.view.bounds];
-    //CGFloat buttonHeight = 30.;
-    //[self.cancelButton setFrame:CGRectMake(0,
-                                      (self.view.bounds.size.height-buttonHeight)*2/3,
-                                      self.view.bounds.size.width,
-                                      buttonHeight)];
-    
-    
-    CGRect logoRect = CGRectMake(0, self.view.bounds.size.height/15, self.view.bounds.size.width, self.view.bounds.size.height/3);
-    [self.logoView setFrame:logoRect];
-     */
+-(void) userPressedCancelButton:(UIButton*)sender
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        if([sender.titleLabel.text isEqualToString:self.buyString]){
+            [self.delegate aboutControllerDidCloseWithString:@"BUY"];
+           
+        } else if ([sender.titleLabel.text isEqualToString:self.continueString]){
+            if(self.daysNumber > 0){ //if continue trial period
+                [self.delegate aboutControllerDidCloseWithString:@"CONTINUE"];
+            } else { //if work without addition after trial period is finished
+                [self.delegate aboutControllerDidCloseWithString:@"CLOSE"];
+            }
+        }
+    }];
 }
 
+#pragma mark ADD_AND_LAYOUT_SUBVIEWS
+-(void) subViewLayoutWithRect:(CGRect) rect;
+{
+    [self.logoView setFrame:CGRectMake(INDENT,
+                                       INDENT,
+                                       rect.size.width - 2*INDENT,
+                                       rect.size.height/3 -2*INDENT)];
+    
+    //calculate parts for labels layout
+    CGFloat startHeight = rect.size.height/3;
+    CGFloat heightPart = (rect.size.height*2/3 - 2*INDENT)/4;
+    
+    //set frame for itsCalc and get font size
+    CGFloat itcCalcFontSize =[self.logoTextView setFrameAndReturnStringAccordingHeight:heightPart];
+    
+    CGRect rct = self.logoTextView.frame;
+    rct.origin.y = startHeight;
+    rct.origin.x = (rect.size.width - rct.size.width)/2;
+    [self.logoTextView setFrame:rct];
+    
+    [self.infoButton setCenter:CGPointMake(rct.origin.x + rct.size.width + INDENT, self.logoTextView.center.y + INDENT/2)];
+    
+    //get font sizes from logo view
+    UIFont *secondFont = [UIFont systemFontOfSize:itcCalcFontSize/2];
+    UIFont *daysFont = [UIFont systemFontOfSize:itcCalcFontSize*1.63];
+    
+    CGRect rectForTrialText;// = CGRectMake(INDENT, startHeight + heightPart, rect.size.width - 2*INDENT, heightPart);
+    
+    //show these labels only at trial period
+    if(self.daysNumber >= 0) {
+        rectForTrialText = CGRectMake(INDENT, startHeight + heightPart, rect.size.width - 2*INDENT, heightPart);
+        [self.trialText setFont:secondFont];
+        [self.trialText setFrame:rectForTrialText];
+        //setFrames for days
+        CGRect rctForDays = CGRectMake((rect.size.width - 1.5*heightPart)/2, startHeight +2*heightPart, 1.5*heightPart, heightPart);
+        [self.days setFont:daysFont];
+        [self.days setFrame:rctForDays];
+        
+        //set frame for "more"
+        CGRect rctForMore = CGRectMake(INDENT, startHeight +2*heightPart + heightPart/4, (rect.size.width - 1.5*heightPart)/2 - 2*INDENT, heightPart/2);
+        [self.lost setFont:secondFont];
+        [self.lost setFrame:rctForMore];
+    
+        //set frame for "lostDays"
+        CGRect rctForLosDays = CGRectMake(rctForDays.origin.x + rctForDays.size.width + INDENT, startHeight +2*heightPart + heightPart/4, (rect.size.width -1.5* heightPart)/2 - 2*INDENT, heightPart/2);
+        [self.lostDays setFont:secondFont];
+        [self.lostDays setFrame:rctForLosDays];
+    } else {
+        rectForTrialText = CGRectMake(INDENT, startHeight + 1.5*heightPart, rect.size.width - 2*INDENT, 1.5*heightPart);
+        
+    }
+
+    [self.trialText setFont:daysFont];
+    [self.trialText setFrame:rectForTrialText];
+    
+    //setFrames for button
+    CGRect rctForButton = CGRectMake(INDENT/2, startHeight+3*heightPart, rect.size.width/2 - INDENT, heightPart);
+    [self.continueButton.titleLabel setFont:secondFont];
+    [self.buyButton.titleLabel setFont:secondFont];
+    
+    [self.continueButton setFrame:rctForButton];
+    
+    rctForButton.origin.x = rect.size.width/2+INDENT/2;
+    [self.buyButton setFrame:rctForButton];
+    
+    //set frame for app rights
+    CGRect appRightRect = CGRectMake(INDENT,
+                                     rect.size.height-2*INDENT,
+                                     rect.size.width-INDENT,
+                                     INDENT);
+    [self.appRight setFrame:appRightRect];
+
+}
+
+-(void) addNeededSubviewsOnMainView
+{
+    //set logo view
+    UIImageView *logoImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Logo.png"]];
+    [logoImg setContentMode:UIViewContentModeScaleAspectFit];
+    [self.mainView addSubview:logoImg];
+    self.logoView = logoImg;
+    
+    UIColor* textColor = [UIColor whiteColor];
+    
+    //set logoTextView
+    LogoTextView *logoTextView = [[LogoTextView alloc] init];
+    [logoTextView setContentMode:UIViewContentModeRedraw];
+    [logoTextView setBackgroundColor:[UIColor clearColor]];
+    [logoTextView setTextColor:textColor];
+    [self.mainView addSubview:logoTextView];
+    _logoTextView = logoTextView;
+    
+    //set info button
+    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    infoButton.tintColor = textColor;
+    [infoButton addTarget:self action:@selector(userPressedInfoButton:) forControlEvents:UIControlEventTouchUpInside];
+    [self.mainView addSubview:infoButton];
+    _infoButton = infoButton;
+    
+    //set explanation trial tex
+    UILabel *trialTextLabel = [[UILabel alloc] init];
+    [trialTextLabel setText:self.trialTextString];
+    trialTextLabel.adjustsFontSizeToFitWidth = YES;
+    trialTextLabel.numberOfLines = 0;
+    trialTextLabel.textAlignment = NSTextAlignmentCenter;
+    trialTextLabel.textColor = textColor;
+    [self.mainView addSubview:trialTextLabel];
+    _trialText = trialTextLabel;
+    
+    
+    
+    //don't show these labels if trial is finished
+    if(self.daysNumber >= 0){
+        //set days
+        UILabel * days = [[UILabel alloc] init];
+        days.text= [@(self.daysNumber) stringValue];
+        days.textAlignment = NSTextAlignmentCenter;
+        days.textColor = textColor;
+        [self.mainView addSubview:days];
+        _days = days;
+        
+        UILabel *lost = [[UILabel alloc] init];
+        UILabel *lostDays = [[UILabel alloc] init];
+        
+        lost.text = self.moreString;
+        lostDays.text = self.daysString;
+        
+        lost.textAlignment = NSTextAlignmentRight;
+        lostDays.textAlignment = NSTextAlignmentLeft;
+        
+        lost.textColor = textColor;
+        lostDays.textColor = textColor;
+        
+        [self.mainView addSubview:lost];
+        [self.mainView addSubview:lostDays];
+        _lost = lost;
+        _lostDays = lostDays;
+    }
+    
+    //set buttons
+    //buy button
+    UIButton *buyButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    buyButton.contentMode = UIViewContentModeRedraw;
+    buyButton.tintColor = textColor;
+    [buyButton addTarget:self action:@selector(userPressedCancelButton:) forControlEvents:UIControlEventTouchUpInside];
+    buyButton.backgroundColor = [UIColor clearColor];
+    [buyButton setTitle:self.buyString forState:UIControlStateNormal];
+    buyButton.titleLabel.numberOfLines = 0;
+    buyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.mainView addSubview:buyButton];
+    _buyButton = buyButton;
+    
+    //continue button
+    UIButton *continueButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    continueButton.contentMode = UIViewContentModeRedraw;
+    continueButton.tintColor = textColor;
+    [continueButton addTarget:self action:@selector(userPressedCancelButton:) forControlEvents:UIControlEventTouchUpInside];
+    continueButton.backgroundColor = [UIColor clearColor];
+    [continueButton setTitle:self.continueString forState:UIControlStateNormal];
+    continueButton.titleLabel.numberOfLines = 0;
+    continueButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.mainView addSubview:continueButton];
+    _continueButton = continueButton;
+    
+    //copyRight
+    UILabel *appRightLabel = [[UILabel alloc] init];
+    [appRightLabel setText:@"Copyright (c) 2015 Serge Sychov. All rights reserved."];
+    appRightLabel.textAlignment = NSTextAlignmentCenter;
+    appRightLabel.textColor = textColor;
+    [appRightLabel setBackgroundColor:[UIColor clearColor]];
+    appRightLabel.font = [UIFont systemFontOfSize:17 weight:.1];
+    appRightLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+    appRightLabel.adjustsFontSizeToFitWidth = YES;
+    [self.mainView addSubview:appRightLabel];
+    _appRight = appRightLabel;
+
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.view addSubview:self.copiedView];
-    // Do any additional setup after loading the view.
-    //[self setMotionEffectToView:self.copiedView];
+    //[self.view addSubview:self.copiedView];
+
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
