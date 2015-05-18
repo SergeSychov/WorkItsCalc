@@ -60,16 +60,21 @@
 #define TIME_INTERVAL_FROM_LAST_ALERT 40.//86400.//for one day 43200. //need to be setted as 12 hours - 43 000;
 
 //important
+//think it isn't need
 #define FREE_TRIAL_PERIOD 2592000. // for thirtee days trial period
-
+#define DAYS_ALOWED_TRIAL_PERIOD 30. //not shure tha its needed
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 #define IS_BLACK_MODE NO
+#define INDENT 20.0f
+
 
 NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
+NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
+NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, AppearedViewControllerProtocol>
 
 
 //outlets
@@ -80,6 +85,8 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 @property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
+//important not shure its need
+@property (nonatomic) UIDeviceOrientation wasRotatedNotificationAnotherController;
 @property (nonatomic) BOOL willBePortraitRotated;
 //necessary height of element for 3,5" screen
 @property (nonatomic) CGFloat histroryTableViewHeight;
@@ -122,7 +129,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (weak, nonatomic) IBOutlet UIView *dynamicContainer;
 @property (nonatomic) CGFloat wasDynamicOriginY;
 @property (weak, nonatomic) IBOutlet HistoryTableSviper *historyTableSviper;
-//@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *swipeGesturerecognizer;
 @property (nonatomic) CGPoint svipeGestureLocation;
 
 
@@ -131,8 +137,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (nonatomic) BOOL wasPurshaised;
 
+//important for trial period
+//set in icloud user default by the big chenges verion or start. first value Yes
 @property (nonatomic) BOOL isTrialPeriod;
-@property (nonatomic) NSInteger daysLastShowedTrialPeriod;// ask user after 10, 20, 25, 29 to buy whole version
+//set in icloud user default by the big chenges verion or start
+@property (nonatomic, strong) NSDate *startTrialDate;
+//set in icloud user default, by the big chenges version or start, first value is 20 days,
+@property (nonatomic) NSInteger nexNeedShovewTrialViewDay;// ask user 1, 5, 10, 20 to the end of trial period to buy whole version
 //iAd banner
 @property (weak, nonatomic) IBOutlet UIView *bannerContainerView;
 @property (weak, nonatomic) IBOutlet ADBannerView *iAdBanner;
@@ -162,9 +173,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (weak, nonatomic) IBOutlet UISwitch *soundSwitcher;
 
 @property (weak, nonatomic) IBOutlet SoundView *soundOff;
-//@property (weak, nonatomic) IBOutlet UIImageView *soundOffView;
 @property (weak, nonatomic) IBOutlet SoundView *soundOn;
-//@property (weak, nonatomic) IBOutlet UIImageView *soundOnView;
 
 @property (nonatomic) BOOL isSoundOn;
 
@@ -191,6 +200,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @property (weak, nonatomic) IBOutlet UIButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
+@property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
 //add spin activity to show process of purchaising
 @property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
 
@@ -481,11 +491,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
 
+- (IBAction)buyAdditionsButtonTapped:(UIButton *)sender {
+    
+}
 
 - (IBAction)defaultKeyboardbuttonTapped:(id)sender
 {
+    //importand need to be changed
     UIAlertView *alert;
-    if(self.wasPurshaised || self.isTrialPeriod){
+    if(self.wasPurshaised /*|| self.isTrialPeriod*/){
         alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
                                                     message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
                                                    delegate:self
@@ -1391,6 +1405,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                     //
                     if(self.counterForShowingAllertView > 26){
                         if(self.fristLunchWithicloudAvailable){
+                            //Important set heere appeared view
                             [self askUserForiCloudStorage];
                         }
                     }
@@ -1398,14 +1413,43 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                         
                         [self showHintViewAccordingCounter];
 
+                        //important
+                    } //else {
+                        //Important show about view
+                        //1. Check if its a trilal period
+                        if(self.isTrialPeriod){
+                            //2. Calculate current value trila period in days(trialDays - (current - start trial time)). For its necessary setup start date and fix it in cloud storage
+                            NSInteger intervalSinceStartInDays = (NSInteger)[self.startTrialDate timeIntervalSinceNow];
+                            NSInteger daysToEndOfTrialPeriod = DAYS_ALOWED_TRIAL_PERIOD + intervalSinceStartInDays/20 ; //Important 86400;// (one day
+                            NSLog(@"daysToEndOfTrialPeriod %ld", (long)daysToEndOfTrialPeriod);//Important - clear
+    
+                            //3. Copare days with @property NSInteger* nexNeedShovewTrialView.
+                            //if(daysToEndOfTrialPeriod < self.nexNeedShovewTrialViewDay){
+                                if(daysToEndOfTrialPeriod < 4){
+                                    self.nexNeedShovewTrialViewDay = 1;
+                                } else if(daysToEndOfTrialPeriod < 9){
+                                    self.nexNeedShovewTrialViewDay = 5;
+                                } else if(daysToEndOfTrialPeriod < 20){
+                                    self.nexNeedShovewTrialViewDay = 10;
+                                }
+                                //[set the app purcase reuest!!!
+                                //and show about trila view
+                                int64_t delayInSeconds = 0.05;
+                                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                    //Importan. If days lees then 0, need ask user Buy or continue without additions
+                                    [self showAboutViewLeftDays:daysToEndOfTrialPeriod];
+                                });
+                                
+                           // }
+                            
+                            //4. If bigger - showAboutView and set days as argument
+                      //  }
+                        
+
+                        
+                        
                     }
-                    //show about view
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                                                
-                    [self showAboutView];
-                    });
                     
                 }else if ([title isEqualToString:@"∓"]){
                     if(self.userIsInTheMidleOfEnteringNumber){
@@ -1562,11 +1606,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             [muttableOutputArray addObject:@" ="];
         }
         self.lastRowDataArray = [muttableOutputArray copy];
-        /*
-        NSIndexPath *lasRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
-        [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lasRow]
-                                 withRowAnimation:UITableViewRowAnimationAutomatic];
-        */
 
     }
 }
@@ -1591,12 +1630,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [muttableOutputArray addObject:emptyArray];
     
     self.lastRowDataArray = [muttableOutputArray copy];
-
-   // NSIndexPath *lasRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
-    /*
-    [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lasRow]
-                             withRowAnimation:UITableViewRowAnimationNone];
-    */
     
 }
 
@@ -3883,7 +3916,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             self.heigthsOfNewRowsAccordingNewObjs = [mutDiction copy];
             //replace row above
             
-            //change heere or not shure
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             
         }
@@ -4287,260 +4319,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     _viewToPDF = viewToPDF;
    // [self.viewToPDF addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.viewToPDF action:@selector(drawLine:)]];
-}
-
-#pragma mark VIEW LAYOUT
-
--(void) setLayOutOfSettingsView:(CGRect)rect
-{
-    CGFloat mainHeight = rect.size.height;
-    CGFloat mainWidth = rect.size.width;
-    self.cloudOnView.on = YES;
-    self.cloudOffView.on = NO;
-    
-    self.soundOff.on = NO;
-    self.soundOn.on = YES;
-    
-    self.archivesizeBigView.isBig=YES;
-    self.archsizeViewSmall.isBig=NO;
-    
-    if(IS_IPAD){
-       // CGFloat measure = (mainHeight - self.displayContainer.frame.size.height )/ 4;
-        CGFloat measure = (mainHeight)/ 4;
-        CGFloat part = mainWidth /3; //
-        CGFloat startSectionOne = part / 4;
-        CGFloat startSectionTwo = startSectionOne + part + (part/2);
-
-        CGFloat centerFirstLine =startSectionOne + (part / 2);
-        CGFloat firstLinePicture = centerFirstLine - 85;
-        CGFloat secondLinePicture = centerFirstLine + 85;
-        
-        CGFloat centerSecondLine = startSectionTwo + (part / 2);
-        CGFloat thirstLinePicture = centerSecondLine - 85;
-        CGFloat fourLinePicture = centerSecondLine + 85;
-        
-
-        //line one part one
-        [self.smallButtonView setCenter:CGPointMake(firstLinePicture, measure)];
-        [self.bigbuttonView setCenter:CGPointMake(secondLinePicture, measure)];
-        [self.isBigSizeSwitcher setCenter:CGPointMake(centerFirstLine, measure)];
-        self.buttonSwitcherLabel.text = NAME_BUTTON_SWITCH;
-        [self.buttonSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.buttonSwitcherLabel setCenter:CGPointMake(centerFirstLine, measure - 60)];
-
-        //line one part two
-        [self.soundOff setCenter:CGPointMake(thirstLinePicture, measure)];
-        //[self.soundOffView setCenter:CGPointMake(thirstLinePicture, measure)];
-        [self.soundOn setCenter:CGPointMake(fourLinePicture, measure)];
-        //[self.soundOnView setCenter:CGPointMake(fourLinePicture, measure)];
-        [self.soundSwitcher setCenter:CGPointMake(centerSecondLine, measure)];
-        
-        self.soundSwitcherLabel.text = NAME_SOUND_SWITCH;
-        [self.soundSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.soundSwitcherLabel setCenter:CGPointMake(centerSecondLine, measure - 60)];
-
-        
-        
-        //line two part one
-        //[self.smallDataBaseView setCenter:CGPointMake(firstLinePicture, 2*measure)];
-        [self.archsizeViewSmall setCenter:CGPointMake(firstLinePicture, 2*measure)];
-        //[self.bigDataBaseView setCenter:CGPointMake(secondLinePicture, 2*measure)];
-        [self.archivesizeBigView setCenter:CGPointMake(secondLinePicture, 2*measure)];
-        [self.isBigDataBaseSwitcher setCenter:CGPointMake(centerFirstLine, 2*measure)];
-        self.archiveSwitcherLabel.text = NAME_ARCHIVE_SWITCH;
-        [self.archiveSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.archiveSwitcherLabel setCenter:CGPointMake(centerFirstLine, 2*measure - 60)];
-
-        
-        //line two part two
-        [self.cloudOffView setCenter:CGPointMake(thirstLinePicture, 2*measure)];
-        [self.cloudOnView setCenter:CGPointMake(fourLinePicture, 2*measure)];
-        [self.isiCloudUseSwitcher setCenter:CGPointMake(centerSecondLine, 2*measure)];
-        self.iCloudSwitcherName.text = NAME_ICLOUD_SWITCH;
-        [self.iCloudSwitcherName setBounds:CGRectMake(0,0, 250, 20)];
-        [self.iCloudSwitcherName setCenter:CGPointMake(centerSecondLine, 2*measure - 60)];
-
-        
-        //line three part one
-        [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
-        
-        //line three part two
-        [self.processSpinner setCenter:CGPointMake(centerSecondLine, 3*measure - 40)];
-        [self.keyboardDefaultButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
-        
-    } else {
-        //CGFloat measure = (mainHeight- self.displayContainer.frame.size.height )/ 7;
-         CGFloat measure = (mainHeight)/ 7;
-        CGRect smallButtonFrame = self.smallButtonView.frame;
-        smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
-        [self.smallButtonView setFrame:smallButtonFrame];
-    
-        CGRect bigButtonFrame = self.bigbuttonView.frame;
-        bigButtonFrame.origin.y = measure - bigButtonFrame.size.height / 2;
-        [self.bigbuttonView setFrame:bigButtonFrame];
-    
-        CGRect buttonsizeSwitcherFrame = self.isBigSizeSwitcher.frame;
-        buttonsizeSwitcherFrame.origin.y = measure - buttonsizeSwitcherFrame.size.height / 2;
-        [self.isBigSizeSwitcher setFrame:buttonsizeSwitcherFrame];
-    
-        CGRect sounSwitcherFrame = self.soundSwitcher.frame;
-        sounSwitcherFrame.origin.y = 2 * measure - sounSwitcherFrame.size.height / 2;
-        [self.soundSwitcher setFrame:sounSwitcherFrame];
-        CGRect sounOffFrame = self.soundOff.frame;
-        sounOffFrame.origin.y =2 * measure - sounOffFrame.size.height / 2;
-        //[self.soundOffView setFrame:sounOffFrame];
-        [self.soundOff setFrame:sounOffFrame];
-        CGRect soundOnFrame = self.soundOn.frame;
-        soundOnFrame.origin.y = 2 * measure - soundOnFrame.size.height / 2;
-        //[self.soundOnView setFrame:soundOnFrame];
-        [self.soundOn setFrame:soundOnFrame];
-    
-        CGRect bigDataSwitcher = self.isBigDataBaseSwitcher.frame;
-        bigDataSwitcher.origin.y = 3 * measure - bigDataSwitcher.size.height / 2;
-        [self.isBigDataBaseSwitcher setFrame:bigDataSwitcher];
-        CGRect smallDataFrame = self.archsizeViewSmall.frame;
-        smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
-        [self.archsizeViewSmall setFrame:smallDataFrame];
-        CGRect bigDataFrame = self.archivesizeBigView.frame;
-        bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
-        [self.archivesizeBigView setFrame:bigDataFrame];
-    
-        CGRect iCloudSwitcherRect = self.isiCloudUseSwitcher.frame;
-        iCloudSwitcherRect.origin.y = 4 * measure - iCloudSwitcherRect.size.height / 2;
-        [self.isiCloudUseSwitcher setFrame:iCloudSwitcherRect];
-        CGRect cloudOnFrame = self.cloudOnView.frame;
-        cloudOnFrame.origin.y =4 * measure - cloudOnFrame.size.height / 2;
-        [self.cloudOnView setFrame:cloudOnFrame];
-        CGRect cloudOffFrame = self.cloudOffView.frame;
-        cloudOffFrame.origin.y = 4 * measure - cloudOffFrame.size.height / 2;
-        [self.cloudOffView setFrame:cloudOffFrame];
-    
-    /*
-    CGRect smallDataFrame = self.smallDataBaseView.frame;
-    smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
-    [self.smallDataBaseView setFrame:smallDataFrame];
-    CGRect bigDataFrame = self.bigDataBaseView.frame;
-    bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
-    [self.bigDataBaseView setFrame:bigDataFrame];
-    */
-    
-        CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
-        clearHistoryButtonFrame.origin.y = 5 * measure - clearHistoryButtonFrame.size.height / 2;
-        [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
- 
-    
-        CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
-        keyboarddefaultButtonFrame.origin.y = 6 * measure - keyboarddefaultButtonFrame.size.height / 2;
-        [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
-    }
-    
-    self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
-
-    
-    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    if(self.wasPurshaised || self.isTrialPeriod){
-        [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-    } else {
-        [self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-    }
-
-}
-
--(void) setHeightOfElementAccordingToScreenIPhone
-{
-    CGRect buttonsRect;
-    if(IS_IPAD){
-        buttonsRect = CGRectMake(0, 0, 60, 60);
-        //for ipad try through autolayout
-        //copy from here
-        if(self.view.bounds.size.height > self.view.bounds.size.width){
-            self.histroryTableViewHeight = 257.f;
-            self.labelViewHeight = 118.f;
-        } else {
-            self.histroryTableViewHeight = 182.f;
-            self.labelViewHeight = 108.f;
-        }
-
-        
-        
-        
-        self.lastRowHistoryTableHeight = 85.f;
-        
-        
-        [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
-        
-        [self.viewToPDF setFrame:CGRectMake(128, 256, 1024, 768)];
-        //define bounds for all buttons in PDF View
-        [self.backToCalcButton setBounds:buttonsRect];
-        [self.shareButton setBounds:buttonsRect];
-        [self.redPanButton setBounds:buttonsRect];
-        [self.bluePanButton setBounds:buttonsRect];
-        [self.cleanButton setBounds:buttonsRect];
-        
-        //it will be total five buttons in PDFView and two empty parts at the bottom and top of view
-        //define one segment
-        CGFloat oneSegment = self.viewToPDF.bounds.size.height / 8;
-        
-        //define x center for all buttons
-        CGFloat xCenter = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.width)/2 + oneSegment/1.5;
-        CGFloat yStart = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.height)/2;
-        
-        //set centers for each button
-        [self.backToCalcButton setCenter:CGPointMake(xCenter, yStart + 2*oneSegment)];
-        [self.shareButton setCenter:CGPointMake(xCenter, yStart + 3*oneSegment)];
-        [self.redPanButton setCenter:CGPointMake(xCenter, yStart + 4*oneSegment)];
-        [self.bluePanButton setCenter:CGPointMake(xCenter, yStart + 5*oneSegment)];
-        [self.cleanButton setCenter:CGPointMake(xCenter, yStart + 6*oneSegment)];
-        //else if iPhone
-    } else if(IS_568_SCREEN){
-        buttonsRect = CGRectMake(0, 0, 60, 60);
-        self.histroryTableViewHeight = 136.f;
-        self.labelViewHeight = 72.f;
-        self.lastRowHistoryTableHeight = 65.f;
-        
-        //[self.testView setFrame:CGRectMake(-166, -166, 652, 652)];
-        [self.testView setFrame:CGRectMake(-652,0, 652, 652)];
-
-        [self.viewToPDF setFrame:CGRectMake(42, 166, 568, 320)];
-        
-        buttonsRect.origin.x = 60;
-        buttonsRect.origin.y = 176;
-        [self.shareButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.redPanButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.bluePanButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.cleanButton setFrame:buttonsRect];
-        
-        
-        //STOP HERE
-        //self.displayBaseLineOffset =[NSNumber numberWithFloat:0];
-    } else {
-        self.histroryTableViewHeight = 112.f;
-        self.labelViewHeight = 65;
-        self.lastRowHistoryTableHeight = 60.f;
-        
-        //[self.testView setFrame:CGRectMake(-42, -164, 577, 577)];
-        [self.testView setFrame:CGRectMake(-577, 0, 577, 577)];
-
-        [self.viewToPDF setFrame:CGRectMake(48, 128, 480, 320)];
-        
-        
-        buttonsRect.origin.x = 70;
-        buttonsRect.origin.y = 140;
-        [self.shareButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.redPanButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.bluePanButton setFrame:buttonsRect];
-        buttonsRect.origin.y += 80;
-        [self.cleanButton setFrame:buttonsRect];
-        
-
-    }
-
 }
 
 
@@ -5134,6 +4912,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                                      name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
                                                    object:store];
         
+        //Important.What is this
         [store setString:@"Test" forKey:@"Test"];
         [store synchronize];
     }
@@ -5194,8 +4973,17 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.isStronglyArgu = NO;//to key value
         self.isResultFromMemory = NO;//to key value
         self.isDecCounting = YES;//to key value
+        //Important WOKS With days trial
         self.isTrialPeriod = YES;
+        
+        //
+        //
+        self.nexNeedShovewTrialViewDay = 20;
+        NSDate *date = [NSDate date];
+        self.startTrialDate = date;
     }
+    
+    
     
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
@@ -5295,6 +5083,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         self.bannerContainerView.hidden = YES;
     }
     [self setHeightOfElementAccordingToScreenIPhone];
+    //Important don't remember why i close it
     [self initialLayoutDynamiccontainer];
     //set the sounds properties
     NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"error" ofType:@"caf"];
@@ -5330,15 +5119,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 }
 
--(void) viewWillAppear:(BOOL)animated{
-
-    if(self.isSoundOn){
-        AudioServicesPlaySystemSound (_blankSoundFileObject);
-    }
-    [self.buttonsCollection reloadData];
-    [super viewWillAppear:animated];
-    
-}
 
 
 //this function need to send message about changing iPad rotation
@@ -5363,9 +5143,290 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                  }];
                 
             }
-            [UIView setAnimationsEnabled:NO];
+            //[UIView setAnimationsEnabled:NO];
+            if(self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeLeft || self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeRight){
+                
+                [self orientationChangedToOrientation:self.wasRotatedNotificationAnotherController fromNotification:NO];
+                self.wasRotatedNotificationAnotherController = 0;
+            }
         }
     }
+}
+
+
+#pragma mark VIEW LAYOUT
+
+-(void) setLayOutOfSettingsView:(CGRect)rect
+{
+    CGFloat mainHeight = rect.size.height;
+    CGFloat mainWidth = rect.size.width;
+    self.cloudOnView.on = YES;
+    self.cloudOffView.on = NO;
+    
+    self.soundOff.on = NO;
+    self.soundOn.on = YES;
+    
+    self.archivesizeBigView.isBig=YES;
+    self.archsizeViewSmall.isBig=NO;
+    
+    if(IS_IPAD){
+        // CGFloat measure = (mainHeight - self.displayContainer.frame.size.height )/ 4;
+        CGFloat measure = (mainHeight)/ 4;
+        CGFloat part = mainWidth /3; //
+        CGFloat startSectionOne = part / 4;
+        CGFloat startSectionTwo = startSectionOne + part + (part/2);
+        
+        CGFloat centerFirstLine =startSectionOne + (part / 2);
+        CGFloat firstLinePicture = centerFirstLine - 85;
+        CGFloat secondLinePicture = centerFirstLine + 85;
+        
+        CGFloat centerSecondLine = startSectionTwo + (part / 2);
+        CGFloat thirstLinePicture = centerSecondLine - 85;
+        CGFloat fourLinePicture = centerSecondLine + 85;
+        
+        
+        //line one part one
+        [self.smallButtonView setCenter:CGPointMake(firstLinePicture, measure)];
+        [self.bigbuttonView setCenter:CGPointMake(secondLinePicture, measure)];
+        [self.isBigSizeSwitcher setCenter:CGPointMake(centerFirstLine, measure)];
+        self.buttonSwitcherLabel.text = NAME_BUTTON_SWITCH;
+        [self.buttonSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
+        [self.buttonSwitcherLabel setCenter:CGPointMake(centerFirstLine, measure - 60)];
+        
+        //line one part two
+        [self.soundOff setCenter:CGPointMake(thirstLinePicture, measure)];
+        //[self.soundOffView setCenter:CGPointMake(thirstLinePicture, measure)];
+        [self.soundOn setCenter:CGPointMake(fourLinePicture, measure)];
+        //[self.soundOnView setCenter:CGPointMake(fourLinePicture, measure)];
+        [self.soundSwitcher setCenter:CGPointMake(centerSecondLine, measure)];
+        
+        self.soundSwitcherLabel.text = NAME_SOUND_SWITCH;
+        [self.soundSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
+        [self.soundSwitcherLabel setCenter:CGPointMake(centerSecondLine, measure - 60)];
+        
+        
+        
+        //line two part one
+        //[self.smallDataBaseView setCenter:CGPointMake(firstLinePicture, 2*measure)];
+        [self.archsizeViewSmall setCenter:CGPointMake(firstLinePicture, 2*measure)];
+        //[self.bigDataBaseView setCenter:CGPointMake(secondLinePicture, 2*measure)];
+        [self.archivesizeBigView setCenter:CGPointMake(secondLinePicture, 2*measure)];
+        [self.isBigDataBaseSwitcher setCenter:CGPointMake(centerFirstLine, 2*measure)];
+        self.archiveSwitcherLabel.text = NAME_ARCHIVE_SWITCH;
+        [self.archiveSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
+        [self.archiveSwitcherLabel setCenter:CGPointMake(centerFirstLine, 2*measure - 60)];
+        
+        
+        //line two part two
+        [self.cloudOffView setCenter:CGPointMake(thirstLinePicture, 2*measure)];
+        [self.cloudOnView setCenter:CGPointMake(fourLinePicture, 2*measure)];
+        [self.isiCloudUseSwitcher setCenter:CGPointMake(centerSecondLine, 2*measure)];
+        self.iCloudSwitcherName.text = NAME_ICLOUD_SWITCH;
+        [self.iCloudSwitcherName setBounds:CGRectMake(0,0, 250, 20)];
+        [self.iCloudSwitcherName setCenter:CGPointMake(centerSecondLine, 2*measure - 60)];
+        
+        CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 4*INDENT)/3, measure-2*INDENT);
+        [self.clearHistoryButton setBounds:buttonsBounds];
+        [self.keyboardDefaultButton setBounds:buttonsBounds];
+        [self.buyAdditionsButton setBounds:buttonsBounds];
+        
+        if(self.isTrialPeriod){
+            [self.clearHistoryButton setCenter:CGPointMake(buttonsBounds.size.width/2+INDENT, 3*measure)];
+            [self.keyboardDefaultButton setCenter:CGPointMake(rect.size.width/2, 3*measure)];
+            
+            [self.processSpinner setCenter:CGPointMake(rect.size.width-(buttonsBounds.size.width/2+INDENT), 3*measure - 40)];
+            [self.buyAdditionsButton setCenter:CGPointMake(rect.size.width-(buttonsBounds.size.width/2+INDENT), 3*measure)];
+            
+        } else if (self.wasPurshaised){
+            //line three part one
+            [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
+            
+            //line three part two
+            [self.keyboardDefaultButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
+        } else {
+            //line three part one
+            [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
+            
+            //line three part two
+            [self.processSpinner setCenter:CGPointMake(centerSecondLine, 3*measure - 40)];
+            [self.buyAdditionsButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
+        }
+        
+        
+        
+    } else {
+        //CGFloat measure = (mainHeight- self.displayContainer.frame.size.height )/ 7;
+        CGFloat measure = (mainHeight)/ 7;
+        CGRect smallButtonFrame = self.smallButtonView.frame;
+        smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
+        [self.smallButtonView setFrame:smallButtonFrame];
+        
+        CGRect bigButtonFrame = self.bigbuttonView.frame;
+        bigButtonFrame.origin.y = measure - bigButtonFrame.size.height / 2;
+        [self.bigbuttonView setFrame:bigButtonFrame];
+        
+        CGRect buttonsizeSwitcherFrame = self.isBigSizeSwitcher.frame;
+        buttonsizeSwitcherFrame.origin.y = measure - buttonsizeSwitcherFrame.size.height / 2;
+        [self.isBigSizeSwitcher setFrame:buttonsizeSwitcherFrame];
+        
+        CGRect sounSwitcherFrame = self.soundSwitcher.frame;
+        sounSwitcherFrame.origin.y = 2 * measure - sounSwitcherFrame.size.height / 2;
+        [self.soundSwitcher setFrame:sounSwitcherFrame];
+        CGRect sounOffFrame = self.soundOff.frame;
+        sounOffFrame.origin.y =2 * measure - sounOffFrame.size.height / 2;
+        //[self.soundOffView setFrame:sounOffFrame];
+        [self.soundOff setFrame:sounOffFrame];
+        CGRect soundOnFrame = self.soundOn.frame;
+        soundOnFrame.origin.y = 2 * measure - soundOnFrame.size.height / 2;
+        //[self.soundOnView setFrame:soundOnFrame];
+        [self.soundOn setFrame:soundOnFrame];
+        
+        CGRect bigDataSwitcher = self.isBigDataBaseSwitcher.frame;
+        bigDataSwitcher.origin.y = 3 * measure - bigDataSwitcher.size.height / 2;
+        [self.isBigDataBaseSwitcher setFrame:bigDataSwitcher];
+        CGRect smallDataFrame = self.archsizeViewSmall.frame;
+        smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
+        [self.archsizeViewSmall setFrame:smallDataFrame];
+        CGRect bigDataFrame = self.archivesizeBigView.frame;
+        bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
+        [self.archivesizeBigView setFrame:bigDataFrame];
+        
+        CGRect iCloudSwitcherRect = self.isiCloudUseSwitcher.frame;
+        iCloudSwitcherRect.origin.y = 4 * measure - iCloudSwitcherRect.size.height / 2;
+        [self.isiCloudUseSwitcher setFrame:iCloudSwitcherRect];
+        CGRect cloudOnFrame = self.cloudOnView.frame;
+        cloudOnFrame.origin.y =4 * measure - cloudOnFrame.size.height / 2;
+        [self.cloudOnView setFrame:cloudOnFrame];
+        CGRect cloudOffFrame = self.cloudOffView.frame;
+        cloudOffFrame.origin.y = 4 * measure - cloudOffFrame.size.height / 2;
+        [self.cloudOffView setFrame:cloudOffFrame];
+        
+        /*
+         CGRect smallDataFrame = self.smallDataBaseView.frame;
+         smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
+         [self.smallDataBaseView setFrame:smallDataFrame];
+         CGRect bigDataFrame = self.bigDataBaseView.frame;
+         bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
+         [self.bigDataBaseView setFrame:bigDataFrame];
+         */
+        
+        CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
+        clearHistoryButtonFrame.origin.y = 5 * measure - clearHistoryButtonFrame.size.height / 2;
+        [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
+        
+        
+        CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
+        keyboarddefaultButtonFrame.origin.y = 6 * measure - keyboarddefaultButtonFrame.size.height / 2;
+        [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
+    }
+    
+    self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
+    
+    
+    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    // if(self.wasPurshaised || self.isTrialPeriod){
+    [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
+    // } else {
+    [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
+    //}
+    
+}
+
+-(void) setHeightOfElementAccordingToScreenIPhone
+{
+    CGRect buttonsRect;
+    if(IS_IPAD){
+        buttonsRect = CGRectMake(0, 0, 60, 60);
+        //for ipad try through autolayout
+        //copy from here
+        if(self.view.bounds.size.height > self.view.bounds.size.width){
+            self.histroryTableViewHeight = 257.f;
+            self.labelViewHeight = 118.f;
+        } else {
+            self.histroryTableViewHeight = 182.f;
+            self.labelViewHeight = 108.f;
+        }
+        
+        
+        
+        
+        self.lastRowHistoryTableHeight = 85.f;
+        
+        
+        [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
+        
+        [self.viewToPDF setFrame:CGRectMake(128, 256, 1024, 768)];
+        //define bounds for all buttons in PDF View
+        [self.backToCalcButton setBounds:buttonsRect];
+        [self.shareButton setBounds:buttonsRect];
+        [self.redPanButton setBounds:buttonsRect];
+        [self.bluePanButton setBounds:buttonsRect];
+        [self.cleanButton setBounds:buttonsRect];
+        
+        //it will be total five buttons in PDFView and two empty parts at the bottom and top of view
+        //define one segment
+        CGFloat oneSegment = self.viewToPDF.bounds.size.height / 8;
+        
+        //define x center for all buttons
+        CGFloat xCenter = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.width)/2 + oneSegment/1.5;
+        CGFloat yStart = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.height)/2;
+        
+        //set centers for each button
+        [self.backToCalcButton setCenter:CGPointMake(xCenter, yStart + 2*oneSegment)];
+        [self.shareButton setCenter:CGPointMake(xCenter, yStart + 3*oneSegment)];
+        [self.redPanButton setCenter:CGPointMake(xCenter, yStart + 4*oneSegment)];
+        [self.bluePanButton setCenter:CGPointMake(xCenter, yStart + 5*oneSegment)];
+        [self.cleanButton setCenter:CGPointMake(xCenter, yStart + 6*oneSegment)];
+        //else if iPhone
+    } else if(IS_568_SCREEN){
+        buttonsRect = CGRectMake(0, 0, 60, 60);
+        self.histroryTableViewHeight = 136.f;
+        self.labelViewHeight = 72.f;
+        self.lastRowHistoryTableHeight = 65.f;
+        
+        //[self.testView setFrame:CGRectMake(-166, -166, 652, 652)];
+        [self.testView setFrame:CGRectMake(-652,0, 652, 652)];
+        
+        [self.viewToPDF setFrame:CGRectMake(42, 166, 568, 320)];
+        
+        buttonsRect.origin.x = 60;
+        buttonsRect.origin.y = 176;
+        [self.shareButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.redPanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.bluePanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.cleanButton setFrame:buttonsRect];
+        
+        
+        //STOP HERE
+        //self.displayBaseLineOffset =[NSNumber numberWithFloat:0];
+    } else {
+        self.histroryTableViewHeight = 112.f;
+        self.labelViewHeight = 65;
+        self.lastRowHistoryTableHeight = 60.f;
+        
+        //[self.testView setFrame:CGRectMake(-42, -164, 577, 577)];
+        [self.testView setFrame:CGRectMake(-577, 0, 577, 577)];
+        
+        [self.viewToPDF setFrame:CGRectMake(48, 128, 480, 320)];
+        
+        
+        buttonsRect.origin.x = 70;
+        buttonsRect.origin.y = 140;
+        [self.shareButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.redPanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.bluePanButton setFrame:buttonsRect];
+        buttonsRect.origin.y += 80;
+        [self.cleanButton setFrame:buttonsRect];
+        
+        
+    }
+    
 }
 
 
@@ -5435,14 +5496,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
                                          self.mainContainerView.bounds.size.width,
                                          self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
     
-    //[self setLayOutOfSettingsView: self.mainContainerView.bounds];
      [self setLayOutOfSettingsView: settingsViewRect];
     [self.SettingsView setFrame:settingsViewRect];
-    //[self setLayOutOfSettingsView: self.mainContainerView.bounds];
-    
-    
-    //}
+
 }
+
 -(void) changeLayoutDynamicContainerWithSize:(CGSize)size
 {
     if(self.animator){
@@ -5793,13 +5851,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     CGRect initialFrame = self.testView.frame;
     initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
     initialFrame.origin.y = self.testView.frame.size.height+self.view.frame.size.height;
-    [self.testView setFrame:initialFrame];
+    //importand why i've made it
+    //[self.testView setFrame:initialFrame];
     if(IS_IPAD){
         self.testView.hidden = YES;
     }
     
-    
-    [self discardChanging];
+    //importand why i've made it
+    //[self discardChanging];
 
     
     [self deleteSuperfluousValuesFromManagedDocuments];
@@ -5814,8 +5873,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 -(void) appWillTerminate
-
-
 {
     [self.doc updateChangeCount:UIDocumentChangeDone];
 
@@ -5831,13 +5888,77 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [super viewWillDisappear:animated];
 
 }
+
+
+-(void) viewWillAppear:(BOOL)animated{
+    
+    if(self.isSoundOn){
+        AudioServicesPlaySystemSound (_blankSoundFileObject);
+    }
+    [self.buttonsCollection reloadData];
+    [super viewWillAppear:animated];
+    
+}
+
+
 #pragma mark ABOUT VIEW
--(void) showAboutView
+
+-(void) showAboutViewLeftDays:(NSInteger)days
 {
-    AboutViewController *aboutController = [[AboutViewController alloc] initWithController:self];
+    
+    AboutViewController *aboutController = [[AboutViewController alloc] initWithController:self daysLeft:days];
+    aboutController.delegate = self;
+    aboutController.direction = YES;
+    aboutController.mainViewBackGroundColor = [UIColor colorWithRed:0.25
+                                                              green:0.61
+                                                               blue:.80
+                                                              alpha:1.];
+    
     [self presentViewController:aboutController animated:NO completion:^{
         nil;
     }];
+    //make product request
+    if([SKPaymentQueue canMakePayments]) {
+        
+        SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
+        request.delegate = self;
+        
+        [request start];
+        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerNotAvailableForBuingNotification object:nil];
+
+    }
+
+}
+
+#pragma mark ABOUT VIEW DELEGATE
+-(void) aboutControllerDidCloseWithString:(NSString *)returnString
+{
+    if([returnString isEqualToString:@"BUY"]){
+        NSLog(@"Buy command from about view");
+        //show buy allert
+        [self defaultKeyboardbuttonTapped:nil];
+        
+    } else if ([returnString isEqualToString:@"CONTINUE"]){ //if continue trial period
+        NSLog(@"Jus continue fronm about view");
+    } else if ([returnString isEqualToString:@"CLOSE"]){ //if work without addition after trial period is finished
+        [self endsOfTrialPeriod];
+    }
+    
+}
+
+-(void) endsOfTrialPeriod
+{
+    NSLog(@"Finish trial period from about view");
+    self.isTrialPeriod = NO;
+    //set settings view for change button
+    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
+                                  0,
+                                  self.mainContainerView.bounds.size.width,
+                                  self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
+    [self setLayOutOfSettingsView:settingsViewRect];
+    //[self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
 }
 
 #pragma mark KEY VALUE STORAGE
@@ -5852,6 +5973,10 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];//to key value
     [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];//to key value
     [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];//to key value
+    [controllerArray addObject:[NSNumber numberWithBool:self.isTrialPeriod]];//to kay value
+    [controllerArray addObject:[NSNumber numberWithInteger:self.nexNeedShovewTrialViewDay]];
+    [controllerArray addObject:self.startTrialDate];
+    
     
     [wholeArray addObject:[controllerArray copy]];
     
@@ -5967,7 +6092,29 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
         
             id top = [controllerArray lastObject];
-        
+            //-----Trial Period
+            if(top && [top isKindOfClass:[NSDate class]]){
+                self.startTrialDate = top;
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.nexNeedShovewTrialViewDay = [top integerValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                self.isTrialPeriod = [top boolValue];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            } else {
+                return  NO;
+            }
+        //-----------------------------------------
         
             if(top && [top isKindOfClass:[NSNumber class]]){
                 self.isResultFromMemory = [top boolValue];
@@ -6073,6 +6220,14 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
             if(![self.currentProgrammVersion isEqualToString:realVersion]){
                self.counterForShowingAllertView= 37;
                 //important
+                //set here show aboutView with new functions and trial additions
+                //if the changes are so big and i whon show it to user
+                //set it manualy every time
+                //Important WOKS With days trial
+                self.isTrialPeriod = YES;
+                self.nexNeedShovewTrialViewDay = 20;
+                self.startTrialDate = [NSDate date];
+
                 self.currentProgrammVersion = realVersion;
             }
             [controllerArray removeLastObject];
@@ -6132,7 +6287,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     
     [super didReceiveMemoryWarning];
 }
-
 
 -(void) rotateToPortraitViewIPhone
 {
@@ -6211,8 +6365,12 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
+#pragma mark CHANGE ORIENTATIONS
+
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    //[UIView setAnimationsEnabled:NO];
+
     BOOL wasWillBePortraitRotated = self.willBePortraitRotated;
     if(size.height > size.width){
         self.willBePortraitRotated = YES;
@@ -6284,198 +6442,229 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         [self.iAdBanner setFrame:self.bannerContainerView.bounds];
          */
     }
-
+     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
 }
 
+/*
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+*/
+-(void) orientationChangedToOrientation:(UIDeviceOrientation)orient fromNotification:(BOOL)isNotification
+{
+    if(orient == UIDeviceOrientationLandscapeLeft){
+
+        [UIView setAnimationsEnabled:NO];
+
+        
+        if(self.wasRightShowed != 1){
+            
+            if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
+                if(self.wasRightShowed == 0){
+                    
+                    //strongly think about it
+                   
+                    CGRect initialFrame = self.testView.frame;
+                    //1
+                    CGRect rct = self.view.frame;
+                    NSLog(@"MAINFRAME: %f, %f, %f, %f",rct.origin.x, rct.origin.y, rct.size.width, rct.size.height );
+                    if(isNotification){
+                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
+                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                        initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
+                        initialFrame.origin.y = -self.testView.frame.size.height;
+                    } else {
+                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
+                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+                        initialFrame.origin.x =  (self.view.frame.size.height - initialFrame.size.height)/2;
+                        initialFrame.origin.y = -self.testView.frame.size.width;
+                    }
+                    
+                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+
+                    [self.testView setFrame:initialFrame];
+                    
+                    int64_t delayInSeconds = 0.05;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        //do something to the button(s)
+                        [UIView setAnimationsEnabled:YES];
+                        
+                        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
+                        [animator addBehavior:gravity];
+                        
+                        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
+                        CGFloat stopY;
+                        
+                        
+                        stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
+                        
+                        
+                        [collisionBehavior addBoundaryWithIdentifier:@"Right"
+                                                           fromPoint:CGPointMake(0, stopY)
+                                                             toPoint:CGPointMake(568, stopY)];
+                        [animator addBehavior:collisionBehavior];
+                        
+                        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
+                        elastic.elasticity = 0.4;
+                        [animator addBehavior:elastic];
+                        
+                        self.animator = animator;
+                        self.isTestViewOnScreen = YES;
+                        
+                    });
+                    
+                } else if(self.wasRightShowed == 2){
+                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
+                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI)];
+                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                    
+                    int64_t delayInSeconds = 0.05;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        //do something to the button(s)
+                        [UIView setAnimationsEnabled:YES];
+                        
+                        [UIView animateWithDuration:0.36
+                                              delay:0
+                                            options:UIViewAnimationOptionCurveLinear
+                                         animations:^{
+                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+                                         } completion:^(BOOL finished) {
+                                             
+                                         }];
+                        
+                    });
+                    
+                }
+                
+            } else {
+                
+                [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                int64_t delayInSeconds = 0.05;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    //do something to the button(s)
+                    [UIView setAnimationsEnabled:YES];
+                });
+                
+            }
+            self.wasRightShowed = 1;
+        }
+        
+    } else if (orient == UIDeviceOrientationLandscapeRight){
+        [UIView setAnimationsEnabled:NO];
+
+        
+        if(self.wasRightShowed != 2){
+            
+            if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
+                if(self.wasRightShowed == 0){
+                    //strongly think about it
+                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                    
+                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+                    CGRect initialFrame = self.testView.frame;
+                    initialFrame.origin.x =(self.view.frame.size.width - initialFrame.size.width)/2;
+                    initialFrame.origin.y = -self.testView.frame.size.height;
+                    
+                    [self.testView setFrame:initialFrame];
+                    
+                    int64_t delayInSeconds = 0.05;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        //do something to the button(s)
+                        [UIView setAnimationsEnabled:YES];
+                        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+                        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
+                        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
+                        [animator addBehavior:gravity];
+                        
+                        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
+                        CGFloat stopY;
+                        
+                        
+                        stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
+                        
+                        
+                        [collisionBehavior addBoundaryWithIdentifier:@"Right"
+                                                           fromPoint:CGPointMake(0, stopY)
+                                                             toPoint:CGPointMake(568, stopY)];
+                        [animator addBehavior:collisionBehavior];
+                        
+                        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
+                        elastic.elasticity = 0.4;
+                        [animator addBehavior:elastic];
+                        
+                        self.animator = animator;
+                        self.isTestViewOnScreen = YES;
+                        
+                    });
+                    
+                } else if(self.wasRightShowed == 1){
+                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+                    [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI)];
+                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                    
+                    int64_t delayInSeconds = 0.05;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        //do something to the button(s)
+                        [UIView setAnimationsEnabled:YES];
+                        
+                        [UIView animateWithDuration:0.36
+                                              delay:0
+                                            options:UIViewAnimationOptionCurveLinear
+                                         animations:^{
+                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+                                         } completion:^(BOOL finished) {
+                                             
+                                         }];
+                        
+                    });
+                    
+                }
+            } else {
+                [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+                
+                int64_t delayInSeconds = 0.05;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    //do something to the button(s)
+                    [UIView setAnimationsEnabled:YES];
+                });
+                
+            }
+            
+            self.wasRightShowed = 2;
+        }
+        
+        
+    } else if (orient == UIDeviceOrientationPortrait){
+        [self rotateToPortraitViewIPhone];
+    }
+
+}
 - (void)orientationChanged:(NSNotification *)notification
 {
 
     UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
-    if(IS_IPAD){
+    if(![self presentedViewController]){ //not change if there is presented another controller
+        self.wasRotatedNotificationAnotherController = 0;
+        if(IS_IPAD){
 
-    } else {
-        
-        if(orient == UIDeviceOrientationLandscapeLeft){
-            
-            if(self.wasRightShowed != 1){
-                
-                if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
-                    if(self.wasRightShowed == 0){
-                        
-                        //strongly think about it
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    
-                        [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                        CGRect initialFrame = self.testView.frame;
-                        initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
-                        initialFrame.origin.y = -self.testView.frame.size.height;
-                        
-                        [self.testView setFrame:initialFrame];
-                        
-                        int64_t delayInSeconds = 0.05;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            //do something to the button(s)
-                            [UIView setAnimationsEnabled:YES];
-                            
-                            UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-                            UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-                            gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-                            [animator addBehavior:gravity];
-                            
-                            UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-                            CGFloat stopY;
-                            
-                            
-                            stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
-                            
-                            
-                            [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                                               fromPoint:CGPointMake(0, stopY)
-                                                                 toPoint:CGPointMake(568, stopY)];
-                            [animator addBehavior:collisionBehavior];
-                            
-                            UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-                            elastic.elasticity = 0.4;
-                            [animator addBehavior:elastic];
-                            
-                            self.animator = animator;
-                            self.isTestViewOnScreen = YES;
-                            
-                        });
-                       
-                    } else if(self.wasRightShowed == 2){
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                         [self.testView setTransform:CGAffineTransformMakeRotation(M_PI)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                        
-                        int64_t delayInSeconds = 0.05;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            //do something to the button(s)
-                            [UIView setAnimationsEnabled:YES];
-                           
-                            [UIView animateWithDuration:0.36
-                                                  delay:0
-                                                options:UIViewAnimationOptionCurveLinear
-                                             animations:^{
-                                                 [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                             } completion:^(BOOL finished) {
-                                                 
-                                             }];
-                            
-                        });
-                         
-                    }
-                    
-                } else {
-                   
-                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                    });
-                  
-                }
-                self.wasRightShowed = 1;
-            }
-            
-        } else if (orient == UIDeviceOrientationLandscapeRight){
-            
-            if(self.wasRightShowed != 2){
-                
-                if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
-                    if(self.wasRightShowed == 0){
-                        //strongly think about it
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                        
-                        [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                        CGRect initialFrame = self.testView.frame;
-                        initialFrame.origin.x =(self.view.frame.size.width - initialFrame.size.width)/2;
-                        initialFrame.origin.y = -self.testView.frame.size.height;
-                        
-                        [self.testView setFrame:initialFrame];
-                        
-                        int64_t delayInSeconds = 0.05;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            //do something to the button(s)
-                            [UIView setAnimationsEnabled:YES];
-                            UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-                            UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-                            gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-                            [animator addBehavior:gravity];
-                            
-                            UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-                            CGFloat stopY;
-                            
-                            
-                            stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
-                            
-                            
-                            [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                                               fromPoint:CGPointMake(0, stopY)
-                                                                 toPoint:CGPointMake(568, stopY)];
-                            [animator addBehavior:collisionBehavior];
-                            
-                            UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-                            elastic.elasticity = 0.4;
-                            [animator addBehavior:elastic];
-                            
-                            self.animator = animator;
-                            self.isTestViewOnScreen = YES;
-
-                        });
-                        
-                    } else if(self.wasRightShowed == 1){
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                        [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                        
-                        int64_t delayInSeconds = 0.05;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            //do something to the button(s)
-                            [UIView setAnimationsEnabled:YES];
-                            
-                            [UIView animateWithDuration:0.36
-                                                  delay:0
-                                                options:UIViewAnimationOptionCurveLinear
-                                             animations:^{
-                                                 [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                             } completion:^(BOOL finished) {
-                                                 
-                                             }];
-                             
-                        });
-                         
-                    }
-                } else {
-                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                    });
-                    
-                }
-                
-                self.wasRightShowed = 2;
-            }
-            
-            
-        } else if (orient == UIDeviceOrientationPortrait){
-            
+        } else {  //if iphone
+            [self orientationChangedToOrientation:orient fromNotification:YES];
         }
+    } else {
+        self.wasRotatedNotificationAnotherController = orient;
     }
 }
 
@@ -6661,9 +6850,13 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     } else {
        // NSLog(@"Product not FUND");
     }
+    
+    if(self.processSpinner){
     //stop and remove process spinner
-    [self.processSpinner stopAnimating];
-    [self.processSpinner removeFromSuperview];
+        [self.processSpinner stopAnimating];
+        [self.processSpinner removeFromSuperview];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerSendPayPossibilityNotification object:nil];
     
 }
 
@@ -6673,6 +6866,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     //stop and remove process spinner
     [self.processSpinner stopAnimating];
     [self.processSpinner removeFromSuperview];
+    [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerNotAvailableForBuingNotification object:nil];
 }
 
 -(void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
