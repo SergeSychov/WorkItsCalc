@@ -12,7 +12,7 @@
 @protocol AppearedViewControllerProtocol <NSObject>
 
 @optional
--(void) aboutControllerDidCloseWithString:(NSString*)returnString;
+-(void) appearedControllerDidCloseWithString:(NSString*)returnString;
 
 @end
 

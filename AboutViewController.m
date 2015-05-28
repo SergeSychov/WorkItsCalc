@@ -10,11 +10,14 @@
 #import "LogoTextView.h"
 #import "AdditionViewController.h"
 
+NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
+NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
+
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define INDENT 20.0f
 
 
-@interface AboutViewController ()
+@interface AboutViewController () 
 
 @property (nonatomic, weak) UIImageView *logoView;
 @property (nonatomic,weak) LogoTextView *logoTextView;
@@ -89,7 +92,8 @@
 }
 
 -(NSInteger)  daysNumber {
-    if(!_daysNumber){
+    
+    if(!_daysNumber && (_daysNumber != 0)){
         _daysNumber = 30;
     }
     return _daysNumber;
@@ -125,13 +129,13 @@
 {
     [self dismissViewControllerAnimated:YES completion:^{
         if([sender.titleLabel.text isEqualToString:self.buyString]){
-            [self.delegate aboutControllerDidCloseWithString:@"BUY"];
+            [self.delegate appearedControllerDidCloseWithString:@"BUY"];
            
         } else if ([sender.titleLabel.text isEqualToString:self.continueString]){
             if(self.daysNumber > 0){ //if continue trial period
-                [self.delegate aboutControllerDidCloseWithString:@"CONTINUE"];
+                [self.delegate appearedControllerDidCloseWithString:@"CONTINUE"];
             } else { //if work without addition after trial period is finished
-                [self.delegate aboutControllerDidCloseWithString:@"CLOSE"];
+                [self.delegate appearedControllerDidCloseWithString:@"CLOSE"];
             }
         }
     }];
@@ -315,9 +319,21 @@
 
 }
 
+#pragma mark PAY_POSSIBILITY_NOTIFICATION
+
+-(void) mainControllerAvailableToBuyOperation:(NSNotification*)note
+{
+    if([note.name isEqualToString:MainControllerSendPayPossibilityNotification]){
+        NSLog(@"Main controller IS available to execute buy operation");
+    } else if([note.name isEqualToString:MainControllerNotAvailableForBuingNotification]){
+        NSLog(@"Main controller NOT available to execute buy operation");
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self.view addSubview:self.copiedView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mainControllerAvailableToBuyOperation:) name:MainControllerSendPayPossibilityNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mainControllerAvailableToBuyOperation:) name:MainControllerNotAvailableForBuingNotification object:nil];
 
 }
 

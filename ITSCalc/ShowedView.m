@@ -105,7 +105,9 @@
         self.isBluePanOrRed = isBluePan;
         self.isDurty = NO;
         //clear painted view
-        [self.paintedView removeFromSuperview];
+        if(self.paintedView){
+            [self.paintedView removeFromSuperview];
+        }
         BezierInterpView *paintedView = [[BezierInterpView alloc] initWithFrame:self.bounds];
         paintedView.backgroundColor = [UIColor clearColor];
         [self addSubview:paintedView];

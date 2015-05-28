@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B23" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="ZRh-ac-cg8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14E17e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="ZRh-ac-cg8">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
     </dependencies>
     <scenes>
         <!--Calc View Controller-->
@@ -33,7 +33,7 @@
                                                 </collectionViewFlowLayout>
                                                 <cells>
                                                     <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="redraw" restorationIdentifier="Button" reuseIdentifier="Button" id="YWt-ty-279" customClass="NewButtonsCollectionViewCell">
-                                                        <rect key="frame" x="0.0" y="82" width="60" height="40"/>
+                                                        <rect key="frame" x="6" y="123" width="60" height="40"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                             <rect key="frame" x="0.0" y="0.0" width="60" height="40"/>
@@ -81,10 +81,10 @@
                                                 <color key="sectionIndexBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="redraw" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="HistoryCell" rowHeight="1" id="TiH-0X-LiT" customClass="HistroryTableViewCell">
-                                                        <rect key="frame" x="0.0" y="1" width="320" height="1"/>
+                                                        <rect key="frame" x="0.0" y="1" width="1024" height="1"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="redraw" tableViewCell="TiH-0X-LiT" id="tKO-ho-Bnc">
-                                                            <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="1024" height="1"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         </tableViewCellContentView>
@@ -348,17 +348,30 @@
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </view>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="bkY-Bc-tBY">
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="bkY-Bc-tBY" customClass="ClearHistoryButton">
                                                         <rect key="frame" x="20" y="294" width="280" height="32"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal" title="clear history">
-                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                         <connections>
                                                             <action selector="clearHistoryButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="SDq-d4-sEa"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="kzs-tR-9yc" userLabel="change design" customClass="DesignButton">
+                                                        <rect key="frame" x="372" y="232" width="280" height="32"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal">
+                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="clearHistoryButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="i26-gT-8Zo"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="1Lb-2c-SkK">
@@ -372,6 +385,19 @@
                                                         </state>
                                                         <connections>
                                                             <action selector="defaultKeyboardbuttonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="R16-bP-d1u"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="tAP-KV-0w0">
+                                                        <rect key="frame" x="372" y="233" width="280" height="30"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <state key="normal" title="buy additions">
+                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="buyAdditionsButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="Gs1-eg-H3E"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -463,7 +489,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                     </view>
@@ -481,6 +507,8 @@
                         <outlet property="bluePanButton" destination="KFC-Oe-UII" id="GMK-0c-tYi"/>
                         <outlet property="buttonSwitcherLabel" destination="qfw-l6-aQs" id="csl-6l-Og2"/>
                         <outlet property="buttonsCollection" destination="FqA-0F-RxO" id="SeM-IW-jQv"/>
+                        <outlet property="buyAdditionsButton" destination="tAP-KV-0w0" id="HNk-FN-bye"/>
+                        <outlet property="changeDesignButton" destination="kzs-tR-9yc" id="quV-DC-kNW"/>
                         <outlet property="cleanButton" destination="pNA-d7-7ay" id="MD7-0M-ep2"/>
                         <outlet property="clearHistoryButton" destination="bkY-Bc-tBY" id="2rX-49-KW9"/>
                         <outlet property="cloudOffView" destination="gSF-cN-pVw" id="q0R-62-X9I"/>

@@ -44,7 +44,15 @@
 #import "NoticeButton.h"
 #import "DelButton.h"
 #import "DownButton.h"
+
+#import "AppearedController.h"
+#import "Transition.h"
+#import "BackTransition.h"
+
 #import "AboutViewController.h"
+#import "SettingViewController.h"
+#import "ClearHistoryButton.h"
+#import "DesignButton.h"
 
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
@@ -74,7 +82,7 @@ NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerS
 NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, AppearedViewControllerProtocol>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate>
 
 
 //outlets
@@ -197,8 +205,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 //need to set iClouds images whole & empty
 
 
-
-@property (weak, nonatomic) IBOutlet UIButton *clearHistoryButton;
+@property (weak, nonatomic) IBOutlet DesignButton *changeDesignButton;
+@property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
 @property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
 //add spin activity to show process of purchaising
@@ -491,33 +499,33 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
 
-- (IBAction)buyAdditionsButtonTapped:(UIButton *)sender {
+- (IBAction)buyAdditionsButtonTapped:(UIButton *)sender
+{
+    UIAlertView *alert;
     
+    alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
+                                       message:@""
+                                      delegate:self
+                             cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
+                             otherButtonTitles: ALLERT_BUTTON_BUY,ALLERT_BUTTON_RESTORE, nil]; //@"Restore"
+    
+    [alert show];
+
 }
 
 - (IBAction)defaultKeyboardbuttonTapped:(id)sender
 {
-    //importand need to be changed
-    UIAlertView *alert;
-    if(self.wasPurshaised /*|| self.isTrialPeriod*/){
+    //if(self.wasPurshaised /*|| self.isTrialPeriod*/){
+        UIAlertView *alert;
         alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
-                                                    message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
-                                                   delegate:self
-                                          cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                                          otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
-        
-    } else {
-        alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
-                                           message:@""
+                                           message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
                                           delegate:self
                                  cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                                 otherButtonTitles: ALLERT_BUTTON_BUY,ALLERT_BUTTON_RESTORE, nil]; //@"Restore"
+                                 otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
         
-        //[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-        //[self restorePurchase];
-        
-    }
     [alert show];
+   // }
+
 }
 
 - (IBAction)clearHistoryButtonTapped:(id)sender
@@ -1422,9 +1430,12 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                             NSInteger intervalSinceStartInDays = (NSInteger)[self.startTrialDate timeIntervalSinceNow];
                             NSInteger daysToEndOfTrialPeriod = DAYS_ALOWED_TRIAL_PERIOD + intervalSinceStartInDays/20 ; //Important 86400;// (one day
                             NSLog(@"daysToEndOfTrialPeriod %ld", (long)daysToEndOfTrialPeriod);//Important - clear
-    
+                            
+                            //important test
+                            [self testShowAppController];
+                            /*
                             //3. Copare days with @property NSInteger* nexNeedShovewTrialView.
-                            //if(daysToEndOfTrialPeriod < self.nexNeedShovewTrialViewDay){
+                            if(daysToEndOfTrialPeriod < self.nexNeedShovewTrialViewDay){
                                 if(daysToEndOfTrialPeriod < 4){
                                     self.nexNeedShovewTrialViewDay = 1;
                                 } else if(daysToEndOfTrialPeriod < 9){
@@ -1441,7 +1452,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                     [self showAboutViewLeftDays:daysToEndOfTrialPeriod];
                                 });
                                 
-                           // }
+                            }
+                            */
                             
                             //4. If bigger - showAboutView and set days as argument
                       //  }
@@ -1788,15 +1800,16 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                  
                              } completion:^(BOOL finihed){
                                 
-                                 if(!(self.wasPurshaised|| self.isTrialPeriod)){
-                                         //enable buttons to buy product
-                                    self.keyboardDefaultButton.enabled = NO;
-                                    [self.keyboardDefaultButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-                                     //start processSpiner
-                                     [self startSpinner];
-                                     //----------------------------
+                                 if(!self.wasPurshaised){
+
+                                    //enable buttons to buy product
+                                    self.buyAdditionsButton.enabled = NO;
+                                    [self.buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+                                    //start processSpiner
+                                    [self startSpinner];
+                                    //----------------------------
                                      
-                                     //make product request
+                                    //make product request
                                     if([SKPaymentQueue canMakePayments]) {
                                         
                                         SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
@@ -1808,8 +1821,10 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                         //if cant make purchaising stop and remove spinner
                                         [self.processSpinner stopAnimating];
                                         [self.processSpinner removeFromSuperview];
-                                        self.keyboardDefaultButton.titleLabel.textColor = [UIColor grayColor];
+                                        self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
                                     }
+                                 }
+                                 if(!(self.wasPurshaised || self.isTrialPeriod)){
 
                                      //if no paid version show at moment only setting view
                                      //not allow user change buttons
@@ -1832,7 +1847,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                                       } completion:^(BOOL finished) {
                                                           self.isSettingsViewOnScreen = YES;
                                                       }];
-                                 }
+                                }
                                  
                                  [self.buttonsCollection reloadData];
                                  //ulock interaction
@@ -1970,10 +1985,10 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         [self.SettingsView setFrame:settingsViewframe];
         [self.settingsBackgroundToolBar setFrame:settingsViewframe];
         
-        if(!self.wasPurshaised || self.isTrialPeriod){
+        if(!self.wasPurshaised){
             //enable buttons to buy product
-            self.keyboardDefaultButton.enabled = NO;
-            [self.keyboardDefaultButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+            self.buyAdditionsButton.enabled = NO;
+            [self.buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
             //start processSpiner
             [self startSpinner];
             //----------------------------
@@ -1990,7 +2005,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                 //if cant make purchaising stop and remove spinner
                 [self.processSpinner stopAnimating];
                 [self.processSpinner removeFromSuperview];
-                self.keyboardDefaultButton.titleLabel.textColor = [UIColor grayColor];
+                self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
             }
         }
         
@@ -2179,7 +2194,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                          self.settingsBackgroundToolBar.hidden = YES;
                          
                          //think about it
-                         if(!(self.wasPurshaised|| self.isTrialPeriod) ){
+                         if(!self.wasPurshaised){
                              [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
                          }
                          if(self.isSoundOn){
@@ -5043,6 +5058,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+  
     
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
@@ -5169,9 +5185,20 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     self.archivesizeBigView.isBig=YES;
     self.archsizeViewSmall.isBig=NO;
     
+    //self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    //self.clearHistoryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    self.keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    self.buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+
+
+    
+    
     if(IS_IPAD){
         // CGFloat measure = (mainHeight - self.displayContainer.frame.size.height )/ 4;
-        CGFloat measure = (mainHeight)/ 4;
+        CGFloat measure = (mainHeight)/5;
         CGFloat part = mainWidth /3; //
         CGFloat startSectionOne = part / 4;
         CGFloat startSectionTwo = startSectionOne + part + (part/2);
@@ -5225,31 +5252,38 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         [self.iCloudSwitcherName setBounds:CGRectMake(0,0, 250, 20)];
         [self.iCloudSwitcherName setCenter:CGPointMake(centerSecondLine, 2*measure - 60)];
         
+        //line three
+        CGRect pictureButtonsRect = CGRectMake(0, 0, measure/1.5, measure/1.5);
+        [self.clearHistoryButton setBounds:pictureButtonsRect];
+        [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
+        [self.changeDesignButton setBounds:pictureButtonsRect];
+        [self.changeDesignButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
+        
         CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 4*INDENT)/3, measure-2*INDENT);
-        [self.clearHistoryButton setBounds:buttonsBounds];
+        //[self.clearHistoryButton setBounds:buttonsBounds];
         [self.keyboardDefaultButton setBounds:buttonsBounds];
         [self.buyAdditionsButton setBounds:buttonsBounds];
         
         if(self.isTrialPeriod){
-            [self.clearHistoryButton setCenter:CGPointMake(buttonsBounds.size.width/2+INDENT, 3*measure)];
-            [self.keyboardDefaultButton setCenter:CGPointMake(rect.size.width/2, 3*measure)];
+            //[self.clearHistoryButton setCenter:CGPointMake(buttonsBounds.size.width/2+INDENT, 3*measure)];
+            [self.keyboardDefaultButton setCenter:CGPointMake(firstLinePicture, 4*measure)];
             
-            [self.processSpinner setCenter:CGPointMake(rect.size.width-(buttonsBounds.size.width/2+INDENT), 3*measure - 40)];
-            [self.buyAdditionsButton setCenter:CGPointMake(rect.size.width-(buttonsBounds.size.width/2+INDENT), 3*measure)];
+            [self.processSpinner setCenter:CGPointMake(secondLinePicture, 4*measure - 40)];
+            [self.buyAdditionsButton setCenter:CGPointMake(secondLinePicture, 4*measure)];
             
         } else if (self.wasPurshaised){
             //line three part one
-            [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
+            //[self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
             
             //line three part two
-            [self.keyboardDefaultButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
+            [self.keyboardDefaultButton setCenter:CGPointMake(rect.size.width/2, 3*measure)];
         } else {
             //line three part one
-            [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
+           // [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
             
             //line three part two
-            [self.processSpinner setCenter:CGPointMake(centerSecondLine, 3*measure - 40)];
-            [self.buyAdditionsButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
+            [self.processSpinner setCenter:CGPointMake(rect.size.width/2, 4*measure - 40)];
+            [self.buyAdditionsButton setCenter:CGPointMake(rect.size.width/2, 4*measure)];
         }
         
         
@@ -5320,8 +5354,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
     }
     
-    self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
+    //self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    //[self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
     
     
     self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -5496,7 +5530,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                          self.mainContainerView.bounds.size.width,
                                          self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
     
-     [self setLayOutOfSettingsView: settingsViewRect];
+    //important think about background
+    [self setLayOutOfSettingsView: settingsViewRect];
     [self.SettingsView setFrame:settingsViewRect];
 
 }
@@ -5899,7 +5934,35 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     [super viewWillAppear:animated];
     
 }
+#pragma mark TRANSITION DELEGATE
+-(id<UIViewControllerAnimatedTransitioning>)
+animationControllerForPresentedController:(UIViewController *)presented
+presentingController:(UIViewController *)presenting
+sourceController:(UIViewController *)source
+{
+    return [[Transition alloc] init];;
+}
 
+#pragma mark SETTING CONTROLLER
+
+//Important test
+-(void) testShowAppController
+{
+    AppearedController *second = [[AppearedController alloc] init];
+    second.view.backgroundColor = [UIColor colorWithRed:0.25
+                                                  green:0.61
+                                                   blue:.80
+                                                  alpha:1.];
+    second.transitioningDelegate = self;
+    
+    [self presentViewController:second animated:YES completion:nil];
+}
+
+
+-(void) showSettingViewControllerWithParameters:(NSArray*)parameters
+{
+    
+}
 
 #pragma mark ABOUT VIEW
 
@@ -5932,13 +5995,13 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 
 }
 
-#pragma mark ABOUT VIEW DELEGATE
--(void) aboutControllerDidCloseWithString:(NSString *)returnString
+#pragma mark APPEARED CONTROLLER DELEGATE
+-(void) appearedControllerDidCloseWithString:(NSString *)returnString
 {
     if([returnString isEqualToString:@"BUY"]){
         NSLog(@"Buy command from about view");
         //show buy allert
-        [self defaultKeyboardbuttonTapped:nil];
+        [self buyAdditionsButtonTapped:nil];
         
     } else if ([returnString isEqualToString:@"CONTINUE"]){ //if continue trial period
         NSLog(@"Jus continue fronm about view");
@@ -5957,8 +6020,21 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                   0,
                                   self.mainContainerView.bounds.size.width,
                                   self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    [self setLayOutOfSettingsView:settingsViewRect];
-    //[self.keyboardDefaultButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
+    [UIView animateWithDuration:0.4
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.keyboardDefaultButton.alpha = 0;
+                          } completion:^(BOOL finished) {
+                              [UIView animateWithDuration:0.4
+                                               animations:^{
+                                                   self.keyboardDefaultButton.hidden = YES;
+                                                   [self setLayOutOfSettingsView:settingsViewRect];
+                                               }];
+    }];
+    //Important:
+    //1. need to reset buttons array
+    //2. need to reset all views
 }
 
 #pragma mark KEY VALUE STORAGE
@@ -6759,11 +6835,13 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 -(void) startSpinner
 {
     CGRect spinnerFrame = CGRectMake((self.SettingsView.bounds.size.width -40)/2,
-                                     self.keyboardDefaultButton.frame.origin.y - 40,
+                                     self.buyAdditionsButton.frame.origin.y - 40,
                                      40.,
                                      40.);
 
     UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc] initWithFrame:spinnerFrame];
+    [processSpinner setCenter:self.buyAdditionsButton.center];
+
     [self.SettingsView addSubview:processSpinner];
     processSpinner.hidesWhenStopped = YES;
     self.processSpinner = processSpinner;
@@ -6773,10 +6851,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 -(void) wasSuccesTransaction
 {
     //3.
-    self.wasPurshaised = YES;
-    NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
-    [defaults synchronize];
+    
     
     self.settingsButton.alpha = 0.;
     self.settingsButton.hidden = self.downButton.hidden;
@@ -6791,13 +6866,18 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                         self.downButton.center = CGPointMake(widthdisplay*2/3, yDisplayCenter);
-                        self.keyboardDefaultButton.alpha = 0;
+                        self.buyAdditionsButton.alpha = 0;
                          
                      } completion:^(BOOL finished) {
                          [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-                         [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-                         //set hide banner if its available
-                         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                         self.wasPurshaised = YES;
+                         NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
+                         [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
+                         [defaults synchronize];
+                         
+                         self.buyAdditionsButton.enabled = NO;
+                         self.buyAdditionsButton.hidden = YES;
+                        
                          [self hideIAdBanner];
                          self.isIAdBaneerAvailable = NO;
                          [UIView animateWithDuration:0.4
@@ -6806,6 +6886,28 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                               self.settingsButton.alpha = self.downButton.alpha;
                                           }];
                      }];
+}
+
+-(void) setWasPurshaised:(BOOL)wasPurshaised
+{
+    if(wasPurshaised){
+        self.keyboardDefaultButton.enabled = YES;
+        self.keyboardDefaultButton.hidden = NO;
+        
+        self.buyAdditionsButton.enabled = NO;
+        self.buyAdditionsButton.hidden = YES;
+        
+    } else {
+        self.buyAdditionsButton.enabled = YES;
+        self.buyAdditionsButton.hidden = NO;
+        if(self.isTrialPeriod){
+            self.keyboardDefaultButton.enabled = YES;
+            self.keyboardDefaultButton.hidden = NO;
+        } else {
+            self.keyboardDefaultButton.enabled = NO;
+            self.keyboardDefaultButton.hidden = YES;
+        }
+    }
 }
 
 -(void) buyUnlockKeyboard
@@ -6845,7 +6947,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         
         
         self.product = products[0];
-        self.keyboardDefaultButton.enabled = YES;
+        self.buyAdditionsButton.enabled = YES;
 
     } else {
        // NSLog(@"Product not FUND");

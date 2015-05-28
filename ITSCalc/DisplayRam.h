@@ -26,6 +26,8 @@
 
 @property (nonatomic, strong) NSNumberFormatter* formatter;
 
+@property (nonatomic) BOOL isIpadPortraitView;
+
 
 -(NSString*) addSymbol:(id) symbol;
 -(NSString*) setResult: (id)result;
@@ -39,6 +41,7 @@
 -(NSString*) getResultFromMemory:(BOOL)isFirst;
 -(void) clearMemory:(BOOL)isFirst;
 -(BOOL) isGradValue;
+
 
 @property (nonatomic,weak) id <DisplayRamDelegate> delegate;
 

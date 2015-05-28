@@ -9,11 +9,13 @@
 #import "DisplayRam.h"
 #import "ACalcBrain.h"
 
+#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+
 @interface DisplayRam()
 
 @property (nonatomic, strong) NSString* resultString;
 @property (nonatomic) BOOL isFloat;
-@property (nonatomic) int displayLenght;
+@property (nonatomic) NSInteger displayLenght;
 
 
 
@@ -25,17 +27,51 @@
 -(void) setup
 {
     self.isFloat = NO;
-    self.displayLenght = 10;
+    if(IS_IPAD){
+        if(self.isIpadPortraitView){
+            self.displayLenght = 12;
+        } else {
+            self.displayLenght = 15;
+        }
+    } else {
+       self.displayLenght = 10;
+    }
+    //self.displayLenght = 10;
     self.isGradMinutesSecons = 0;
     
 }
+
+
+-(void) setIsIpadPortraitView:(BOOL)isIpadPortraitView
+{
+    _isIpadPortraitView = isIpadPortraitView;
+    if(isIpadPortraitView){
+        self.displayLenght = 11;
+    } else {
+        self.displayLenght = 15;
+    }
+}
+
 
 -(NSNumberFormatter*) formatter
 {
     if(!_formatter){
         _formatter = [[NSNumberFormatter alloc] init];
+        //_formatter.usesSignificantDigits = YES;
+        
         [_formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-        [_formatter setMaximumFractionDigits:12];
+        if(IS_IPAD ) {
+            if(self.isIpadPortraitView){
+                [_formatter setMaximumFractionDigits:14];
+            } else {
+                [_formatter setMaximumFractionDigits:20];
+                //[_formatter setMaximumSignificantDigits:20];
+            }
+            //[_formatter setMaximumFractionDigits:18];
+        } else {
+            [_formatter setMaximumFractionDigits:12];
+        }
+        //[_formatter setMaximumFractionDigits:12];
         [_formatter setMinimumFractionDigits:0];
         [_formatter setExponentSymbol:@"e"];
         [_formatter setZeroSymbol:@"0"];
@@ -83,17 +119,48 @@
     return _resultString;
 }
 
--(int) displayLenght{
-    return self.isFloat ? 11 : 10;
+-(NSInteger) displayLenght{
+    
+    if(IS_IPAD){
+        if(self.isIpadPortraitView){
+            return self.isFloat ? 12 : 11;
+        } else {
+            return self.isFloat ? 16 : 15;
+        }
+        //return self.isFloat ? 17 : 16;
+    } else {
+        return self.isFloat ? 11 : 10;
+    }
+    //return self.isFloat ? 11 : 10;
 }
 
 -(void)setIsFloat:(BOOL)isFloat
 {
     _isFloat = isFloat;
     if(isFloat){
-        self.displayLenght = 11;
+        if(IS_IPAD){
+            if(self.isIpadPortraitView){
+                self.displayLenght = 12;
+            } else {
+                self.displayLenght = 16;
+            }
+            //self.displayLenght = 17;
+        } else {
+            self.displayLenght = 11;
+        }
+       // self.displayLenght = 11;
     } else {
-        self.displayLenght = 10;
+        if(IS_IPAD){
+            if(self.isIpadPortraitView){
+                self.displayLenght = 11;
+            } else {
+                self.displayLenght = 15;
+            }
+            //self.displayLenght = 16;
+        } else {
+            self.displayLenght = 10;
+        }
+       // self.displayLenght = 10;
     }
 }
 
@@ -109,9 +176,30 @@
 
     [self.formatter setNumberStyle:NSNumberFormatterDecimalStyle];
     if(self.isFloat){
-        [self.formatter setMaximumFractionDigits:12];
+        if(IS_IPAD){
+            if(self.isIpadPortraitView){
+                [self.formatter setMaximumFractionDigits:14];
+            } else {
+                [self.formatter setMaximumFractionDigits:18];
+            }
+            //[self.formatter setMaximumFractionDigits:18];
+        } else {
+            [self.formatter setMaximumFractionDigits:12];
+        }
+        //[self.formatter setMaximumFractionDigits:12];
     } else {
-        [self.formatter setMaximumFractionDigits:11];
+        if(IS_IPAD){
+            if(self.isIpadPortraitView){
+                [self.formatter setMaximumFractionDigits:13];
+            } else {
+                [self.formatter setMaximumFractionDigits:17];
+                //[self.formatter setMaximumIntegerDigits:17];
+            }
+            //[self.formatter setMaximumFractionDigits:17];
+        } else {
+            [self.formatter setMaximumFractionDigits:11];
+        }
+        //[self.formatter setMaximumFractionDigits:11];
     }
     if([symbol isKindOfClass:[NSNumber class]]){
         if(self.isGradMinutesSecons == 0){
@@ -139,12 +227,22 @@
                     } else {
                         self.resultString = [self.resultString stringByAppendingString:[symbol stringValue]];
                     }
-                    double test = [self.resultString doubleValue];
+                    
+                    
+                     long double test = [self.resultString doubleValue];
+                   
+                    
                     self.resultNumber = [NSNumber numberWithDouble:test];// [self.resultString doubleValue]
+                   // self.resultNumber = [self.formatter numberFromString:self.resultString];
+                    //self.resultNumber = [NSNumber numberWithDouble:test];
+                    [self.formatter setNumberStyle:NSNumberFormatterDecimalStyle];
                     str = [self.formatter stringFromNumber:self.resultNumber];
+                   // }
+
                 }
 
             } else {
+                
                 str = [self.formatter stringFromNumber:self.resultNumber];
             }
             //for minutes and secons
@@ -379,24 +477,46 @@
             self.resultNumber = (NSNumber*) result;//[NSNumber numberWithDouble:[self.resultString doubleValue]];
 
                 //self.resultString = [result stringValue];
-            if (fabs([result doubleValue])>9e9 || fabs([result doubleValue])<9e-9) {
+            double maxNum;
+            double minNum;
+            NSInteger fraction;
+            if(IS_IPAD){
+                if(self.isIpadPortraitView){
+                    maxNum = 9e10;
+                    minNum = 9e-10;
+                    fraction = 8;
+                } else {
+                    maxNum = 9e15;
+                    minNum = 9e-15;
+                    fraction = 13;
+                }
+                //self.displayLenght = 17;
+            } else {
+                maxNum = 9e9;
+                minNum = 9e-9;
+                fraction = 7;
+            }
+            if (fabs([result doubleValue])>maxNum|| fabs([result doubleValue])<minNum) {
                 [self.formatter setNumberStyle:NSNumberFormatterScientificStyle];
-                [self.formatter setMaximumFractionDigits:7];
+                [self.formatter setMaximumFractionDigits:fraction];
             }
             else{
                 [self.formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-                double intPartLenght = log10(fabs([result doubleValue]));
-                double intPart;
-                modf(intPartLenght, &intPart);
-                if(intPart <0) intPart = 0;
-                [self.formatter setMaximumFractionDigits:(9 - (int)intPart)];
-
+                
                 NSRange pointRange = [self.resultString rangeOfString:@"."];
                 if(pointRange.location == NSNotFound){
                     self.isFloat = NO;
                 } else {
                     self.isFloat = YES;
                 }
+                
+                double intPartLenght = log10(fabs([result doubleValue]));
+                double intPart;
+                modf(intPartLenght, &intPart);
+                if(intPart <0) intPart = 0;
+                
+                [self.formatter setMaximumFractionDigits:(self.displayLenght - 2 - (int)intPart)];
+                //[self.formatter setMaximumFractionDigits:(9 - (int)intPart)];
             
             }
             
@@ -512,6 +632,7 @@
     [copyMemory removeAllObjects];
     isFirst ? (self.firstMemoryStack = [copyMemory copy]) : (self.secondMemoryStack = [copyMemory copy]);
 }
+
 
 #pragma marks ______HELPED_FUNCTIONS_______________
 -(NSString *) point

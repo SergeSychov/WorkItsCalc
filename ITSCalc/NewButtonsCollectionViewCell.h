@@ -22,6 +22,8 @@
 //@property (weak, nonatomic) IBOutlet newButton *cellButton;
 @property (weak, nonatomic) IBOutlet CloseSetButton *closeAndSetButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
+
+@property (weak,nonatomic) UIColor *drawColor;
 //@property (nonatomic) CGPoint collectionViewOffset;
 @property (nonatomic,strong) NSString* name;
 @property (nonatomic) BOOL isUnderChanging;//is there buttons in underchangeble condition
