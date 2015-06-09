@@ -12,12 +12,10 @@
 @interface ShowedView : UIView
 
 @property (nonatomic) BOOL isBluePanOrRed;
-@property (nonatomic) BOOL isDurty;
+
 
 -(void) setShowedViewWithCountedStr:(NSAttributedString*)countStr resultStr:(NSAttributedString*)resStr andBluePan:(BOOL) isBluePan;
-//-(void) drawLine:(UIPanGestureRecognizer*) sender;
 -(void) clearPaintedView;
--(NSString*) stringOnScreen;
 
 
 @end
