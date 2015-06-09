@@ -48,6 +48,10 @@
 #import "AppearedController.h"
 #import "Transition.h"
 #import "BackTransition.h"
+//here its only test
+#import "SecondViewController.h"
+#import "ShowedViewController.h"
+//#import "ThirdController.h"
 
 #import "AboutViewController.h"
 #import "SettingViewController.h"
@@ -77,10 +81,12 @@
 #define INDENT 20.0f
 
 
+//delete
 NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
 NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
 NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
-
+#pragma mark CHANGES FROM OTHER CONTROLLERS
+NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 @interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate>
 
@@ -88,6 +94,15 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 //outlets
 //
 //Main container view
+#pragma mark TRANSITOPN PROPERTIES
+@property (strong,nonatomic) Transition* transition;
+@property (weak,nonatomic) SecondViewController* secondController;
+@property (strong) ShowedViewController* showedController;
+@property (nonatomic,strong) NSAttributedString *strAtrrForShow;
+@property (nonatomic,strong) NSAttributedString *resStringForShow;
+@property (nonatomic) BOOL callShowController;
+
+
 
 @property (weak, nonatomic) HintView *hintView;
 
@@ -128,7 +143,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 @property (weak, nonatomic) IBOutlet HistoryTableView *historyTable;
 @property (nonatomic) CGFloat isHistoryWholeShowed;
 //property to show is one row from history table is selected
-@property (strong,nonatomic) HistroryTableViewCell *selectedRow;
+@property (weak,nonatomic) HistroryTableViewCell *selectedRow;
 //attributes for historyTable
 @property (nonatomic,strong) NSDictionary * attributes;
 
@@ -354,6 +369,21 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     }
     
     return _displayRam;
+}
+#pragma mark SET VARIABLES
+-(void) setCallShowController:(BOOL)callShowController
+{
+    _callShowController = callShowController;
+    if(_callShowController){
+        [self showShowedView];
+    }
+}
+
+#pragma mark NOTIFICATION
+-(void) recivedNotification:(NSNotification*)notification
+{
+    NSLog(@"SendChangedNotification %@", [notification.userInfo objectForKey:@"Message"]);
+    
 }
 
 #pragma mark TEXT ATTRIBUTES
@@ -3718,8 +3748,36 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 
 -(void) cellDidSelect:(HistroryTableViewCell *)cell
 {
+   
     self.selectedRow = cell;
+    /*
+    NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
+    
+    NSIndexPath *previousSelectedIndexPatch = [self.historyTable indexPathForCell:_selectedRow];
+    NSIndexPath *nowSelectedIndexPatch = [self.historyTable indexPathForSelectedRow];
+    
+    if(previousSelectedIndexPatch.row != nowSelectedIndexPatch.row){
+        
+        //self.selectedRow = cell;
+        if(!indexPath){
+            self.recountButton.enabled = NO;
+            self.deleteButton.enabled = NO;
+        }else if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+            self.recountButton.enabled = YES;
+            self.deleteButton.enabled = YES;
+        } else {
+            self.recountButton.enabled = NO;
+            self.deleteButton.enabled = NO;
+            
+        }
+    }
+    if(!self.isTestViewOnScreen){
+        [self showCount];
+    }
+
+*/
 }
+
 
 -(void) setSelectedRow:(HistroryTableViewCell *)selectedRow
 {
@@ -3743,7 +3801,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
             
         }
     }
-    if(!self.isTestViewOnScreen){
+    if(![self.presentedViewController isKindOfClass:[ThirdController class]] && ![self.presentedViewController isKindOfClass:[SecondViewController class]]){
         [self showCount];
     }
 }
@@ -3812,7 +3870,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
                              withRowAnimation:UITableViewRowAnimationFade];
     [self.historyTable endUpdates];
-    [self.historyTable selectRowAtIndexPath:lastRow animated:NO scrollPosition:UITableViewScrollPositionBottom];
+   // [self.historyTable selectRowAtIndexPath:lastRow animated:NO scrollPosition:UITableViewScrollPositionBottom];
 
     //--------------------------
     //INSERTED HERE
@@ -4040,71 +4098,75 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         // self.historyTable.isNeedToSetOffsetToButton = YES;
         
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+
     } else {
           [self.historyTable setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
         // self.historyTable.isNeedToSetOffsetToButton = YES;
     }
-    
-    
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
     }
+
+    
     
 }
 
 #pragma mark SHOW VIEW
-
-
--(void) showCount
+//now its tes
+/*
+-(NSAttributedString*)attrStrForLabel
 {
-   // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSAttributedString * count;
-        NSAttributedString *result;
-
-        if([self.historyTable numberOfRowsInSection: 0] >0){
-            NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-            NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-            if(!indexPath){
-                indexPath = lastRowPatch;
-            }
-            NSMutableAttributedString *atrStrFromString;
-            if(indexPath.row == lastRowPatch.row){
-                if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
-                atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
-            } else {
-                atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
-            }
-            if(atrStrFromString.length >0){
-                if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
-                
-                    NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
-                    if([lastSymbol isEqualToString: @"="]){
-                        [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
-                    }
-                }
-            
-            }
-        
-            if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
-                NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
-                if(equalRange.location == NSNotFound){
-                    count = [atrStrFromString copy];
-                    result = [[NSAttributedString alloc] initWithString:@""];
-                } else {
-                    count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
-                    result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
-                }
-
-            }
-        
+    NSAttributedString * count;
+    NSAttributedString *result;
+    
+    if([self.historyTable numberOfRowsInSection: 0] >0){
+        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        if(!indexPath){
+            indexPath = lastRowPatch;
         }
-    [self.viewToPDF setShowedViewWithCountedStr:count resultStr:result andBluePan:YES];
-
+        NSMutableAttributedString *atrStrFromString;
+        if(indexPath.row == lastRowPatch.row){
+            if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
+            atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
+        } else {
+            atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+        }
+        if(atrStrFromString.length >0){
+            if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
+                
+                NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
+                if([lastSymbol isEqualToString: @"="]){
+                    [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
+                }
+            }
+            
+        }
+        
+        if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
+            NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
+            if(equalRange.location == NSNotFound){
+                count = [atrStrFromString copy];
+                result = [[NSAttributedString alloc] initWithString:@""];
+            } else {
+                count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
+                result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
+            }
+            
+        }
+        
+    }
+    return count;
 }
 
+*/
+
+//need to work this func at background
+
+//DELETE
 //tapped at share button in showed view
 - (IBAction)tapeShareButton:(id)sender
 {
@@ -4131,6 +4193,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     
 }
 
+
+//DELETE
 - (IBAction)tabBluePanButton:(id)sender
 {
     self.viewToPDF.isBluePanOrRed = YES;
@@ -4142,6 +4206,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     //need to set new image for red button
 }
 
+//DELETE
 - (IBAction)tapRedPanButton:(id)sender
 {
     self.viewToPDF.isBluePanOrRed = NO;
@@ -4152,6 +4217,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanUnselected2.png"] forState:normal];
     
 }
+//DELETE
 
 - (IBAction)tapClearButton:(UIButton *)sender
 {
@@ -4160,7 +4226,9 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
 
 - (IBAction)tappedRealNoticeButton:(UIButton *)sender
 {
-   // NSLog(@"Tapped real notice button");
+    self.callShowController = YES;
+    /*
+    // NSLog(@"Tapped real notice button");
     self.testView.hidden = NO;
     if(self.willBePortraitRotated){
         [self.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
@@ -4227,6 +4295,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     }
     self.isTestViewOnScreen = YES;
     // });
+    */
 
 }
 
@@ -4319,7 +4388,8 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     
 }
 
-
+//delete
+/*
 -(void) isDurtyShovedView
 {
     if(self.viewToPDF.isDurty){
@@ -4328,7 +4398,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         self.cleanButton.enabled = NO;
     }
 }
-
+*/
 //attach the gesture recognizer for line drawing to viewToPDF
 -(void) setViewToPDF:(ShowedView *)viewToPDF
 {
@@ -5053,17 +5123,22 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                                  object:[UIApplication sharedApplication]];
     
     // Request to turn on accelerometer and begin receiving accelerometer events
-
+    /*
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    */
   
+    //recive notification from other controllers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
     
-
+    //delete
+    /*
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
+     */
     
-    
+    //delete
     self.testView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
 
 
@@ -5122,15 +5197,23 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     // Create a system sound object representing the sound file.
     AudioServicesCreateSystemSoundID  ((__bridge CFURLRef)self.blankSoundFileURLRef, &_blankSoundFileObject);
     //replace from show count
+    
+    //delete
     [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
+    //delete
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
     
     self.isHistoryWholeShowed = 0;
     //set other cursor color
+    
+    //delete
     self.isTestViewOnScreen = NO;
     if(IS_IPAD){
         self.testView.hidden = YES;
     }
+    
+    //transition to third controller
+    self.callShowController = NO;
     
 
 }
@@ -5144,9 +5227,9 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     if(IS_IPAD){
         self.displayRam.isIpadPortraitView = willBePortraitRotated;
     } else {
-        if(willBePortraitRotated){
-            [self rotateToPortraitViewIPhone];
-        } else {
+       // if(willBePortraitRotated){
+       //     [self rotateToPortraitViewIPhone];
+      //  } else {
             if(self.hintView){
                  //if there ara hint view - remove it
                 [UIView animateWithDuration:0.2
@@ -5160,12 +5243,12 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                 
             }
             //[UIView setAnimationsEnabled:NO];
-            if(self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeLeft || self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeRight){
+           // if(self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeLeft || self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeRight){
                 
-                [self orientationChangedToOrientation:self.wasRotatedNotificationAnotherController fromNotification:NO];
-                self.wasRotatedNotificationAnotherController = 0;
-            }
-        }
+           //     [self orientationChangedToOrientation:self.wasRotatedNotificationAnotherController fromNotification:NO];
+           //     self.wasRotatedNotificationAnotherController = 0;
+           // }
+       // }
     }
 }
 
@@ -5387,30 +5470,43 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         
         self.lastRowHistoryTableHeight = 85.f;
         
-        
+        //delete
         [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
-        
+        //delete
         [self.viewToPDF setFrame:CGRectMake(128, 256, 1024, 768)];
         //define bounds for all buttons in PDF View
+        //delete
         [self.backToCalcButton setBounds:buttonsRect];
+        //delete
         [self.shareButton setBounds:buttonsRect];
+        //delete
         [self.redPanButton setBounds:buttonsRect];
+        //delete
         [self.bluePanButton setBounds:buttonsRect];
+        //delete
         [self.cleanButton setBounds:buttonsRect];
         
         //it will be total five buttons in PDFView and two empty parts at the bottom and top of view
         //define one segment
+        //delete
         CGFloat oneSegment = self.viewToPDF.bounds.size.height / 8;
         
         //define x center for all buttons
+        //delete
         CGFloat xCenter = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.width)/2 + oneSegment/1.5;
+        //delete
         CGFloat yStart = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.height)/2;
         
         //set centers for each button
+        //delete
         [self.backToCalcButton setCenter:CGPointMake(xCenter, yStart + 2*oneSegment)];
+        //delete
         [self.shareButton setCenter:CGPointMake(xCenter, yStart + 3*oneSegment)];
+        //delete
         [self.redPanButton setCenter:CGPointMake(xCenter, yStart + 4*oneSegment)];
+        //delete
         [self.bluePanButton setCenter:CGPointMake(xCenter, yStart + 5*oneSegment)];
+        //delete
         [self.cleanButton setCenter:CGPointMake(xCenter, yStart + 6*oneSegment)];
         //else if iPhone
     } else if(IS_568_SCREEN){
@@ -5420,18 +5516,28 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         self.lastRowHistoryTableHeight = 65.f;
         
         //[self.testView setFrame:CGRectMake(-166, -166, 652, 652)];
+        //delete
         [self.testView setFrame:CGRectMake(-652,0, 652, 652)];
+        //delete
         
         [self.viewToPDF setFrame:CGRectMake(42, 166, 568, 320)];
-        
+        //delete
         buttonsRect.origin.x = 60;
+        //delete
         buttonsRect.origin.y = 176;
+        //delete
         [self.shareButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.redPanButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.bluePanButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.cleanButton setFrame:buttonsRect];
         
         
@@ -5443,19 +5549,28 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
         self.lastRowHistoryTableHeight = 60.f;
         
         //[self.testView setFrame:CGRectMake(-42, -164, 577, 577)];
+        //delete
         [self.testView setFrame:CGRectMake(-577, 0, 577, 577)];
-        
+        //delete
         [self.viewToPDF setFrame:CGRectMake(48, 128, 480, 320)];
         
-        
+        //delete
         buttonsRect.origin.x = 70;
+        //delete
         buttonsRect.origin.y = 140;
+        //delete
         [self.shareButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.redPanButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.bluePanButton setFrame:buttonsRect];
+        //delete
         buttonsRect.origin.y += 80;
+        //delete
         [self.cleanButton setFrame:buttonsRect];
         
         
@@ -5635,6 +5750,7 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
                                                 self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
     
     
+    //Important may be Need to deleted it
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
@@ -5808,10 +5924,12 @@ NSString *const MainControllerNotAvailableForBuingNotification = @"MainControlle
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
+    /*
     if([self.historyTable numberOfRowsInSection: 0]>0){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable     numberOfRowsInSection: 0] -1 inSection:0];
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
+     */
 
 }
 
@@ -5940,11 +6058,370 @@ animationControllerForPresentedController:(UIViewController *)presented
 presentingController:(UIViewController *)presenting
 sourceController:(UIViewController *)source
 {
-    return [[Transition alloc] init];;
+    Transition* trans = [[Transition alloc] init];
+    self.transition = trans;
+    
+    if(self.callShowController){
+        self.transition.isGravity = YES;
+    } else {
+        self.transition.isGravity = NO;
+        
+    }
+    return self.transition;
 }
 
-#pragma mark SETTING CONTROLLER
+#pragma mark SHOW OTHER CONTROLLERS
 
+#pragma mark SHOW VIEW CONTROLLER
+
+
+-(void) showShowedView
+{
+    NSLog(@"ATTR str fro show: %@", self.strAtrrForShow.string);
+    ShowedViewController *show = [[ShowedViewController alloc] init];
+    [show setNeedStringsForShow:self.strAtrrForShow andRes:self.resStringForShow];
+    if(IS_IPAD){
+        UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
+        if(orient == UIDeviceOrientationPortrait || orient == UIDeviceOrientationPortraitUpsideDown){
+            
+            CGFloat angle = 0;
+            CGFloat width = self.view.bounds.size.height;
+            CGFloat height = self.view.bounds.size.width;
+
+            switch (orient) {
+                case UIDeviceOrientationPortrait:
+                    angle = 0;
+                    break;
+                case UIDeviceOrientationPortraitUpsideDown:
+                    angle = 0;
+                    
+                default:
+                    break;
+            }
+            
+            [show.cView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+            [show.cView setFrame:CGRectMake(0,0, height, width)];
+        }
+    }
+    
+    self.showedController = show;
+    self.showedController.transitioningDelegate = self;
+   // self.showedController.attrStrForLabel = self.strAtrrForShow;
+    
+    [self presentViewController:self.showedController animated:YES completion:nil];
+}
+#pragma mark PREAPERE STRINGS
+-(void) showCount
+{
+    //important AT START ITS CALL 4 times IMPOSIBLE //end every time ITS CALLED TWICE, at = CALL THREE TIMES
+    // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    NSAttributedString * count;
+    NSAttributedString *result;
+    NSLog(@"Number of rowInhistory table %ld",(long)[self.historyTable numberOfRowsInSection:0]);
+    
+    if([self.historyTable numberOfRowsInSection: 0] >0){
+        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        if(!indexPath){
+            indexPath = lastRowPatch;
+        }
+        NSMutableAttributedString *atrStrFromString;
+        if(indexPath.row == lastRowPatch.row){
+            if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
+            atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
+        } else {
+            atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
+        }
+        if(atrStrFromString.length >0){
+            if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
+                
+                NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
+                if([lastSymbol isEqualToString: @"="]){
+                    [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
+                }
+            }
+            
+        }
+        
+       // if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
+            NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
+            if(equalRange.location == NSNotFound){
+                count = [atrStrFromString copy];
+                result = [[NSAttributedString alloc] initWithString:@""];
+            } else {
+                count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
+                result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
+            }
+            
+       // }
+        
+    }
+    //NSLog(@"Print str: %@", count.string);
+    //_strAtrrForShow = count;
+   // _resStringForShow = result;
+   // if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
+   //     [self prepareStringsFroShowedViewController:(ShowedViewController*)self.presentedViewController];
+        [self prepareStringsForshowedViewControllerCountStr:[count copy] andResStr:[result copy]];
+        
+   // }
+
+    
+}
+
+//call its func only if ShowedController is presented of begining appears
+//make it in background
+#define RES_RECT_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 196.f : 96.f)
+#define RES_STRING_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 176.f : 72.f)
+#define COUNT_STRING_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 88.f : 48.f)
+#define STRING_INDENT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 150.f : 90.f)
+-(void) prepareStringsForshowedViewControllerCountStr:(NSAttributedString*)countStr andResStr:(NSAttributedString*)resStr
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //first works with result string
+        NSMutableAttributedString * countAtrStr = [countStr mutableCopy];
+        
+        UIFont *font; //72;
+        UIColor *textColor = [UIColor darkTextColor];
+        NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        style.alignment = NSTextAlignmentLeft;
+        style.lineHeightMultiple = 0;
+        
+        [countAtrStr beginEditing];
+        NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
+        [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [countAtrStr endEditing];
+        
+        //set maximum heigth of count string
+        UIFont *mainAttributefont = [self.attributes valueForKey:NSFontAttributeName];
+        
+        countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:COUNT_STRING_HEIGHT/mainAttributefont.pointSize] mutableCopy];
+        //countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:COUNT_STRING_HEIGHT] mutableCopy];
+        
+        //find the need height of multiline string
+        NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+        //calculate width and height of DEVICE
+        CGFloat width;
+        CGFloat height;
+        if(self.view.bounds.size.width > self.view.bounds.size.height){
+            width = self.view.bounds.size.width;
+            height = self.view.bounds.size.height;
+        } else {
+            width = self.view.bounds.size.height;
+            height = self.view.bounds.size.width;
+        }
+        
+        CGSize neededSize = CGSizeMake(width - STRING_INDENT - 20,1000);
+        CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                      context:drawContext];
+        //CGFloat needPointsize = COUNT_STRING_HEIGHT;
+        CGFloat maxHightOfMultiLineString = height - 20- RES_RECT_HEIGHT;
+        
+        while (neededRect.size.height > maxHightOfMultiLineString) {
+            CGFloat koeff = sqrtf(maxHightOfMultiLineString/neededRect.size.height);
+            countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:koeff] mutableCopy];
+            neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:drawContext];
+            NSLog(@"in Loop needRect: %f,%f,%f,%f",
+                  neededRect.origin.x,
+                  neededRect.origin.y,
+                  neededRect.size.width,
+                  neededRect.size.height);
+        }
+        
+        //set result string
+        NSMutableAttributedString * resulAttrStr = [resStr mutableCopy];
+        font = [self setFontWithSize:RES_STRING_HEIGHT]; //72
+        style.alignment = NSTextAlignmentRight;
+        style.lineHeightMultiple = 1.;
+        [resulAttrStr beginEditing];
+        wholeRange = NSMakeRange(0, [resulAttrStr length]);
+        [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
+        [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [resulAttrStr endEditing];
+        
+        // NSInteger resultStringSize = RES_STRING_HEIGHT;//176;//72;
+        
+        CGRect resRect = CGRectMake(STRING_INDENT,
+                                    height - RES_RECT_HEIGHT - 20,
+                                    width - STRING_INDENT - 20,
+                                    RES_RECT_HEIGHT);
+        
+        CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+                                                             context:drawContext];
+        while(neededResultRect.size.width > (resRect.size.width -10)){
+            CGFloat koeff = sqrtf((resRect.size.width -10)/neededResultRect.size.width);
+            
+            resulAttrStr = [[self resizeAttrString:[resulAttrStr copy] withKoeff:koeff] mutableCopy];
+            neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+                                                          context:drawContext];
+            
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _strAtrrForShow = [countAtrStr copy];
+            _resStringForShow = [resulAttrStr copy];
+            if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
+                [(ShowedViewController*)self.presentedViewController setNeedStringsForShow:[countAtrStr copy] andRes:[resulAttrStr copy]];
+                
+            }
+        });
+        
+    });
+    
+
+}
+/*
+-(void) prepareStringsFroShowedViewController:(ShowedViewController*)showedController
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //first works with result string
+        NSMutableAttributedString * countAtrStr = [self.strAtrrForShow mutableCopy];
+        
+        UIFont *font; //72;
+        UIColor *textColor = [UIColor darkTextColor];
+        NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        style.alignment = NSTextAlignmentLeft;
+        style.lineHeightMultiple = 0;
+        
+        [countAtrStr beginEditing];
+        NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
+        [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [countAtrStr endEditing];
+        
+        //set maximum heigth of count string
+        UIFont *mainAttributefont = [self.attributes valueForKey:NSFontAttributeName];
+        
+        countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:COUNT_STRING_HEIGHT/mainAttributefont.pointSize] mutableCopy];
+        //countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:COUNT_STRING_HEIGHT] mutableCopy];
+        
+        //find the need height of multiline string
+        NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+        //calculate width and height of DEVICE
+        CGFloat width;
+        CGFloat height;
+        if(self.view.bounds.size.width > self.view.bounds.size.height){
+            width = self.view.bounds.size.width;
+            height = self.view.bounds.size.height;
+        } else {
+            width = self.view.bounds.size.height;
+            height = self.view.bounds.size.width;
+        }
+        
+        CGSize neededSize = CGSizeMake(width - STRING_INDENT - 20,1000);
+        CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                      context:drawContext];
+        //CGFloat needPointsize = COUNT_STRING_HEIGHT;
+        CGFloat maxHightOfMultiLineString = height - 20- RES_RECT_HEIGHT;
+        
+        while (neededRect.size.height > maxHightOfMultiLineString) {
+            CGFloat koeff = sqrtf(maxHightOfMultiLineString/neededRect.size.height);
+            countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:koeff] mutableCopy];
+            neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:drawContext];
+            NSLog(@"in Loop needRect: %f,%f,%f,%f",
+                  neededRect.origin.x,
+                  neededRect.origin.y,
+                  neededRect.size.width,
+                  neededRect.size.height);
+        }
+        
+        //set result string
+        NSMutableAttributedString * resulAttrStr = [self.resStringForShow mutableCopy];
+        font = [self setFontWithSize:RES_STRING_HEIGHT]; //72
+        style.alignment = NSTextAlignmentRight;
+        style.lineHeightMultiple = 1.;
+        [resulAttrStr beginEditing];
+        wholeRange = NSMakeRange(0, [resulAttrStr length]);
+        [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
+        [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
+        [resulAttrStr endEditing];
+        
+       // NSInteger resultStringSize = RES_STRING_HEIGHT;//176;//72;
+        
+        CGRect resRect = CGRectMake(STRING_INDENT,
+                                    height - RES_RECT_HEIGHT - 20,
+                                    width - STRING_INDENT - 20,
+                                    RES_RECT_HEIGHT);
+        
+        CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+                                                             context:drawContext];
+        while(neededResultRect.size.width > (resRect.size.width -10)){
+            CGFloat koeff = sqrtf((resRect.size.width -10)/neededResultRect.size.width);
+            
+            resulAttrStr = [[self resizeAttrString:[resulAttrStr copy] withKoeff:koeff] mutableCopy];
+            neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
+                                                          context:drawContext];
+            
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [showedController setNeedStringsForShow:countAtrStr andRes:resulAttrStr];
+
+        });
+        
+    });
+    
+}
+*/
+//helped function for set need font
+-(UIFont*) setFontWithSize:(CGFloat) size
+{
+    UIFont *font; //if there is no needed font
+    
+    NSString *fontName = nil;
+    NSArray *famalyNames  =[UIFont familyNames];
+    if([famalyNames containsObject:@"Helvetica Neue"]){
+        NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
+        if([fontNames containsObject:@"HelveticaNeue"]){
+            fontName = @"HelveticaNeue";
+        }
+    }
+    
+    if(fontName){
+        font = [UIFont fontWithName:fontName size:size];
+    }else {
+        font =[UIFont boldSystemFontOfSize:size];
+    }
+    return  font;
+}
+
+
+-(NSAttributedString*) resizeAttrString:(NSAttributedString*)inputStr withKoeff:(CGFloat)k;
+{
+    NSMutableAttributedString* resultString = [inputStr mutableCopy];
+    
+    //set the new value for all of symbols according new k
+    for(int i = 0; i < inputStr.length; i++){
+        NSMutableAttributedString *symbolString = [[NSMutableAttributedString alloc] initWithAttributedString:[resultString attributedSubstringFromRange:NSMakeRange(i, 1)]];
+        NSDictionary *attributes = [symbolString attributesAtIndex:0 effectiveRange:nil];
+        
+        UIFont *wasFont = [attributes valueForKey:NSFontAttributeName];
+        NSNumber *wasOffset = [attributes valueForKey:NSBaselineOffsetAttributeName];
+        UIFont *font = [UIFont fontWithName:wasFont.familyName size:wasFont.pointSize * k]; //if there is no needed font
+        UIColor *textColor = [UIColor darkTextColor];
+        
+        [symbolString beginEditing];
+        NSRange wholeRange = NSMakeRange(0, [symbolString length]);
+        [symbolString addAttribute:NSFontAttributeName value:font range:wholeRange];
+        [symbolString addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
+        [symbolString addAttribute:NSBaselineOffsetAttributeName value:[NSNumber numberWithFloat:[wasOffset floatValue]* k] range:wholeRange];
+        [symbolString endEditing];
+        [resultString replaceCharactersInRange:NSMakeRange(i, 1) withAttributedString:symbolString];
+    }
+    
+    return [resultString copy];
+}
+
+
+#pragma mark MORE CONTROLLERS
 //Important test
 -(void) testShowAppController
 {
@@ -5954,6 +6431,7 @@ sourceController:(UIViewController *)source
                                                    blue:.80
                                                   alpha:1.];
     second.transitioningDelegate = self;
+    
     
     [self presentViewController:second animated:YES completion:nil];
 }
@@ -6441,19 +6919,19 @@ sourceController:(UIViewController *)source
     }
 }
 
-#pragma mark CHANGE ORIENTATIONS
+#pragma mark ROTATION
 
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     //[UIView setAnimationsEnabled:NO];
-
+    /*
     BOOL wasWillBePortraitRotated = self.willBePortraitRotated;
     if(size.height > size.width){
         self.willBePortraitRotated = YES;
     } else {
         self.willBePortraitRotated = NO;
     }
-    
+    */
     
     if(self.hintView){
         [self.hintView removeFromSuperview];
@@ -6463,6 +6941,8 @@ sourceController:(UIViewController *)source
     NSInteger bannerHeight;
     
     if(IS_IPAD){
+        [self IPadTransitionToSize:size withTransitionCoordinator:coordinator];
+        /*
         bannerHeight = 66;
     //
         [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];//ipad
@@ -6492,9 +6972,12 @@ sourceController:(UIViewController *)source
                 int64_t delayInSeconds = 0.05;
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [UIView setAnimationsEnabled:YES];
+                        [UIView setAnimationsEnabled:YES];
+                        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
                 });
             }
+        } else {
+                 [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
         }
         if(!self.wasPurshaised){
             
@@ -6505,8 +6988,10 @@ sourceController:(UIViewController *)source
             [self.bannerContainerView setFrame:bannerFrame];
             [self.iAdBanner setFrame:self.bannerContainerView.bounds];
         }
+        */
     } else {
         bannerHeight = 50;
+        [self iPhoneTransitionToSize:size withTransitionCoordinator:coordinator];
     }
     if(!self.wasPurshaised){
         /*
@@ -6518,16 +7003,342 @@ sourceController:(UIViewController *)source
         [self.iAdBanner setFrame:self.bannerContainerView.bounds];
          */
     }
-     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+-(void) IPadTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
+    NSInteger bannerHeight = 66;
+    
+    BOOL wasWillBePortraitRotated = self.willBePortraitRotated;
+    if(size.height > size.width){
+        self.willBePortraitRotated = YES;
+    } else {
+        self.willBePortraitRotated = NO;
+    }
+    
+    [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];//ipad
+    [self setUpMainButtonsStartWithPosition];//ipad
+    [self makeTwoArrays];//ipad
+    [self.buttonsCollection reloadData];//ipad
+    [self changeLayoutDynamicContainerWithSize:size];//ipad
+    
+    //!!!
+    //If presented second controller
+    //
+    //steel don't ready for IPad
+    if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
+       /*
+        CGFloat angle = 0;
+        CGFloat width = size.height;
+        CGFloat height = size.width;
+        
+        if(size.width > size.height){
+            width = size.height;
+            height = size.width;
+            switch (orient) {
+                case UIDeviceOrientationLandscapeLeft:
+                    angle = -M_PI/2;
+                    break;
+                case UIDeviceOrientationLandscapeRight:
+                    angle = M_PI/2;
+                    
+                default:
+                    break;
+            }
+        }
+        
+        [UIView setAnimationsEnabled:NO];
+       // [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
+        [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+        
+        [self.secondController.cView setTransform:CGAffineTransformMakeRotation(angle)];
+        [self.secondController.cView setFrame:CGRectMake(0,0, height, width)];
+        
+        [self.view setTransform:CGAffineTransformMakeRotation(0)];
+        
+        
+        int64_t delayInSeconds = 0.05;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            
+            [UIView setAnimationsEnabled:YES];
+            [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+        });
+        */
+        
+    }
+    //!!!!
+    //if presented third controller
+    //
+    else if ([self.presentedViewController isKindOfClass:[ThirdController class]]){
+
+            if(wasWillBePortraitRotated != self.willBePortraitRotated){
+                //if(self.willBePortraitRotated){
+                [UIView setAnimationsEnabled:NO];
+                if(!self.willBePortraitRotated){
+                    [self.showedController.testView setTransform:CGAffineTransformMakeRotation(0)];
+                    CGRect initialFrame = self.showedController.testView.frame;
+                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
+                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
+                    [self.showedController.testView setFrame:initialFrame];
+                } else {
+                    [self.showedController.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+                    CGRect initialFrame = self.showedController.testView.frame;
+                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
+                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
+                    [self.showedController.testView setFrame:initialFrame];
+                    
+                }
+                int64_t delayInSeconds = 0.05;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    [UIView setAnimationsEnabled:YES];
+                    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                });
+            } else {
+        
+        /*
+        CGFloat angle = 0;
+        CGFloat width = size.height;
+        CGFloat height = size.width;
+        
+        if(size.height > size.width){
+            width = size.height;
+            height = size.width;
+            switch (self.showedController.wasOrient) {
+                case UIDeviceOrientationLandscapeLeft:
+                    angle = M_PI/2;
+                    break;
+                case UIDeviceOrientationLandscapeRight:
+                    angle = -M_PI/2;
+                default:
+                    break;
+            }
+            self.showedController.wasOrient = orient;
+        }
+       // if(needDissmisThirdController) {
+            [UIView setAnimationsEnabled:NO];
+           // [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
+           // [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+            
+            [self.showedController.cView setTransform:CGAffineTransformMakeRotation(angle)];
+            [self.showedController.cView setFrame:CGRectMake(0,0, height, width)];
+            
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                [UIView setAnimationsEnabled:YES];
+                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                [self.showedController dismis];
+            });
+        */
+       // }
+        
+                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+            }
+    }
+    //!!!!
+    //if presented current controller
+    //
+    else {
+       
+        
+        /*
+        
+        if(self.isTestViewOnScreen){
+            if(wasWillBePortraitRotated != self.willBePortraitRotated){
+                //if(self.willBePortraitRotated){
+                [UIView setAnimationsEnabled:NO];
+                if(!self.willBePortraitRotated){
+                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
+                    CGRect initialFrame = self.testView.frame;
+                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
+                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
+                    [self.testView setFrame:initialFrame];
+                } else {
+                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+                    CGRect initialFrame = self.testView.frame;
+                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
+                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
+                    [self.testView setFrame:initialFrame];
+                    
+                }
+                int64_t delayInSeconds = 0.05;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    [UIView setAnimationsEnabled:YES];
+                    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                });
+            }
+        } else {
+            */
+            [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+        //}
+        if(!self.wasPurshaised){
+            
+            CGRect bannerFrame = self.bannerContainerView.frame;
+            bannerFrame.size.width = size.width;
+            bannerFrame.size.height = bannerHeight;
+            
+            [self.bannerContainerView setFrame:bannerFrame];
+            [self.iAdBanner setFrame:self.bannerContainerView.bounds];
+        }
+    }
 
 }
+
+-(void) iPhoneTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+        UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
+        //!!!
+        //If presented second controller
+        //
+        if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
+            
+            CGFloat angle = 0;
+            CGFloat width = size.height;
+            CGFloat height = size.width;
+            
+            if(size.width > size.height){
+                width = size.height;
+                height = size.width;
+                switch (orient) {
+                    case UIDeviceOrientationLandscapeLeft:
+                        angle = -M_PI/2;
+                        break;
+                    case UIDeviceOrientationLandscapeRight:
+                        angle = M_PI/2;
+                        
+                    default:
+                        break;
+                }
+            }
+            
+            [UIView setAnimationsEnabled:NO];
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
+            [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+            
+            [self.secondController.cView setTransform:CGAffineTransformMakeRotation(angle)];
+            [self.secondController.cView setFrame:CGRectMake(0,0, height, width)];
+            
+            [self.view setTransform:CGAffineTransformMakeRotation(0)];
+            
+            
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                [UIView setAnimationsEnabled:YES];
+                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+            });
+            
+            
+        }
+        //!!!!
+        //if presented third controller
+        //
+        else if ([self.presentedViewController isKindOfClass:[ThirdController class]]){
+            CGFloat angle = 0;
+            CGFloat width = size.height;
+            CGFloat height = size.width;
+            BOOL needDissmisThirdController = NO;
+            
+            if(size.height > size.width){
+                width = size.height;
+                height = size.width;
+                switch (self.showedController.wasOrient) {
+                    case UIDeviceOrientationLandscapeLeft:
+                        angle = M_PI/2;
+                        needDissmisThirdController = YES;
+                        break;
+                    case UIDeviceOrientationLandscapeRight:
+                        angle = -M_PI/2;
+                        needDissmisThirdController = YES;
+                        
+                    default:
+                        break;
+                }
+                self.showedController.wasOrient = orient;
+            }
+            if(needDissmisThirdController) {
+                [UIView setAnimationsEnabled:NO];
+                [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
+                [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+                
+                [self.showedController.cView setTransform:CGAffineTransformMakeRotation(angle)];
+                [self.showedController.cView setFrame:CGRectMake(0,0, height, width)];
+                
+                int64_t delayInSeconds = 0.05;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    
+                    [UIView setAnimationsEnabled:YES];
+                    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                    [self.showedController dismis];
+                });
+            }
+            
+        }
+        //!!!!
+        //if presented current controller
+        //
+        else {
+            
+            CGFloat angle = 0;
+            CGFloat width = size.height;
+            CGFloat height = size.width;
+            
+            BOOL needCallcontroller = NO;
+            
+            if(size.width > size.height){
+                width = size.height;
+                height = size.width;
+                switch (orient) {
+                    case UIDeviceOrientationLandscapeLeft:
+                        angle = -M_PI/2;
+                        needCallcontroller = YES;
+                        break;
+                    case UIDeviceOrientationLandscapeRight:
+                        angle = M_PI/2;
+                        needCallcontroller = YES;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            [UIView setAnimationsEnabled:NO];
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
+            [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+            
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                [UIView setAnimationsEnabled:YES];
+                
+                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                self.callShowController = needCallcontroller;
+                //attemptRotationToDeviceOrientation
+                /*
+                 NSLog(@"Size: %f, %f. DynRect:%f, %f, %f, %f",size.width,size.height, self.cView.frame.origin.x,
+                 self.cView.frame.origin.y,
+                 self.cView.frame.size.width,
+                 self.cView.frame.size.height);
+                 */
+            });
+        }
+}
+
 
 /*
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
     return UIInterfaceOrientationPortrait;
 }
-*/
+
 -(void) orientationChangedToOrientation:(UIDeviceOrientation)orient fromNotification:(BOOL)isNotification
 {
     if(orient == UIDeviceOrientationLandscapeLeft){
@@ -6743,7 +7554,7 @@ sourceController:(UIViewController *)source
         self.wasRotatedNotificationAnotherController = orient;
     }
 }
-
+*/
 #pragma mark SHOWING IAd BANNER
 //but exactly here need to show banner
 //1. delay banner appearence
