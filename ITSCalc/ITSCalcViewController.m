@@ -10,7 +10,6 @@
 #import <CoreData/CoreData.h>
 #import <CoreText/CTStringAttributes.h>
 #import <MessageUI/MessageUI.h>
-//#import <AVFoundation/AVFoundation.h>
 
 #import "ITSCalcViewController.h"
 
@@ -19,7 +18,7 @@
 #import "HistroryTableViewCell.h"
 
 #import "ACalcBrain.h"
-#import "cmyk.h"
+
 #import "DisplayLabel.h"
 #import "DisplayRam.h"
 #import "History.h"
@@ -29,17 +28,19 @@
 #import "ButtonObject.h"
 #import "HistoryTableSviper.h"
 #import "HistoryTableView.h"
-#import "ShowedView.h"
 
 #import "HintView.h"
 
 #import "recBut.h"
 #import "SettingButton.h"
-#import "CalcButton.h"
-#import "CleanButton.h"
+
+//dellete
 #import "CloudView.h"
+//dellete
 #import "SoundView.h"
+//dellete
 #import "ArchiveSizeView.h"
+//dellete
 #import "ShareButton.h"
 #import "NoticeButton.h"
 #import "DelButton.h"
@@ -49,7 +50,8 @@
 #import "Transition.h"
 #import "BackTransition.h"
 //here its only test
-#import "SecondViewController.h"
+//#import "SecondViewController.h"
+#import "SettingsViewController.h"
 #import "ShowedViewController.h"
 //#import "ThirdController.h"
 
@@ -64,7 +66,6 @@
 #define Y_OFFSET 2.0f
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 
-//#define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
@@ -76,13 +77,12 @@
 #define FREE_TRIAL_PERIOD 2592000. // for thirtee days trial period
 #define DAYS_ALOWED_TRIAL_PERIOD 30. //not shure tha its needed
 
+//important delete
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 #define IS_BLACK_MODE NO
 #define INDENT 20.0f
 
 
-//delete
-NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification";
 NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
 NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 #pragma mark CHANGES FROM OTHER CONTROLLERS
@@ -95,12 +95,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //
 //Main container view
 #pragma mark TRANSITOPN PROPERTIES
-@property (strong,nonatomic) Transition* transition;
-@property (weak,nonatomic) SecondViewController* secondController;
-@property (strong) ShowedViewController* showedController;
+@property (weak,nonatomic) Transition* transition;
+@property (weak,nonatomic) SettingsViewController* settingsController;
+@property (weak,nonatomic) ShowedViewController* showedController;
 @property (nonatomic,strong) NSAttributedString *strAtrrForShow;
 @property (nonatomic,strong) NSAttributedString *resStringForShow;
 @property (nonatomic) BOOL callShowController;
+@property (nonatomic) BOOL showControllerIsForward;
 
 
 
@@ -115,7 +116,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) CGFloat histroryTableViewHeight;
 @property (nonatomic) CGFloat labelViewHeight;
 @property (nonatomic) CGFloat lastRowHistoryTableHeight;
-//@property (nonatomic) CGFloat settingsViewHeight;
 
 //Buttons collection
 @property (weak, nonatomic) IBOutlet ButtonsCollectionView *buttonsCollection;
@@ -156,6 +156,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 
 //bool property for paid version
+//important delete
 @property (nonatomic, strong) SKProduct *product;
 
 @property (nonatomic) BOOL wasPurshaised;
@@ -232,17 +233,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 //Showed View
 @property (nonatomic, strong) UIDynamicAnimator *animator;
-@property (strong, nonatomic) IBOutlet UIView *testView;
-@property (strong, nonatomic) IBOutlet ShowedView *viewToPDF;
-@property (nonatomic) BOOL isTestViewOnScreen;
-
-@property (weak, nonatomic) IBOutlet CalcButton *backToCalcButton;
-@property (weak, nonatomic) IBOutlet UIButton *redPanButton;
-@property (weak, nonatomic) IBOutlet UIButton *bluePanButton;
-@property (weak, nonatomic) IBOutlet CleanButton *cleanButton;
-@property (weak, nonatomic) IBOutlet ShareButton *shareButton;
-
-@property (nonatomic) BOOL isPDFViewOnScreen;
 
 //Document
 //@property (nonatomic, retain) UIDocumentInteractionController *docController;
@@ -334,7 +324,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 //hint vew
 
-//@property (nonatomic) BOOL appWasOnBackGroundTwice;
 @property (nonatomic, strong) NSDate *lastShowAllertViewDate;
 
 // Set to YES to get some debugging output in the console.
@@ -379,12 +368,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
-#pragma mark NOTIFICATION
--(void) recivedNotification:(NSNotification*)notification
-{
-    NSLog(@"SendChangedNotification %@", [notification.userInfo objectForKey:@"Message"]);
-    
-}
+
 
 #pragma mark TEXT ATTRIBUTES
 //attributes for history table
@@ -515,7 +499,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 #define ALERT_CANCEL_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CANCEL_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"alert cancel buton title")
 #define ALERT_RESTORE_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_RESTORE_BUTTON_TITLE ",@"ACalcTryViewControllerTable", @"restore buton title")
 
-#define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"clear history button title")
+#define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
+
+
 #define ALERT_MESSAGE_CLEAR_HOSTORY NSLocalizedStringFromTable(@"ALERT_MESSAGE_CLEAR_HOSTORY",@"ACalcTryViewControllerTable", @"delete history. all results will be lost")
 #define ALERT_CLEAR_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CLEAR_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"clear")
 
@@ -529,6 +515,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
 
+//--important delete
 - (IBAction)buyAdditionsButtonTapped:(UIButton *)sender
 {
     UIAlertView *alert;
@@ -765,17 +752,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     return YES;
 }
 
-/*
--(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
-
--(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
-*/
 
 #pragma mark BUTTONS ARRAYS
 -(NSArray*) startArray
@@ -1215,6 +1191,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 //delete empty program from fetch
+//IMPORTANT think its not necessary
 -(void) deleteEmptyProgram
 {
     NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
@@ -1988,6 +1965,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 - (IBAction)tapSettingsBotomButton:(UIButton *)sender
 {
+    [self showSettingsViewcontroller];
+    /*
     if(self.isBottomSettingsViewOnScreen){
         CGRect settingsViewframe = self.SettingsView.frame;
         settingsViewframe.origin.x = -self.mainContainerView.bounds.size.width;
@@ -2054,12 +2033,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              
                          }];
     }
-    
+    */
 }
 
 - (IBAction)tapSettingsButton:(UIButton *)sender
 {
-
+    [self showSettingsViewcontroller];
+    /*
     if(self.isSettingsViewOnScreen){
         
         CGRect settingsViewframe = self.SettingsView.frame;
@@ -2104,6 +2084,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              self.isSettingsViewOnScreen = YES;
                          }];
     }
+    */
     
     
 }
@@ -2248,10 +2229,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-    }
-    self.isTestViewOnScreen = NO;
-    if(IS_IPAD){
-        self.testView.hidden = YES;
     }
 
 }
@@ -4115,212 +4092,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 #pragma mark SHOW VIEW
-//now its tes
-/*
--(NSAttributedString*)attrStrForLabel
-{
-    NSAttributedString * count;
-    NSAttributedString *result;
-    
-    if([self.historyTable numberOfRowsInSection: 0] >0){
-        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        if(!indexPath){
-            indexPath = lastRowPatch;
-        }
-        NSMutableAttributedString *atrStrFromString;
-        if(indexPath.row == lastRowPatch.row){
-            if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
-            atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
-        } else {
-            atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
-        }
-        if(atrStrFromString.length >0){
-            if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
-                
-                NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
-                if([lastSymbol isEqualToString: @"="]){
-                    [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
-                }
-            }
-            
-        }
-        
-        if(![atrStrFromString.string isEqualToString:[self.viewToPDF stringOnScreen]]){
-            NSRange equalRange = [atrStrFromString.string rangeOfString:@"="];
-            if(equalRange.location == NSNotFound){
-                count = [atrStrFromString copy];
-                result = [[NSAttributedString alloc] initWithString:@""];
-            } else {
-                count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
-                result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
-            }
-            
-        }
-        
-    }
-    return count;
-}
-
-*/
-
-//need to work this func at background
-
-//DELETE
-//tapped at share button in showed view
-- (IBAction)tapeShareButton:(id)sender
-{
-    
-    UIGraphicsBeginImageContextWithOptions(self.viewToPDF.bounds.size, self.viewToPDF.opaque, 0.0);
-    [self.viewToPDF.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:img, /*strToShare, */nil];
-    
-    UIActivityViewController *activity = [[UIActivityViewController alloc]
-                                          initWithActivityItems:activityItems
-                                          applicationActivities:nil];
-    //very important for ipad!!!
-    if(IS_IPAD){
-        activity.popoverPresentationController.sourceView = self.view;
-    }
-
-    activity.excludedActivityTypes = @[UIActivityTypePostToFacebook, UIActivityTypeAirDrop, UIActivityTypePostToTwitter, UIActivityTypePostToWeibo, UIActivityTypePrint, UIActivityTypePostToFlickr, UIActivityTypeAssignToContact];
-    [self presentViewController:activity animated:YES completion:nil];
-    
-    //activity.
-    
-}
-
-
-//DELETE
-- (IBAction)tabBluePanButton:(id)sender
-{
-    self.viewToPDF.isBluePanOrRed = YES;
-    //set new image for that button
-    [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
-    [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
-    
-    //!!
-    //need to set new image for red button
-}
-
-//DELETE
-- (IBAction)tapRedPanButton:(id)sender
-{
-    self.viewToPDF.isBluePanOrRed = NO;
-    //set new image for that button
-    //!!
-    //need to set new image for red button
-    [self.redPanButton setImage:[UIImage imageNamed:@"redPanSelected2.png"] forState:normal];
-    [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanUnselected2.png"] forState:normal];
-    
-}
-//DELETE
-
-- (IBAction)tapClearButton:(UIButton *)sender
-{
-    [self.viewToPDF clearPaintedView];
-}
 
 - (IBAction)tappedRealNoticeButton:(UIButton *)sender
 {
     self.callShowController = YES;
-    /*
-    // NSLog(@"Tapped real notice button");
-    self.testView.hidden = NO;
-    if(self.willBePortraitRotated){
-        [self.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-        CGRect initialFrame = self.testView.frame;
-        initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
-        initialFrame.origin.y = -self.testView.frame.size.height;
-        
-        [self.testView setFrame:initialFrame];
-        
-        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-        [animator addBehavior:gravity];
-        
-        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-        CGFloat stopY;
-        
-        
-        stopY = self.view.frame.size.height + ( self.testView.frame.size.height - self.view.frame.size.height)/2;
-        
-        
-        [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                           fromPoint:CGPointMake(0, stopY)
-                                             toPoint:CGPointMake(self.view.frame.size.width, stopY)];
-        [animator addBehavior:collisionBehavior];
-        
-        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-        elastic.elasticity = 0.4;
-        [animator addBehavior:elastic];
-        
-        self.animator = animator;
-        
-    } else {
-         [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-        CGRect initialFrame = self.testView.frame;
-        initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
-        initialFrame.origin.y = -self.testView.frame.size.height;
-        
-        [self.testView setFrame:initialFrame];
-        
-        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-        [animator addBehavior:gravity];
-        
-        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-        CGFloat stopY;
-        
-        
-        stopY = self.view.frame.size.height + ( self.testView.frame.size.height - self.view.frame.size.height)/2;
-        
-        
-        [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                           fromPoint:CGPointMake(0, stopY)
-                                             toPoint:CGPointMake(self.view.frame.size.width, stopY)];
-        [animator addBehavior:collisionBehavior];
-        
-        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-        elastic.elasticity = 0.4;
-        [animator addBehavior:elastic];
-        
-        self.animator = animator;
- 
-    }
-    self.isTestViewOnScreen = YES;
-    // });
-    */
-
-}
-
-- (IBAction)tappedBackToCalcButton:(UIButton *)sender
-{
-    //NSLog(@"tapped back to calculator button");
-    [UIView setAnimationsEnabled:YES];
-    
-    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-    gravity.gravityDirection = CGVectorMake(.0, 4.0);
-    __weak typeof (self) weakSelf = self;
-    gravity.action = ^{
-        typeof(self) strongSelf = weakSelf;
-        if(strongSelf.testView.frame.origin.y > strongSelf.dynamicContainer.frame.size.height){
-            self.testView.hidden = YES;
-            [animator removeAllBehaviors];
-        }
-    };
-    [animator addBehavior:gravity];
-    
-    self.animator = animator;
-    self.isTestViewOnScreen = NO;
-    
-
 }
 
 //tapped at share button in table condition
@@ -4386,24 +4161,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
     }
     
-}
-
-//delete
-/*
--(void) isDurtyShovedView
-{
-    if(self.viewToPDF.isDurty){
-        self.cleanButton.enabled = YES;
-    } else {
-        self.cleanButton.enabled = NO;
-    }
-}
-*/
-//attach the gesture recognizer for line drawing to viewToPDF
--(void) setViewToPDF:(ShowedView *)viewToPDF
-{
-    _viewToPDF = viewToPDF;
-   // [self.viewToPDF addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.viewToPDF action:@selector(drawLine:)]];
 }
 
 
@@ -5122,25 +4879,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                                    name:UIApplicationDidBecomeActiveNotification
                                                  object:[UIApplication sharedApplication]];
     
-    // Request to turn on accelerometer and begin receiving accelerometer events
-    /*
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationChanged:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
-    */
   
-    //recive notification from other controllers
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
     
-    //delete
-    /*
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isDurtyShovedView) name:@"ShowedViewIsDirtyNotification" object:nil];
-     */
-    
-    //delete
-    self.testView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
-
 
     //set to 0 indication of previous rotation, also need at discard changing
     self.wasRightShowed = 0;
@@ -5197,30 +4937,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     // Create a system sound object representing the sound file.
     AudioServicesCreateSystemSoundID  ((__bridge CFURLRef)self.blankSoundFileURLRef, &_blankSoundFileObject);
     //replace from show count
-    
-    //delete
-    [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
-    //delete
-    [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
+
     
     self.isHistoryWholeShowed = 0;
     //set other cursor color
-    
-    //delete
-    self.isTestViewOnScreen = NO;
-    if(IS_IPAD){
-        self.testView.hidden = YES;
-    }
-    
     //transition to third controller
     self.callShowController = NO;
-    
-
 }
 
 
 
 //this function need to send message about changing iPad rotation
+/*
 -(void) setWillBePortraitRotated:(BOOL)willBePortraitRotated
 {
     _willBePortraitRotated = willBePortraitRotated;
@@ -5251,7 +4979,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
        // }
     }
 }
-
+*/
 
 #pragma mark VIEW LAYOUT
 
@@ -5464,116 +5192,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.histroryTableViewHeight = 182.f;
             self.labelViewHeight = 108.f;
         }
-        
-        
-        
-        
         self.lastRowHistoryTableHeight = 85.f;
-        
-        //delete
-        [self.testView setFrame:CGRectMake(-1280,0, 1280, 1280)];
-        //delete
-        [self.viewToPDF setFrame:CGRectMake(128, 256, 1024, 768)];
-        //define bounds for all buttons in PDF View
-        //delete
-        [self.backToCalcButton setBounds:buttonsRect];
-        //delete
-        [self.shareButton setBounds:buttonsRect];
-        //delete
-        [self.redPanButton setBounds:buttonsRect];
-        //delete
-        [self.bluePanButton setBounds:buttonsRect];
-        //delete
-        [self.cleanButton setBounds:buttonsRect];
-        
-        //it will be total five buttons in PDFView and two empty parts at the bottom and top of view
-        //define one segment
-        //delete
-        CGFloat oneSegment = self.viewToPDF.bounds.size.height / 8;
-        
-        //define x center for all buttons
-        //delete
-        CGFloat xCenter = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.width)/2 + oneSegment/1.5;
-        //delete
-        CGFloat yStart = (self.testView.bounds.size.width - self.viewToPDF.bounds.size.height)/2;
-        
-        //set centers for each button
-        //delete
-        [self.backToCalcButton setCenter:CGPointMake(xCenter, yStart + 2*oneSegment)];
-        //delete
-        [self.shareButton setCenter:CGPointMake(xCenter, yStart + 3*oneSegment)];
-        //delete
-        [self.redPanButton setCenter:CGPointMake(xCenter, yStart + 4*oneSegment)];
-        //delete
-        [self.bluePanButton setCenter:CGPointMake(xCenter, yStart + 5*oneSegment)];
-        //delete
-        [self.cleanButton setCenter:CGPointMake(xCenter, yStart + 6*oneSegment)];
+
         //else if iPhone
     } else if(IS_568_SCREEN){
         buttonsRect = CGRectMake(0, 0, 60, 60);
         self.histroryTableViewHeight = 136.f;
         self.labelViewHeight = 72.f;
         self.lastRowHistoryTableHeight = 65.f;
-        
-        //[self.testView setFrame:CGRectMake(-166, -166, 652, 652)];
-        //delete
-        [self.testView setFrame:CGRectMake(-652,0, 652, 652)];
-        //delete
-        
-        [self.viewToPDF setFrame:CGRectMake(42, 166, 568, 320)];
-        //delete
-        buttonsRect.origin.x = 60;
-        //delete
-        buttonsRect.origin.y = 176;
-        //delete
-        [self.shareButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.redPanButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.bluePanButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.cleanButton setFrame:buttonsRect];
-        
-        
-        //STOP HERE
-        //self.displayBaseLineOffset =[NSNumber numberWithFloat:0];
     } else {
         self.histroryTableViewHeight = 112.f;
         self.labelViewHeight = 65;
         self.lastRowHistoryTableHeight = 60.f;
-        
-        //[self.testView setFrame:CGRectMake(-42, -164, 577, 577)];
-        //delete
-        [self.testView setFrame:CGRectMake(-577, 0, 577, 577)];
-        //delete
-        [self.viewToPDF setFrame:CGRectMake(48, 128, 480, 320)];
-        
-        //delete
-        buttonsRect.origin.x = 70;
-        //delete
-        buttonsRect.origin.y = 140;
-        //delete
-        [self.shareButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.redPanButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.bluePanButton setFrame:buttonsRect];
-        //delete
-        buttonsRect.origin.y += 80;
-        //delete
-        [self.cleanButton setFrame:buttonsRect];
-        
-        
     }
     
 }
@@ -5668,7 +5298,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         } else {
             self.histroryTableViewHeight = 182.f;
             self.labelViewHeight = 108.f;
-        }    }
+        }
+    }
     
     //set origin.y for dynamicContainer
     CGFloat originYDynamicContainer;
@@ -5733,6 +5364,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [self.SettingsView setFrame:settingsViewRect];
 
     [self setLayOutOfSettingsView:settingsViewRect];
+    
+    
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         
         [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0, 0, 0)];
@@ -5744,6 +5377,25 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                            0,
                                            self.mainContainerView.bounds.size.width,
                                            size.height - self.labelViewHeight)];
+    
+    
+    //impo
+    for (UIView *subview in self.historyTable.subviews)
+    {
+        if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewWrapperView"])
+        {
+            subview.frame = CGRectMake(0, 0, self.historyTable.bounds.size.width, self.historyTable.bounds.size.height);
+        }
+    }
+    //IMOPRTANT TEST
+    //self.historyTable.style=
+    CGRect rc = self.historyTable.frame;
+    NSLog(@"Rect:%f, %f, %f, %f", rc.origin.x,
+          rc.origin.y,
+          rc.size.width,
+          rc.size.height);
+    
+    
     [self.buttonsCollection setFrame:CGRectMake(0,
                                                 displayViewFrame.origin.y,
                                                 size.width,
@@ -5999,17 +5651,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
     
-    //if(!IS_IPAD)[self rotateToPortraitViewIPhone];
-    //remove pdf view
-    CGRect initialFrame = self.testView.frame;
-    initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
-    initialFrame.origin.y = self.testView.frame.size.height+self.view.frame.size.height;
-    //importand why i've made it
-    //[self.testView setFrame:initialFrame];
-    if(IS_IPAD){
-        self.testView.hidden = YES;
-    }
-    
     //importand why i've made it
     //[self discardChanging];
 
@@ -6045,9 +5686,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void) viewWillAppear:(BOOL)animated{
     
+    NSLog(@"MainView Will appear");
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
+    self.callShowController = NO;
     [self.buttonsCollection reloadData];
     [super viewWillAppear:animated];
     
@@ -6065,6 +5708,11 @@ sourceController:(UIViewController *)source
         self.transition.isGravity = YES;
     } else {
         self.transition.isGravity = NO;
+        if(self.showControllerIsForward){
+            self.transition.isForward = YES;
+        } else {
+            self.transition.isForward = NO;
+        }
         
     }
     return self.transition;
@@ -6072,12 +5720,90 @@ sourceController:(UIViewController *)source
 
 #pragma mark SHOW OTHER CONTROLLERS
 
-#pragma mark SHOW VIEW CONTROLLER
+#pragma mark SETTINGS VIEW CONTROLLER
 
+//recived notification from settingsViewcontroller
+#pragma mark NOTIFICATION
+-(void) recivedNotification:(NSNotification*)notification
+{
+    NSArray *keys = notification.userInfo.allKeys;
+    if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
+        //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
+        NSString *key = keys[0];
+        if([key isEqualToString:@"isBigSizeButtons"]){
+            
+            self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            
+        } else if([key isEqualToString:@"isSoundOn"]){
+            
+            self.isSoundOn = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            
+        } else if([key isEqualToString:@"isBigDataBase"]){
+            
+            self.isBigDataBase = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            
+        } else if([key isEqualToString:@"isiCloudInUse"]){
+            
+            self.isiCloudInUse = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            
+        } else if([key isEqualToString:@"wasPurshaised"]){
+            
+            self.wasPurshaised = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            
+        } else if ([key isEqualToString:@"setKeyboardDefaultAction"]){
+            if([[notification.userInfo objectForKey:keys[0]] boolValue]){
+                
+                [Buttons clearContext:self.buttonManagedObjectContext];
+                [self setUpArrays];
+                [self.doc updateChangeCount:UIDocumentChangeDone];
+                [self.buttonsCollection reloadData];
+            }
+            
+        } else if ([key isEqualToString:@"cleanHistoryArchive"]){
+            if([[notification.userInfo objectForKey:keys[0]] boolValue]){
+                
+                [History clearContext:self.managedObjectContext];
+                NSArray *newHeightsOfRows = [[NSArray alloc] init];
+                self.heightsOfRows = newHeightsOfRows;
+                [self performFetch];
+            }
+            
+        }else {
+            NSLog(@"Not find right key");
+        }
+    } else {
+        NSLog(@"recived wrong notification");
+    }
+    
+}
+-(void) showSettingsViewcontroller
+{
+    self.showControllerIsForward = NO;
+    self.callShowController = NO;
+    
+    SettingsViewController *settingsController = [[SettingsViewController alloc] init];
+    //set all properties
+    settingsController.isiCloudInUse = self.isiCloudInUse;;
+    settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
+    settingsController.isSoundOn = self.isSoundOn;
+    settingsController.isBigSizeButtons = self.isBigSizeButtons;
+
+    settingsController.isTrialPeriod = self.isTrialPeriod;
+    settingsController.wasPurshaised = self.wasPurshaised;
+
+    self.settingsController = settingsController;
+    self.settingsController.transitioningDelegate = self;
+    //recive notification from other controllers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
+    [self presentViewController:self.settingsController animated:YES completion:nil];
+    
+}
+
+#pragma mark SHOW VIEW CONTROLLER
 
 -(void) showShowedView
 {
-    NSLog(@"ATTR str fro show: %@", self.strAtrrForShow.string);
+    //NSLog(@"ATTR str fro show: %@", self.strAtrrForShow.string);
     ShowedViewController *show = [[ShowedViewController alloc] init];
     [show setNeedStringsForShow:self.strAtrrForShow andRes:self.resStringForShow];
     if(IS_IPAD){
@@ -6117,7 +5843,7 @@ sourceController:(UIViewController *)source
     // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     NSAttributedString * count;
     NSAttributedString *result;
-    NSLog(@"Number of rowInhistory table %ld",(long)[self.historyTable numberOfRowsInSection:0]);
+   // NSLog(@"Number of rowInhistory table %ld",(long)[self.historyTable numberOfRowsInSection:0]);
     
     if([self.historyTable numberOfRowsInSection: 0] >0){
         NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
@@ -6152,20 +5878,10 @@ sourceController:(UIViewController *)source
                 count = [atrStrFromString attributedSubstringFromRange:NSMakeRange(0, equalRange.location +1)];
                 result = [atrStrFromString attributedSubstringFromRange:NSMakeRange(equalRange.location +1, atrStrFromString.length - equalRange.location -1)];
             }
-            
-       // }
         
     }
-    //NSLog(@"Print str: %@", count.string);
-    //_strAtrrForShow = count;
-   // _resStringForShow = result;
-   // if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
-   //     [self prepareStringsFroShowedViewController:(ShowedViewController*)self.presentedViewController];
-        [self prepareStringsForshowedViewControllerCountStr:[count copy] andResStr:[result copy]];
-        
-   // }
 
-    
+        [self prepareStringsForshowedViewControllerCountStr:[count copy] andResStr:[result copy]];
 }
 
 //call its func only if ShowedController is presented of begining appears
@@ -6197,7 +5913,6 @@ sourceController:(UIViewController *)source
         UIFont *mainAttributefont = [self.attributes valueForKey:NSFontAttributeName];
         
         countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:COUNT_STRING_HEIGHT/mainAttributefont.pointSize] mutableCopy];
-        //countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:COUNT_STRING_HEIGHT] mutableCopy];
         
         //find the need height of multiline string
         NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
@@ -6223,11 +5938,13 @@ sourceController:(UIViewController *)source
             countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:koeff] mutableCopy];
             neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                    context:drawContext];
+            /*
             NSLog(@"in Loop needRect: %f,%f,%f,%f",
                   neededRect.origin.x,
                   neededRect.origin.y,
                   neededRect.size.width,
                   neededRect.size.height);
+            */
         }
         
         //set result string
@@ -6274,103 +5991,7 @@ sourceController:(UIViewController *)source
     
 
 }
-/*
--(void) prepareStringsFroShowedViewController:(ShowedViewController*)showedController
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //first works with result string
-        NSMutableAttributedString * countAtrStr = [self.strAtrrForShow mutableCopy];
-        
-        UIFont *font; //72;
-        UIColor *textColor = [UIColor darkTextColor];
-        NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        style.alignment = NSTextAlignmentLeft;
-        style.lineHeightMultiple = 0;
-        
-        [countAtrStr beginEditing];
-        NSRange wholeRange = NSMakeRange(0, [countAtrStr length]);
-        [countAtrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-        [countAtrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
-        [countAtrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
-        [countAtrStr endEditing];
-        
-        //set maximum heigth of count string
-        UIFont *mainAttributefont = [self.attributes valueForKey:NSFontAttributeName];
-        
-        countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:COUNT_STRING_HEIGHT/mainAttributefont.pointSize] mutableCopy];
-        //countAtrStr = [[self resizeAttrString:[countAtrStr copy] withHeight:COUNT_STRING_HEIGHT] mutableCopy];
-        
-        //find the need height of multiline string
-        NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
-        //calculate width and height of DEVICE
-        CGFloat width;
-        CGFloat height;
-        if(self.view.bounds.size.width > self.view.bounds.size.height){
-            width = self.view.bounds.size.width;
-            height = self.view.bounds.size.height;
-        } else {
-            width = self.view.bounds.size.height;
-            height = self.view.bounds.size.width;
-        }
-        
-        CGSize neededSize = CGSizeMake(width - STRING_INDENT - 20,1000);
-        CGRect neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
-                                                      context:drawContext];
-        //CGFloat needPointsize = COUNT_STRING_HEIGHT;
-        CGFloat maxHightOfMultiLineString = height - 20- RES_RECT_HEIGHT;
-        
-        while (neededRect.size.height > maxHightOfMultiLineString) {
-            CGFloat koeff = sqrtf(maxHightOfMultiLineString/neededRect.size.height);
-            countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:koeff] mutableCopy];
-            neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
-                                                   context:drawContext];
-            NSLog(@"in Loop needRect: %f,%f,%f,%f",
-                  neededRect.origin.x,
-                  neededRect.origin.y,
-                  neededRect.size.width,
-                  neededRect.size.height);
-        }
-        
-        //set result string
-        NSMutableAttributedString * resulAttrStr = [self.resStringForShow mutableCopy];
-        font = [self setFontWithSize:RES_STRING_HEIGHT]; //72
-        style.alignment = NSTextAlignmentRight;
-        style.lineHeightMultiple = 1.;
-        [resulAttrStr beginEditing];
-        wholeRange = NSMakeRange(0, [resulAttrStr length]);
-        [resulAttrStr addAttribute:NSFontAttributeName value:font range:wholeRange];
-        [resulAttrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-        [resulAttrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
-        [resulAttrStr addAttribute:NSParagraphStyleAttributeName value:style range:wholeRange];
-        [resulAttrStr endEditing];
-        
-       // NSInteger resultStringSize = RES_STRING_HEIGHT;//176;//72;
-        
-        CGRect resRect = CGRectMake(STRING_INDENT,
-                                    height - RES_RECT_HEIGHT - 20,
-                                    width - STRING_INDENT - 20,
-                                    RES_RECT_HEIGHT);
-        
-        CGRect neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
-                                                             context:drawContext];
-        while(neededResultRect.size.width > (resRect.size.width -10)){
-            CGFloat koeff = sqrtf((resRect.size.width -10)/neededResultRect.size.width);
-            
-            resulAttrStr = [[self resizeAttrString:[resulAttrStr copy] withKoeff:koeff] mutableCopy];
-            neededResultRect = [resulAttrStr boundingRectWithSize:resRect.size options:NSStringDrawingUsesFontLeading//NSStringDrawingUsesFontLeading
-                                                          context:drawContext];
-            
-        }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [showedController setNeedStringsForShow:countAtrStr andRes:resulAttrStr];
-
-        });
-        
-    });
-    
-}
-*/
 //helped function for set need font
 -(UIFont*) setFontWithSize:(CGFloat) size
 {
@@ -6436,11 +6057,6 @@ sourceController:(UIViewController *)source
     [self presentViewController:second animated:YES completion:nil];
 }
 
-
--(void) showSettingViewControllerWithParameters:(NSArray*)parameters
-{
-    
-}
 
 #pragma mark ABOUT VIEW
 
@@ -6842,96 +6458,11 @@ sourceController:(UIViewController *)source
     [super didReceiveMemoryWarning];
 }
 
--(void) rotateToPortraitViewIPhone
-{
-    if(self.wasRightShowed != 0){
-        [UIView setAnimationsEnabled:NO];
-        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-
-        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-
-        
-        if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
-            
-            if(self.wasRightShowed == 1){
-                [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
-            } else if(self.wasRightShowed == 2){
-                [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
-            }
-
-            [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.height)/2,
-                                               (self.view.frame.size.width -self.testView.bounds.size.width)/2,
-                                               self.testView.bounds.size.height,
-                                               self.testView.bounds.size.width)];
-
-            self.wasRightShowed = 0;
-            //hide
-            int64_t delayInSeconds = 0.05;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                
-                [UIView setAnimationsEnabled:YES];
-                
-                UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-                UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-                gravity.gravityDirection = CGVectorMake(.0, 4.0);
-                [animator addBehavior:gravity];
-                
-                self.animator = animator;
-                
-            });
-            
-        } else {
-            //if was not portrait and but changin view, just hide restView
-            [self.testView setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
-            [self.testView setFrame:CGRectMake((self.view.frame.size.height -self.testView.bounds.size.width)/2,
-                                               self.testView.bounds.size.height,
-                                               self.testView.bounds.size.height,
-                                               self.testView.bounds.size.width)];
-            int64_t delayInSeconds = 0.05;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                //do something to the button(s)
-                [UIView setAnimationsEnabled:YES];
-            });
-        }
-        
-    } else {
-        //was in portrait view
-        [UIView setAnimationsEnabled:NO];
-        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-        
-        
-        int64_t delayInSeconds = 0.05;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            //do something to the button(s)
-            [UIView setAnimationsEnabled:YES];
-        });
-    }
-    
-    self.wasRightShowed = 0;
-    self.isTestViewOnScreen = NO;
-    
-    if(self.isSoundOn){
-        AudioServicesPlaySystemSound (_blankSoundFileObject);
-    }
-}
 
 #pragma mark ROTATION
 
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    //[UIView setAnimationsEnabled:NO];
-    /*
-    BOOL wasWillBePortraitRotated = self.willBePortraitRotated;
-    if(size.height > size.width){
-        self.willBePortraitRotated = YES;
-    } else {
-        self.willBePortraitRotated = NO;
-    }
-    */
     
     if(self.hintView){
         [self.hintView removeFromSuperview];
@@ -6942,53 +6473,7 @@ sourceController:(UIViewController *)source
     
     if(IS_IPAD){
         [self IPadTransitionToSize:size withTransitionCoordinator:coordinator];
-        /*
-        bannerHeight = 66;
-    //
-        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];//ipad
-        [self setUpMainButtonsStartWithPosition];//ipad
-        [self makeTwoArrays];//ipad
-        [self.buttonsCollection reloadData];//ipad
-        [self changeLayoutDynamicContainerWithSize:size];//ipad
 
-        if(self.isTestViewOnScreen){
-            if(wasWillBePortraitRotated != self.willBePortraitRotated){
-                //if(self.willBePortraitRotated){
-                [UIView setAnimationsEnabled:NO];
-                if(!self.willBePortraitRotated){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                    CGRect initialFrame = self.testView.frame;
-                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
-                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
-                    [self.testView setFrame:initialFrame];
-                } else {
-                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                    CGRect initialFrame = self.testView.frame;
-                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
-                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
-                    [self.testView setFrame:initialFrame];
-            
-                }
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        [UIView setAnimationsEnabled:YES];
-                        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-                });
-            }
-        } else {
-                 [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-        }
-        if(!self.wasPurshaised){
-            
-            CGRect bannerFrame = self.bannerContainerView.frame;
-            bannerFrame.size.width = size.width;
-            bannerFrame.size.height = bannerHeight;
-            
-            [self.bannerContainerView setFrame:bannerFrame];
-            [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-        }
-        */
     } else {
         bannerHeight = 50;
         [self iPhoneTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -7003,13 +6488,18 @@ sourceController:(UIViewController *)source
         [self.iAdBanner setFrame:self.bannerContainerView.bounds];
          */
     }
+    //[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 -(void) IPadTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
-    NSInteger bannerHeight = 66;
     
+    
+    //!!!
+    //If presented second controller
+    //
+    //steel don't ready for IPad
+    NSInteger bannerHeight = 66;
     BOOL wasWillBePortraitRotated = self.willBePortraitRotated;
     if(size.height > size.width){
         self.willBePortraitRotated = YES;
@@ -7017,62 +6507,24 @@ sourceController:(UIViewController *)source
         self.willBePortraitRotated = NO;
     }
     
+    
+    
     [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];//ipad
     [self setUpMainButtonsStartWithPosition];//ipad
     [self makeTwoArrays];//ipad
     [self.buttonsCollection reloadData];//ipad
     [self changeLayoutDynamicContainerWithSize:size];//ipad
     
-    //!!!
-    //If presented second controller
-    //
-    //steel don't ready for IPad
     if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
-       /*
-        CGFloat angle = 0;
-        CGFloat width = size.height;
-        CGFloat height = size.width;
-        
-        if(size.width > size.height){
-            width = size.height;
-            height = size.width;
-            switch (orient) {
-                case UIDeviceOrientationLandscapeLeft:
-                    angle = -M_PI/2;
-                    break;
-                case UIDeviceOrientationLandscapeRight:
-                    angle = M_PI/2;
-                    
-                default:
-                    break;
-            }
-        }
-        
-        [UIView setAnimationsEnabled:NO];
-       // [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
-        [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
-        
-        [self.secondController.cView setTransform:CGAffineTransformMakeRotation(angle)];
-        [self.secondController.cView setFrame:CGRectMake(0,0, height, width)];
-        
-        [self.view setTransform:CGAffineTransformMakeRotation(0)];
-        
-        
-        int64_t delayInSeconds = 0.05;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
-            [UIView setAnimationsEnabled:YES];
-            [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-        });
-        */
+        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
         
     }
     //!!!!
     //if presented third controller
     //
     else if ([self.presentedViewController isKindOfClass:[ThirdController class]]){
-
+       
             if(wasWillBePortraitRotated != self.willBePortraitRotated){
                 //if(self.willBePortraitRotated){
                 [UIView setAnimationsEnabled:NO];
@@ -7095,47 +6547,10 @@ sourceController:(UIViewController *)source
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     [UIView setAnimationsEnabled:YES];
                     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
                 });
-            } else {
-        
-        /*
-        CGFloat angle = 0;
-        CGFloat width = size.height;
-        CGFloat height = size.width;
-        
-        if(size.height > size.width){
-            width = size.height;
-            height = size.width;
-            switch (self.showedController.wasOrient) {
-                case UIDeviceOrientationLandscapeLeft:
-                    angle = M_PI/2;
-                    break;
-                case UIDeviceOrientationLandscapeRight:
-                    angle = -M_PI/2;
-                default:
-                    break;
-            }
-            self.showedController.wasOrient = orient;
-        }
-       // if(needDissmisThirdController) {
-            [UIView setAnimationsEnabled:NO];
-           // [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
-           // [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
-            
-            [self.showedController.cView setTransform:CGAffineTransformMakeRotation(angle)];
-            [self.showedController.cView setFrame:CGRectMake(0,0, height, width)];
-            
-            int64_t delayInSeconds = 0.05;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 
-                [UIView setAnimationsEnabled:YES];
-                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-                [self.showedController dismis];
-            });
-        */
-       // }
-        
+            } else {
                 [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
             }
     }
@@ -7143,39 +6558,10 @@ sourceController:(UIViewController *)source
     //if presented current controller
     //
     else {
-       
+        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+        NSLog(@"Main viewWillTransitionToSize");
         
-        /*
-        
-        if(self.isTestViewOnScreen){
-            if(wasWillBePortraitRotated != self.willBePortraitRotated){
-                //if(self.willBePortraitRotated){
-                [UIView setAnimationsEnabled:NO];
-                if(!self.willBePortraitRotated){
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                    CGRect initialFrame = self.testView.frame;
-                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
-                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
-                    [self.testView setFrame:initialFrame];
-                } else {
-                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                    CGRect initialFrame = self.testView.frame;
-                    initialFrame.origin.x =  (size.width - initialFrame.size.width)/2;
-                    initialFrame.origin.y = (size.height - initialFrame.size.height)/2;
-                    [self.testView setFrame:initialFrame];
-                    
-                }
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [UIView setAnimationsEnabled:YES];
-                    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-                });
-            }
-        } else {
-            */
-            [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-        //}
         if(!self.wasPurshaised){
             
             CGRect bannerFrame = self.bannerContainerView.frame;
@@ -7187,6 +6573,7 @@ sourceController:(UIViewController *)source
         }
     }
 
+
 }
 
 -(void) iPhoneTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -7196,44 +6583,93 @@ sourceController:(UIViewController *)source
         //If presented second controller
         //
         if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
-            
+
             CGFloat angle = 0;
             CGFloat width = size.height;
             CGFloat height = size.width;
             
+            BOOL rotate = NO;
+            CGRect rctWasCView = self.settingsController.cView.frame;
+            CGRect newCViewFrame = self.settingsController.cView.frame;
+            
+            UIDeviceOrientation wasOrient = self.settingsController.wasOrient;
+            
             if(size.width > size.height){
+                
                 width = size.height;
                 height = size.width;
                 switch (orient) {
                     case UIDeviceOrientationLandscapeLeft:
-                        angle = -M_PI/2;
+                        if(orient == wasOrient){
+                            angle = -M_PI/2;
+                            rotate = NO;
+                        } else if(wasOrient == UIDeviceOrientationLandscapeRight){
+                            angle = -M_PI/2;
+                            rotate = NO;
+                        } else {
+                            angle = -M_PI/2;
+                            rotate = YES;
+                        }
                         break;
                     case UIDeviceOrientationLandscapeRight:
-                        angle = M_PI/2;
-                        
+                        if(orient == wasOrient){
+                            angle = M_PI/2;
+                            rotate = NO;
+                        } else if(wasOrient == UIDeviceOrientationLandscapeLeft){
+
+                            angle = M_PI/2;
+                            rotate = NO;
+                        } else {
+                            angle = M_PI/2;
+                            rotate = YES;
+                        }
+                        break;
                     default:
                         break;
                 }
+
+                if(rotate){
+                    newCViewFrame = CGRectMake(rctWasCView.origin.y,
+                                               rctWasCView.origin.x,
+                                               rctWasCView.size.height,
+                                               rctWasCView.size.width);
+                }else {
+                    newCViewFrame = CGRectMake(rctWasCView.origin.x,
+                                               rctWasCView.origin.y,
+                                               rctWasCView.size.width,
+                                               rctWasCView.size.height);
+                }
+            } else {
+                if(wasOrient == UIDeviceOrientationLandscapeLeft || wasOrient == UIDeviceOrientationLandscapeRight){
+                    newCViewFrame = CGRectMake(rctWasCView.origin.y,
+                                               rctWasCView.origin.x,
+                                               rctWasCView.size.height,
+                                               rctWasCView.size.width);
+                }
+                
             }
             
+            self.settingsController.wasOrient = orient;
+
+
             [UIView setAnimationsEnabled:NO];
             [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
             [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
             
-            [self.secondController.cView setTransform:CGAffineTransformMakeRotation(angle)];
-            [self.secondController.cView setFrame:CGRectMake(0,0, height, width)];
+            [self.settingsController.cView setTransform:CGAffineTransformMakeRotation(angle)];
+            [self.settingsController.cView setFrame:newCViewFrame];
             
             [self.view setTransform:CGAffineTransformMakeRotation(0)];
-            
             
             int64_t delayInSeconds = 0.05;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 
                 [UIView setAnimationsEnabled:YES];
+                
                 [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
             });
-            
             
         }
         //!!!!
@@ -7321,240 +6757,13 @@ sourceController:(UIViewController *)source
                 
                 [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
                 self.callShowController = needCallcontroller;
-                //attemptRotationToDeviceOrientation
-                /*
-                 NSLog(@"Size: %f, %f. DynRect:%f, %f, %f, %f",size.width,size.height, self.cView.frame.origin.x,
-                 self.cView.frame.origin.y,
-                 self.cView.frame.size.width,
-                 self.cView.frame.size.height);
-                 */
+
             });
         }
 }
 
 
-/*
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return UIInterfaceOrientationPortrait;
-}
 
--(void) orientationChangedToOrientation:(UIDeviceOrientation)orient fromNotification:(BOOL)isNotification
-{
-    if(orient == UIDeviceOrientationLandscapeLeft){
-
-        [UIView setAnimationsEnabled:NO];
-
-        
-        if(self.wasRightShowed != 1){
-            
-            if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
-                if(self.wasRightShowed == 0){
-                    
-                    //strongly think about it
-                   
-                    CGRect initialFrame = self.testView.frame;
-                    //1
-                    CGRect rct = self.view.frame;
-                    NSLog(@"MAINFRAME: %f, %f, %f, %f",rct.origin.x, rct.origin.y, rct.size.width, rct.size.height );
-                    if(isNotification){
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                        initialFrame.origin.x =  (self.view.frame.size.width - initialFrame.size.width)/2;
-                        initialFrame.origin.y = -self.testView.frame.size.height;
-                    } else {
-                        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                        [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-                        initialFrame.origin.x =  (self.view.frame.size.height - initialFrame.size.height)/2;
-                        initialFrame.origin.y = -self.testView.frame.size.width;
-                    }
-                    
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-
-                    [self.testView setFrame:initialFrame];
-                    
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        
-                        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-                        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-                        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-                        [animator addBehavior:gravity];
-                        
-                        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-                        CGFloat stopY;
-                        
-                        
-                        stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
-                        
-                        
-                        [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                                           fromPoint:CGPointMake(0, stopY)
-                                                             toPoint:CGPointMake(568, stopY)];
-                        [animator addBehavior:collisionBehavior];
-                        
-                        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-                        elastic.elasticity = 0.4;
-                        [animator addBehavior:elastic];
-                        
-                        self.animator = animator;
-                        self.isTestViewOnScreen = YES;
-                        
-                    });
-                    
-                } else if(self.wasRightShowed == 2){
-                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                    [self.testView setTransform:CGAffineTransformMakeRotation(M_PI)];
-                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear
-                                         animations:^{
-                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                         } completion:^(BOOL finished) {
-                                             
-                                         }];
-                        
-                    });
-                    
-                }
-                
-            } else {
-                
-                [self.mainContainerView setTransform:CGAffineTransformMakeRotation(-M_PI/2)];
-                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                });
-                
-            }
-            self.wasRightShowed = 1;
-        }
-        
-    } else if (orient == UIDeviceOrientationLandscapeRight){
-        [UIView setAnimationsEnabled:NO];
-
-        
-        if(self.wasRightShowed != 2){
-            
-            if(!self.isButtonsCollectionUnderChanging && !self.isBottomSettingsViewOnScreen){
-                if(self.wasRightShowed == 0){
-                    //strongly think about it
-                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    
-                    [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                    CGRect initialFrame = self.testView.frame;
-                    initialFrame.origin.x =(self.view.frame.size.width - initialFrame.size.width)/2;
-                    initialFrame.origin.y = -self.testView.frame.size.height;
-                    
-                    [self.testView setFrame:initialFrame];
-                    
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-                        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.testView]];
-                        gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-                        [animator addBehavior:gravity];
-                        
-                        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[self.testView]];
-                        CGFloat stopY;
-                        
-                        
-                        stopY = self.view.frame.size.height +( self.testView.frame.size.height - self.view.frame.size.height) /2;
-                        
-                        
-                        [collisionBehavior addBoundaryWithIdentifier:@"Right"
-                                                           fromPoint:CGPointMake(0, stopY)
-                                                             toPoint:CGPointMake(568, stopY)];
-                        [animator addBehavior:collisionBehavior];
-                        
-                        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[self.testView]];
-                        elastic.elasticity = 0.4;
-                        [animator addBehavior:elastic];
-                        
-                        self.animator = animator;
-                        self.isTestViewOnScreen = YES;
-                        
-                    });
-                    
-                } else if(self.wasRightShowed == 1){
-                    [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                    [self.testView setTransform:CGAffineTransformMakeRotation(-M_PI)];
-                    [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                    
-                    int64_t delayInSeconds = 0.05;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        //do something to the button(s)
-                        [UIView setAnimationsEnabled:YES];
-                        
-                        [UIView animateWithDuration:0.36
-                                              delay:0
-                                            options:UIViewAnimationOptionCurveLinear
-                                         animations:^{
-                                             [self.testView setTransform:CGAffineTransformMakeRotation(0)];
-                                         } completion:^(BOOL finished) {
-                                             
-                                         }];
-                        
-                    });
-                    
-                }
-            } else {
-                [self.mainContainerView setTransform:CGAffineTransformMakeRotation(M_PI/2)];
-                [self.mainContainerView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-                
-                int64_t delayInSeconds = 0.05;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    //do something to the button(s)
-                    [UIView setAnimationsEnabled:YES];
-                });
-                
-            }
-            
-            self.wasRightShowed = 2;
-        }
-        
-        
-    } else if (orient == UIDeviceOrientationPortrait){
-        [self rotateToPortraitViewIPhone];
-    }
-
-}
-- (void)orientationChanged:(NSNotification *)notification
-{
-
-    UIDeviceOrientation orient = [[UIDevice currentDevice] orientation];
-    if(![self presentedViewController]){ //not change if there is presented another controller
-        self.wasRotatedNotificationAnotherController = 0;
-        if(IS_IPAD){
-
-        } else {  //if iphone
-            [self orientationChangedToOrientation:orient fromNotification:YES];
-        }
-    } else {
-        self.wasRotatedNotificationAnotherController = orient;
-    }
-}
-*/
 #pragma mark SHOWING IAd BANNER
 //but exactly here need to show banner
 //1. delay banner appearence
@@ -7642,6 +6851,10 @@ sourceController:(UIViewController *)source
     
 }
 
+//----------------------------------------------------------
+//-----IMPORTANT DELETE-------------------------------------
+//----------------------------------------------------------
+
 #pragma mark IN-APP PURSHASE
 -(void) startSpinner
 {
@@ -7701,6 +6914,7 @@ sourceController:(UIViewController *)source
 
 -(void) setWasPurshaised:(BOOL)wasPurshaised
 {
+    /*
     if(wasPurshaised){
         self.keyboardDefaultButton.enabled = YES;
         self.keyboardDefaultButton.hidden = NO;
@@ -7719,6 +6933,7 @@ sourceController:(UIViewController *)source
             self.keyboardDefaultButton.hidden = YES;
         }
     }
+    */
 }
 
 -(void) buyUnlockKeyboard
@@ -7834,7 +7049,9 @@ sourceController:(UIViewController *)source
     }
 
 }
-
+//----------------------------------------------------------
+//-----IMPORTANT DELETE-------------------------------------
+//----------------------------------------------------------
 
 
 #pragma mark HELPED FUNCTIONS______________________
