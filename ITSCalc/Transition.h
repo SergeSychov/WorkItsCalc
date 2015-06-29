@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface Transition : NSObject <UIViewControllerAnimatedTransitioning>
+@interface Transition : NSObject <UIViewControllerAnimatedTransitioning, UICollisionBehaviorDelegate>
+
+@property (nonatomic) BOOL isGravity;
+@property (nonatomic) BOOL isForward;
 
 @end
