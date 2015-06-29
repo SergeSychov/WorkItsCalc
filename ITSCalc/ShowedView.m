@@ -16,7 +16,7 @@
 @interface ShowedView()
 
 
-@property (nonatomic, strong) BezierInterpView *paintedView;
+@property (nonatomic, weak) BezierInterpView *paintedView;
 @property (nonatomic, strong) NSAttributedString *count;
 @property (nonatomic, strong) NSAttributedString *result;
 
@@ -93,10 +93,10 @@
     CGFloat waspointSize = 0;
     for(int i = 0; i < inputStr.length; i++){
         NSMutableAttributedString *symbolString = [[NSMutableAttributedString alloc] initWithAttributedString:[resultString attributedSubstringFromRange:NSMakeRange(i, 1)]];
-        NSLog(@"symbolString: %@", symbolString.string);
+        //NSLog(@"symbolString: %@", symbolString.string);
         NSDictionary *attributes = [symbolString attributesAtIndex:0 effectiveRange:nil];
         UIFont *wasFont = [attributes valueForKey:NSFontAttributeName];
-        NSLog(@"wasFont pointsize: %f", wasFont.pointSize);
+        //NSLog(@"wasFont pointsize: %f", wasFont.pointSize);
         if(wasFont.pointSize > waspointSize) waspointSize = wasFont.pointSize;
     }
     //count the resizing

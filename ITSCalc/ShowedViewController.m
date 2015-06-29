@@ -146,13 +146,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
         } else {
             [self.showedView setFrame:CGRectMake((quardSize-cVWidth)/2, (quardSize-cVHeight)/2, cVWidth, cVHeight)];
         }
-        CGRect neededRect = self.showedView.bounds;
 
-        NSLog(@"ShowedView bounds in controller: %f,%f,%f,%f",
-              neededRect.origin.x,
-              neededRect.origin.y,
-              neededRect.size.width,
-              neededRect.size.height);
         
         //define bounds for all buttons in PDF View
         [self.calcButton setBounds:buttonsRect];
@@ -229,7 +223,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.testView = testView;
     
     //setup showed view
-    NSLog(@"Attr str %@", self.attrStrForLabel.string);
     ShowedView *showedView = [[ShowedView alloc] initWithFrame:self.cView.frame];
     [showedView setShowedViewWithCountedStr:self.attrStrForLabel resultStr:self.resStringforShow andBluePan:YES];
     [self.testView addSubview:showedView];
@@ -285,7 +278,6 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 -(void) viewWillAppear:(BOOL)animated
 {
-    NSLog(@"Showed controller view will appear");
     if(IS_IPAD){
         if(self.cView.bounds.size.width < self.cView.bounds.size.height){
             CGFloat angle = M_PI/2;
@@ -313,6 +305,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(DurtyBezierView) name:@"BezierViewIsDirtyNotification" object:nil];
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(appWillGoToBackground:)
+                                                   name:UIApplicationWillResignActiveNotification
+                                                 object:[UIApplication sharedApplication]];
     
 }
+
+-(void)appWillGoToBackground:(NSNotification *)note{
+    [self dismis];
+}
+
 @end
