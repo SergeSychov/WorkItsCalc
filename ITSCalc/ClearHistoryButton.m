@@ -16,17 +16,20 @@
 
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    
-    self.storkeColor = self.touchedColor;
-    [self setNeedsDisplay];
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 0.15;
+    }];
+
     return [super beginTrackingWithTouch:touch withEvent:event];
     
 }
 
 -(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    self.storkeColor = self.normalColor;
-    [self setNeedsDisplay];
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 1.;
+    }];
+
     [super endTrackingWithTouch:touch
                       withEvent:event];
 }

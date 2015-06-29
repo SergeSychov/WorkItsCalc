@@ -8,8 +8,56 @@
 
 #import "CalcButton.h"
 
+@interface CalcButton()
+@property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor *touchedColor;
+
+@end
+
 @implementation CalcButton
 
+//work with change color in case of event
+
+
+-(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 0.15;
+    }];
+    return [super beginTrackingWithTouch:touch withEvent:event];
+    
+}
+-(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 1.;
+    }];
+    [super endTrackingWithTouch:touch
+                      withEvent:event];
+}
+
+
+-(UIColor*) touchedColor{
+    if(self.state == UIControlStateNormal){
+        if(!_touchedColor){
+            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
+        }
+    } else {
+        _touchedColor = [UIColor grayColor];
+    }
+    return _touchedColor;
+    
+}
+-(UIColor*) storkeColor
+{
+    
+    if(!_storkeColor){
+        _storkeColor = self.currentTitleColor;
+    }
+    
+    return _storkeColor;
+}
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -23,11 +71,11 @@
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
     if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
-    }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
+        CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
+    } else {
+        CGContextSetStrokeColorWithColor(context, [UIColor grayColor].CGColor);
     }
+    
     CGPoint center = CGPointMake(rect.size.width/2, rect.size.height/2);
 
     //first rect

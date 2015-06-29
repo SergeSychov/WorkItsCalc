@@ -11,59 +11,59 @@
 @interface DesignButton();
 
 @property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor *touchedColor;
 
 @end
 
 @implementation DesignButton
 
+//work with change color in case of event
+
 
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-   
-    self.storkeColor = self.touchedColor;
-    [self setNeedsDisplay];
+    
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 0.15;
+    }];
+   // self.storkeColor = self.touchedColor;
+   // [self setNeedsDisplay];
     return [super beginTrackingWithTouch:touch withEvent:event];
     
 }
-
 -(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    self.storkeColor = self.normalColor;
-    [self setNeedsDisplay];
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 1.;
+    }];
+    //self.storkeColor = self.currentTitleColor;
+    //[self setNeedsDisplay];
     [super endTrackingWithTouch:touch
                       withEvent:event];
 }
 
--(UIColor*) normalColor{
-    
-        if(self.state != UIControlStateDisabled){
-            _normalColor = self.currentTitleColor;
-        } else {
-           _normalColor = [UIColor grayColor];
-        }
-    return _normalColor;
-}
 
 -(UIColor*) touchedColor{
     if(self.state == UIControlStateNormal){
-         if(!_touchedColor){
-             _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
-         }
+        if(!_touchedColor){
+            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
+        }
     } else {
-            _touchedColor = [UIColor grayColor];
+        _touchedColor = [UIColor grayColor];
     }
     return _touchedColor;
-
+    
 }
 -(UIColor*) storkeColor
 {
-
+    
     if(!_storkeColor){
-        _storkeColor = self.normalColor;
+        _storkeColor = self.currentTitleColor;
     }
-
+    
     return _storkeColor;
 }
+
 
 -(CGPoint) transformPoint:(CGPoint)inputPoint onAngle:(CGFloat)angle throughCenter:(CGPoint)center
 {
@@ -114,7 +114,11 @@
     CGContextSetLineJoin(context, kCGLineJoinRound);
     
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-    CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
+    if(self.state == UIControlStateNormal){
+        CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
+    } else {
+        CGContextSetStrokeColorWithColor(context, [UIColor grayColor].CGColor);
+    }
     //CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
     
     

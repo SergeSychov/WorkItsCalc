@@ -10,7 +10,4 @@
 
 @interface DesignButton : UIButton
 
-@property (nonatomic,strong) UIColor *normalColor;
-@property (nonatomic,strong) UIColor *touchedColor;
-
 @end

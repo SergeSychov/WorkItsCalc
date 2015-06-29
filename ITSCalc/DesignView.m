@@ -38,14 +38,14 @@
         //calculate current angle
         
         CGFloat currAngle = addToAngle + atanf(currHeight/currWidth);
-        NSLog(@"angle: %f", angle*180 / M_PI);
+       // NSLog(@"angle: %f", angle*180 / M_PI);
 
-        NSLog(@"currentAngle: %f", currAngle*180 / M_PI);
+       // NSLog(@"currentAngle: %f", currAngle*180 / M_PI);
     
         //add new angle
         CGFloat newAngle = currAngle + angle;
         
-        NSLog(@"newAngle: %f", newAngle*180 / M_PI);
+       // NSLog(@"newAngle: %f", newAngle*180 / M_PI);
     
         //calculate new hipotinuse, width and height
         CGFloat newWidth = hipotinuse * cosf(newAngle);

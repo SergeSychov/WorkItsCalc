@@ -8,7 +8,56 @@
 
 #import "CleanButton.h"
 
+@interface CleanButton()
+@property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor *touchedColor;
+
+@end
+
 @implementation CleanButton
+
+
+//work with change color in case of event
+
+
+-(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    
+    self.storkeColor = self.touchedColor;
+    [self setNeedsDisplay];
+    return [super beginTrackingWithTouch:touch withEvent:event];
+    
+}
+-(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    self.storkeColor = self.currentTitleColor;
+    [self setNeedsDisplay];
+    [super endTrackingWithTouch:touch
+                      withEvent:event];
+}
+
+
+-(UIColor*) touchedColor{
+    if(self.state == UIControlStateNormal){
+        if(!_touchedColor){
+            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
+        }
+    } else {
+        _touchedColor = [UIColor grayColor];
+    }
+    return _touchedColor;
+    
+}
+-(UIColor*) storkeColor
+{
+    
+    if(!_storkeColor){
+        _storkeColor = self.currentTitleColor;
+    }
+    
+    return _storkeColor;
+}
+
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -101,13 +150,10 @@
 
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
     if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
-    }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
+        CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
+    } else {
+      CGContextSetStrokeColorWithColor(context, [UIColor grayColor].CGColor);
     }
-    
-    
     
     pathOfRect = patch.CGPath;
     

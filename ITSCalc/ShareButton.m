@@ -8,7 +8,63 @@
 
 #import "ShareButton.h"
 
+@interface ShareButton()
+
+@property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor *normalColor;
+@property (nonatomic,strong) UIColor *touchedColor;
+
+@end
+
 @implementation ShareButton
+
+-(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    
+    self.storkeColor = self.touchedColor;
+    [self setNeedsDisplay];
+    return [super beginTrackingWithTouch:touch withEvent:event];
+    
+}
+-(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    self.storkeColor = self.normalColor;
+    [self setNeedsDisplay];
+    [super endTrackingWithTouch:touch
+                      withEvent:event];
+}
+
+
+-(UIColor*) normalColor{
+    
+    if(self.state != UIControlStateDisabled){
+        _normalColor = self.currentTitleColor;
+    } else {
+        _normalColor = [UIColor darkGrayColor];
+    }
+    return _normalColor;
+}
+
+-(UIColor*) touchedColor{
+    if(self.state == UIControlStateNormal){
+        if(!_touchedColor){
+            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
+        }
+    } else {
+        _touchedColor = [UIColor greenColor];
+    }
+    return _touchedColor;
+    
+}
+-(UIColor*) storkeColor
+{
+    
+    if(!_storkeColor){
+        _storkeColor = self.normalColor;
+    }
+    
+    return _storkeColor;
+}
 
 
 // Only override drawRect: if you perform custom drawing.
@@ -91,16 +147,7 @@
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-    if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
-    }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
-    }else if (self.state == UIControlStateHighlighted){
-        CGContextSetRGBStrokeColor(context, 0.5, 0.5, 0.5, 1.0);
-    }
-    
-    
+    CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
     
     pathOfRect = patch.CGPath;
     
