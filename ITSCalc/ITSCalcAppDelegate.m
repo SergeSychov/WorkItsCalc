@@ -8,9 +8,6 @@
 
 #import "ITSCalcAppDelegate.h"
 
-//NSString *const AppDelegateDidEnterBackgroundNotification = @"AppDelegateDidEnterBackgroundNotification";
-//NSString *const AppDelegateWillEnterForegroundNotification = @"AppDelegateWillEnterForegroundNotification";
-//NSString *const AppDelegateWillTerminateNotification = @"AppDelegateWillTerminateNotification";
 
 
 @implementation ITSCalcAppDelegate
