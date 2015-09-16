@@ -35,11 +35,11 @@
 #import "SettingButton.h"
 
 //dellete
-#import "CloudView.h"
+//#import "CloudView.h"
 //dellete
-#import "SoundView.h"
+//#import "SoundView.h"
 //dellete
-#import "ArchiveSizeView.h"
+//#import "ArchiveSizeView.h"
 //dellete
 #import "ShareButton.h"
 #import "NoticeButton.h"
@@ -82,13 +82,23 @@
 #define IS_BLACK_MODE NO
 #define INDENT 20.0f
 
+//define design numbers
+#define DESIGN_CLASSIC 1
+#define DESIGN_PAPER 2
+#define DESIGN_COLOR_BLUE 30
+#define DESIGN_COLOR_GREEN 31
+#define DESIGN_COLOR_PINK 32
+#define DESIGN_COLOR_YELOW 33
+#define DESIGN_COLOR_GRAY 34
+#define DESIGN_PHOTO 4
 
-NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
-NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
+
+//NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
+//NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate>
 
 
 //outlets
@@ -156,9 +166,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 
 //bool property for paid version
-//important delete
-@property (nonatomic, strong) SKProduct *product;
-
 @property (nonatomic) BOOL wasPurshaised;
 
 //important for trial period
@@ -180,56 +187,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //how many times were request to hide iAd banner
 //@property (nonatomic) NSInteger timesRequestToHideIAdBanner;
 
-//Settings View
-@property (weak, nonatomic) IBOutlet UIView *SettingsView;
-@property (weak, nonatomic) IBOutlet UIToolbar *settingsBackgroundToolBar;
-@property (nonatomic) BOOL isSettingsViewOnScreen; //need to set in viewDidLoad
-@property (nonatomic) BOOL isBottomSettingsViewOnScreen;//
 
-@property (weak, nonatomic) IBOutlet UILabel *buttonSwitcherLabel;
-@property (weak, nonatomic) IBOutlet UIView *smallButtonView;
-@property (weak, nonatomic) IBOutlet UIView *bigbuttonView;
-@property (weak, nonatomic) IBOutlet UISwitch *isBigSizeSwitcher;
+//Settings
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
-
-
-@property (weak, nonatomic) IBOutlet UILabel *soundSwitcherLabel;
-@property (weak, nonatomic) IBOutlet UISwitch *soundSwitcher;
-
-@property (weak, nonatomic) IBOutlet SoundView *soundOff;
-@property (weak, nonatomic) IBOutlet SoundView *soundOn;
-
 @property (nonatomic) BOOL isSoundOn;
-
-
-@property (weak, nonatomic) IBOutlet UILabel *archiveSwitcherLabel;
-@property (weak, nonatomic) IBOutlet UISwitch *isBigDataBaseSwitcher;
-//@property (weak, nonatomic) IBOutlet UIImageView *smallDataBaseView;
-@property (weak, nonatomic) IBOutlet ArchiveSizeView *archsizeViewSmall;
-//@property (weak, nonatomic) IBOutlet UIImageView *bigDataBaseView;
-@property (weak, nonatomic) IBOutlet ArchiveSizeView *archivesizeBigView;
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) int limitInDataBase;
+@property (nonatomic) NSInteger design;
 
-
-@property (weak, nonatomic) IBOutlet CloudView *cloudOnView;
-@property (weak, nonatomic) IBOutlet CloudView *cloudOffView;
-@property (weak, nonatomic) IBOutlet UILabel *iCloudSwitcherName;
-@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
 @property (nonatomic) BOOL isiCloudInUse;
+@property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
 @property (nonatomic) BOOL fristLunchWithicloudAvailable;
 //need to set iClouds images whole & empty
-
-
-@property (weak, nonatomic) IBOutlet DesignButton *changeDesignButton;
-@property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
-@property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
-@property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
-//add spin activity to show process of purchaising
-@property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
-
-
-
 
 //Showed View
 @property (nonatomic, strong) UIDynamicAnimator *animator;
@@ -484,26 +453,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 #define LOCAL_ONLY NSLocalizedStringFromTable(@"LOCAL_ONLY",@"ACalcTryViewControllerTableTwo", @"LOCAL_ONLY")
 #define USE_ICLOUD NSLocalizedStringFromTable(@"USE_ICLOUD",@"ACalcTryViewControllerTableTwo", @"USE_ICLOUD")
 
-#define NAME_BUTTON_SWITCH NSLocalizedStringFromTable(@"Buttons size",@"ACalcTryViewControllerTableTwo", @"Button size")
-#define NAME_SOUND_SWITCH NSLocalizedStringFromTable(@"Sound",@"ACalcTryViewControllerTableTwo", @"Sound")
-#define NAME_ARCHIVE_SWITCH NSLocalizedStringFromTable(@"History archive size",@"ACalcTryViewControllerTableTwo", @"Archive size")
-#define NAME_ICLOUD_SWITCH NSLocalizedStringFromTable(@"iCloud",@"ACalcTryViewControllerTableTwo", @"iCloud")
-
-
-#pragma mark SETTINGS VIEW
-
-#define BUY_REQUEST_BUTTON NSLocalizedStringFromTable(@"BUY_REQUEST_BUTTON",@"ACalcTryViewControllerTable", @"buy button title")
-
-#define TITLE_RESET_BUTTON NSLocalizedStringFromTable(@"TITLE_RESET_BUTTON",@"ACalcTryViewControllerTable", @"reset button title")
-#define ALERT_MESAGE_RESET_BUTTONS NSLocalizedStringFromTable(@"ALERT_MESAGE_RESET_BUTTONS",@"ACalcTryViewControllerTable", @"reset button alert mesage")
-#define ALERT_CANCEL_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CANCEL_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"alert cancel buton title")
-#define ALERT_RESTORE_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_RESTORE_BUTTON_TITLE ",@"ACalcTryViewControllerTable", @"restore buton title")
-
-#define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
-
-
-#define ALERT_MESSAGE_CLEAR_HOSTORY NSLocalizedStringFromTable(@"ALERT_MESSAGE_CLEAR_HOSTORY",@"ACalcTryViewControllerTable", @"delete history. all results will be lost")
-#define ALERT_CLEAR_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CLEAR_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"clear")
 
 #define ALERT_TITLE_ASSES NSLocalizedStringFromTable(@"ALLERT_TITLE_ASSES",@"ACalcTryViewControllerTable", @"YOUR OPINION IS IMPORTANT TO ME")
 #define ALERT_MESSAGE_ASSES NSLocalizedStringFromTable(@"ALLERT_MESSAGE_ASSES",@"ACalcTryViewControllerTable", @"...should I stay or should I go?")
@@ -511,49 +460,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 #define ALERT_ASSES_ASSES_APLICATION_BUTTON NSLocalizedStringFromTable(@"ALERT_ASSES_ASSES_APLICATION_BUTTON",@"ACalcTryViewControllerTable", @"Аssess the application")
 #define ALERT_ASSES_REMIND_LATER_BUTTON NSLocalizedStringFromTable(@"ALERT_ASSES_REMIND_LATER_BUTTON",@"ACalcTryViewControllerTable", @"Remind later")
 
-#define ALLERT_TITLE_CHANGE_KEYBOARD NSLocalizedStringFromTable(@"ALLERT_TITLE_CHANGE_KEYBOARD",@"ACalcTryViewControllerTableAdditional", @"Change keyboard")
-#define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
-#define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
-
-//--important delete
-- (IBAction)buyAdditionsButtonTapped:(UIButton *)sender
-{
-    UIAlertView *alert;
-    
-    alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
-                                       message:@""
-                                      delegate:self
-                             cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                             otherButtonTitles: ALLERT_BUTTON_BUY,ALLERT_BUTTON_RESTORE, nil]; //@"Restore"
-    
-    [alert show];
-
-}
-
-- (IBAction)defaultKeyboardbuttonTapped:(id)sender
-{
-    //if(self.wasPurshaised /*|| self.isTrialPeriod*/){
-        UIAlertView *alert;
-        alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
-                                           message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
-                                          delegate:self
-                                 cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                                 otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
-        
-    [alert show];
-   // }
-
-}
-
-- (IBAction)clearHistoryButtonTapped:(id)sender
-{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TITLE_CLEAR_HISTORY_BUTTON
-                                                    message:ALERT_MESSAGE_CLEAR_HOSTORY//@"delete history. all results will be lost"
-                                                   delegate:self
-                                          cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                                          otherButtonTitles:ALERT_CLEAR_BUTTON_TITLE, nil]; //@"Clear"
-    [alert show];
-}
 
 //not settings view but allert to ask woth API
 -(void) setCounterForShowingAllertView:(NSInteger)counterForShowingAllertView
@@ -648,22 +554,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-    if([title isEqualToString:ALERT_RESTORE_BUTTON_TITLE]){
-        [Buttons clearContext:self.buttonManagedObjectContext];
-        
-        [self setUpArrays];
-        [self.doc updateChangeCount:UIDocumentChangeDone];
-        
-        [self.buttonsCollection reloadData];
-        
-    } else if ([title isEqualToString:ALERT_CLEAR_BUTTON_TITLE]){
-        
-        [History clearContext:self.managedObjectContext];
-        NSArray *newHeightsOfRows = [[NSArray alloc] init];
-        self.heightsOfRows = newHeightsOfRows;
-        [self performFetch];
-        
-    } else if ([title isEqualToString:ALERT_ASSES_ASSES_APLICATION_BUTTON]){
+    if ([title isEqualToString:ALERT_ASSES_ASSES_APLICATION_BUTTON]){
         //NSString *iTunesLink = @"itms-apps://itunes.apple.com/us/app/its-calc/id873164530?l=ru&ls=1&mt=8";
         NSString *iTunesLink = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=873164530&type=Purple+Software";//&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:iTunesLink]];
@@ -672,42 +563,19 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     } else if ([title isEqualToString:ALERT_ASSES_NO_BUTTON]){
         self.counterForShowingAllertView = -1;
         
-    } else if ([title isEqualToString:ALLERT_BUTTON_RESTORE]){
-        [self restorePurchase];
-        
-    } else if ([title isEqualToString:ALLERT_BUTTON_BUY]){
-        [self buyUnlockKeyboard];
-        
     } else if ([title isEqualToString:USE_ICLOUD]){
         self.isiCloudInUse = YES;
     }
     
 }
 
-- (IBAction)switchIsBigDataBase:(UISwitch *)sender
-{
-    self.isBigDataBase = sender.on;
-}
-
 -(void) setIsBigDataBase:(BOOL)isBigDataBase
 {
     _isBigDataBase = isBigDataBase;
-    if(_isBigDataBase != self.isBigDataBaseSwitcher.on){
-        self.isBigDataBaseSwitcher.on = _isBigDataBase;
-    }
 }
 
 -(int) limitInDataBase{
     return self.isBigDataBase ? 200 : 500;
-}
-
-- (IBAction)isBigSizeButtonSwitch:(UISwitch *)sender
-{
-    if(sender.isOn){
-        self.isBigSizeButtons = YES;
-    } else {
-        self.isBigSizeButtons = NO;
-    }
 }
 
 -(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
@@ -720,31 +588,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self makeTwoArrays];
         [self.buttonsCollection reloadData];
     }
-    
-
-    if(_isBigSizeButtons != self.isBigSizeSwitcher.on){
-        [self.isBigSizeSwitcher setOn:_isBigSizeButtons];
-    }
-    
 }
-
-- (IBAction)isSoundSwitch:(UISwitch *)sender
-{
-    if(sender.isOn){
-        self.isSoundOn = YES;
-    } else {
-        self.isSoundOn = NO;
-    }
-}
-
--(void) setIsSoundOn:(BOOL)isSoundOn
-{
-    _isSoundOn = isSoundOn;
-    if(_isSoundOn != self.soundSwitcher.on){
-        [self.soundSwitcher setOn:_isSoundOn];
-    }
-}
-
 
 //delegate method to allow read gestures (PAN AND SCROLL) toogether
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -1203,9 +1047,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
     }
 }
-
-
-
 
 
 #pragma mark Button taped Action
@@ -1726,7 +1567,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 #pragma mark - GESTURES and Tap Fix  and delete Button at changeble conditions buttonscollection
 
-
 //long press at display
 - (IBAction)displayLongPress:(UILongPressGestureRecognizer *)sender
 {
@@ -1807,53 +1647,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                  
                              } completion:^(BOOL finihed){
                                 
-                                 if(!self.wasPurshaised){
-
-                                    //enable buttons to buy product
-                                    self.buyAdditionsButton.enabled = NO;
-                                    [self.buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-                                    //start processSpiner
-                                    [self startSpinner];
-                                    //----------------------------
-                                     
-                                    //make product request
-                                    if([SKPaymentQueue canMakePayments]) {
-                                        
-                                        SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
-                                        request.delegate = self;
-                                             
-                                        [request start];
-                                        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-                                    } else {
-                                        //if cant make purchaising stop and remove spinner
-                                        [self.processSpinner stopAnimating];
-                                        [self.processSpinner removeFromSuperview];
-                                        self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
-                                    }
-                                 }
                                  if(!(self.wasPurshaised || self.isTrialPeriod)){
+                                     [self showSettingsViewcontroller];
 
-                                     //if no paid version show at moment only setting view
-                                     //not allow user change buttons
-                                    CGRect settingsViewNewframe = self.SettingsView.frame;
-                                    settingsViewNewframe.origin.y = self.displayContainer.frame.origin.y + self.displayContainer.frame.size.height;
-                                    [self.SettingsView setFrame:settingsViewNewframe];
-                                    [self.settingsBackgroundToolBar setFrame:settingsViewNewframe];
-                                     self.SettingsView.hidden = NO;
-                                     self.settingsBackgroundToolBar.hidden = NO;
-                                     
-                                    settingsViewNewframe.origin.x = 0;
-                                    [UIView animateWithDuration:0.5
-                                                           delay:0.2
-                                                         options:UIViewAnimationOptionCurveEaseOut
-                                                      animations:^{
-                                                          
-                                                          [self.SettingsView setFrame:settingsViewNewframe];
-                                                          [self.settingsBackgroundToolBar setFrame:settingsViewNewframe];
-                                                      
-                                                      } completion:^(BOOL finished) {
-                                                          self.isSettingsViewOnScreen = YES;
-                                                      }];
                                 }
                                  
                                  [self.buttonsCollection reloadData];
@@ -1966,136 +1762,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 - (IBAction)tapSettingsBotomButton:(UIButton *)sender
 {
     [self showSettingsViewcontroller];
-    /*
-    if(self.isBottomSettingsViewOnScreen){
-        CGRect settingsViewframe = self.SettingsView.frame;
-        settingsViewframe.origin.x = -self.mainContainerView.bounds.size.width;
-        
-        [UIView animateWithDuration:0.28f
-                              delay:0
-                            options:UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             [self.SettingsView setFrame:settingsViewframe];
-                             [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                         } completion:^(BOOL finished) {
-                             self.isBottomSettingsViewOnScreen = NO;
-                             self.SettingsView.hidden = YES;
-                             self.settingsBackgroundToolBar.hidden = YES;
-                         }];
-        
-    } else {
-        
-        
-        CGRect settingsViewframe = self.SettingsView.frame;
-        
-        settingsViewframe.origin.y = 0;
-        self.SettingsView.hidden = NO;
-        self.settingsBackgroundToolBar.hidden = NO;
-        [self.SettingsView setFrame:settingsViewframe];
-        [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-        
-        if(!self.wasPurshaised){
-            //enable buttons to buy product
-            self.buyAdditionsButton.enabled = NO;
-            [self.buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-            //start processSpiner
-            [self startSpinner];
-            //----------------------------
-            
-            //make product request
-            if([SKPaymentQueue canMakePayments]) {
-                
-                SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
-                request.delegate = self;
-                
-                [request start];
-                [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-            } else {
-                //if cant make purchaising stop and remove spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
-            }
-        }
-        
-        settingsViewframe.origin.x = 0;
-        
-        [UIView animateWithDuration:0.28
-                              delay:0
-                            options:UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             
-                             [self.SettingsView setFrame:settingsViewframe];
-                             [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                             
-                         } completion:^(BOOL finished) {
-                             self.isBottomSettingsViewOnScreen = YES;
-                             
-                         }];
-    }
-    */
 }
 
 - (IBAction)tapSettingsButton:(UIButton *)sender
 {
     [self showSettingsViewcontroller];
-    /*
-    if(self.isSettingsViewOnScreen){
-        
-        CGRect settingsViewframe = self.SettingsView.frame;
-        
-        settingsViewframe.origin.x = -self.mainContainerView.bounds.size.width;
-        
-        
-        [UIView animateWithDuration:0.28f
-                              delay:0
-                            options:UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             [self.SettingsView setFrame:settingsViewframe];
-                             [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                         } completion:^(BOOL finished) {
-                             self.isSettingsViewOnScreen = NO;
-                             self.SettingsView.hidden = YES;
-                             self.settingsBackgroundToolBar.hidden = YES;
-                         }];
-        
-    } else {
-        
-        
-        CGRect settingsViewframe = self.SettingsView.frame;
-        settingsViewframe.origin.y = self.displayContainer.bounds.size.height + self.displayContainer.frame.origin.y;
-       // NSLog(@"Initial frame origin y- %f", settingsViewframe.origin.y);
-        self.SettingsView.hidden = NO;
-        self.settingsBackgroundToolBar.hidden = NO;
-        [self.SettingsView setFrame:settingsViewframe];
-        [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-        
-        settingsViewframe.origin.x = 0;
-        
-        [UIView animateWithDuration:0.28
-                              delay:0
-                            options:UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             
-                             [self.SettingsView setFrame:settingsViewframe];
-                             [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-                             
-                         } completion:^(BOOL finished) {
-                             self.isSettingsViewOnScreen = YES;
-                         }];
-    }
-    */
-    
-    
+
 }
 
 -(void) discardChanging
 {
-    //if there is process spiner - remove it from settings view
-    if(self.processSpinner){
-        [self.processSpinner stopAnimating];
-        [self.processSpinner removeFromSuperview];
-    }
     
     self.buttonsCollection.scrollEnabled = NO;
     //if there is buttonAsSubview in buttonCollection
@@ -2137,16 +1813,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
     buttonsCollectionViewBounds.origin.y = self.historyTable.bounds.size.height;
 
-    CGRect settingsViewframe = self.SettingsView.frame;
-    if(self.isBottomSettingsViewOnScreen){
-        settingsViewframe.origin.y = self.displayContainer.frame.origin.y - settingsViewframe.size.height;
-    } else {
-        settingsViewframe.origin.y = self.displayContainer.frame.origin.y + self.displayContainer.frame.size.height;
-    }
-    settingsViewframe.origin.x = - settingsViewframe.size.width;
-
-    
-    
     [UIView animateWithDuration:.3
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
@@ -2166,9 +1832,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              [self.iAdBanner setFrame:self.bannerContainerView.bounds];
 
                          }
-                         
-                         [self.SettingsView setFrame:settingsViewframe];
-                         [self.settingsBackgroundToolBar setFrame:settingsViewframe];
                          
                          [self.buttonsCollection setFrame:buttonsCollectionViewBounds];
                          
@@ -2199,14 +1862,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          //allow show settings button only in paid version
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = YES;
                          self.downButton.hidden = YES;
-                         self.isSettingsViewOnScreen = NO;
-                         self.isBottomSettingsViewOnScreen = NO;
-                         self.SettingsView.hidden = YES;
-                         self.settingsBackgroundToolBar.hidden = YES;
-                         
+
                          //think about it
                          if(!self.wasPurshaised){
-                             [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+                             //[[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
                          }
                          if(self.isSoundOn){
                              AudioServicesPlaySystemSound (_blankSoundFileObject);
@@ -2286,13 +1945,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             CGRect dynamicRect = self.dynamicContainer.frame;
             dynamicRect.origin.y = hopeDynamicOriginY;
             [self.dynamicContainer setFrame:dynamicRect];
-            
-            if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
-                CGRect settingsViewframe = self.SettingsView.frame;
-                settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
-                [self.SettingsView setFrame:settingsViewframe];
-                [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-            }
 
         }
         //if drag down
@@ -2314,13 +1966,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.deleteButton.alpha = 1 - opacityMark;
             self.isHistoryWholeShowed = 1 - opacityMark;
             
-            if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
-                CGRect settingsViewframe = self.SettingsView.frame;
-                settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
-                [self.SettingsView setFrame:settingsViewframe];
-                [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-            }
-
         }
         
         if(self.wasDynamicOriginY == -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight) {
@@ -2382,29 +2027,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         strongSelf.isHistoryWholeShowed = 1-opacityMark;
         
         CGFloat needY = strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height;
-        
-        if(strongSelf.SettingsView.frame.origin.x > -strongSelf.SettingsView.frame.size.width){
-            CGRect settingsViewframe = strongSelf.SettingsView.frame;
-            settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
-            [strongSelf.SettingsView setFrame:settingsViewframe];
-            [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
-        }
 
         if(ABS(CGRectGetMidY(strongSelf.dynamicContainer.frame) - centerY) < 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
            [animator removeAllBehaviors];
             CGRect dynamicRect = view.frame;
             dynamicRect.origin.y = needY;
             [view setFrame:dynamicRect];
-
-            //in any case hide settings view
-            CGRect settingsViewframe = strongSelf.SettingsView.frame;
-            settingsViewframe.origin.x = - settingsViewframe.size.width;
-            [strongSelf.SettingsView setFrame:settingsViewframe];
-            [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
-            strongSelf.isSettingsViewOnScreen = NO;
-            strongSelf.isBottomSettingsViewOnScreen = NO;
-            self.SettingsView.hidden = YES;
-            self.settingsBackgroundToolBar.hidden = YES;
             
             strongSelf.display.alpha =  1;
             strongSelf.settingsBottomButtn.alpha =0;
@@ -2477,13 +2105,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         strongSelf.recountButton.alpha = 1- opacityMark;
         strongSelf.deleteButton.alpha = 1- opacityMark;
         self.isHistoryWholeShowed = 1- opacityMark;
-        
-        if(self.SettingsView.frame.origin.x > -self.SettingsView.frame.size.width){
-            CGRect settingsViewframe = self.SettingsView.frame;
-            settingsViewframe.origin.x = - settingsViewframe.size.width * opacityMark;
-            [self.SettingsView setFrame:settingsViewframe];
-            [self.settingsBackgroundToolBar setFrame:settingsViewframe];
-        }
+
         //if self.isHistoryWholeShowed = 1.;
         CGFloat needY = 0;
         UIView *view = strongSelf.dynamicContainer;
@@ -2503,14 +2125,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             strongSelf.recountButton.alpha = 1.;
             strongSelf.deleteButton.alpha = 1.;
             strongSelf.isHistoryWholeShowed = 1.;
-            
-            if(strongSelf.SettingsView.frame.origin.x > -strongSelf.SettingsView.frame.size.width){
-                CGRect settingsViewframe = strongSelf.SettingsView.frame;
-                settingsViewframe.origin.x = 0;
-                [strongSelf.SettingsView setFrame:settingsViewframe];
-                [strongSelf.settingsBackgroundToolBar setFrame:settingsViewframe];
-            }
-            
             
         }
 
@@ -4178,7 +3792,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void) migrateDataToNewStorage:(NSURL*) newStorageURL
 {
-    NSLog(@"Need to migrate to URL %@", newStorageURL);
+   // NSLog(@"Need to migrate to URL %@", newStorageURL);
 }
 
 
@@ -4190,7 +3804,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void)cloudDidChange:(NSNotification*)notification
 {
- //   NSLog(@"cloud Did Change %@", notification);// %@", [notification userInfo]);
+   // NSLog(@"cloud Did Change %@", notification);// %@", [notification userInfo]);
 }
 
 -(void)cloudWillChange:(NSNotification*)notification
@@ -4258,8 +3872,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     } else {
        // NSLog(@"History didn't change");
     }
-    
-
     
 }
 
@@ -4545,10 +4157,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     
     _isiCloudInUse = isiCloudInUse;
-    if(_isiCloudInUse != self.isiCloudUseSwitcher.on) {
-        [self.isiCloudUseSwitcher setOn:_isiCloudInUse];
-        
-    }
     [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:isiCloudInUse]
                                              forKey:@"userUseiCloud"];
 }
@@ -4712,13 +4320,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [[NSUserDefaults standardUserDefaults]
          setObject:newTokenData
          forKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
-        self.isiCloudUseSwitcher.enabled = YES;
+        self.isiCloudUseSwitcherEnabled = YES;
         
     } else {
         [[NSUserDefaults standardUserDefaults]
          removeObjectForKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
         self.isiCloudInUse = NO;
-        self.isiCloudUseSwitcher.enabled = NO;
+        self.isiCloudUseSwitcherEnabled = NO;
     }
 }
 
@@ -4835,17 +4443,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.isBigDataBase = NO;
         self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
+        self.design = DESIGN_CLASSIC;
         self.lastShowAllertViewDate = [NSDate date];
         self.counterForShowingAllertView = 26;
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
     }
-    
-    
-    self.isSettingsViewOnScreen = NO;
-    self.isBottomSettingsViewOnScreen = NO;
-    self.SettingsView.hidden = YES;
-    self.settingsBackgroundToolBar.hidden = YES;
     
     self.historyTable.allowsMultipleSelectionDuringEditing = NO;
     self.historyTable.allowsMultipleSelection = NO;
@@ -4947,236 +4550,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 
 
-//this function need to send message about changing iPad rotation
-/*
--(void) setWillBePortraitRotated:(BOOL)willBePortraitRotated
-{
-    _willBePortraitRotated = willBePortraitRotated;
-    if(IS_IPAD){
-        self.displayRam.isIpadPortraitView = willBePortraitRotated;
-    } else {
-       // if(willBePortraitRotated){
-       //     [self rotateToPortraitViewIPhone];
-      //  } else {
-            if(self.hintView){
-                 //if there ara hint view - remove it
-                [UIView animateWithDuration:0.2
-                                      delay:0
-                                    options:UIViewAnimationOptionCurveEaseIn
-                                 animations:^{
-                                     self.hintView.alpha = 0;
-                                 } completion:^(BOOL finished) {
-                                     [self.hintView removeFromSuperview];
-                                 }];
-                
-            }
-            //[UIView setAnimationsEnabled:NO];
-           // if(self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeLeft || self.wasRotatedNotificationAnotherController == UIInterfaceOrientationLandscapeRight){
-                
-           //     [self orientationChangedToOrientation:self.wasRotatedNotificationAnotherController fromNotification:NO];
-           //     self.wasRotatedNotificationAnotherController = 0;
-           // }
-       // }
-    }
-}
-*/
-
 #pragma mark VIEW LAYOUT
-
--(void) setLayOutOfSettingsView:(CGRect)rect
-{
-    CGFloat mainHeight = rect.size.height;
-    CGFloat mainWidth = rect.size.width;
-    self.cloudOnView.on = YES;
-    self.cloudOffView.on = NO;
-    
-    self.soundOff.on = NO;
-    self.soundOn.on = YES;
-    
-    self.archivesizeBigView.isBig=YES;
-    self.archsizeViewSmall.isBig=NO;
-    
-    //self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    
-    //self.clearHistoryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    self.keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    self.buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-
-
-    
-    
-    if(IS_IPAD){
-        // CGFloat measure = (mainHeight - self.displayContainer.frame.size.height )/ 4;
-        CGFloat measure = (mainHeight)/5;
-        CGFloat part = mainWidth /3; //
-        CGFloat startSectionOne = part / 4;
-        CGFloat startSectionTwo = startSectionOne + part + (part/2);
-        
-        CGFloat centerFirstLine =startSectionOne + (part / 2);
-        CGFloat firstLinePicture = centerFirstLine - 85;
-        CGFloat secondLinePicture = centerFirstLine + 85;
-        
-        CGFloat centerSecondLine = startSectionTwo + (part / 2);
-        CGFloat thirstLinePicture = centerSecondLine - 85;
-        CGFloat fourLinePicture = centerSecondLine + 85;
-        
-        
-        //line one part one
-        [self.smallButtonView setCenter:CGPointMake(firstLinePicture, measure)];
-        [self.bigbuttonView setCenter:CGPointMake(secondLinePicture, measure)];
-        [self.isBigSizeSwitcher setCenter:CGPointMake(centerFirstLine, measure)];
-        self.buttonSwitcherLabel.text = NAME_BUTTON_SWITCH;
-        [self.buttonSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.buttonSwitcherLabel setCenter:CGPointMake(centerFirstLine, measure - 60)];
-        
-        //line one part two
-        [self.soundOff setCenter:CGPointMake(thirstLinePicture, measure)];
-        //[self.soundOffView setCenter:CGPointMake(thirstLinePicture, measure)];
-        [self.soundOn setCenter:CGPointMake(fourLinePicture, measure)];
-        //[self.soundOnView setCenter:CGPointMake(fourLinePicture, measure)];
-        [self.soundSwitcher setCenter:CGPointMake(centerSecondLine, measure)];
-        
-        self.soundSwitcherLabel.text = NAME_SOUND_SWITCH;
-        [self.soundSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.soundSwitcherLabel setCenter:CGPointMake(centerSecondLine, measure - 60)];
-        
-        
-        
-        //line two part one
-        //[self.smallDataBaseView setCenter:CGPointMake(firstLinePicture, 2*measure)];
-        [self.archsizeViewSmall setCenter:CGPointMake(firstLinePicture, 2*measure)];
-        //[self.bigDataBaseView setCenter:CGPointMake(secondLinePicture, 2*measure)];
-        [self.archivesizeBigView setCenter:CGPointMake(secondLinePicture, 2*measure)];
-        [self.isBigDataBaseSwitcher setCenter:CGPointMake(centerFirstLine, 2*measure)];
-        self.archiveSwitcherLabel.text = NAME_ARCHIVE_SWITCH;
-        [self.archiveSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.archiveSwitcherLabel setCenter:CGPointMake(centerFirstLine, 2*measure - 60)];
-        
-        
-        //line two part two
-        [self.cloudOffView setCenter:CGPointMake(thirstLinePicture, 2*measure)];
-        [self.cloudOnView setCenter:CGPointMake(fourLinePicture, 2*measure)];
-        [self.isiCloudUseSwitcher setCenter:CGPointMake(centerSecondLine, 2*measure)];
-        self.iCloudSwitcherName.text = NAME_ICLOUD_SWITCH;
-        [self.iCloudSwitcherName setBounds:CGRectMake(0,0, 250, 20)];
-        [self.iCloudSwitcherName setCenter:CGPointMake(centerSecondLine, 2*measure - 60)];
-        
-        //line three
-        CGRect pictureButtonsRect = CGRectMake(0, 0, measure/1.5, measure/1.5);
-        [self.clearHistoryButton setBounds:pictureButtonsRect];
-        [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
-        [self.changeDesignButton setBounds:pictureButtonsRect];
-        [self.changeDesignButton setCenter:CGPointMake(centerSecondLine, 3*measure)];
-        
-        CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 4*INDENT)/3, measure-2*INDENT);
-        //[self.clearHistoryButton setBounds:buttonsBounds];
-        [self.keyboardDefaultButton setBounds:buttonsBounds];
-        [self.buyAdditionsButton setBounds:buttonsBounds];
-        
-        if(self.isTrialPeriod){
-            //[self.clearHistoryButton setCenter:CGPointMake(buttonsBounds.size.width/2+INDENT, 3*measure)];
-            [self.keyboardDefaultButton setCenter:CGPointMake(firstLinePicture, 4*measure)];
-            
-            [self.processSpinner setCenter:CGPointMake(secondLinePicture, 4*measure - 40)];
-            [self.buyAdditionsButton setCenter:CGPointMake(secondLinePicture, 4*measure)];
-            
-        } else if (self.wasPurshaised){
-            //line three part one
-            //[self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
-            
-            //line three part two
-            [self.keyboardDefaultButton setCenter:CGPointMake(rect.size.width/2, 3*measure)];
-        } else {
-            //line three part one
-           // [self.clearHistoryButton setCenter:CGPointMake(centerFirstLine, 3*measure)];
-            
-            //line three part two
-            [self.processSpinner setCenter:CGPointMake(rect.size.width/2, 4*measure - 40)];
-            [self.buyAdditionsButton setCenter:CGPointMake(rect.size.width/2, 4*measure)];
-        }
-        
-        
-        
-    } else {
-        //CGFloat measure = (mainHeight- self.displayContainer.frame.size.height )/ 7;
-        CGFloat measure = (mainHeight)/ 7;
-        CGRect smallButtonFrame = self.smallButtonView.frame;
-        smallButtonFrame.origin.y = measure - smallButtonFrame.size.height / 2;
-        [self.smallButtonView setFrame:smallButtonFrame];
-        
-        CGRect bigButtonFrame = self.bigbuttonView.frame;
-        bigButtonFrame.origin.y = measure - bigButtonFrame.size.height / 2;
-        [self.bigbuttonView setFrame:bigButtonFrame];
-        
-        CGRect buttonsizeSwitcherFrame = self.isBigSizeSwitcher.frame;
-        buttonsizeSwitcherFrame.origin.y = measure - buttonsizeSwitcherFrame.size.height / 2;
-        [self.isBigSizeSwitcher setFrame:buttonsizeSwitcherFrame];
-        
-        CGRect sounSwitcherFrame = self.soundSwitcher.frame;
-        sounSwitcherFrame.origin.y = 2 * measure - sounSwitcherFrame.size.height / 2;
-        [self.soundSwitcher setFrame:sounSwitcherFrame];
-        CGRect sounOffFrame = self.soundOff.frame;
-        sounOffFrame.origin.y =2 * measure - sounOffFrame.size.height / 2;
-        //[self.soundOffView setFrame:sounOffFrame];
-        [self.soundOff setFrame:sounOffFrame];
-        CGRect soundOnFrame = self.soundOn.frame;
-        soundOnFrame.origin.y = 2 * measure - soundOnFrame.size.height / 2;
-        //[self.soundOnView setFrame:soundOnFrame];
-        [self.soundOn setFrame:soundOnFrame];
-        
-        CGRect bigDataSwitcher = self.isBigDataBaseSwitcher.frame;
-        bigDataSwitcher.origin.y = 3 * measure - bigDataSwitcher.size.height / 2;
-        [self.isBigDataBaseSwitcher setFrame:bigDataSwitcher];
-        CGRect smallDataFrame = self.archsizeViewSmall.frame;
-        smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
-        [self.archsizeViewSmall setFrame:smallDataFrame];
-        CGRect bigDataFrame = self.archivesizeBigView.frame;
-        bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
-        [self.archivesizeBigView setFrame:bigDataFrame];
-        
-        CGRect iCloudSwitcherRect = self.isiCloudUseSwitcher.frame;
-        iCloudSwitcherRect.origin.y = 4 * measure - iCloudSwitcherRect.size.height / 2;
-        [self.isiCloudUseSwitcher setFrame:iCloudSwitcherRect];
-        CGRect cloudOnFrame = self.cloudOnView.frame;
-        cloudOnFrame.origin.y =4 * measure - cloudOnFrame.size.height / 2;
-        [self.cloudOnView setFrame:cloudOnFrame];
-        CGRect cloudOffFrame = self.cloudOffView.frame;
-        cloudOffFrame.origin.y = 4 * measure - cloudOffFrame.size.height / 2;
-        [self.cloudOffView setFrame:cloudOffFrame];
-        
-        /*
-         CGRect smallDataFrame = self.smallDataBaseView.frame;
-         smallDataFrame.origin.y =3 * measure - smallDataFrame.size.height / 2;
-         [self.smallDataBaseView setFrame:smallDataFrame];
-         CGRect bigDataFrame = self.bigDataBaseView.frame;
-         bigDataFrame.origin.y = 3 * measure - bigDataFrame.size.height / 2;
-         [self.bigDataBaseView setFrame:bigDataFrame];
-         */
-        
-        CGRect clearHistoryButtonFrame = self.clearHistoryButton.frame;
-        clearHistoryButtonFrame.origin.y = 5 * measure - clearHistoryButtonFrame.size.height / 2;
-        [self.clearHistoryButton setFrame:clearHistoryButtonFrame];
-        
-        
-        CGRect keyboarddefaultButtonFrame = self.keyboardDefaultButton.frame;
-        keyboarddefaultButtonFrame.origin.y = 6 * measure - keyboarddefaultButtonFrame.size.height / 2;
-        [self.keyboardDefaultButton setFrame:keyboarddefaultButtonFrame];
-    }
-    
-    //self.clearHistoryButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    //[self.clearHistoryButton setTitle:TITLE_CLEAR_HISTORY_BUTTON forState:UIControlStateNormal];
-    
-    
-    self.keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    // if(self.wasPurshaised || self.isTrialPeriod){
-    [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-    // } else {
-    [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-    //}
-    
-}
 
 -(void) setHeightOfElementAccordingToScreenIPhone
 {
@@ -5269,15 +4643,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
     sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
     [self.historyTableSviper setFrame:sviperRect];
-    
-    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
-                                         0,
-                                         self.mainContainerView.bounds.size.width,
-                                         self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    
-    //important think about background
-    [self setLayOutOfSettingsView: settingsViewRect];
-    [self.SettingsView setFrame:settingsViewRect];
 
 }
 
@@ -5341,31 +4706,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
     [self.historyTableSviper setFrame:sviperRect];
     
-    CGRect settingsViewRect = self.SettingsView.frame;
-
-    
-    if(self.isBottomSettingsViewOnScreen){
-        settingsViewRect = CGRectMake(0,
-                                      0,
-                                      self.mainContainerView.bounds.size.width,
-                                      self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    } else if (self.isSettingsViewOnScreen){
-        settingsViewRect = CGRectMake(0,
-                                      self.displayContainer.bounds.size.height + self.displayContainer.frame.origin.y,
-                                      self.mainContainerView.bounds.size.width,
-                                      self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    } else {
-        settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
-                                         0,
-                                         self.mainContainerView.bounds.size.width,
-                                         self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    }
-    
-    [self.SettingsView setFrame:settingsViewRect];
-
-    [self setLayOutOfSettingsView:settingsViewRect];
-    
-    
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         
         [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0, 0, 0)];
@@ -5388,13 +4728,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
     }
     //IMOPRTANT TEST
+    /*
     //self.historyTable.style=
     CGRect rc = self.historyTable.frame;
     NSLog(@"Rect:%f, %f, %f, %f", rc.origin.x,
           rc.origin.y,
           rc.size.width,
           rc.size.height);
-    
+    */
     
     [self.buttonsCollection setFrame:CGRectMake(0,
                                                 displayViewFrame.origin.y,
@@ -5444,33 +4785,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     
     self.backgroundToolBar.frame = self.displayContainer.frame;
-    self.settingsBackgroundToolBar.frame = self.SettingsView.frame;
-    
     //set size buttonsViews and frames
     struct Color clr;
     clr.r = 0.95;//0.26;
     clr.g = 0.95;//0.57;
     clr.b = 0.95;//0.70;
     clr.a = 1.0;
-    
-    self.smallButtonView.backgroundColor = [UIColor clearColor];
-    CGRect smalLook = self.smallButtonView.bounds;
-    smalLook.size.width = smalLook.size.width -4;
-    smalLook.size.height =smalLook.size.height-4;
-    newButtonView *smalButtonLook = [[newButtonView alloc] initWithFrame:smalLook];
-    smalButtonLook.title = @"=";
-    smalButtonLook.buttonColor = clr;
-    [self.smallButtonView addSubview:smalButtonLook];
-    
-    self.bigbuttonView.backgroundColor = [UIColor clearColor];
-    CGRect bigLook = self.bigbuttonView.bounds;
-    bigLook.size.width =-4;
-    bigLook.size.height =-4;
-    newButtonView *bigButtonLook = [[newButtonView alloc] initWithFrame:self.bigbuttonView.bounds];
-    bigButtonLook.title = @"=";
-    bigButtonLook.buttonColor = clr;
-    [self.bigbuttonView addSubview:bigButtonLook];
-    
+
     CGFloat yDisplayCenter = self.displayContainer.frame.size.height/2;
     CGFloat widthdisplay = self.displayContainer.frame.size.width;
 
@@ -5614,13 +4935,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //really enter to background
 -(void) appDidEnterBackground
 {
-    //if there is process spiner - remove it from settings view
-    if(self.processSpinner){
-        [self.processSpinner stopAnimating];
-        [self.processSpinner removeFromSuperview];
-    }
-    
-   
     //if there is byttonAssubview - delete it
     if(self.buttonsAsSubView){
         CGRect subFrame = self.subCell.frame;
@@ -5686,12 +5000,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void) viewWillAppear:(BOOL)animated{
     
-    NSLog(@"MainView Will appear");
+   // NSLog(@"MainView Will appear");
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
     self.callShowController = NO;
     [self.buttonsCollection reloadData];
+    
+    //remove notification observer for settings changes
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ReciveChangedNotification object:nil];
     [super viewWillAppear:animated];
     
 }
@@ -5768,7 +5085,10 @@ sourceController:(UIViewController *)source
                 [self performFetch];
             }
             
-        }else {
+        } else if ([key isEqualToString:@"ChangedDesign"]){
+            NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
+            self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+        } else {
             NSLog(@"Not find right key");
         }
     } else {
@@ -5787,9 +5107,11 @@ sourceController:(UIViewController *)source
     settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
     settingsController.isSoundOn = self.isSoundOn;
     settingsController.isBigSizeButtons = self.isBigSizeButtons;
+    settingsController.design = self.design;
 
     settingsController.isTrialPeriod = self.isTrialPeriod;
     settingsController.wasPurshaised = self.wasPurshaised;
+    settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
 
     self.settingsController = settingsController;
     self.settingsController.transitioningDelegate = self;
@@ -6075,6 +5397,7 @@ sourceController:(UIViewController *)source
         nil;
     }];
     //make product request
+    /*
     if([SKPaymentQueue canMakePayments]) {
         
         SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
@@ -6086,12 +5409,14 @@ sourceController:(UIViewController *)source
         [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerNotAvailableForBuingNotification object:nil];
 
     }
+    */
 
 }
 
 #pragma mark APPEARED CONTROLLER DELEGATE
 -(void) appearedControllerDidCloseWithString:(NSString *)returnString
 {
+    /*
     if([returnString isEqualToString:@"BUY"]){
         NSLog(@"Buy command from about view");
         //show buy allert
@@ -6099,9 +5424,10 @@ sourceController:(UIViewController *)source
         
     } else if ([returnString isEqualToString:@"CONTINUE"]){ //if continue trial period
         NSLog(@"Jus continue fronm about view");
-    } else if ([returnString isEqualToString:@"CLOSE"]){ //if work without addition after trial period is finished
+    } else */if ([returnString isEqualToString:@"CLOSE"]){ //if work without addition after trial period is finished
         [self endsOfTrialPeriod];
     }
+    
     
 }
 
@@ -6110,22 +5436,6 @@ sourceController:(UIViewController *)source
     NSLog(@"Finish trial period from about view");
     self.isTrialPeriod = NO;
     //set settings view for change button
-    CGRect settingsViewRect = CGRectMake(-self.mainContainerView.bounds.size.width,
-                                  0,
-                                  self.mainContainerView.bounds.size.width,
-                                  self.mainContainerView.bounds.size.height - self.displayContainer.bounds.size.height);
-    [UIView animateWithDuration:0.4
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         self.keyboardDefaultButton.alpha = 0;
-                          } completion:^(BOOL finished) {
-                              [UIView animateWithDuration:0.4
-                                               animations:^{
-                                                   self.keyboardDefaultButton.hidden = YES;
-                                                   [self setLayOutOfSettingsView:settingsViewRect];
-                                               }];
-    }];
     //Important:
     //1. need to reset buttons array
     //2. need to reset all views
@@ -6355,6 +5665,7 @@ sourceController:(UIViewController *)source
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];
+    [controllerArray addObject:[NSNumber numberWithInteger:self.design]];
     [controllerArray addObject: self.currentProgrammVersion];
     [controllerArray addObject:[NSNumber numberWithInteger:self.counterForShowingAllertView]];
     
@@ -6405,7 +5716,14 @@ sourceController:(UIViewController *)source
         } else {
             return NO;
         }
-
+        if(top && [top isKindOfClass:[NSNumber class]]){
+            self.design = [top integerValue];
+            [controllerArray removeLastObject];
+            top = [controllerArray lastObject];
+        } else {
+            return NO;
+        }
+        
         if(top && [top isKindOfClass:[NSNumber class]]){
             self.isSoundOn = [top boolValue];
             [controllerArray removeLastObject];
@@ -6560,7 +5878,7 @@ sourceController:(UIViewController *)source
     else {
         [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-        NSLog(@"Main viewWillTransitionToSize");
+        //NSLog(@"Main viewWillTransitionToSize");
         
         if(!self.wasPurshaised){
             
@@ -6850,209 +6168,6 @@ sourceController:(UIViewController *)source
     
     
 }
-
-//----------------------------------------------------------
-//-----IMPORTANT DELETE-------------------------------------
-//----------------------------------------------------------
-
-#pragma mark IN-APP PURSHASE
--(void) startSpinner
-{
-    CGRect spinnerFrame = CGRectMake((self.SettingsView.bounds.size.width -40)/2,
-                                     self.buyAdditionsButton.frame.origin.y - 40,
-                                     40.,
-                                     40.);
-
-    UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc] initWithFrame:spinnerFrame];
-    [processSpinner setCenter:self.buyAdditionsButton.center];
-
-    [self.SettingsView addSubview:processSpinner];
-    processSpinner.hidesWhenStopped = YES;
-    self.processSpinner = processSpinner;
-    [self.processSpinner startAnimating];
-}
-
--(void) wasSuccesTransaction
-{
-    //3.
-    
-    
-    self.settingsButton.alpha = 0.;
-    self.settingsButton.hidden = self.downButton.hidden;
-
-    CGFloat yDisplayCenter = self.displayContainer.frame.size.height/2;
-    CGFloat widthdisplay = self.displayContainer.frame.size.width;
-    
-    
-    self.settingsButton.center = CGPointMake(widthdisplay/3, yDisplayCenter);
-    [UIView animateWithDuration:0.4
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                        self.downButton.center = CGPointMake(widthdisplay*2/3, yDisplayCenter);
-                        self.buyAdditionsButton.alpha = 0;
-                         
-                     } completion:^(BOOL finished) {
-                         [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-                         self.wasPurshaised = YES;
-                         NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-                         [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
-                         [defaults synchronize];
-                         
-                         self.buyAdditionsButton.enabled = NO;
-                         self.buyAdditionsButton.hidden = YES;
-                        
-                         [self hideIAdBanner];
-                         self.isIAdBaneerAvailable = NO;
-                         [UIView animateWithDuration:0.4
-                                          animations:^{
-                                              self.keyboardDefaultButton.alpha = 1;
-                                              self.settingsButton.alpha = self.downButton.alpha;
-                                          }];
-                     }];
-}
-
--(void) setWasPurshaised:(BOOL)wasPurshaised
-{
-    /*
-    if(wasPurshaised){
-        self.keyboardDefaultButton.enabled = YES;
-        self.keyboardDefaultButton.hidden = NO;
-        
-        self.buyAdditionsButton.enabled = NO;
-        self.buyAdditionsButton.hidden = YES;
-        
-    } else {
-        self.buyAdditionsButton.enabled = YES;
-        self.buyAdditionsButton.hidden = NO;
-        if(self.isTrialPeriod){
-            self.keyboardDefaultButton.enabled = YES;
-            self.keyboardDefaultButton.hidden = NO;
-        } else {
-            self.keyboardDefaultButton.enabled = NO;
-            self.keyboardDefaultButton.hidden = YES;
-        }
-    }
-    */
-}
-
--(void) buyUnlockKeyboard
-{
-
-    SKPayment *payment = [SKPayment paymentWithProduct:self.product];
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
-
-}
-
--(void) restorePurchase
-{
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-}
-
-
--(void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
-{
-    //1.
-    
-    for(SKPaymentTransaction *transaction in queue.transactions){
-        if(transaction.transactionState == SKPaymentTransactionStateRestored){
-            break;
-        }
-    }
-
-    
-}
-
-#pragma mark _
-#pragma mark SKProductsRequestDelegate
-
--(void) productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
-{
-    NSArray *products = response.products;
-    if(products.count != 0) {
-        
-        
-        self.product = products[0];
-        self.buyAdditionsButton.enabled = YES;
-
-    } else {
-       // NSLog(@"Product not FUND");
-    }
-    
-    if(self.processSpinner){
-    //stop and remove process spinner
-        [self.processSpinner stopAnimating];
-        [self.processSpinner removeFromSuperview];
-    }
-    [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerSendPayPossibilityNotification object:nil];
-    
-}
-
-
--(void) request:(SKRequest *)request didFailWithError:(NSError *)error
-{
-    //stop and remove process spinner
-    [self.processSpinner stopAnimating];
-    [self.processSpinner removeFromSuperview];
-    [[NSNotificationCenter defaultCenter] postNotificationName: MainControllerNotAvailableForBuingNotification object:nil];
-}
-
--(void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
-{
-    //3.
-    
-    for(SKPaymentTransaction *transaction in transactions){
-        switch (transaction.transactionState) {
-            case SKPaymentTransactionStatePurchased: [self wasSuccesTransaction];
-               // NSLog(@"Succes payment");
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                
-                break;
-                
-            case SKPaymentTransactionStateRestored: [self wasSuccesTransaction];
-                //NSLog(@"Succes restored");
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                
-                break;
-                
-            case SKPaymentTransactionStateDeferred:
-                
-                break;
-            
-            case SKPaymentTransactionStatePurchasing: //NSLog(@"Purchasing in process");
-
-                break;
-                
-            case SKPaymentTransactionStateFailed: ;//NSLog(@"Purchasing faild");;
-                
-
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Transaction failed"
-                                                                message:@""//@"restore initial buttons settings"
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Ok"//@"Cancel"
-                                                      otherButtonTitles: nil]; //@"Restore"
-                
-                [alert show];
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-
-                break;
-        }
-    }
-
-}
-//----------------------------------------------------------
-//-----IMPORTANT DELETE-------------------------------------
-//----------------------------------------------------------
-
 
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
