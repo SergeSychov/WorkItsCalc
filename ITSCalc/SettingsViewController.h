@@ -11,9 +11,11 @@
 @interface SettingsViewController : SecondViewController
 
 @property (nonatomic) BOOL isiCloudInUse;
+@property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) BOOL isSoundOn;
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
+@property (nonatomic) NSInteger design; //number of design
 
 @property (nonatomic) BOOL isTrialPeriod;
 @property (nonatomic) BOOL wasPurshaised;
