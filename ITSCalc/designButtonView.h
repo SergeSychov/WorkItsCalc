@@ -10,7 +10,6 @@
 
 @interface designButtonView : UIView
 @property (nonatomic,weak) NSString* title;
-
 @property (nonatomic) NSInteger design;
 
 @end

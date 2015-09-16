@@ -41,19 +41,25 @@
 -(void) setDesign:(NSInteger)design
 {
     _design = design;
+    if(IS_IPAD){
+        self.titleFont = [UIFont systemFontOfSize:18];
+    } else {
+        self.titleFont = [UIFont systemFontOfSize:20];
+    }
     switch (self.design) {
         case DESIGN_CLASSIC:
             self.title = @"классический";
             self.borderColor = [UIColor colorWithRed:0.69 green:0.69 blue:0.55 alpha:1];
             self.bodyColor = [UIColor clearColor];
+
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0;
             self.shadowBlur = 0;
-            self.shadowColor = 0;
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
             self.shadowOffset = CGSizeMake(0, 0);
             break;
             
@@ -63,12 +69,12 @@
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor darkTextColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 1;
             self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor whiteColor];
+            self.shadowColor = [UIColor colorWithWhite:1 alpha:1.];
             self.shadowOffset = CGSizeMake(1, 1);
             break;
             
@@ -78,72 +84,72 @@
             self.bodyColor = [UIColor colorWithRed:0.58 green:0.812 blue:0.922 alpha:.6];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0.3;
             self.shadowBlur = 6;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             self.shadowOffset = CGSizeMake(3, 3);
             break;
             
         case DESIGN_COLOR_GREEN:
             self.title = @"цветной";
-            self.borderColor = [UIColor whiteColor];
+            self.borderColor = [UIColor clearColor];
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0.3;
             self.shadowBlur = 6;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             self.shadowOffset = CGSizeMake(3, 3);
             break;
             
         case DESIGN_COLOR_YELOW:
             self.title = @"цветной";
-            self.borderColor = [UIColor whiteColor];
+            self.borderColor = [UIColor clearColor];
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0.3;
             self.shadowBlur = 6;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             self.shadowOffset = CGSizeMake(3, 3);
             break;
             
         case DESIGN_COLOR_PINK:
             self.title = @"цветной";
-            self.borderColor = [UIColor whiteColor];
+            self.borderColor = [UIColor clearColor];
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0.3;
             self.shadowBlur = 6;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             self.shadowOffset = CGSizeMake(3, 3);
             break;
             
         case DESIGN_COLOR_GRAY:
             self.title = @"цветной";
-            self.borderColor = [UIColor whiteColor];
+            self.borderColor = [UIColor clearColor];
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0.3;
             self.shadowBlur = 6;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             self.shadowOffset = CGSizeMake(3, 3);
             break;
             
@@ -153,12 +159,16 @@
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             
-            self.titleFont = [UIFont boldSystemFontOfSize:20];
+            if(IS_IPAD){
+                self.titleFont = [UIFont boldSystemFontOfSize:18];
+            } else {
+                self.titleFont = [UIFont boldSystemFontOfSize:20];
+            }
             self.borderVsRadius = 6.2;
             
             self.shadowOpacity = 0.5;
             self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor blackColor];
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowOffset = CGSizeMake(1, 1);
             break;
             
@@ -168,16 +178,16 @@
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor lightGrayColor];
             
-            self.titleFont = [UIFont systemFontOfSize:20];
+            //self.titleFont = [UIFont systemFontOfSize:20];
             self.borderVsRadius = 12.2;
             
             self.shadowOpacity = 0;
             self.shadowBlur = 0;
-            self.shadowColor = 0;
+            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
             self.shadowOffset = CGSizeMake(0, 0);
             break;
     }
-
+    [self setNeedsDisplay];
 }
 
 -(NSString*)title{
@@ -213,7 +223,7 @@
     return _titleLabel;
 }
 
--(void) drawButtonViewInContext:(CGContextRef)context
+-(void) drawButtonViewInContext:(CGContextRef)context inRect:(CGRect)rect
 {
     CGRect cornerRect;
     UIBezierPath *drawRectPath;
@@ -223,20 +233,20 @@
     
     
     if(IS_IPAD){
-        radiusCorner = self.frame.size.height/ 3.;
+        radiusCorner = ((rect.size.height)/1.2)/ 3.;
         
-        borderWidth = radiusCorner / 4.9;//9.2;
+        borderWidth = radiusCorner /self.borderVsRadius;// 4.9;//9.2;
     } else {
-        radiusCorner = self.frame.size.height/ 3.2;
+        radiusCorner = ((rect.size.height)/1.2)/ 3.2;
         
         borderWidth = radiusCorner / self.borderVsRadius;
     }
     
     //to states of buttons
-    CGFloat x = borderWidth /2;
-    CGFloat y = borderWidth /2;
-    CGFloat width = self.bounds.size.width - borderWidth;
-    CGFloat height = self.bounds.size.height -borderWidth;
+    CGFloat x = rect.size.width/12 + borderWidth /2;
+    CGFloat y = rect.size.height/12+borderWidth /2;
+    CGFloat width = rect.size.width/1.2 - borderWidth;
+    CGFloat height = rect.size.height/1.2 -borderWidth;
     cornerRect = CGRectMake(x,y,width,height);
     
     drawRectPath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(radiusCorner - borderWidth)];
@@ -244,42 +254,29 @@
     
     pathOfRect = drawRectPath.CGPath;
     CGContextAddPath(context, pathOfRect);
-    
-    //UIColor *borderColor;
-    //UIColor *bodyColor;
 
     CGContextSetStrokeColorWithColor(context, self.borderColor.CGColor);
     CGContextSetFillColorWithColor(context, self.bodyColor.CGColor);
     
+    CGContextSetShadowWithColor(context, self.shadowOffset, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
-    
-    
+
 }
 
 
 
--(void) drawRect:(CGRect)rect{
-    
-    //self.backgroundColor = [UIColor clearColor];
+-(void) drawRect:(CGRect)rect
+{
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [self drawButtonViewInContext:context];
-    
+    [self drawButtonViewInContext:context inRect:rect];
 
-    CALayer *layer = self.layer;
-    //layer.shadowOffset = CGSizeMake(10, 10);
-    layer.shadowOpacity = self.shadowOpacity;
-    //layer.shadowColor = self.shadowColor.CGColor;
-    //layer.shadowRadius = self.shadowBlur;
-    
-
-    layer.shadowOffset = self.shadowOffset;
-    layer.shadowColor = self.shadowColor.CGColor;
-    layer.shadowRadius = self.shadowBlur;
-
-    
     CGRect labelRect = CGRectInset(rect, rect.size.height/5, rect.size.height/5);
     [self.titleLabel setFrame:labelRect];
+    if(self.design ==DESIGN_PHOTO || self.design == DESIGN_PAPER){
+        self.titleLabel.shadowColor = self.shadowColor;
+        self.titleLabel.shadowOffset = self.shadowOffset;
+    }
 }
 
 @end

@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TestButtonBackGroundView : UIView
+@interface TestButtonBackGroundView : UIButton
 
-@property (nonatomic,weak) UIColor *mainviewcolor;
-@property (nonatomic,strong) UIColor *coloredColor;
+@property (nonatomic) BOOL isChoosed;
+@property (nonatomic) NSInteger designIndex;
 
 @end
