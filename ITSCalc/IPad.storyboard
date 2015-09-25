@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14E17e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="ZRh-ac-cg8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E36b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="ZRh-ac-cg8">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
         <!--Calc View Controller-->
@@ -9,8 +9,8 @@
             <objects>
                 <viewController id="ZRh-ac-cg8" customClass="ITSCalcViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Heg-qj-uIu">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view autoresizesSubviews="NO" contentMode="redraw" id="icA-ej-95m" userLabel="Main Container View">
                                 <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
@@ -238,171 +238,6 @@
                                                     <outletCollection property="gestureRecognizers" destination="LT6-cL-t6t" appends="YES" id="1xB-ty-sPf"/>
                                                 </connections>
                                             </view>
-                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="XvS-CO-Fai" userLabel="Settings BackGtrround Toolbar">
-                                                <rect key="frame" x="-352" y="262" width="1024" height="44"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <items/>
-                                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            </toolbar>
-                                            <view contentMode="redraw" id="UvP-6h-unv" userLabel="Settings View">
-                                                <rect key="frame" x="-352" y="36" width="1024" height="496"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" minimumScaleFactor="0.5" id="qfw-l6-aQs" userLabel="ButtonSwitchName">
-                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="e04-kk-Kbe" userLabel="Switch Button Size">
-                                                        <rect key="frame" x="485" y="26" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isBigSizeButtonSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="wsa-0w-TCt"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="Xnb-w3-eAw" userLabel="SoundSwitchName">
-                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="zY3-F2-Vsw" userLabel="Switch Sound">
-                                                        <rect key="frame" x="485" y="124" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isSoundSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="gCJ-LW-bez"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" minimumFontSize="9" id="l24-ap-jTI" userLabel="ArchiveSwitchName">
-                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="bGb-xU-5Sc" userLabel="Switch History Size">
-                                                        <rect key="frame" x="485" y="222" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="switchIsBigDataBase:" destination="ZRh-ac-cg8" eventType="valueChanged" id="wK5-cs-joe"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="7Uh-AB-sS4" userLabel="iCloudSwitchName">
-                                                        <rect key="frame" x="491" y="238" width="42" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="aDs-Eq-LF9" userLabel="Switch iCloud">
-                                                        <rect key="frame" x="485" y="235" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isiCloudSwitch:" destination="ZRh-ac-cg8" eventType="valueChanged" id="h9u-oE-feR"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <view contentMode="redraw" id="yE3-so-aAt" userLabel="View Small Button">
-                                                        <rect key="frame" x="54" y="24" width="56" height="36"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="redraw" id="jLs-Mj-5cS" userLabel="View Big Button">
-                                                        <rect key="frame" x="202" y="20" width="74" height="44"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="redraw" id="4fx-ib-I80" userLabel="archiveSmallView" customClass="ArchiveSizeView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="MSt-0K-xU6" userLabel="archiveBigView" customClass="ArchiveSizeView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="3Ky-Ah-GYj" userLabel="soundOffView" customClass="SoundView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="T4T-Rc-BEl" userLabel="soundOnView" customClass="SoundView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="RB9-KR-DwU" userLabel="cloudOnViiew" customClass="CloudView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="gSF-cN-pVw" userLabel="cloudOfView" customClass="CloudView">
-                                                        <rect key="frame" x="256" y="124" width="80" height="80"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="bkY-Bc-tBY" customClass="ClearHistoryButton">
-                                                        <rect key="frame" x="20" y="294" width="280" height="32"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal">
-                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="clearHistoryButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="SDq-d4-sEa"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="kzs-tR-9yc" userLabel="change design" customClass="DesignButton">
-                                                        <rect key="frame" x="372" y="232" width="280" height="32"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal">
-                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="clearHistoryButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="i26-gT-8Zo"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="1Lb-2c-SkK">
-                                                        <rect key="frame" x="20" y="347" width="280" height="30"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal" title="set keyboard default">
-                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="defaultKeyboardbuttonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="R16-bP-d1u"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="tAP-KV-0w0">
-                                                        <rect key="frame" x="372" y="233" width="280" height="30"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal" title="buy additions">
-                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="buyAdditionsButtonTapped:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="Gs1-eg-H3E"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            </view>
                                             <view contentMode="scaleToFill" id="a8n-VM-Sxh" customClass="HistoryTableSviper">
                                                 <rect key="frame" x="130" y="239" width="60" height="90"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -433,86 +268,16 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
-                            <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="ukj-4N-jsK" userLabel="Notice View">
-                                <rect key="frame" x="-1280" y="-42" width="1280" height="1280"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" id="z2E-fu-k2u" userLabel="ViewToPDF" customClass="ShowedView">
-                                        <rect key="frame" x="42" y="166" width="568" height="320"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <gestureRecognizers/>
-                                    </view>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="HZt-EU-Qjn" userLabel="Button_Red">
-                                        <rect key="frame" x="60" y="256" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <state key="normal" image="redPanUnselected2.png"/>
-                                        <connections>
-                                            <action selector="tapRedPanButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="he3-Zp-LHS"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="fIb-WZ-yUS" userLabel="Button_BackToCalc" customClass="CalcButton">
-                                        <rect key="frame" x="610" y="610" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="tappedBackToCalcButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="KyQ-RY-tJu"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Hoj-F3-CZb" userLabel="Button_Share" customClass="ShareButton">
-                                        <rect key="frame" x="60" y="176" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="tapeShareButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="NUZ-Yu-iwj"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="pNA-d7-7ay" userLabel="Button_Clear" customClass="CleanButton">
-                                        <rect key="frame" x="60" y="416" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="tapClearButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="xuZ-1O-Ku2"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KFC-Oe-UII" userLabel="Button_Blue">
-                                        <rect key="frame" x="60" y="336" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <state key="normal" image="bluePanSelected2.png"/>
-                                        <connections>
-                                            <action selector="tabBluePanButton:" destination="ZRh-ac-cg8" eventType="touchUpInside" id="ahV-sj-crG"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="iPad"/>
                     <connections>
-                        <outlet property="SettingsView" destination="UvP-6h-unv" id="IGQ-mN-Cku"/>
-                        <outlet property="archiveSwitcherLabel" destination="l24-ap-jTI" id="CDb-qB-lbV"/>
-                        <outlet property="archivesizeBigView" destination="MSt-0K-xU6" id="rpb-5l-Tgd"/>
-                        <outlet property="archsizeViewSmall" destination="4fx-ib-I80" id="e9y-ZN-VuD"/>
-                        <outlet property="backToCalcButton" destination="fIb-WZ-yUS" id="odL-Ls-G1j"/>
                         <outlet property="backgroundToolBar" destination="eTD-n8-gIL" id="Jyk-Ms-677"/>
                         <outlet property="bannerContainerView" destination="kC1-se-Fex" id="YHo-Ar-LTu"/>
-                        <outlet property="bigbuttonView" destination="jLs-Mj-5cS" id="vkL-0y-j7u"/>
-                        <outlet property="bluePanButton" destination="KFC-Oe-UII" id="GMK-0c-tYi"/>
-                        <outlet property="buttonSwitcherLabel" destination="qfw-l6-aQs" id="csl-6l-Og2"/>
                         <outlet property="buttonsCollection" destination="FqA-0F-RxO" id="SeM-IW-jQv"/>
-                        <outlet property="buyAdditionsButton" destination="tAP-KV-0w0" id="HNk-FN-bye"/>
-                        <outlet property="changeDesignButton" destination="kzs-tR-9yc" id="quV-DC-kNW"/>
-                        <outlet property="cleanButton" destination="pNA-d7-7ay" id="MD7-0M-ep2"/>
-                        <outlet property="clearHistoryButton" destination="bkY-Bc-tBY" id="2rX-49-KW9"/>
-                        <outlet property="cloudOffView" destination="gSF-cN-pVw" id="q0R-62-X9I"/>
-                        <outlet property="cloudOnView" destination="RB9-KR-DwU" id="YPv-Ej-E7E"/>
                         <outlet property="collectionViewFlowLayout" destination="EV7-33-AWO" id="r0E-bR-1wt"/>
                         <outlet property="deleteButton" destination="LyF-sn-08m" id="ppm-sg-eh1"/>
                         <outlet property="display" destination="Ng0-pM-QXM" id="ot2-uW-SN9"/>
@@ -522,30 +287,15 @@
                         <outlet property="historyTable" destination="GsC-gp-efy" id="8aT-Ef-f89"/>
                         <outlet property="historyTableSviper" destination="a8n-VM-Sxh" id="2Xm-9B-sYM"/>
                         <outlet property="iAdBanner" destination="d44-Vp-Ufb" id="hFP-Us-Sht"/>
-                        <outlet property="iCloudSwitcherName" destination="7Uh-AB-sS4" id="yxc-Xb-vfI"/>
-                        <outlet property="isBigDataBaseSwitcher" destination="bGb-xU-5Sc" id="GZR-0i-eTl"/>
-                        <outlet property="isBigSizeSwitcher" destination="e04-kk-Kbe" id="iJa-Qe-9BP"/>
-                        <outlet property="isiCloudUseSwitcher" destination="aDs-Eq-LF9" id="DtW-10-wGd"/>
-                        <outlet property="keyboardDefaultButton" destination="1Lb-2c-SkK" id="x2c-yY-g9k"/>
                         <outlet property="longPressRecognizer" destination="wh5-du-vYB" id="xNV-Yg-zUi"/>
                         <outlet property="mainContainerView" destination="icA-ej-95m" id="u51-qu-m7h"/>
                         <outlet property="moveButtonsPanGestureRecognizer" destination="6hN-KF-gg9" id="TSn-IZ-vl0"/>
                         <outlet property="noticeButton" destination="RCC-gr-YIR" id="CFR-B5-lvn"/>
                         <outlet property="noticeRealButton" destination="leV-L2-QBg" id="tsS-06-N4R"/>
                         <outlet property="recountButton" destination="KzA-0T-Kqa" id="Cf0-Kb-rr0"/>
-                        <outlet property="redPanButton" destination="HZt-EU-Qjn" id="hJR-Dh-H2t"/>
-                        <outlet property="settingsBackgroundToolBar" destination="XvS-CO-Fai" id="Ner-9t-13e"/>
                         <outlet property="settingsBottomButtn" destination="40P-9k-c1k" id="mnZ-Ri-ByV"/>
                         <outlet property="settingsButton" destination="f0B-st-hnP" id="Gi1-0z-GU4"/>
-                        <outlet property="shareButton" destination="Hoj-F3-CZb" id="WPN-Qo-84F"/>
-                        <outlet property="smallButtonView" destination="yE3-so-aAt" id="Vq5-r8-mli"/>
-                        <outlet property="soundOff" destination="3Ky-Ah-GYj" id="Ijq-Zu-9BG"/>
-                        <outlet property="soundOn" destination="T4T-Rc-BEl" id="h3k-YJ-BNp"/>
-                        <outlet property="soundSwitcher" destination="zY3-F2-Vsw" id="EqD-bZ-Fqf"/>
-                        <outlet property="soundSwitcherLabel" destination="Xnb-w3-eAw" id="7yL-gS-9ea"/>
-                        <outlet property="testView" destination="ukj-4N-jsK" id="KL5-e8-p30"/>
                         <outlet property="upButton" destination="oNe-PZ-EJw" id="bXv-fC-b6u"/>
-                        <outlet property="viewToPDF" destination="z2E-fu-k2u" id="sW9-Pu-1Uf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QNx-0C-YRO" sceneMemberID="firstResponder"/>
@@ -593,10 +343,6 @@
             <point key="canvasLocation" x="325.86666666666667" y="-57.746666666666663"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="bluePanSelected2.png" width="543" height="543"/>
-        <image name="redPanUnselected2.png" width="543" height="543"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

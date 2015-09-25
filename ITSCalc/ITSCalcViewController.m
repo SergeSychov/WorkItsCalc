@@ -60,6 +60,8 @@
 #import "ClearHistoryButton.h"
 #import "DesignButton.h"
 
+#import "Clr.h"
+
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -337,7 +339,72 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
+-(void) setDesign:(NSInteger)design
+{
+    _design = design;
+    self.display.design = design;
+    switch (_design) {
+        case DESIGN_CLASSIC:
+            self.view.backgroundColor = [UIColor clearColor];
+            self.displayContainer.backgroundColor = [UIColor clearColor];
+            self.backgroundToolBar.alpha = 1;
+            break;
+            
+        case DESIGN_PAPER:
+            self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
+            self.displayContainer.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
+            self.backgroundToolBar.alpha = 1;
+            break;
+        case DESIGN_COLOR_BLUE:
+            self.view.backgroundColor = [Clr blueGround];
+            self.displayContainer.backgroundColor = [Clr blueDisplay];
+            self.backgroundToolBar.alpha = 0.;
+            break;
+        case DESIGN_COLOR_GREEN:
+            self.view.backgroundColor = [Clr greenGround];
+            self.displayContainer.backgroundColor = [Clr greenDisplay];
+            self.backgroundToolBar.alpha = 0;
 
+            break;
+        case DESIGN_COLOR_YELOW:
+            self.view.backgroundColor = [Clr yellowGround];
+            self.displayContainer.backgroundColor = [Clr yellowDisplay];
+            self.backgroundToolBar.alpha = 0;
+
+            break;
+        case DESIGN_COLOR_PINK:
+            self.view.backgroundColor = [Clr pinkGround];
+            self.displayContainer.backgroundColor = [Clr pinkDisplay];
+            self.backgroundToolBar.alpha = 0;
+
+            break;
+        case DESIGN_COLOR_GRAY:
+            self.view.backgroundColor = [Clr grayGround];
+            self.displayContainer.backgroundColor = [Clr grayDisplay];
+            self.backgroundToolBar.alpha = 0;
+
+            break;
+        case DESIGN_PHOTO:
+            self.view.backgroundColor = [Clr blueGround];
+            self.displayContainer.backgroundColor = [UIColor clearColor];
+            self.backgroundToolBar.alpha = 0;
+
+            break;
+        default:
+            self.view.backgroundColor = [UIColor clearColor];
+            self.displayContainer.backgroundColor = [UIColor clearColor];
+            self.backgroundToolBar.alpha = 1;
+
+            break;
+    }
+    //if(self.buttonManagedObjectContext){
+   //     [self setUpMainButtonsStartWithPosition];
+   //     [self makeTwoArrays];
+    [self.historyTable reloadData];
+    [self.buttonsCollection reloadData];
+   // }
+    //[self.buttonsCollection reloadData];
+}
 
 #pragma mark TEXT ATTRIBUTES
 //attributes for history table
@@ -2717,9 +2784,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Button" forIndexPath:indexPath];
     ((NewButtonsCollectionViewCell *)cell).delegate = (ButtonsCollectionView*)collectionView;
     ((NewButtonsCollectionViewCell *)cell).isIpadPortraitView = self.willBePortraitRotated;
+    [((NewButtonsCollectionViewCell *)cell)removeFromSuperview];
+    [collectionView insertSubview:((NewButtonsCollectionViewCell *)cell) atIndex:indexPath.item];
     
     if([cell isKindOfClass:[NewButtonsCollectionViewCell class]]){
         NSInteger item = indexPath.item;
+        ((NewButtonsCollectionViewCell*)cell).design = self.design;
         if(self.isButtonsCollectionUnderChanging){
             ButtonObject *button = [self.allButtonObj objectAtIndex:item];
             
@@ -2745,7 +2815,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         } else {
             NSString* nameFromModel = [self.workButtonsNames objectAtIndex:item];
-
+            ((NewButtonsCollectionViewCell*)cell).design = self.design;
             
             if([nameFromModel isEqualToString:@"."]){
                 ((NewButtonsCollectionViewCell *)cell).name = [self point];
@@ -2834,7 +2904,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             insets.top = 119;
   
         }
-    insets.right = 11;
+        insets.right = 11;
         insets.left = 11;
         
     } else {
@@ -3134,6 +3204,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         
         ((HistroryTableViewCell*)cell).delegate = self;
+        ((HistroryTableViewCell*)cell).design = self.design;
         
         if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
             ((HistroryTableViewCell*)cell).isCanDrag = NO;
@@ -3246,15 +3317,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 #pragma mark - HistoryCellDelegate Methods
 
-- (IBAction)historyTableLeftSwipeGesturerecognizer:(UISwipeGestureRecognizer *)sender
+- (IBAction)historyTableLeftSwipeGesturerecognizer:(UIPanGestureRecognizer *)sender
 {
     CGPoint tapLocation = [sender locationInView:self.historyTable];
+
     NSIndexPath *indexPath = [self.historyTable indexPathForRowAtPoint:tapLocation];
     if(indexPath){
         if([[self.historyTable  cellForRowAtIndexPath:indexPath] isKindOfClass:[HistroryTableViewCell class]]){
             if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
                 HistroryTableViewCell *tableCell = (HistroryTableViewCell*)[self.historyTable cellForRowAtIndexPath:indexPath];
-                [tableCell showButtons];
+                [tableCell showButtons:sender];
             }
             [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
         }
@@ -3264,7 +3336,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 - (IBAction)historyTableRightSwipeGestureRecognizer:(UISwipeGestureRecognizer *)sender
 {
-    
+
     CGPoint tapLocation = [sender locationInView:self.historyTable];
     NSIndexPath *indexPath = [self.historyTable indexPathForRowAtPoint:tapLocation];
     if(indexPath && ([[self.historyTable  cellForRowAtIndexPath:indexPath] isKindOfClass:[HistroryTableViewCell class]])){
@@ -4407,6 +4479,23 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //set pan gesture delegate
     self.moveButtonsPanGestureRecognizer.delegate = self;
     self.isThreadInWork = NO;
+    
+    //USER DEFAULT
+    id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
+    if(userDefault && [self extractFromUserDefault:userDefault]){
+        
+    } else {
+        self.isBigDataBase = NO;
+        self.isBigSizeButtons = YES;
+        self.isSoundOn = YES;
+        self.design = DESIGN_CLASSIC;
+        self.lastShowAllertViewDate = [NSDate date];
+        self.counterForShowingAllertView = 26;
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    }
+
+    
     //key value iCloudStorage
     if([self extractKeyValuesFromStorage]){
         [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
@@ -4435,20 +4524,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     
     
-    //USER DEFAULT
-    id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
-    if(userDefault && [self extractFromUserDefault:userDefault]){
-
-    } else {
-        self.isBigDataBase = NO;
-        self.isBigSizeButtons = YES;
-        self.isSoundOn = YES;
-        self.design = DESIGN_CLASSIC;
-        self.lastShowAllertViewDate = [NSDate date];
-        self.counterForShowingAllertView = 26;
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
-    }
     
     self.historyTable.allowsMultipleSelectionDuringEditing = NO;
     self.historyTable.allowsMultipleSelection = NO;
@@ -4546,6 +4621,38 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //set other cursor color
     //transition to third controller
     self.callShowController = NO;
+    /*
+    //set design view
+    switch (self.design) {
+        case DESIGN_CLASSIC:
+            self.view.backgroundColor = [UIColor clearColor];
+            break;
+        case DESIGN_COLOR_BLUE:
+            self.view.backgroundColor = [Clr blue];
+            break;
+        case DESIGN_COLOR_GREEN:
+            self.view.backgroundColor = [Clr green];
+            break;
+        case DESIGN_COLOR_YELOW:
+            self.view.backgroundColor = [Clr yellow];
+            break;
+        case DESIGN_COLOR_PINK:
+            self.view.backgroundColor = [Clr pink];
+            break;
+        case DESIGN_COLOR_GRAY:
+            self.view.backgroundColor = [Clr gray];
+            break;
+        case DESIGN_PAPER:
+            self.view.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1];
+            break;
+        case DESIGN_PHOTO:
+            self.view.backgroundColor = [Clr blue];
+            break;
+        default:
+            self.view.backgroundColor = [UIColor clearColor];
+            break;
+    }
+    */
 }
 
 

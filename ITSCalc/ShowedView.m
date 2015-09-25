@@ -200,7 +200,7 @@
 
 -(void) setup
 {
-    self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]];
+    self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];//@"handmadepaper.png"
     self.isBluePanOrRed = YES;
     
     BezierInterpView *paintedView = [[BezierInterpView alloc] init];

@@ -7,6 +7,7 @@
 //
 
 #import "designButtonView.h"
+#import "Clr.h"
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
@@ -49,7 +50,7 @@
     switch (self.design) {
         case DESIGN_CLASSIC:
             self.title = @"классический";
-            self.borderColor = [UIColor colorWithRed:0.69 green:0.69 blue:0.55 alpha:1];
+            self.borderColor = [Clr digitsButton];
             self.bodyColor = [UIColor clearColor];
 
             self.titleColor = [UIColor whiteColor];
@@ -81,7 +82,7 @@
         case DESIGN_COLOR_BLUE:
             self.title = @"цветной";
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithRed:0.58 green:0.812 blue:0.922 alpha:.6];
+            self.bodyColor = [Clr blueButton];
             self.titleColor = [UIColor whiteColor];
             
             //self.titleFont = [UIFont systemFontOfSize:20];
@@ -96,7 +97,7 @@
         case DESIGN_COLOR_GREEN:
             self.title = @"цветной";
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor clearColor];
+            self.bodyColor = [Clr greenButton];
             self.titleColor = [UIColor whiteColor];
             
             //self.titleFont = [UIFont systemFontOfSize:20];
@@ -111,7 +112,7 @@
         case DESIGN_COLOR_YELOW:
             self.title = @"цветной";
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor clearColor];
+            self.bodyColor = [Clr yellowButton];
             self.titleColor = [UIColor whiteColor];
             
             //self.titleFont = [UIFont systemFontOfSize:20];
@@ -126,7 +127,7 @@
         case DESIGN_COLOR_PINK:
             self.title = @"цветной";
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor clearColor];
+            self.bodyColor =[Clr pinkButton];
             self.titleColor = [UIColor whiteColor];
             
             //self.titleFont = [UIFont systemFontOfSize:20];
@@ -141,7 +142,7 @@
         case DESIGN_COLOR_GRAY:
             self.title = @"цветной";
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor clearColor];
+            self.bodyColor = [Clr grayButton];
             self.titleColor = [UIColor whiteColor];
             
             //self.titleFont = [UIFont systemFontOfSize:20];

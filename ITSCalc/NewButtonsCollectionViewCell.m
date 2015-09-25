@@ -16,7 +16,15 @@
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
 
-
+//define design numbers
+#define DESIGN_CLASSIC 1
+#define DESIGN_PAPER 2
+#define DESIGN_COLOR_BLUE 30
+#define DESIGN_COLOR_GREEN 31
+#define DESIGN_COLOR_PINK 32
+#define DESIGN_COLOR_YELOW 33
+#define DESIGN_COLOR_GRAY 34
+#define DESIGN_PHOTO 4
 
 @interface NewButtonsCollectionViewCell() 
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
@@ -27,7 +35,27 @@
 
 @implementation NewButtonsCollectionViewCell
 
-
+-(void)setDesign:(NSInteger)design
+{
+    _design = design;
+    self.cellSubView.design = design;
+}
+/*
+-(NSInteger)design {
+    if((self.design != DESIGN_CLASSIC) &&
+       (self.design != DESIGN_PAPER)&&
+       (self.design != DESIGN_COLOR_BLUE) &&
+       (self.design != DESIGN_COLOR_GREEN) &&
+       (self.design != DESIGN_COLOR_PINK) &&
+       (self.design != DESIGN_COLOR_YELOW) &&
+       (self.design != DESIGN_COLOR_GRAY) &&
+       (self.design != DESIGN_PHOTO )){
+        _design = DESIGN_CLASSIC;
+    }
+    
+    return _design;
+}
+*/
 -(void) setName:(NSString *)name
 {
     
@@ -78,6 +106,9 @@
         //[UIView animateWithDuration:0.03 animations:^{
         //    self.cellSubView.frame = [self getRect];
         //}];
+        if(self.design == DESIGN_PAPER){
+            [self.cellSubView fillButton:YES];
+        } else {
         [UIView animateWithDuration:0.15
                               delay:0
              usingSpringWithDamping:0.5
@@ -87,6 +118,7 @@
                              //self.cellSubView.frame = [self getRect];
                              [self setFrame:[self getRect]];
                          } completion:nil];
+        }
         self.cellSubView.isTaped = YES;
     } else {
         
@@ -104,6 +136,9 @@
         //[UIView animateWithDuration:0.03 animations:^{
           //  self.cellSubView.frame = self.rectArchive;
        // }];
+        if(self.design == DESIGN_PAPER){
+            [self.cellSubView fillButton:NO];
+        } else {
         [UIView animateWithDuration:0.15
                               delay:0
              usingSpringWithDamping:.5
@@ -113,7 +148,7 @@
                             // self.cellSubView.frame = self.rectArchive;
                              self.frame = self.rectArchive;
                          } completion:nil];
-        
+        }
         self.cellSubView.isTaped = NO;
     } else {
        // self.cellSubView.frame = self.rectArchive;
@@ -296,6 +331,7 @@
 
 -(void) setup
 {
+    self.clipsToBounds = NO;
     if(IS_IPAD){
         self.incr = 1.8;
     } else {
@@ -305,6 +341,7 @@
     self.isEnable = YES;
     self.isAllovedToDelete = self.isEnable; //to set alloved to delete according quantity of buttons in view
     [self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
+    
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -326,8 +363,8 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-    [self.cellSubView setFrame:CGRectMake(0, 0, rect.size.width -4, rect.size.height - 4)];
-
+   // [self.cellSubView setFrame:CGRectMake(0, 0, rect.size.width -4, rect.size.height - 4)];
+    [self.cellSubView setFrame:rect];
     CGFloat closeCheckWidth;
     if(IS_IPAD) {
         closeCheckWidth = 36.;

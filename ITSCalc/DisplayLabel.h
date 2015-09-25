@@ -15,6 +15,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *decRadLabel;
 @property (strong, nonatomic) IBOutlet UILabel *firstMemoryLabel;
 @property (strong, nonatomic) IBOutlet UILabel *secondMemoryLabel;
+@property (nonatomic) NSInteger design;
 
 
 -(void) showString:(NSString*) str;

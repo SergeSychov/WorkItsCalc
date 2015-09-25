@@ -218,7 +218,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
     //setup container view (not cView its important
     UIView *testView = [[UIView alloc] init];
-    [testView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"handmadepaper.png"]]];
+    [testView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]]];
     [self.cView addSubview:testView];
     self.testView = testView;
     

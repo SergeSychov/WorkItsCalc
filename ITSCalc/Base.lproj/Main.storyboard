@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14E17e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="15A279b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
         <!--Calc View Controller-->
@@ -23,6 +23,7 @@
                                             <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" rowHeight="1" sectionHeaderHeight="1" sectionFooterHeight="1" id="wUU-dX-Cqj" customClass="HistoryTableView">
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="136"/>
                                                 <autoresizingMask key="autoresizingMask"/>
+                                                <animations/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                 <gestureRecognizers/>
@@ -34,8 +35,10 @@
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="redraw" tableViewCell="VPs-NO-5Hk" id="jPq-8U-biE">
                                                             <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
                                                             <autoresizingMask key="autoresizingMask"/>
+                                                            <animations/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         </tableViewCellContentView>
+                                                        <animations/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <gestureRecognizers/>
                                                     </tableViewCell>
@@ -51,6 +54,7 @@
                                             <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="redraw" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="FK6-Yi-iBk" customClass="ButtonsCollectionView">
                                                 <rect key="frame" x="0.0" y="136" width="320" height="432"/>
                                                 <autoresizingMask key="autoresizingMask"/>
+                                                <animations/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <gestureRecognizers/>
                                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="4" minimumInteritemSpacing="4" id="Tol-Ey-l6y">
@@ -70,11 +74,13 @@
                                                                 <view contentMode="redraw" id="Buc-rr-hv0" customClass="newButtonView">
                                                                     <rect key="frame" x="0.0" y="0.0" width="56" height="36"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <animations/>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                 </view>
                                                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8i1-p6-K4I" customClass="CloseSetButton">
                                                                     <rect key="frame" x="36" y="-9" width="28" height="28"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                                    <animations/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                     <state key="normal">
                                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -84,8 +90,10 @@
                                                                     </connections>
                                                                 </button>
                                                             </subviews>
+                                                            <animations/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         </view>
+                                                        <animations/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <connections>
@@ -105,6 +113,7 @@
                                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="yu0-nU-wxg">
                                                 <rect key="frame" x="0.0" y="136" width="320" height="44"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                                <animations/>
                                                 <items/>
                                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </toolbar>
@@ -115,6 +124,7 @@
                                                     <label opaque="NO" clipsSubviews="YES" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="none" adjustsFontSizeToFit="NO" id="Pyr-VE-ATA" customClass="DisplayLabel">
                                                         <rect key="frame" x="0.0" y="0.0" width="320" height="72"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <animations/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <attributedString key="attributedText">
                                                             <fragment content="44448888.888">
@@ -131,6 +141,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="50a-i4-Tew" userLabel="settingBottomButton" customClass="SettingButton">
                                                         <rect key="frame" x="10" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <connections>
                                                             <action selector="tapSettingsBotomButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="VQT-sn-buM"/>
@@ -139,6 +150,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="X3S-Ye-W5h" userLabel="noticeButton" customClass="ShareButton">
                                                         <rect key="frame" x="70" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -150,6 +162,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="tfA-Ug-Kr6" userLabel="recountButton" customClass="recBut">
                                                         <rect key="frame" x="190" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -161,6 +174,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="Xlh-66-Cnf" userLabel="upButton">
                                                         <rect key="frame" x="130" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -172,6 +186,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="jkW-IC-7lR" userLabel="deleteButton" customClass="DelButton">
                                                         <rect key="frame" x="250" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -183,6 +198,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="n9w-vx-hp3" userLabel="settingsButton" customClass="SettingButton">
                                                         <rect key="frame" x="67" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -194,6 +210,7 @@
                                                     <button hidden="YES" opaque="NO" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="ASd-ct-WtW" userLabel="downButton" customClass="DownButton">
                                                         <rect key="frame" x="193" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask"/>
+                                                        <animations/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
                                                         <state key="normal">
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -203,154 +220,17 @@
                                                         </connections>
                                                     </button>
                                                 </subviews>
+                                                <animations/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <gestureRecognizers/>
                                                 <connections>
                                                     <outletCollection property="gestureRecognizers" destination="YQX-wv-lBu" appends="YES" id="thR-aq-yyf"/>
                                                 </connections>
                                             </view>
-                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="hNS-JY-dNE" userLabel="Settings BackGtrround Toolbar">
-                                                <rect key="frame" x="0.0" y="262" width="320" height="44"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <items/>
-                                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            </toolbar>
-                                            <view contentMode="scaleToFill" id="iT4-7U-kLA" userLabel="Settings View">
-                                                <rect key="frame" x="0.0" y="36" width="320" height="496"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                                                <subviews>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Yev-bU-GnB" userLabel="Switch Button Size">
-                                                        <rect key="frame" x="135" y="26" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isBigSizeButtonSwitch:" destination="vXZ-lx-hvc" eventType="valueChanged" id="kd2-6Q-weO"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="PvG-RB-STI" userLabel="Switch Sound">
-                                                        <rect key="frame" x="135" y="124" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isSoundSwitch:" destination="vXZ-lx-hvc" eventType="valueChanged" id="0nn-Zb-9LW"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="UlK-qP-iXs" userLabel="Switch History Size">
-                                                        <rect key="frame" x="135" y="222" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="switchIsBigDataBase:" destination="vXZ-lx-hvc" eventType="valueChanged" id="HAd-vV-i3v"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="wTH-Cq-0sR" userLabel="Switch iCloud">
-                                                        <rect key="frame" x="134" y="243" width="51" height="31"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                                                        <connections>
-                                                            <action selector="isiCloudSwitch:" destination="vXZ-lx-hvc" eventType="valueChanged" id="FfG-il-TIG"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <view contentMode="scaleToFill" id="YSk-gX-qsX" userLabel="View Small Button">
-                                                        <rect key="frame" x="54" y="24" width="56" height="36"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="0DV-Jy-qJq" userLabel="View Big Button">
-                                                        <rect key="frame" x="202" y="20" width="74" height="44"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="oKc-Wb-IzD" userLabel="ArchiveSmall" customClass="ArchiveSizeView">
-                                                        <rect key="frame" x="51" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="wof-eZ-ZDT" userLabel="ArchiveBig" customClass="ArchiveSizeView">
-                                                        <rect key="frame" x="208" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="UI1-Lf-xgL" userLabel="soundOffView" customClass="SoundView">
-                                                        <rect key="frame" x="51" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="uSD-ou-k2g" userLabel="soundOnView" customClass="SoundView">
-                                                        <rect key="frame" x="208" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="JJQ-EG-cvC" userLabel="cloudOnView" customClass="CloudView">
-                                                        <rect key="frame" x="208" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" id="e4O-BO-831" userLabel="cloudOffView" customClass="CloudView">
-                                                        <rect key="frame" x="51" y="124" width="60" height="60"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </view>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="e7K-40-f8d" userLabel="clear history" customClass="ClearHistoryButton">
-                                                        <rect key="frame" x="20" y="294" width="280" height="32"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal">
-                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="clearHistoryButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="kxS-Rt-Ze1"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="Oo3-NG-kbJ" userLabel="change design" customClass="DesignButton">
-                                                        <rect key="frame" x="20" y="232" width="280" height="32"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal">
-                                                            <color key="titleColor" red="0.25098039220000001" green="0.60392156860000001" blue="0.79215686269999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="clearHistoryButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="lTo-UY-Vcw"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="lNl-4p-K7e">
-                                                        <rect key="frame" x="20" y="347" width="280" height="30"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal" title="set keyboard default">
-                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="defaultKeyboardbuttonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="pwG-PR-8hZ"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" id="KBA-bG-aeI">
-                                                        <rect key="frame" x="20" y="233" width="280" height="30"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <state key="normal" title="buy additions">
-                                                            <color key="titleColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="buyAdditionsButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="MqK-DX-rAA"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            </view>
                                             <view contentMode="scaleToFill" id="LsF-jj-Vfx" customClass="HistoryTableSviper">
                                                 <rect key="frame" x="140" y="254" width="40" height="60"/>
                                                 <autoresizingMask key="autoresizingMask"/>
+                                                <animations/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <gestureRecognizers/>
                                                 <connections>
@@ -359,7 +239,12 @@
                                                 </connections>
                                             </view>
                                         </subviews>
+                                        <animations/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="wO0-wh-3jA" appends="YES" id="eOg-6d-QFc"/>
+                                        </connections>
                                     </view>
                                     <view contentMode="scaleToFill" id="eK6-Ew-deE" userLabel="Container Banner">
                                         <rect key="frame" x="0.0" y="-50" width="320" height="50"/>
@@ -368,83 +253,29 @@
                                             <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="dHL-Yn-2aZ">
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                                <animations/>
                                                 <connections>
                                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="Ol2-wu-jCg"/>
                                                 </connections>
                                             </adBannerView>
                                         </subviews>
+                                        <animations/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            </view>
-                            <view contentMode="scaleToFill" id="VgF-vP-IcI" userLabel="Notice View">
-                                <rect key="frame" x="-166" y="-42" width="652" height="652"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" id="X2v-Gx-Z8X" userLabel="ViewToPDF" customClass="ShowedView">
-                                        <rect key="frame" x="42" y="166" width="568" height="320"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <gestureRecognizers/>
-                                    </view>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="0P9-WL-ATL" userLabel="Button_Red">
-                                        <rect key="frame" x="60" y="256" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <state key="normal" image="redPanUnselected2.png"/>
-                                        <connections>
-                                            <action selector="tapRedPanButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="HS7-BT-qbf"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TQy-oq-2Vr" userLabel="Button_Share" customClass="ShareButton">
-                                        <rect key="frame" x="60" y="176" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="tapeShareButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="zEB-cy-G8O"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="fSv-jh-YCR" userLabel="Button_Clear" customClass="CleanButton">
-                                        <rect key="frame" x="60" y="416" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="tapClearButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="DQK-Bi-w1f"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Y2l-pS-JyI" userLabel="Button_Blue">
-                                        <rect key="frame" x="60" y="336" width="60" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
-                                        <state key="normal" image="bluePanSelected2.png"/>
-                                        <connections>
-                                            <action selector="tabBluePanButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="jb2-Zn-qrX"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
+                                <animations/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
-                        <outlet property="SettingsView" destination="iT4-7U-kLA" id="88L-Y4-R3N"/>
-                        <outlet property="archivesizeBigView" destination="wof-eZ-ZDT" id="Wo0-C7-c1o"/>
-                        <outlet property="archsizeViewSmall" destination="oKc-Wb-IzD" id="EET-zt-KqV"/>
                         <outlet property="backgroundToolBar" destination="yu0-nU-wxg" id="meA-dG-njI"/>
                         <outlet property="bannerContainerView" destination="eK6-Ew-deE" id="r8n-OF-XRI"/>
-                        <outlet property="bigbuttonView" destination="0DV-Jy-qJq" id="TuW-OE-Zh7"/>
-                        <outlet property="bluePanButton" destination="Y2l-pS-JyI" id="Nfs-le-rFI"/>
                         <outlet property="buttonsCollection" destination="FK6-Yi-iBk" id="1yH-LO-7Fo"/>
-                        <outlet property="buyAdditionsButton" destination="KBA-bG-aeI" id="01A-Ec-FnI"/>
-                        <outlet property="changeDesignButton" destination="Oo3-NG-kbJ" id="2nX-Cb-GRO"/>
-                        <outlet property="cleanButton" destination="fSv-jh-YCR" id="HYf-lM-QBH"/>
-                        <outlet property="clearHistoryButton" destination="e7K-40-f8d" id="Knr-tY-afy"/>
-                        <outlet property="cloudOffView" destination="e4O-BO-831" id="tqr-Y0-9Ri"/>
-                        <outlet property="cloudOnView" destination="JJQ-EG-cvC" id="S52-cn-QVU"/>
                         <outlet property="collectionViewFlowLayout" destination="Tol-Ey-l6y" id="JP3-cx-p7W"/>
                         <outlet property="deleteButton" destination="jkW-IC-7lR" id="L7S-Lh-JzX"/>
                         <outlet property="display" destination="Pyr-VE-ATA" id="cGZ-kK-Faq"/>
@@ -454,27 +285,14 @@
                         <outlet property="historyTable" destination="wUU-dX-Cqj" id="BhY-Ul-DJ2"/>
                         <outlet property="historyTableSviper" destination="LsF-jj-Vfx" id="ZYc-JV-Dtm"/>
                         <outlet property="iAdBanner" destination="dHL-Yn-2aZ" id="ET7-GU-da8"/>
-                        <outlet property="isBigDataBaseSwitcher" destination="UlK-qP-iXs" id="bHD-Cx-vh2"/>
-                        <outlet property="isBigSizeSwitcher" destination="Yev-bU-GnB" id="0hf-Ck-cpn"/>
-                        <outlet property="isiCloudUseSwitcher" destination="wTH-Cq-0sR" id="dKi-lA-6K3"/>
-                        <outlet property="keyboardDefaultButton" destination="lNl-4p-K7e" id="jMf-md-Seq"/>
                         <outlet property="longPressRecognizer" destination="iQj-4t-yg3" id="OGi-kQ-3x6"/>
                         <outlet property="mainContainerView" destination="2Y9-ja-9gk" id="Wy0-zo-byx"/>
                         <outlet property="moveButtonsPanGestureRecognizer" destination="urn-UF-2ek" id="5iS-f2-ZQ1"/>
                         <outlet property="noticeButton" destination="X3S-Ye-W5h" id="b3F-Zb-J3O"/>
                         <outlet property="recountButton" destination="tfA-Ug-Kr6" id="hI7-k0-Uu2"/>
-                        <outlet property="redPanButton" destination="0P9-WL-ATL" id="rpZ-Nj-yXa"/>
-                        <outlet property="settingsBackgroundToolBar" destination="hNS-JY-dNE" id="vt5-db-EV9"/>
                         <outlet property="settingsBottomButtn" destination="50a-i4-Tew" id="eFA-CZ-lz3"/>
                         <outlet property="settingsButton" destination="n9w-vx-hp3" id="4fa-lo-Gpv"/>
-                        <outlet property="shareButton" destination="TQy-oq-2Vr" id="mkO-d9-srM"/>
-                        <outlet property="smallButtonView" destination="YSk-gX-qsX" id="vvq-mH-840"/>
-                        <outlet property="soundOff" destination="UI1-Lf-xgL" id="Nf7-q6-GI1"/>
-                        <outlet property="soundOn" destination="uSD-ou-k2g" id="lCb-UG-w2L"/>
-                        <outlet property="soundSwitcher" destination="PvG-RB-STI" id="Xsi-qi-8wc"/>
-                        <outlet property="testView" destination="VgF-vP-IcI" id="57e-Hu-ZSi"/>
                         <outlet property="upButton" destination="Xlh-66-Cnf" id="kHh-7x-0d3"/>
-                        <outlet property="viewToPDF" destination="X2v-Gx-Z8X" id="hf4-Da-XL0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -518,13 +336,14 @@
                         <action selector="tapSviper:" destination="vXZ-lx-hvc" id="4fS-gs-hTq"/>
                     </connections>
                 </tapGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="wO0-wh-3jA" userLabel="Drag History Gesture Recognizer">
+                    <connections>
+                        <action selector="historyTableLeftSwipeGesturerecognizer:" destination="vXZ-lx-hvc" id="lo3-3e-wqf"/>
+                    </connections>
+                </panGestureRecognizer>
             </objects>
         </scene>
     </scenes>
-    <resources>
-        <image name="bluePanSelected2.png" width="543" height="543"/>
-        <image name="redPanUnselected2.png" width="543" height="543"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

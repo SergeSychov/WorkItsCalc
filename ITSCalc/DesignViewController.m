@@ -15,6 +15,7 @@
 #import "newButtonView.h"
 #import "PlusButton.h"
 
+
 NSString *const SendChangedNotification=@"SendChangedNotification";
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
@@ -262,12 +263,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //blue
     TestButtonBackGroundView *clolorBlueButton = [[TestButtonBackGroundView alloc]init];
-    //clolorBlueButton.backgroundColor= [UIColor clearColor];
-    //clolorBlueButton.mainviewcolor = [UIColor whiteColor];
-    //clolorBlueButton.coloredColor = [UIColor colorWithRed:0.25 //64
-     //                                               green:0.61 //156
-      //                                               blue:.80 //204
-     //                                               alpha:1.];
+
     clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
     clolorBlueButton.isChoosed = NO;
     [self.cView addSubview:clolorBlueButton];
@@ -275,14 +271,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //pink
     TestButtonBackGroundView *colorPinkButton = [[TestButtonBackGroundView alloc]init];
-    /*
-    colorPinkButton.backgroundColor= [UIColor clearColor];
-    colorPinkButton.mainviewcolor = [UIColor whiteColor];
-    colorPinkButton.coloredColor = [UIColor colorWithRed:1
-                                                   green:0.55
-                                                    blue:.42
-                                                   alpha:1.];
-    */
+
+
     colorPinkButton.designIndex = DESIGN_COLOR_PINK;
     colorPinkButton.isChoosed = NO;
     [self.cView addSubview:colorPinkButton];
@@ -290,14 +280,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //green
     TestButtonBackGroundView *colorGreenButton = [[TestButtonBackGroundView alloc]init];
-    /*
-    colorGreenButton.backgroundColor= [UIColor clearColor];
-    colorGreenButton.mainviewcolor = [UIColor whiteColor];
-    colorGreenButton.coloredColor = [UIColor colorWithRed:0.1
-                                                    green:0.79
-                                                     blue:.42
-                                                    alpha:1.];
-    */
+
+
     colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
     colorGreenButton.isChoosed = NO;
     [self.cView addSubview:colorGreenButton];
@@ -305,14 +289,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //yelow
     TestButtonBackGroundView *colorYelowButton = [[TestButtonBackGroundView alloc]init];
-    /*
-    colorYelowButton.backgroundColor= [UIColor clearColor];
-    colorYelowButton.mainviewcolor = [UIColor whiteColor];
-    colorYelowButton.coloredColor = [UIColor colorWithRed:.97
-                                                    green:0.71
-                                                     blue:.0
-                                                    alpha:1.];
-    */
+
     colorYelowButton.isChoosed = NO;
     colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
     [self.cView addSubview:colorYelowButton];
@@ -320,14 +297,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //black
     TestButtonBackGroundView *colorBlackButton = [[TestButtonBackGroundView alloc]init];
-    /*
-    colorBlackButton.backgroundColor= [UIColor clearColor];
-    colorBlackButton.mainviewcolor = [UIColor whiteColor];
-    colorBlackButton.coloredColor = [UIColor colorWithRed:.2
-                                                    green:0.2
-                                                     blue:.2
-                                                    alpha:1.];
-    */
+
     colorBlackButton.isChoosed = NO;
     colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
     [self.cView addSubview:colorBlackButton];

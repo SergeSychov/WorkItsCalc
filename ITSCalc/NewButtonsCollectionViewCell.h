@@ -19,7 +19,8 @@
 @end
 
 @interface NewButtonsCollectionViewCell : UICollectionViewCell //<SetingCellFrameDelegate>
-//@property (weak, nonatomic) IBOutlet newButton *cellButton;
+
+@property (nonatomic) NSInteger design;
 @property (weak, nonatomic) IBOutlet CloseSetButton *closeAndSetButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
 

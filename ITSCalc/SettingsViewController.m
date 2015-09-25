@@ -474,7 +474,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     newButtonView *smalButtonLook = [[newButtonView alloc] init];
     smalButtonLook.title = @"=";
-    smalButtonLook.buttonColor = clr;
+    smalButtonLook.buttonColor = [UIColor whiteColor];
     [self.smallButtonView addSubview:smalButtonLook];
     self.smalButtonLook = smalButtonLook;
     
@@ -484,7 +484,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     newButtonView *bigButtonLook = [[newButtonView alloc] init];
     bigButtonLook.title = @"=";
-    bigButtonLook.buttonColor = clr;
+    bigButtonLook.buttonColor = [UIColor whiteColor];
     [self.bigbuttonView addSubview:bigButtonLook];
     self.bigButtonLook = bigButtonLook;
     

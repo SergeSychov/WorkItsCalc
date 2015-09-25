@@ -7,10 +7,22 @@
 //
 
 #import "DisplayLabel.h"
+#import "Clr.h"
+
 #define DIGITS_LIMIT 10.
 #define BASE_LINE  0
 #define BUTTON_HEIGHT 60.f
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+
+#define DESIGN_CLASSIC 1
+#define DESIGN_PAPER 2
+#define DESIGN_COLOR_BLUE 30
+#define DESIGN_COLOR_GREEN 31
+#define DESIGN_COLOR_PINK 32
+#define DESIGN_COLOR_YELOW 33
+#define DESIGN_COLOR_GRAY 34
+#define DESIGN_PHOTO 4
+
 
 @interface DisplayLabel()
 
@@ -18,6 +30,42 @@
 @end
 
 @implementation DisplayLabel
+
+-(void) setDesign:(NSInteger)design
+{
+    _design = design;
+    UIColor *textColor;
+    
+    switch (self.design) {
+        case DESIGN_PHOTO:
+            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightBold];
+            textColor = [UIColor whiteColor];
+            break;
+            
+        case DESIGN_CLASSIC:
+            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
+            textColor = [UIColor colorWithWhite:0.95 alpha:1];
+            break;
+            
+        case DESIGN_PAPER:
+            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
+            textColor = [Clr paperButton];
+            break;
+            
+        default:
+            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
+            textColor = [UIColor colorWithWhite:0.95 alpha:1];
+            break;
+            
+    }
+    
+    [self.decRadLabel setTextColor:textColor];
+    [self.firstMemoryLabel setTextColor:textColor];
+    [self.secondMemoryLabel  setTextColor:textColor];
+    
+    [self showString:self.attributedText.string];
+    
+}
 
 -(void) showString:(NSString *)str
 {
@@ -60,86 +108,70 @@
             }
         }
     }
+    //set textcolor aacroding design
+    UIColor *textColor;
+    switch (self.design) {
+        case DESIGN_PAPER:
+            textColor = [Clr paperButton];
+            [mutAttrString addAttribute:NSForegroundColorAttributeName
+                                  value:textColor
+                                  range:NSMakeRange(0, mutAttrString.length)];
+            [mutAttrString addAttribute:NSTextEffectAttributeName
+                                  value:NSTextEffectLetterpressStyle
+                                  range:NSMakeRange(0, mutAttrString.length)];
+
+            
+            break;
+            
+        default:
+            break;
+    }
     
-    self.attributedText = mutAttrString;
+    self.attributedText = [mutAttrString copy];
 }
 -(void) setup
 {
     UIFont *font; //if there is no needed font
     CGFloat size;
-    if(IS_IPAD){
-        size = 93;
-    } else {
-        size = 50;
-    }
-    
-    NSString *fontName = nil;
-    NSString *fondBoldName = nil;
-    
-    NSArray *famalyNames  =[UIFont familyNames];
-    if([famalyNames containsObject:@"Helvetica Neue"]){
-        NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
-        if([fontNames containsObject:@"HelveticaNeue-Thin"]){
-            fontName = @"HelveticaNeue-Thin";
-        }
-        if([fontNames containsObject:@"HelveticaNeue-Light"]){
-            fondBoldName = @"HelveticaNeue-Light" ;
-        }
-    }
-    
-    UIFont *system = [UIFont systemFontOfSize:size];
-    // NSLog(@"Font sys: %@", system);
-    if([system.fontName isEqualToString:@".HelveticaNeueInterface-Regular"]){
-        if(fontName){
-            font = [UIFont fontWithName:fontName size:size];
-        }else {
-            font =[UIFont systemFontOfSize:size];
-        }
-    } else if ([system.fontName isEqualToString:@".HelveticaNeueInterface-MediumP4"]){
-        if(fondBoldName){
-            font = [UIFont fontWithName:fondBoldName size:size];
-        }else {
-            font =[UIFont systemFontOfSize:size];
-        }
-        
-    } else {
-        font =[UIFont systemFontOfSize:size];
-    }
-    
-    self.font = font;
     
     UILabel *decRadLabel;
     UILabel *firstMemoryLabel;
     UILabel *secondMemoryLabel;
+    UIColor *textColor;
     
     if(IS_IPAD){
+        size = 93;
         font = [UIFont systemFontOfSize:19.];
         decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 0, 48,22)];
         firstMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(72, 0, 27,22)];
         secondMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(117, 0, 27,22)];
     } else {
+        size = 50;
         font = [UIFont systemFontOfSize:13.];
         decRadLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 32,15)];
         firstMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(48, 0, 18,15)];
         secondMemoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(78, 0, 18,15)];
     }
     
+
     
+    self.font = [UIFont systemFontOfSize:size weight:UIFontWeightLight ];
     
+    textColor = [UIColor whiteColor];
     
-    [decRadLabel setTextColor:[UIColor whiteColor]];
+    [decRadLabel setTextColor:textColor];
     [decRadLabel setFont:font];
     [self addSubview:decRadLabel];
     self.decRadLabel = decRadLabel;
     
     
-    [firstMemoryLabel setTextColor:[UIColor whiteColor]];
+    [firstMemoryLabel setTextColor:textColor];
     [firstMemoryLabel setFont:font];
     [self addSubview:firstMemoryLabel];
     self.firstMemoryLabel = firstMemoryLabel;
     
     
-    [secondMemoryLabel setTextColor:[UIColor whiteColor]];
+    [secondMemoryLabel setTextColor:textColor];
     [secondMemoryLabel setFont:font];
     [self addSubview:secondMemoryLabel];
     self.secondMemoryLabel = secondMemoryLabel;

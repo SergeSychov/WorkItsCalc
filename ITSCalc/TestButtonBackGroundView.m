@@ -10,6 +10,9 @@
 #import "MarkView.h"
 #import "RoundViewForDesignChooseButton.h"
 
+//for colors
+#import "Clr.h"
+
 #define INDENT 20.
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
@@ -27,6 +30,7 @@
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 @interface TestButtonBackGroundView()
+
 
 @property (nonatomic,strong) CALayer *buttonLayer;
 @property (nonatomic) CGFloat boardWidht;
@@ -122,7 +126,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     _designIndex = designIndex;
     switch (self.designIndex) {
         case DESIGN_CLASSIC:
-            self.borderColor = [UIColor colorWithRed:0.69 green:0.69 blue:0.55 alpha:1];
+            self.borderColor = [Clr digitsButton];
             self.bodyColor = [UIColor clearColor];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = YES;
@@ -149,7 +153,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         case DESIGN_COLOR_BLUE:
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithRed:0.58 green:0.812 blue:0.922 alpha:1];
+            self.bodyColor = [Clr blueButton];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = NO;
             self.borderVsRadius = 12.2;
@@ -162,7 +166,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         case DESIGN_COLOR_GREEN:
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithRed:.404 green:0.875 blue:0.624 alpha:1];
+            self.bodyColor = [Clr greenButton];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = NO;
             self.borderVsRadius = 12.2;
@@ -175,7 +179,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         case DESIGN_COLOR_YELOW:
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithRed:1. green:0.788 blue:0.212 alpha:1];
+            self.bodyColor = [Clr yellowButton];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = NO;
             self.borderVsRadius = 12.2;
@@ -188,7 +192,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         case DESIGN_COLOR_PINK:
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithRed:1. green:0.663 blue:0.565 alpha:1];
+            self.bodyColor = [Clr pinkButton];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = NO;
             self.borderVsRadius = 12.2;
@@ -201,7 +205,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         case DESIGN_COLOR_GRAY:
             self.borderColor = [UIColor clearColor];
-            self.bodyColor = [UIColor colorWithWhite:0.3 alpha:1];
+            self.bodyColor = [Clr grayButton];
             self.titleColor = [UIColor whiteColor];
             self.titleShadow = NO;
             self.borderVsRadius = 12.2;

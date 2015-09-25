@@ -8,22 +8,34 @@
 
 #import "newButtonView.h"
 #import "cmyk.h"
+#import "Clr.h"
 
 #define X_OFFSET = 2.0f
 #define Y_OFFSET = 2.0f
 #define ANGLE_OFFSET = (M_PI_4*0.1f)
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define IS_NEW_DESIGN NO
+
+#define DESIGN_CLASSIC 1
+#define DESIGN_PAPER 2
+#define DESIGN_COLOR_BLUE 30
+#define DESIGN_COLOR_GREEN 31
+#define DESIGN_COLOR_PINK 32
+#define DESIGN_COLOR_YELOW 33
+#define DESIGN_COLOR_GRAY 34
+#define DESIGN_PHOTO 4
 
 @interface newButtonView()
 //@property (nonatomic, strong) UILabel *labelView;
 @property (nonatomic,strong) NSArray *symbolsToMakeBigger;// = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=", nil];//, @"-"
 @property (nonatomic,strong)NSArray *pointsToMakeBigger; //= [NSArray arrayWithObjects: @".", @",", nil];
 @property (nonatomic) BOOL isOnsuperView;
+@property (nonatomic,weak) UIView *paperFillView;
 //@property (nonatomic) UIFont* font;
 @end
 
 @implementation newButtonView
+
+
 -(void) didMoveToSuperview{
     [super didMoveToSuperview];
     self.isOnsuperView = YES;
@@ -38,7 +50,7 @@
     return _attrbutedTitle;
 }
 
--(void) setButtonColor:(struct Color)buttonColor{
+-(void) setButtonColor:(UIColor*)buttonColor{
     _buttonColor = buttonColor;
 }
 
@@ -47,11 +59,15 @@
     //[self setNeedsDisplay];
 }
 
-
+-(void) setDesign:(NSInteger)design
+{
+    _design = design;
+    [self setNeedsDisplay];
+}
 -(void) setup
 {
     self.backgroundColor = [UIColor clearColor];
-    self.radiusCorner = self.frame.size.width / 4;
+    self.radiusCorner = (self.frame.size.width - 4)/ 4;
     //set color for border of view
     /*
     struct Color cmyk;
@@ -65,7 +81,7 @@
     self.isOnsuperView = NO;
     self.symbolsToMakeBigger = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=",@"-"/*,@"∓"*/, nil];//, @"-"
     self.pointsToMakeBigger = [NSArray arrayWithObjects: @".", @",", nil];
-    self.clipsToBounds = NO;
+    //self.clipsToBounds = NO;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -90,35 +106,162 @@
             NSArray *digits = [NSArray arrayWithObjects:@"1", @"2", @"3",@"4", @"5",@"6",@"7",@"8", @"9", @"0",@".", nil];
             NSArray *clear = [NSArray arrayWithObjects:@"C",nil];
             NSArray *equal = [NSArray arrayWithObjects:@"=",nil];
-            
-            struct Color clr;
-            
+    
+    switch (self.design) {
+        case DESIGN_PHOTO:
+
+            self.buttonColor = [UIColor colorWithWhite:0.95 alpha:1];
+            break;
+        case DESIGN_CLASSIC:
             if([digits containsObject:title]){
-                clr.r = 0.69;
-                clr.g = 0.69;
-                clr.b = 0.55;
-                clr.a = 1.;
-                self.buttonColor = clr;
+
+                self.buttonColor = [Clr digitsButton];
             }else if ([clear containsObject:title]){
-                clr.r = 1.0;
-                clr.g = 0.72;
-                clr.b = 0.25;
-                clr.a = 1.0;
-                self.buttonColor = clr;
+
+                self.buttonColor = [Clr cButton];
             }else if([equal containsObject:title]){
-                clr.r = 0.26;//0.26;
-                clr.g = 0.57;//0.57;
-                clr.b = 0.70;//0.70;
-                clr.a = 1.0;
-                self.buttonColor = clr;
+
+                self.buttonColor = [Clr equalButton];
             } else {
-                clr.r = 0.51;
-                clr.g = 0.52;
-                clr.b = 0.49;
-                clr.a = 1.0;
-                self.buttonColor = clr;
+
+                self.buttonColor = [Clr button];
             }
-            //self.cellButton.title = name;
+            break;
+        
+        case DESIGN_PAPER:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr paperDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr paperC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr paperEqual];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr paperButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }
+            break;
+        
+        case DESIGN_COLOR_BLUE:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr blueDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr blueC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr blueC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr blueButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }
+            break;
+            
+        case DESIGN_COLOR_GREEN:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr greenDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr greenC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr greenC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr greenButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }            break;
+            
+        case DESIGN_COLOR_YELOW:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr yellowDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr yellowC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr yellowC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr yellowButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }            break;
+            
+        case DESIGN_COLOR_PINK:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr pinkDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr pinkC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr pinkC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr pinkButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }
+            break;
+        case DESIGN_COLOR_GRAY:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr grayDigits];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr grayC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr grayC];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            } else {
+                
+                self.buttonColor = [Clr grayButton];
+                //self.buttonColor = [self.buttonColor colorWithAlphaComponent:0.8];
+            }            break;
+
+            
+        default:
+            if([digits containsObject:title]){
+                
+                self.buttonColor = [Clr digitsButton];
+            }else if ([clear containsObject:title]){
+                
+                self.buttonColor = [Clr cButton];
+            }else if([equal containsObject:title]){
+                
+                self.buttonColor = [Clr equalButton];
+            } else {
+                
+                self.buttonColor = [Clr button];
+            }
+            break;
+    }
+
 }
 
 -(void)setTitle:(NSString *)title
@@ -128,13 +271,35 @@
         if(![_title isEqualToString:title]){
             [self setButtonColorAccordingTitle:title];
             _title = title;
-            UIColor *textColor = [UIColor colorWithWhite:0.95 alpha:1]; //color of text
-            /*
-            UIColor *textColor = [UIColor colorWithRed:self.buttonColor.r
-                                                 green:self.buttonColor.g
-                                                  blue:self.buttonColor.b
-                                                 alpha:self.buttonColor.a]; //color of text
-             */
+            UIColor *textColor; //color of text
+            switch (self.design) {
+                case DESIGN_CLASSIC:
+                    textColor = [UIColor colorWithWhite:0.95 alpha:1];
+                    break;
+                case DESIGN_PAPER:
+                    textColor = self.buttonColor;
+                    break;
+
+                case DESIGN_COLOR_BLUE:
+                    textColor =  [UIColor colorWithWhite:1. alpha:1];
+                    break;
+                case DESIGN_COLOR_GREEN:
+                    textColor =  [UIColor colorWithWhite:1. alpha:1];
+                    break;
+                case DESIGN_COLOR_YELOW:
+                    textColor =  [UIColor colorWithWhite:1. alpha:1];
+                    break;
+                case DESIGN_COLOR_PINK:
+                    textColor =  [UIColor colorWithWhite:1. alpha:1];
+                    break;
+                case DESIGN_COLOR_GRAY:
+                    textColor =  [UIColor colorWithWhite:1. alpha:1];
+                    break;
+
+                default:
+                    textColor = [UIColor colorWithWhite:1. alpha:1];
+                    break;
+            }
 
             CGPoint titleCenter;
             titleCenter.x = self.bounds.size.width/2;
@@ -158,6 +323,7 @@
                                                     initWithString:title
                                                     attributes:@{
                                                                  NSStrokeColorAttributeName: textColor,
+                                                                // NSShadowAttributeName: shadow,
                                                                  NSForegroundColorAttributeName:  textColor,
                                                                  NSParagraphStyleAttributeName: style,
                                                                  NSBaselineOffsetAttributeName: baselineOffset,
@@ -205,40 +371,39 @@
 -(UIFont*) setFontWithSize:(CGFloat) size
 {
     UIFont *font; //if there is no needed font
-    
-    NSString *fontName = nil;
-    NSString *fondBoldName = nil;
-    
-    NSArray *famalyNames  =[UIFont familyNames];
-    if([famalyNames containsObject:@"Helvetica Neue"]){
-        NSArray *fontNames = [UIFont fontNamesForFamilyName:@"Helvetica Neue"];
-       //NSLog(@"Names: %@", fontNames);
-        if([fontNames containsObject:@"HelveticaNeue-Thin"]){
-            fontName = @"HelveticaNeue-Thin";
-        }
-        if([fontNames containsObject:@"HelveticaNeue-Light"]){
-            fondBoldName = @"HelveticaNeue-Light";
-        }
+    switch (self.design) {
+        case DESIGN_PHOTO:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightBold];
+            break;
+            
+        case DESIGN_CLASSIC:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
+            break;
+            
+        case DESIGN_PAPER:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        case DESIGN_COLOR_BLUE:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        case DESIGN_COLOR_GREEN:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        case DESIGN_COLOR_YELOW:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        case DESIGN_COLOR_PINK:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        case DESIGN_COLOR_GRAY:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightMedium ];
+            break;
+        default:
+            font =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
+            break;
+            
     }
-    
-    UIFont *system = [UIFont systemFontOfSize:size];
-   // NSLog(@"Font sys: %@", system);
-    if([system.fontName isEqualToString:@".HelveticaNeueInterface-Regular"]){
-        if(fontName){
-            font = [UIFont fontWithName:fontName size:size];
-        }else {
-            font =[UIFont systemFontOfSize:size];
-        }
-    } else if ([system.fontName isEqualToString:@".HelveticaNeueInterface-MediumP4"]){
-        if(fondBoldName){
-            font = [UIFont fontWithName:fondBoldName size:size];
-        }else {
-            font =[UIFont systemFontOfSize:size];
-        }
-        
-    } else {
-        font =[UIFont systemFontOfSize:size];
-    }
+
     
     return  font;
 }
@@ -271,7 +436,7 @@
     self.attrbutedTitle = [attrTextMutCopy copy];
 }
 
--(void) drawTitle:(CGRect) rect
+-(void) drawTitle:(CGRect)rect inContext:(CGContextRef) context
 {
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
     //drawContext.minimumScaleFactor = 0.5;
@@ -290,77 +455,138 @@
     }
     
     neededRect.origin.y = (rect.size.height - neededRect.size.height)/2;
-    neededRect.origin.x = (rect.size.width - neededRect.size.width) /2;
-    
+    neededRect.origin.x = (rect.size.width - neededRect.size.width) /2+0.5;
+    switch (self.design) {
+        case DESIGN_PHOTO:
+            //CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 3, [UIColor blackColor].CGColor);
+            break;
+        case DESIGN_PAPER:
+            break;
+            
+        default:
+            CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 3, [UIColor clearColor].CGColor);
+            break;
+    }
+    //CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 3, [UIColor clearColor].CGColor);
     [self.attrbutedTitle drawWithRect:neededRect options:NSStringDrawingUsesLineFragmentOrigin //
                               context:nil];
 }
 
 
--(void) drawButtonViewInContext:(CGContextRef)context
+-(void) drawButtonViewInContext:(CGContextRef)context inRect:(CGRect)rect
 {
     CGRect cornerRect;
     UIBezierPath *drawRectPath;
     CGPathRef pathOfRect;
     CGFloat borderWidth;
     if(IS_IPAD){
-        self.radiusCorner = self.frame.size.height/ 3.;
+        self.radiusCorner = self.frame.size.height-4/ 3.;
         
         borderWidth = self.radiusCorner / 4.9;//9.2;
     } else {
-        self.radiusCorner = self.frame.size.height/ 3.2;
+        self.radiusCorner = (self.frame.size.height-4)/ 3.2;
+        switch (self.design) {
+            case DESIGN_PHOTO:
+                self.radiusCorner = (rect.size.height-4)/ 2.8;
+                borderWidth = self.radiusCorner / 5.2;
+                CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+                CGContextSetStrokeColorWithColor(context, self.buttonColor.CGColor);
+                CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 3, [UIColor colorWithWhite:0 alpha:0.5].CGColor);
 
-        borderWidth = self.radiusCorner / 12.2;
+                break;
+            case DESIGN_CLASSIC:
+                borderWidth = self.radiusCorner / 12.2;
+                CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+                CGContextSetStrokeColorWithColor(context, self.buttonColor.CGColor);
+                break;
+            
+            case DESIGN_PAPER:
+                borderWidth = self.radiusCorner / 8.2;
+                CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+                CGContextSetStrokeColorWithColor(context,self.buttonColor.CGColor);
+                CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 0.5, [UIColor colorWithWhite:1 alpha:1].CGColor);
+                break;
+             
+            default:
+                borderWidth = self.radiusCorner / 12.2;
+                CGContextSetFillColorWithColor(context, self.buttonColor.CGColor);
+                CGContextSetStrokeColorWithColor(context,[UIColor clearColor].CGColor);
+                CGContextSetShadowWithColor(context, CGSizeMake(1, 1), 3, [UIColor colorWithWhite:0 alpha:0.5].CGColor);
+                break;
+        }
+        //borderWidth = self.radiusCorner / 12.2;
     }
 
         //to states of buttons
-    CGFloat x = borderWidth /2;
+    CGFloat x = borderWidth /2+0.5;
     CGFloat y = borderWidth /2;
-    CGFloat width = self.bounds.size.width - borderWidth;
-    CGFloat height = self.bounds.size.height -borderWidth;
-    cornerRect = CGRectMake(x,y,width,height);
+    CGFloat width = rect.size.width - borderWidth;
+    CGFloat height = rect.size.height -borderWidth;
+    cornerRect = CGRectMake(x,y,width,height); //CGRectInset(rect, borderWidth, borderWidth);//
         
     drawRectPath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(self.radiusCorner - borderWidth)];
     CGContextSetLineWidth(context, borderWidth);
 
     pathOfRect = drawRectPath.CGPath;
     CGContextAddPath(context, pathOfRect);
-    if(IS_NEW_DESIGN){
-        CGContextSetRGBFillColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, 0.1);
-         CGContextSetRGBFillColor(context, 1, 1, 1, 0.2);
-        CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, 0.);
 
-    } else {
-        if((self.buttonColor.r == 0.95) && (self.buttonColor.g == .95)&&(self.buttonColor.b == .95)){
-        
-        } else {
-            CGContextSetRGBFillColor(context, .2, .2, .2, 0.2); //background of button
-        }
-        CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, self.buttonColor.a);
-    }
+        //CGContextSetRGBStrokeColor(context, self.buttonColor.r, self.buttonColor.g, self.buttonColor.b, self.buttonColor.a);
+    //CGContextSetStrokeColorWithColor(context, self.buttonColor.CGColor);
+    //CGContextClipToRect(context, CGRectInset(rect, 10, 10));
     CGContextDrawPath(context, kCGPathFillStroke);
+    //CGContextClosePath(context);
     
 
 }
 
 - (void)drawRect:(CGRect)rect
 {
-
+    self.clipsToBounds = NO;
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [self drawButtonViewInContext:context];
-    [self drawTitle:rect];    
+
+    [self drawButtonViewInContext:context inRect:CGRectInset(rect, 2, 2)];
+    [self drawTitle:CGRectInset(rect, 2, 2) inContext: context];
 
     //CALayer * viewLayer = self.layer;
     CGSize  shadowOffset;
    shadowOffset.height = 0;
     shadowOffset.width = 0;
-    self.layer.shadowRadius = self.radiusCorner/3.0;
-    if(self.isTaped){
-            self.layer.shadowOpacity = 1.0;
-    } else {
-            self.layer.shadowOpacity = .0;
-    }
+   // self.layer.shadowRadius = self.radiusCorner/3.0;
+    //if(self.isTaped){
+   //         self.layer.shadowOpacity = 1.0;
+    //} else {
+    //        self.layer.shadowOpacity = .0;
+   // }
    
 }
 
+-(void) fillButton:(BOOL)filling
+{
+
+    if(filling){
+        CGFloat borderWidth = self.radiusCorner / 8.2;
+        CGFloat x = borderWidth /2+0.5;
+        CGFloat y = borderWidth /2;
+        CGRect rct = CGRectInset(self.frame,2,2);
+        rct.origin = CGPointMake(x, y);
+        
+        UIView *paperFillView = [[UIView alloc] initWithFrame:rct];
+        paperFillView.layer.cornerRadius = self.radiusCorner;
+        paperFillView.backgroundColor = self.buttonColor;
+        paperFillView.alpha = 0;
+        [self addSubview:paperFillView];
+        self.paperFillView = paperFillView;
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            self.paperFillView.alpha = .8;
+        }];
+
+    } else {
+        [UIView animateWithDuration:0.6 animations:^{
+            self.paperFillView.alpha = 0.0;
+        } completion:^(BOOL finished) {
+            [self.paperFillView removeFromSuperview];
+        }];
+    }
+}
 @end

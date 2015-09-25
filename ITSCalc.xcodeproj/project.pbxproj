@@ -55,22 +55,38 @@
 		5021BD2918FDB372001749D4 /* newButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2518FDB372001749D4 /* newButtonView.m */; };
 		5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2718FDB372001749D4 /* NewButtonsCollectionViewCell.m */; };
 		502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 502E82AB197EA5B800B05E83 /* IPad.storyboard */; };
+		504750131B7931BB001AD553 /* myTextureSych.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750121B7931BB001AD553 /* myTextureSych.png */; };
+		504750151B793317001AD553 /* myTextureSych2.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750141B793317001AD553 /* myTextureSych2.png */; };
+		504750171B79346C001AD553 /* myTextureSych 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750161B79346C001AD553 /* myTextureSych 3.png */; };
+		5047501D1B7BC45A001AD553 /* PlusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5047501C1B7BC45A001AD553 /* PlusButton.m */; };
 		504EA8C51A1902A300E225F7 /* recBut.m in Sources */ = {isa = PBXBuildFile; fileRef = 504EA8C41A1902A300E225F7 /* recBut.m */; };
 		505156001B01311400E2E042 /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 505155FF1B01311400E2E042 /* AddViewController.m */; };
+		50532F941B583A0000A6CC97 /* IMG_1552.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 50532F931B583A0000A6CC97 /* IMG_1552.jpg */; };
 		50545AF71AFFA9930036EAD8 /* LogoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AF61AFFA9930036EAD8 /* LogoTextView.m */; };
 		50545AFB1B00C6140036EAD8 /* AdditionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AFA1B00C6140036EAD8 /* AdditionViewController.m */; };
 		50545AFF1B00CB0C0036EAD8 /* DesignView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AFE1B00CB0C0036EAD8 /* DesignView.m */; };
 		50702AA81914349C00274FB9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50702AA71914349C00274FB9 /* StoreKit.framework */; };
 		5073EEC91A209EF60027EE0E /* CalcButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5073EEC71A209EF60027EE0E /* CalcButton.m */; };
+		5074EB9D1B544ACE00291799 /* DesignViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5074EB9C1B544ACE00291799 /* DesignViewController.m */; };
+		5074EBA21B55815C00291799 /* TestButtonBackGroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5074EBA11B55815C00291799 /* TestButtonBackGroundView.m */; };
 		5080B953196477CB0004EEED /* tap2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5080B952196477CB0004EEED /* tap2.caf */; };
 		5080B9621965F0F90004EEED /* bluePanSelected2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5080B9541965F0F90004EEED /* bluePanSelected2.png */; };
 		5080B9631965F0F90004EEED /* bluePanUnselected2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5080B9551965F0F90004EEED /* bluePanUnselected2.png */; };
 		5080B96B1965F0F90004EEED /* redPanUnselected2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5080B95D1965F0F90004EEED /* redPanUnselected2.png */; };
 		5080B96C1965F0F90004EEED /* redPanSelected2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5080B95E1965F0F90004EEED /* redPanSelected2.png */; };
+		50832D331B67F7AA00ACD00F /* designButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50832D321B67F7A900ACD00F /* designButtonView.m */; };
 		50961B641A1A875C00868777 /* SettingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50961B631A1A875C00868777 /* SettingButton.m */; };
+		50A666901B16F80E005ABB39 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A6668D1B16F80E005ABB39 /* SecondViewController.m */; };
+		50A666911B16F80E005ABB39 /* ThirdController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A6668F1B16F80E005ABB39 /* ThirdController.m */; };
+		50A666961B16FFE3005ABB39 /* ShowedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A666951B16FFE3005ABB39 /* ShowedViewController.m */; };
+		50A7D7001BAC33B900ABCB0C /* Clr.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D6FF1BAC33B900ABCB0C /* Clr.m */; };
+		50A7D7031BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D7021BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m */; };
 		50B991C91B0E5E8600BDCBC5 /* Transition.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991C61B0E5E8600BDCBC5 /* Transition.m */; };
 		50B991CA1B0E5E8600BDCBC5 /* BackTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991C81B0E5E8600BDCBC5 /* BackTransition.m */; };
 		50B991D01B0E5FAD00BDCBC5 /* AppearedController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991CF1B0E5FAD00BDCBC5 /* AppearedController.m */; };
+		50C3C4C61B981049005A6854 /* MarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3C4C51B981049005A6854 /* MarkView.m */; };
+		50C3C5071BA5AD9D005A6854 /* DesignViewFromButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */; };
+		50DF89251B2E0EA200DF6D06 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DF89241B2E0EA200DF6D06 /* SettingsViewController.m */; };
 		50ED4CE9195233A6001854C0 /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 50ED4CE8195233A6001854C0 /* handmadepaper.png */; };
 		50F3123C1A20AFFB002604FB /* CleanButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F3123B1A20AFFB002604FB /* CleanButton.m */; };
 		50F312421A20BA19002604FB /* CloudView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312411A20BA19002604FB /* CloudView.m */; };
@@ -242,10 +258,16 @@
 		5021BD5018FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5021BD5118FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		502E82AB197EA5B800B05E83 /* IPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = IPad.storyboard; sourceTree = "<group>"; };
+		504750121B7931BB001AD553 /* myTextureSych.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myTextureSych.png; sourceTree = "<group>"; };
+		504750141B793317001AD553 /* myTextureSych2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myTextureSych2.png; sourceTree = "<group>"; };
+		504750161B79346C001AD553 /* myTextureSych 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "myTextureSych 3.png"; sourceTree = "<group>"; };
+		5047501B1B7BC45A001AD553 /* PlusButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlusButton.h; sourceTree = "<group>"; };
+		5047501C1B7BC45A001AD553 /* PlusButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlusButton.m; sourceTree = "<group>"; };
 		504EA8C31A1902A300E225F7 /* recBut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = recBut.h; sourceTree = "<group>"; };
 		504EA8C41A1902A300E225F7 /* recBut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = recBut.m; sourceTree = "<group>"; };
 		505155FE1B01311400E2E042 /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddViewController.h; sourceTree = "<group>"; };
 		505155FF1B01311400E2E042 /* AddViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddViewController.m; sourceTree = "<group>"; };
+		50532F931B583A0000A6CC97 /* IMG_1552.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_1552.jpg; sourceTree = "<group>"; };
 		50545AF51AFFA9930036EAD8 /* LogoTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogoTextView.h; path = ../LogoTextView.h; sourceTree = "<group>"; };
 		50545AF61AFFA9930036EAD8 /* LogoTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LogoTextView.m; path = ../LogoTextView.m; sourceTree = "<group>"; };
 		50545AF91B00C6140036EAD8 /* AdditionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdditionViewController.h; sourceTree = "<group>"; };
@@ -255,19 +277,41 @@
 		50702AA71914349C00274FB9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5073EEC71A209EF60027EE0E /* CalcButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalcButton.m; sourceTree = "<group>"; };
 		5073EEC81A209EF60027EE0E /* CalcButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalcButton.h; sourceTree = "<group>"; };
+		5074EB9B1B544ACE00291799 /* DesignViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignViewController.h; sourceTree = "<group>"; };
+		5074EB9C1B544ACE00291799 /* DesignViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignViewController.m; sourceTree = "<group>"; };
+		5074EBA01B55815C00291799 /* TestButtonBackGroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestButtonBackGroundView.h; sourceTree = "<group>"; };
+		5074EBA11B55815C00291799 /* TestButtonBackGroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestButtonBackGroundView.m; sourceTree = "<group>"; };
 		5080B952196477CB0004EEED /* tap2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = tap2.caf; sourceTree = "<group>"; };
 		5080B9541965F0F90004EEED /* bluePanSelected2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluePanSelected2.png; sourceTree = "<group>"; };
 		5080B9551965F0F90004EEED /* bluePanUnselected2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluePanUnselected2.png; sourceTree = "<group>"; };
 		5080B95D1965F0F90004EEED /* redPanUnselected2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redPanUnselected2.png; sourceTree = "<group>"; };
 		5080B95E1965F0F90004EEED /* redPanSelected2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redPanSelected2.png; sourceTree = "<group>"; };
+		50832D311B67F7A900ACD00F /* designButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = designButtonView.h; sourceTree = "<group>"; };
+		50832D321B67F7A900ACD00F /* designButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = designButtonView.m; sourceTree = "<group>"; };
 		50961B621A1A875C00868777 /* SettingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingButton.h; sourceTree = "<group>"; };
 		50961B631A1A875C00868777 /* SettingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingButton.m; sourceTree = "<group>"; };
+		50A6668C1B16F80E005ABB39 /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		50A6668D1B16F80E005ABB39 /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		50A6668E1B16F80E005ABB39 /* ThirdController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdController.h; sourceTree = "<group>"; };
+		50A6668F1B16F80E005ABB39 /* ThirdController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdController.m; sourceTree = "<group>"; };
+		50A666941B16FFE3005ABB39 /* ShowedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowedViewController.h; sourceTree = "<group>"; };
+		50A666951B16FFE3005ABB39 /* ShowedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowedViewController.m; sourceTree = "<group>"; };
+		50A7D6FE1BAC33B900ABCB0C /* Clr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clr.h; sourceTree = "<group>"; };
+		50A7D6FF1BAC33B900ABCB0C /* Clr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Clr.m; sourceTree = "<group>"; };
+		50A7D7011BAC42B600ABCB0C /* RoundViewForDesignChooseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundViewForDesignChooseButton.h; sourceTree = "<group>"; };
+		50A7D7021BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundViewForDesignChooseButton.m; sourceTree = "<group>"; };
 		50B991C51B0E5E8600BDCBC5 /* Transition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transition.h; sourceTree = "<group>"; };
 		50B991C61B0E5E8600BDCBC5 /* Transition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Transition.m; sourceTree = "<group>"; };
 		50B991C71B0E5E8600BDCBC5 /* BackTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackTransition.h; sourceTree = "<group>"; };
 		50B991C81B0E5E8600BDCBC5 /* BackTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackTransition.m; sourceTree = "<group>"; };
 		50B991CE1B0E5FAD00BDCBC5 /* AppearedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppearedController.h; path = ../AppearedController.h; sourceTree = "<group>"; };
 		50B991CF1B0E5FAD00BDCBC5 /* AppearedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppearedController.m; path = ../AppearedController.m; sourceTree = "<group>"; };
+		50C3C4C41B981049005A6854 /* MarkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkView.h; sourceTree = "<group>"; };
+		50C3C4C51B981049005A6854 /* MarkView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkView.m; sourceTree = "<group>"; };
+		50C3C5051BA5AD9D005A6854 /* DesignViewFromButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignViewFromButton.h; sourceTree = "<group>"; };
+		50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignViewFromButton.m; sourceTree = "<group>"; };
+		50DF89231B2E0EA200DF6D06 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		50DF89241B2E0EA200DF6D06 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		50ED4CE8195233A6001854C0 /* handmadepaper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = handmadepaper.png; sourceTree = "<group>"; };
 		50F3123A1A20AFFB002604FB /* CleanButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanButton.h; sourceTree = "<group>"; };
 		50F3123B1A20AFFB002604FB /* CleanButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanButton.m; sourceTree = "<group>"; };
@@ -346,7 +390,7 @@
 			isa = PBXGroup;
 			children = (
 				6479E4C619C1FB3B00230A5C /* Its Calc.entitlements */,
-				5021BC8818FDAE3C001749D4 /* ITSCalc */,
+				5074EB9E1B544AE500291799 /* New Group */,
 				5021BCA718FDAE3C001749D4 /* ITSCalcTests */,
 				5021BC8118FDAE3C001749D4 /* Frameworks */,
 				5021BC8018FDAE3C001749D4 /* Products */,
@@ -389,13 +433,17 @@
 				5021BD0C18FDB12E001749D4 /* ViewsAndLabels */,
 				5021BD0518FDB0F5001749D4 /* ScrollViews */,
 				5021BCF618FDB0AB001749D4 /* CoreData */,
-				5021BCBF18FDB066001749D4 /* Sourse */,
+				50A6668B1B16F6D1005ABB39 /* AbstractControllers */,
+				50DF89221B2E0E6500DF6D06 /* SettingsViewController */,
+				5074EB9F1B544B1000291799 /* DesignViewcontroller */,
+				50A666931B16FEB1005ABB39 /* ShowedViewConroller */,
 				5021BC9118FDAE3C001749D4 /* ITSCalcAppDelegate.h */,
 				5021BC9218FDAE3C001749D4 /* ITSCalcAppDelegate.m */,
 				5021BC9718FDAE3C001749D4 /* ITSCalcViewController.h */,
 				5021BC9818FDAE3C001749D4 /* ITSCalcViewController.m */,
 				5021BC9A18FDAE3C001749D4 /* Images.xcassets */,
 				640185DC19B05DE700D9BE5C /* GrayStyleView.m */,
+				5021BCBF18FDB066001749D4 /* Sourse */,
 				5021BC8918FDAE3C001749D4 /* Supporting Files */,
 			);
 			path = ITSCalc;
@@ -433,10 +481,18 @@
 		5021BCBF18FDB066001749D4 /* Sourse */ = {
 			isa = PBXGroup;
 			children = (
+				50A7D6FE1BAC33B900ABCB0C /* Clr.h */,
+				50A7D6FF1BAC33B900ABCB0C /* Clr.m */,
+				50C3C4C41B981049005A6854 /* MarkView.h */,
+				50C3C4C51B981049005A6854 /* MarkView.m */,
+				5047501B1B7BC45A001AD553 /* PlusButton.h */,
+				5047501C1B7BC45A001AD553 /* PlusButton.m */,
 				355142A71B0BC8BE00471CCD /* ClearHistoryButton.h */,
 				355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */,
 				355142A91B0BC8BE00471CCD /* DesignButton.h */,
 				355142AA1B0BC8BE00471CCD /* DesignButton.m */,
+				50C3C5051BA5AD9D005A6854 /* DesignViewFromButton.h */,
+				50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */,
 				50545AFD1B00CB0C0036EAD8 /* DesignView.h */,
 				50545AFE1B00CB0C0036EAD8 /* DesignView.m */,
 				50F312551A22448F002604FB /* CloseSetButton.h */,
@@ -457,13 +513,15 @@
 				50F312411A20BA19002604FB /* CloudView.m */,
 				50F3123A1A20AFFB002604FB /* CleanButton.h */,
 				50F3123B1A20AFFB002604FB /* CleanButton.m */,
-				5073EEC71A209EF60027EE0E /* CalcButton.m */,
 				5073EEC81A209EF60027EE0E /* CalcButton.h */,
+				5073EEC71A209EF60027EE0E /* CalcButton.m */,
 				504EA8C31A1902A300E225F7 /* recBut.h */,
 				504EA8C41A1902A300E225F7 /* recBut.m */,
 				50961B621A1A875C00868777 /* SettingButton.h */,
 				50961B631A1A875C00868777 /* SettingButton.m */,
 				504EA8A51A17C6E000E225F7 /* iPads */,
+				504750161B79346C001AD553 /* myTextureSych 3.png */,
+				504750141B793317001AD553 /* myTextureSych2.png */,
 				5080B9541965F0F90004EEED /* bluePanSelected2.png */,
 				5080B9551965F0F90004EEED /* bluePanUnselected2.png */,
 				5080B95D1965F0F90004EEED /* redPanUnselected2.png */,
@@ -526,10 +584,6 @@
 				5021BD1118FDB1E6001749D4 /* HistoryTableSviper.m */,
 				5021BD1418FDB1E6001749D4 /* DisplayLabel.h */,
 				5021BD1518FDB1E6001749D4 /* DisplayLabel.m */,
-				5021BD0D18FDB146001749D4 /* ShowedView.h */,
-				5021BD0E18FDB146001749D4 /* ShowedView.m */,
-				50FD96D619478E5100ADCF9A /* BezierInterpView.h */,
-				50FD96D719478E5100ADCF9A /* BezierInterpView.m */,
 				50104755192BB21100A0CB1F /* HintView.h */,
 				50104756192BB21100A0CB1F /* HintView.m */,
 			);
@@ -554,6 +608,8 @@
 		504EA8A51A17C6E000E225F7 /* iPads */ = {
 			isa = PBXGroup;
 			children = (
+				504750121B7931BB001AD553 /* myTextureSych.png */,
+				50532F931B583A0000A6CC97 /* IMG_1552.jpg */,
 			);
 			name = iPads;
 			sourceTree = "<group>";
@@ -586,6 +642,53 @@
 			name = AddtionviewController;
 			sourceTree = "<group>";
 		};
+		5074EB9E1B544AE500291799 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				5021BC8818FDAE3C001749D4 /* ITSCalc */,
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
+		5074EB9F1B544B1000291799 /* DesignViewcontroller */ = {
+			isa = PBXGroup;
+			children = (
+				5074EB9B1B544ACE00291799 /* DesignViewController.h */,
+				5074EB9C1B544ACE00291799 /* DesignViewController.m */,
+				5074EBA01B55815C00291799 /* TestButtonBackGroundView.h */,
+				5074EBA11B55815C00291799 /* TestButtonBackGroundView.m */,
+				50832D311B67F7A900ACD00F /* designButtonView.h */,
+				50832D321B67F7A900ACD00F /* designButtonView.m */,
+				50A7D7011BAC42B600ABCB0C /* RoundViewForDesignChooseButton.h */,
+				50A7D7021BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m */,
+			);
+			name = DesignViewcontroller;
+			sourceTree = "<group>";
+		};
+		50A6668B1B16F6D1005ABB39 /* AbstractControllers */ = {
+			isa = PBXGroup;
+			children = (
+				50A6668C1B16F80E005ABB39 /* SecondViewController.h */,
+				50A6668D1B16F80E005ABB39 /* SecondViewController.m */,
+				50A6668E1B16F80E005ABB39 /* ThirdController.h */,
+				50A6668F1B16F80E005ABB39 /* ThirdController.m */,
+			);
+			name = AbstractControllers;
+			sourceTree = "<group>";
+		};
+		50A666931B16FEB1005ABB39 /* ShowedViewConroller */ = {
+			isa = PBXGroup;
+			children = (
+				50A666941B16FFE3005ABB39 /* ShowedViewController.h */,
+				50A666951B16FFE3005ABB39 /* ShowedViewController.m */,
+				5021BD0D18FDB146001749D4 /* ShowedView.h */,
+				5021BD0E18FDB146001749D4 /* ShowedView.m */,
+				50FD96D619478E5100ADCF9A /* BezierInterpView.h */,
+				50FD96D719478E5100ADCF9A /* BezierInterpView.m */,
+			);
+			name = ShowedViewConroller;
+			sourceTree = "<group>";
+		};
 		50B991C41B0E5E5E00BDCBC5 /* Transition */ = {
 			isa = PBXGroup;
 			children = (
@@ -595,6 +698,15 @@
 				50B991C81B0E5E8600BDCBC5 /* BackTransition.m */,
 			);
 			name = Transition;
+			sourceTree = "<group>";
+		};
+		50DF89221B2E0E6500DF6D06 /* SettingsViewController */ = {
+			isa = PBXGroup;
+			children = (
+				50DF89231B2E0EA200DF6D06 /* SettingsViewController.h */,
+				50DF89241B2E0EA200DF6D06 /* SettingsViewController.m */,
+			);
+			name = SettingsViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -642,7 +754,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = ITSCalc;
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Sergey Sychov";
 				TargetAttributes = {
 					5021BC7E18FDAE3C001749D4 = {
@@ -696,9 +808,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				504750171B79346C001AD553 /* myTextureSych 3.png in Resources */,
 				5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */,
 				5021BCE318FDB08B001749D4 /* tap.caf in Resources */,
 				64206BCC1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings in Resources */,
+				504750131B7931BB001AD553 /* myTextureSych.png in Resources */,
 				5021BCE218FDB08B001749D4 /* shutter.caf in Resources */,
 				502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */,
 				5010475A192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings in Resources */,
@@ -712,6 +826,8 @@
 				5080B953196477CB0004EEED /* tap2.caf in Resources */,
 				5080B9631965F0F90004EEED /* bluePanUnselected2.png in Resources */,
 				5080B96B1965F0F90004EEED /* redPanUnselected2.png in Resources */,
+				504750151B793317001AD553 /* myTextureSych2.png in Resources */,
+				50532F941B583A0000A6CC97 /* IMG_1552.jpg in Resources */,
 				5080B96C1965F0F90004EEED /* redPanSelected2.png in Resources */,
 				5021BCE118FDB08B001749D4 /* blank.m4a in Resources */,
 				5021BC9618FDAE3C001749D4 /* Main.storyboard in Resources */,
@@ -735,36 +851,47 @@
 			files = (
 				5021BD0B18FDB11E001749D4 /* ButtonsCollectionView.m in Sources */,
 				50F3124B1A21F7EF002604FB /* ShareButton.m in Sources */,
+				50832D331B67F7AA00ACD00F /* designButtonView.m in Sources */,
 				5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */,
 				5073EEC91A209EF60027EE0E /* CalcButton.m in Sources */,
 				5021BD2918FDB372001749D4 /* newButtonView.m in Sources */,
+				50A7D7001BAC33B900ABCB0C /* Clr.m in Sources */,
 				50F312541A2222F7002604FB /* DownButton.m in Sources */,
 				5021BC9918FDAE3C001749D4 /* ITSCalcViewController.m in Sources */,
 				5021BD0F18FDB146001749D4 /* ShowedView.m in Sources */,
 				50F312511A221D78002604FB /* DelButton.m in Sources */,
+				50DF89251B2E0EA200DF6D06 /* SettingsViewController.m in Sources */,
 				355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */,
 				50F3124E1A220621002604FB /* NoticeButton.m in Sources */,
 				5021BC9318FDAE3C001749D4 /* ITSCalcAppDelegate.m in Sources */,
+				50A666901B16F80E005ABB39 /* SecondViewController.m in Sources */,
 				50B991C91B0E5E8600BDCBC5 /* Transition.m in Sources */,
 				50F312451A20CCFD002604FB /* SoundView.m in Sources */,
 				5021BD0218FDB0C8001749D4 /* Buttons.m in Sources */,
 				50104757192BB21100A0CB1F /* HintView.m in Sources */,
+				5074EB9D1B544ACE00291799 /* DesignViewController.m in Sources */,
 				5021BD0318FDB0C8001749D4 /* History+Maker.m in Sources */,
+				50A666911B16F80E005ABB39 /* ThirdController.m in Sources */,
 				50B991CA1B0E5E8600BDCBC5 /* BackTransition.m in Sources */,
 				5021BD2018FDB242001749D4 /* ACalcBrain.m in Sources */,
 				50545AF71AFFA9930036EAD8 /* LogoTextView.m in Sources */,
 				5021BD0A18FDB11E001749D4 /* HistoryTableView.m in Sources */,
 				50B991D01B0E5FAD00BDCBC5 /* AppearedController.m in Sources */,
+				5074EBA21B55815C00291799 /* TestButtonBackGroundView.m in Sources */,
 				5021BD2818FDB372001749D4 /* HistroryTableViewCell.m in Sources */,
 				35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */,
 				5021BD1718FDB1E6001749D4 /* DisplayRam.m in Sources */,
+				50C3C5071BA5AD9D005A6854 /* DesignViewFromButton.m in Sources */,
 				50F312571A22448F002604FB /* CloseSetButton.m in Sources */,
 				50545AFB1B00C6140036EAD8 /* AdditionViewController.m in Sources */,
 				640185DD19B05DE700D9BE5C /* GrayStyleView.m in Sources */,
+				50A7D7031BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m in Sources */,
 				50FD96D819478E5100ADCF9A /* BezierInterpView.m in Sources */,
+				50C3C4C61B981049005A6854 /* MarkView.m in Sources */,
 				50545AFF1B00CB0C0036EAD8 /* DesignView.m in Sources */,
 				50F3123C1A20AFFB002604FB /* CleanButton.m in Sources */,
 				50119EEC1B07531700E4BDE0 /* AppearedViewController.m in Sources */,
+				5047501D1B7BC45A001AD553 /* PlusButton.m in Sources */,
 				504EA8C51A1902A300E225F7 /* recBut.m in Sources */,
 				5021BD0118FDB0C8001749D4 /* Buttons+Buttons_Maker.m in Sources */,
 				35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */,
@@ -775,6 +902,7 @@
 				355142AB1B0BC8BE00471CCD /* ClearHistoryButton.m in Sources */,
 				5021BD1618FDB1E6001749D4 /* HistoryTableSviper.m in Sources */,
 				5021BC8F18FDAE3C001749D4 /* main.m in Sources */,
+				50A666961B16FFE3005ABB39 /* ShowedViewController.m in Sources */,
 				64DAEDB1198AEDAF002A8EF3 /* History.xcdatamodel in Sources */,
 				5021BD1818FDB1E6001749D4 /* DisplayLabel.m in Sources */,
 				505156001B01311400E2E042 /* AddViewController.m in Sources */,

@@ -23,10 +23,11 @@
 @property (nonatomic, strong) NSString *historyDateString;
 @property (nonatomic) BOOL isCanDrag; //can't drag last cell also set changeble uitextview
 @property (nonatomic, strong) UITextView *programTextView;
+@property (nonatomic) NSInteger design;
 
 //thi property allow user recount history sell / alow apeasr recount button
 //@property (nonatomic) BOOL wasPurhased;
--(void) showButtons;
+-(void) showButtons:(UISwipeGestureRecognizer *)sender;
 
 @property (nonatomic,weak) id <HistoryTableViewCellDelegate> delegate;
 
