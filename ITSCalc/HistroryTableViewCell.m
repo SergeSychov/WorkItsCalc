@@ -11,6 +11,8 @@
 #import "DelButton.h"
 #import "Clr.h"
 
+
+
 NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"HistoryTableViewCellViewDidBeginScrolingNotification";
 
 #define  kCatchWidth 160
