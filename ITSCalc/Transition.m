@@ -83,7 +83,7 @@
         [transitionContext.containerView addSubview:toVC.view];
         
         CGRect rct = transitionContext.containerView.bounds;
-        [toVC.view setFrame:CGRectMake(0, -rct.size.height, rct.size.width, rct.size.height)];
+        [toVC.view setFrame:CGRectMake(0, -1.5*rct.size.height, rct.size.width, rct.size.height)];
         
         self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:transitionContext.containerView];
         
@@ -107,7 +107,7 @@
         gravity.action = ^{
             typeof(self) strongSelf = weakSelf;
             UIView *view = strongSelf.viewBeginDismissed;
-            if(ABS(strongSelf.viewBeginDismissed.frame.origin.y)< 0.5  && [dynamicItem linearVelocityForItem:view].y < 0.01){
+            if(ABS(strongSelf.viewBeginDismissed.frame.origin.y)< 1.1  && [dynamicItem linearVelocityForItem:view].y < 0.01){
                 
                 [strongSelf.animator removeAllBehaviors];
                 [strongSelf.context completeTransition:YES];
