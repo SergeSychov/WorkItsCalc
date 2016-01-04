@@ -120,6 +120,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (weak, nonatomic) HintView *hintView;
 
 @property (weak, nonatomic) IBOutlet UIView *mainContainerView;
+@property (weak,nonatomic) UIImageView *imageBackgroundView;
 @property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
 //important not shure its need
 @property (nonatomic) UIDeviceOrientation wasRotatedNotificationAnotherController;
@@ -140,7 +141,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (weak, nonatomic) IBOutlet UIView *displayContainer;
 @property (weak, nonatomic) IBOutlet  DisplayLabel *display; //calc display
 @property (nonatomic, strong) DisplayRam *displayRam; //outbut dta from dislplay /input to display
-@property (weak, nonatomic) IBOutlet UIToolbar *backgroundToolBar; //background for display
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *displayBackground;
+@property (weak, nonatomic) UIView*blackViewforPhotoBackground;
+//@property (weak, nonatomic) IBOutlet UIToolbar *backgroundToolBar; //background for display
 //fix button to fix changes and settibgs
 @property (weak, nonatomic) IBOutlet ShareButton *noticeButton;
 @property (weak, nonatomic) IBOutlet NoticeButton *noticeRealButton;
@@ -196,6 +199,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) int limitInDataBase;
 @property (nonatomic) NSInteger design;
+@property (nonatomic) BOOL isNeedToBeReloadedAfterDesignChanged;
 
 @property (nonatomic) BOOL isiCloudInUse;
 @property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
@@ -338,72 +342,258 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self showShowedView];
     }
 }
+-(void) setPhotoBackGround:(BOOL)isPhoto
+{
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString* documentName;
+    if(isPhoto){
+        documentName = @"PhotoPicture";//@"MyDocument.sqlite"
+    } else {
+        documentName = @"PaintedPicture";//@"MyDocument.sqlite"
+    }
+    
+    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                     inDomains:NSUserDomainMask] lastObject];
+    NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+    UIImage *imageForPhotoPart;
+    
+    if ([fileManager fileExistsAtPath:[storeURL path]]) {
+        if([fileManager isDeletableFileAtPath:[storeURL path]]){
+            imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
+        } else {
+           // [UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
+        }
+    } else {
+       // [UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
+        
+    }
+    if(!self.imageBackgroundView){
+        id minValue;
+        id maxValue;
+        if(IS_IPAD){
+            minValue = @(60);
+            maxValue = @(-60);
+        } else {
+            minValue = @(40);
+            maxValue = @(-40);
+        }
+        UIImageView *imageBackgroundView = [[UIImageView alloc] initWithImage:imageForPhotoPart];
+        imageBackgroundView.contentMode = UIViewContentModeScaleAspectFill;
+        //imageBackgroundView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.mainContainerView insertSubview:imageBackgroundView atIndex:0];
+        self.imageBackgroundView = imageBackgroundView;
+        
+        // Do any additional setup after loading the view, typically from a nib.
+        // Set vertical effect
+        UIInterpolatingMotionEffect *verticalMotionEffect =
+        [[UIInterpolatingMotionEffect alloc]
+         initWithKeyPath:@"center.y"
+         type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+        verticalMotionEffect.minimumRelativeValue = minValue;
+        verticalMotionEffect.maximumRelativeValue = maxValue;
+        
+        // Set horizontal effect
+        UIInterpolatingMotionEffect *horizontalMotionEffect =
+        [[UIInterpolatingMotionEffect alloc]
+         initWithKeyPath:@"center.x"
+         type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+        horizontalMotionEffect.minimumRelativeValue = minValue;
+        horizontalMotionEffect.maximumRelativeValue = maxValue;
+        
+        // Create group to combine both
+        UIMotionEffectGroup *group = [UIMotionEffectGroup new];
+        group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
+        
+        // Add both effects to your view
+        [self.imageBackgroundView addMotionEffect:group];
+    } else {
+        [self.imageBackgroundView setImage:imageForPhotoPart];
+    }
+    if(isPhoto){
+        if(!self.blackViewforPhotoBackground){
+            UIView* blackViewforPhotoBackground = [[UIView alloc] init];
+            blackViewforPhotoBackground.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+            [self.imageBackgroundView addSubview:blackViewforPhotoBackground];
+            self.blackViewforPhotoBackground = blackViewforPhotoBackground;
+        }
+    } else {
+        if(self.blackViewforPhotoBackground){
+            [self.blackViewforPhotoBackground removeFromSuperview];
+        }
+    }
+}
 
 -(void) setDesign:(NSInteger)design
 {
+    //if(_design != design){
     _design = design;
     self.display.design = design;
+    self.historyTableSviper.design = design;
+    UIColor* buttonShadowColor;
+    CGSize buttonShadowSize;
+    CGFloat buttonShadowBlur;
     switch (_design) {
         case DESIGN_CLASSIC:
             self.view.backgroundColor = [UIColor clearColor];
             self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.backgroundToolBar.alpha = 1;
+            self.historyTable.backgroundColor = [UIColor whiteColor];
+            self.displayBackground.alpha = 1;
+            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            
+            if(self.imageBackgroundView){
+                [self.imageBackgroundView removeFromSuperview];
+            }
+            
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
             
         case DESIGN_PAPER:
             self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
             self.displayContainer.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            self.backgroundToolBar.alpha = 1;
+            self.historyTable.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
+
+            self.displayBackground.alpha = 0;
+            if(self.imageBackgroundView){
+                [self.imageBackgroundView removeFromSuperview];
+            }
+            
+            buttonShadowColor = [UIColor whiteColor];
+            buttonShadowSize = CGSizeMake(1., 1.);
+            buttonShadowBlur = 0.5;
+
             break;
+            
         case DESIGN_COLOR_BLUE:
             self.view.backgroundColor = [Clr blueGround];
             self.displayContainer.backgroundColor = [Clr blueDisplay];
-            self.backgroundToolBar.alpha = 0.;
+            self.historyTable.backgroundColor = [Clr blueFirstGradient];
+            self.displayBackground.alpha = 0.;
+            [self setPhotoBackGround:NO];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
         case DESIGN_COLOR_GREEN:
             self.view.backgroundColor = [Clr greenGround];
             self.displayContainer.backgroundColor = [Clr greenDisplay];
-            self.backgroundToolBar.alpha = 0;
-
+            self.historyTable.backgroundColor = [Clr greenFirstGradient];
+            self.displayBackground.alpha = 0;
+            [self setPhotoBackGround:NO];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
         case DESIGN_COLOR_YELOW:
             self.view.backgroundColor = [Clr yellowGround];
             self.displayContainer.backgroundColor = [Clr yellowDisplay];
-            self.backgroundToolBar.alpha = 0;
-
+            self.historyTable.backgroundColor = [Clr yellowFirstGradient];
+            self.displayBackground.alpha = 0;
+            [self setPhotoBackGround:NO];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
         case DESIGN_COLOR_PINK:
             self.view.backgroundColor = [Clr pinkGround];
             self.displayContainer.backgroundColor = [Clr pinkDisplay];
-            self.backgroundToolBar.alpha = 0;
-
+            self.historyTable.backgroundColor = [Clr pinkFirstGradient];
+            self.displayBackground.alpha = 0;
+            [self setPhotoBackGround:NO];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
         case DESIGN_COLOR_GRAY:
             self.view.backgroundColor = [Clr grayGround];
             self.displayContainer.backgroundColor = [Clr grayDisplay];
-            self.backgroundToolBar.alpha = 0;
-
+            self.historyTable.backgroundColor = [Clr grayFirstGradient];
+            self.displayBackground.alpha = 0;
+            [self setPhotoBackGround:NO];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
             break;
         case DESIGN_PHOTO:
+            //if(self.imageBackgroundView){
+            //    [self.imageBackgroundView removeFromSuperview];
+            //}
             self.view.backgroundColor = [Clr blueGround];
             self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.backgroundToolBar.alpha = 0;
+            self.historyTable.backgroundColor = [Clr photoFirstGradient];
+            self.displayBackground.alpha = 1;
+            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            
+            
+            [self setPhotoBackGround:YES];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
 
             break;
         default:
             self.view.backgroundColor = [UIColor clearColor];
             self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.backgroundToolBar.alpha = 1;
+            self.historyTable.backgroundColor = [UIColor clearColor];
+            self.displayBackground.alpha = 1;
+            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            buttonShadowColor = [UIColor clearColor];
+            buttonShadowSize = CGSizeMake(0., 0.);
+            buttonShadowBlur = 0.;
 
             break;
     }
     //if(self.buttonManagedObjectContext){
    //     [self setUpMainButtonsStartWithPosition];
    //     [self makeTwoArrays];
+    
     [self.historyTable reloadData];
     [self.buttonsCollection reloadData];
+    
+    self.recountButton.shadowColor = buttonShadowColor;
+    self.recountButton.shadowBlur = buttonShadowBlur;
+    self.recountButton.shadowSize = buttonShadowSize;
+    [self.recountButton setNeedsDisplay];
+
+    
+    self.deleteButton.shadowColor = buttonShadowColor;
+    self.deleteButton.shadowBlur = buttonShadowBlur;
+    self.deleteButton.shadowSize = buttonShadowSize;
+    [self.deleteButton setNeedsDisplay];
+    
+    self.settingsButton.shadowColor = buttonShadowColor;
+    self.settingsButton.shadowBlur = buttonShadowBlur;
+    self.settingsButton.shadowSize = buttonShadowSize;
+    [self.settingsButton setNeedsDisplay];
+    
+    self.settingsBottomButtn.shadowColor = buttonShadowColor;
+    self.settingsBottomButtn.shadowBlur = buttonShadowBlur;
+    self.settingsBottomButtn.shadowSize = buttonShadowSize;
+    [self.settingsBottomButtn setNeedsDisplay];
+    
+    self.downButton.shadowColor = buttonShadowColor;
+    self.downButton.shadowBlur = buttonShadowBlur;
+    self.downButton.shadowSize = buttonShadowSize;
+    [self.downButton setNeedsDisplay];
+    
+    self.noticeButton.shadowColor = buttonShadowColor;
+    self.noticeButton.shadowBlur = buttonShadowBlur;
+    self.noticeButton.shadowSize = buttonShadowSize;
+    [self.noticeButton setNeedsDisplay];
+    
+    if(self.noticeRealButton){
+        self.noticeRealButton.shadowColor = buttonShadowColor;
+        self.noticeRealButton.shadowBlur = buttonShadowBlur;
+        self.noticeRealButton.shadowSize = buttonShadowSize;
+        [self.noticeRealButton setNeedsDisplay];
+    }
+    //[self.displayContainer setNeedsDisplay];
+    self.isNeedToBeReloadedAfterDesignChanged = YES;
    // }
     //[self.buttonsCollection reloadData];
+    //}
 }
 
 #pragma mark TEXT ATTRIBUTES
@@ -1742,6 +1932,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         self.buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
                         self.buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)self.subCell).cellSubView.title;
                         self.buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)self.subCell).cellSubView.buttonColor;
+                        self.buttonsAsSubView.design = self.design;
                         [self.buttonsCollection addSubview:self.buttonsAsSubView];
                         self.subCell.alpha = 0.0;
                         
@@ -1975,6 +2166,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 - (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender
 {
+    if((IS_IPAD)||(!([UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight ))){
     if(!self.isButtonsCollectionUnderChanging){
     CGPoint currentSvipeGestureLocation = [sender locationInView:self.view];
     
@@ -2053,6 +2245,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
        // NSLog(@"filed or canceled");
+    }
     }
     }
     
@@ -2204,6 +2397,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //tap on history sviper
 - (IBAction)tapSviper:(UITapGestureRecognizer *)sender
 {
+    if((IS_IPAD)||(!([UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight ))){
     if(!self.isButtonsCollectionUnderChanging){
         if(self.isHistoryWholeShowed == 1){
             [self finisDraggingUpWithVelocity:CGPointMake(0, 0)];
@@ -2228,6 +2422,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.isHistoryWholeShowed = .01;
             [self finishDraggingDownWithVelocity:CGPointMake(0, 0)];
         }
+    }
     }
 }
 
@@ -4531,7 +4726,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
         [self.buttonsCollection setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
     } else {
-        [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1]];
+        //[self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1]];
     }
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
@@ -4621,38 +4816,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //set other cursor color
     //transition to third controller
     self.callShowController = NO;
-    /*
-    //set design view
-    switch (self.design) {
-        case DESIGN_CLASSIC:
-            self.view.backgroundColor = [UIColor clearColor];
-            break;
-        case DESIGN_COLOR_BLUE:
-            self.view.backgroundColor = [Clr blue];
-            break;
-        case DESIGN_COLOR_GREEN:
-            self.view.backgroundColor = [Clr green];
-            break;
-        case DESIGN_COLOR_YELOW:
-            self.view.backgroundColor = [Clr yellow];
-            break;
-        case DESIGN_COLOR_PINK:
-            self.view.backgroundColor = [Clr pink];
-            break;
-        case DESIGN_COLOR_GRAY:
-            self.view.backgroundColor = [Clr gray];
-            break;
-        case DESIGN_PAPER:
-            self.view.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1];
-            break;
-        case DESIGN_PHOTO:
-            self.view.backgroundColor = [Clr blue];
-            break;
-        default:
-            self.view.backgroundColor = [UIColor clearColor];
-            break;
-    }
-    */
+
+    self.isNeedToBeReloadedAfterDesignChanged = NO;
 }
 
 
@@ -4730,7 +4895,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
     [self.displayContainer setFrame:displayViewFrame];
     self.display.frame = self.displayContainer.bounds;
-    self.backgroundToolBar.frame = self.displayContainer.frame;
+    self.displayBackground.frame = self.displayContainer.frame;
     
     //if Ipad set Layout for display buttons
     if(IS_IPAD){
@@ -4750,6 +4915,19 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
     sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
     [self.historyTableSviper setFrame:sviperRect];
+    if(self.imageBackgroundView){
+        CGFloat inset;
+        if(IS_IPAD){
+            inset = -60;
+        } else {
+            inset = -40;
+        }
+        [self.imageBackgroundView setFrame:CGRectInset(rect,inset, inset)];
+        //[self.imageBackgroundView setFrame:CGRectInset(self.view.frame,inset, inset)];
+        if(self.blackViewforPhotoBackground){
+            [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
+        }
+    }
 
 }
 
@@ -4762,6 +4940,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     
     [self.mainContainerView setFrame:rect];
+    if(self.imageBackgroundView){
+        CGFloat inset;
+        if(IS_IPAD){
+            inset = -60;
+        } else {
+            inset = -40;
+        }
+        [self.imageBackgroundView setFrame:CGRectInset(rect,inset, inset)];
+        if(self.blackViewforPhotoBackground){
+            [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
+        }
+    }
     
     if(IS_IPAD){
         if(self.willBePortraitRotated){
@@ -4797,7 +4987,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     [self.displayContainer setFrame:displayViewFrame];
     self.display.frame = self.displayContainer.bounds;
-    self.backgroundToolBar.frame = self.displayContainer.frame;
+    self.displayBackground.frame = self.displayContainer.frame;
     
     
     
@@ -4857,6 +5047,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
     }
     
+    if(IS_IPAD){
+        [self setUpMainButtonsStartWithPosition];//ipad
+        [self makeTwoArrays];//ipad
+        [self.buttonsCollection reloadData];//ipad
+    }
+    
     
 }
 
@@ -4891,7 +5087,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         //[self.mainContainerView setFrame:self.view.bounds];
     }
     
-    self.backgroundToolBar.frame = self.displayContainer.frame;
+    self.displayBackground.frame = self.displayContainer.frame;
     //set size buttonsViews and frames
     struct Color clr;
     clr.r = 0.95;//0.26;
@@ -4995,6 +5191,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
         i+=1;
     }
+    //self.isNeedToBeReloadedAfterDesignChanged = NO;
 
 }
 
@@ -5036,6 +5233,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     //save managed object context
      [self.doc updateChangeCount:UIDocumentChangeDone];
+    [self discardChanging];
+
 
 }
 
@@ -5073,7 +5272,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
     
     //importand why i've made it
-    //[self discardChanging];
+   // [self discardChanging];
 
     
     [self deleteSuperfluousValuesFromManagedDocuments];
@@ -5104,6 +5303,32 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 }
 
+-(void) viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if(self.isNeedToBeReloadedAfterDesignChanged){
+        if(self.imageBackgroundView){
+            CGFloat inset;
+            if(IS_IPAD){
+                inset = -60;
+            } else {
+                inset = -40;
+            }
+            [self.imageBackgroundView setFrame:CGRectInset(self.mainContainerView.bounds,inset, inset)];
+            //[self.imageBackgroundView setFrame:CGRectInset(self.view.frame,inset, inset)];
+            if(self.blackViewforPhotoBackground){
+                [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
+            }
+        }
+        //[self wholeViewReloadAfterdesignChanged];
+        self.isNeedToBeReloadedAfterDesignChanged = NO;
+        //[self.buttonsCollection reloadData];
+       // [self.historyTable reloadData];
+       // [self initialLayoutDynamicContainerWithSize:self.view.frame.size];
+    }
+    
+    
+}
 
 -(void) viewWillAppear:(BOOL)animated{
     
@@ -5112,12 +5337,28 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
     self.callShowController = NO;
-    [self.buttonsCollection reloadData];
+    
+    
     
     //remove notification observer for settings changes
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ReciveChangedNotification object:nil];
     [super viewWillAppear:animated];
     
+}
+
+-(void) wholeViewReloadAfterdesignChanged
+{
+    [self initialLayoutDynamiccontainer];
+    self.display.alpha =  1;
+    self.settingsBottomButtn.alpha =0;
+    self.noticeButton.alpha = 0;
+    if(IS_IPAD){
+        self.noticeRealButton.alpha = 0.;
+    }
+    self.recountButton.alpha = 0;
+    self.deleteButton.alpha = 0;
+    self.isHistoryWholeShowed = 0;
+    [self.buttonsCollection reloadData];
 }
 #pragma mark TRANSITION DELEGATE
 -(id<UIViewControllerAnimatedTransitioning>)
@@ -5214,17 +5455,22 @@ sourceController:(UIViewController *)source
     settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
     settingsController.isSoundOn = self.isSoundOn;
     settingsController.isBigSizeButtons = self.isBigSizeButtons;
-    settingsController.design = self.design;
-
     settingsController.isTrialPeriod = self.isTrialPeriod;
     settingsController.wasPurshaised = self.wasPurshaised;
     settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
+    settingsController.design = self.design;
+
+    //settingsController.isTrialPeriod = self.isTrialPeriod;
+    //settingsController.wasPurshaised = self.wasPurshaised;
+   // settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
 
     self.settingsController = settingsController;
     self.settingsController.transitioningDelegate = self;
     //recive notification from other controllers
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
-    [self presentViewController:self.settingsController animated:YES completion:nil];
+    [self presentViewController:self.settingsController animated:YES completion:^{
+        [self discardChanging];
+    }];
     
 }
 
@@ -5234,6 +5480,7 @@ sourceController:(UIViewController *)source
 {
     //NSLog(@"ATTR str fro show: %@", self.strAtrrForShow.string);
     ShowedViewController *show = [[ShowedViewController alloc] init];
+   // NSLog(@"Showed srt before %@",self.resStringForShow.string);
     [show setNeedStringsForShow:self.strAtrrForShow andRes:self.resStringForShow];
     if(IS_IPAD){
         UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
@@ -5935,13 +6182,14 @@ sourceController:(UIViewController *)source
     
     
     [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];//ipad
-    [self setUpMainButtonsStartWithPosition];//ipad
-    [self makeTwoArrays];//ipad
-    [self.buttonsCollection reloadData];//ipad
+    //[self setUpMainButtonsStartWithPosition];//ipad
+    //[self makeTwoArrays];//ipad
+    //[self.buttonsCollection reloadData];//ipad
     [self changeLayoutDynamicContainerWithSize:size];//ipad
     
     if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
         [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+        [self.view setFrame:CGRectMake(0, 0, size.width, size.height)];
 
         
     }
@@ -6080,6 +6328,8 @@ sourceController:(UIViewController *)source
             [UIView setAnimationsEnabled:NO];
             [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angle)];
             [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+
+            [self.view setFrame:CGRectMake(0,0, height, width)];
             
             [self.settingsController.cView setTransform:CGAffineTransformMakeRotation(angle)];
             [self.settingsController.cView setFrame:newCViewFrame];
@@ -6127,6 +6377,7 @@ sourceController:(UIViewController *)source
                 [UIView setAnimationsEnabled:NO];
                 [self.mainContainerView setTransform:CGAffineTransformMakeRotation(0)];
                 [self.mainContainerView setFrame:CGRectMake(0,0, height, width)];
+                [self.view setFrame:CGRectMake(0,0, height, width)];
                 
                 [self.showedController.cView setTransform:CGAffineTransformMakeRotation(angle)];
                 [self.showedController.cView setFrame:CGRectMake(0,0, height, width)];
@@ -6136,7 +6387,7 @@ sourceController:(UIViewController *)source
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     
                     [UIView setAnimationsEnabled:YES];
-                    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                 //   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
                     [self.showedController dismis];
                 });
             }
@@ -6179,9 +6430,33 @@ sourceController:(UIViewController *)source
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 
                 [UIView setAnimationsEnabled:YES];
-                
-                [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-                self.callShowController = needCallcontroller;
+                if(!self.isButtonsCollectionUnderChanging){
+                    if(self.isNeedToBeReloadedAfterDesignChanged){
+                        
+                        self.isNeedToBeReloadedAfterDesignChanged = NO;
+                        //[self.buttonsCollection reloadData];
+                        //[self.historyTable reloadData];
+                        [self wholeViewReloadAfterdesignChanged];
+                        [self initialLayoutDynamicContainerWithSize:size];
+                        /*
+                        if(self.imageBackgroundView){
+                            CGFloat inset;
+                            if(IS_IPAD){
+                                inset = -60;
+                            } else {
+                                inset = -40;
+                            }
+                            [self.imageBackgroundView setFrame:CGRectInset(self.mainContainerView.bounds,inset, inset)];
+                            //[self.imageBackgroundView setFrame:CGRectInset(self.view.frame,inset, inset)];
+                            if(self.blackViewforPhotoBackground){
+                                [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
+                            }
+                        }
+                        */
+                    }
+                    //[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+                    self.callShowController = needCallcontroller;
+                }
 
             });
         }
