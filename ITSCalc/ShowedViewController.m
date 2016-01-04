@@ -313,7 +313,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 }
 
 -(void)appWillGoToBackground:(NSNotification *)note{
+   // self.transitioningDelegate = self;
     [self dismis];
+
 }
 
 @end
