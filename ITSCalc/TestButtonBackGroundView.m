@@ -117,6 +117,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              }];
             
         }
+    } else {
+        if(!isChoosed){
+            if(self.markView){
+                [self.markView removeFromSuperview];
+                self.markView = nil;
+            }
+        }
     }
     _isChoosed = isChoosed;
 }

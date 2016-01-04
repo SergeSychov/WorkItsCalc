@@ -14,6 +14,8 @@
 #import "TestButtonBackGroundView.h"
 #import "newButtonView.h"
 #import "PlusButton.h"
+#import "Clr.h"
+#import "RoundedGroundView.h"
 
 
 NSString *const SendChangedNotification=@"SendChangedNotification";
@@ -71,6 +73,102 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     return YES;
 }
 
+#define ALERT_MESSAGE_CHOOSE_NEW_PHOTO NSLocalizedStringFromTable(@"ALERT_MESSAGE_CHOOSE_NEW_PHOTO",@"ACalcTryViewControllerTableNew", @"Выберите фотографию из Вашего фотоархива")
+#define TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK NSLocalizedStringFromTable(@"TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK",@"ACalcTryViewControllerTableNew", @"Ok")
+
+#pragma mark SET NEW DESIGN
+-(void)sendNoteChangeDesign:(NSInteger)design
+{
+    self.design = design;
+    NSNumber *message = [NSNumber numberWithInteger:design];
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
+    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:nil userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotification:note];
+}
+
+-(void)trySetDesign:(NSInteger)design
+{
+    if(self.design != design){
+        if(design == DESIGN_PHOTO){
+            //check is there user photo in store
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
+            NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                             inDomains:NSUserDomainMask] lastObject];
+            NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+            
+            if ([fileManager fileExistsAtPath:[storeURL path]]) {
+
+                    [self sendNoteChangeDesign:design];
+
+            } else {
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@""
+                                                                               message:ALERT_MESSAGE_CHOOSE_NEW_PHOTO
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {[self choosePhoto];}];
+                
+                [alert addAction:defaultAction];
+                [self presentViewController:alert animated:YES completion:nil];
+                
+            }
+            //if send user to photo library throug message
+        } else {
+             if (design == DESIGN_COLOR_BLUE){
+                 [self setNewBackgroundImageForColor:[Clr blueGround]];
+             }else if (design == DESIGN_COLOR_GRAY){
+                 [self setNewBackgroundImageForColor:[Clr grayGround]];
+             }else if (design == DESIGN_COLOR_GREEN){
+                 [self setNewBackgroundImageForColor:[Clr greenGround]];
+             }else if (design == DESIGN_COLOR_PINK){
+                 [self setNewBackgroundImageForColor:[Clr pinkGround]];
+             }else if (design == DESIGN_COLOR_YELOW){
+                 [self setNewBackgroundImageForColor:[Clr yellowGround]];
+             }
+            [self sendNoteChangeDesign:design];
+        }
+
+    }
+}
+-(void) setNewBackgroundImageForColor:(UIColor*)color
+{
+    UIImage *createdImage = [RoundedGroundView getImageForRect:CGRectInset(self.view.bounds, -40, -40) withColor:color];
+    NSData *newImageData = UIImagePNGRepresentation(createdImage);
+    
+    //save image
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString* documentName = @"PaintedPicture";//@"MyDocument.sqlite"
+    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                     inDomains:NSUserDomainMask] lastObject];
+    NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+    
+    if ([fileManager fileExistsAtPath:[storeURL path]]) {
+        if([fileManager isDeletableFileAtPath:[storeURL path]]){
+            NSError *error;
+            BOOL delSucces = [fileManager removeItemAtPath:[storeURL path] error:&error];
+            if(delSucces){
+                NSLog(@"File exist and deleted");
+                if([newImageData writeToURL:storeURL atomically:YES]){
+                    NSLog(@"File replace succesefuly");
+                    
+                } else {
+                    NSLog(@"But not replace");
+                }
+            } else {
+                NSLog(@"File exist but not deleted");
+            }
+        }
+    } else {
+        NSLog(@"File not finded");
+        if([newImageData writeToURL:storeURL atomically:YES]){
+            NSLog(@"File created succesefuly");
+        } else {
+            NSLog(@"But not created");
+        }
+    }
+
+}
+
 #pragma mark ROTATION
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
@@ -94,7 +192,21 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [self.delegate designViewControllerDidCloseWithString:@"BACK"];
 
 }
-
+#pragma mark RECIVE CHANGE DESIGN NOTIFICATION
+-(void) recivedNotification:(NSNotification*)notification
+{
+    NSArray *keys = notification.userInfo.allKeys;
+    if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
+        //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
+        NSString *key = keys[0];
+        if([key isEqualToString:@"ChangedDesign"]){
+        
+            self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            
+        }
+        //NSLog(@"recived wrong notification");
+    }
+}
 #pragma mark UIImagePickerControllerDelegate
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -109,6 +221,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                                                      inDomains:NSUserDomainMask] lastObject];
     NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
     
+    BOOL succes = NO;
+    
     if ([fileManager fileExistsAtPath:[storeURL path]]) {
         if([fileManager isDeletableFileAtPath:[storeURL path]]){
             NSError *error;
@@ -117,6 +231,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                 NSLog(@"File exist and deleted");
                 if([newImageData writeToURL:storeURL atomically:YES]){
                     NSLog(@"File replace succesefuly");
+                    succes = YES;
                 } else {
                     NSLog(@"But not replace");
                 }
@@ -128,6 +243,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         NSLog(@"File not finded");
         if([newImageData writeToURL:storeURL atomically:YES]){
             NSLog(@"File created succesefuly");
+            succes = YES;
         } else {
             NSLog(@"But not created");
         }
@@ -135,16 +251,15 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
 
     [picker dismissViewControllerAnimated:YES completion:^{
-        
+       if(succes) [self sendNoteChangeDesign:DESIGN_PHOTO];
+
     }];
 }
 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissViewControllerAnimated:YES completion:^{
-        
-    }];
+    [picker dismissViewControllerAnimated:YES completion:^{ }];
 }
 
 
@@ -154,6 +269,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     imagePickerController.delegate = self;
     [self presentViewController:imagePickerController animated:YES completion:nil];
+    
 }
 
 -(void)chooseNewPhoto:(id)sender
@@ -180,12 +296,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         }
     }
     
-    NSNumber *message = [NSNumber numberWithInteger:design];
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:nil userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-
-    self.design = design;
+    [self trySetDesign:design];
 
 }
 
@@ -232,6 +343,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.classicButtonView = classicButtonView;
     
     TestButtonBackGroundView *classicButton = [[TestButtonBackGroundView alloc]init];
+    classicButton.designIndex = DESIGN_CLASSIC;
     classicButton.isChoosed = NO;
     [self.classicPartView addSubview:classicButton];
     self.classicButton = classicButton;
@@ -247,6 +359,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.paperButtonView = paperButtonView;
     
     TestButtonBackGroundView *paperButton = [[TestButtonBackGroundView alloc]init];
+    paperButton.designIndex = DESIGN_PAPER;
     paperButton.isChoosed = NO;
     [self.paperPartView addSubview:paperButton];
     self.paperButton = paperButton;
@@ -290,16 +403,18 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     //yelow
     TestButtonBackGroundView *colorYelowButton = [[TestButtonBackGroundView alloc]init];
 
-    colorYelowButton.isChoosed = NO;
+   
     colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
+     colorYelowButton.isChoosed = NO;
     [self.cView addSubview:colorYelowButton];
     self.colorYelowButton = colorYelowButton;
     
     //black
     TestButtonBackGroundView *colorBlackButton = [[TestButtonBackGroundView alloc]init];
 
-    colorBlackButton.isChoosed = NO;
+    
     colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
+    colorBlackButton.isChoosed = NO;
     [self.cView addSubview:colorBlackButton];
     self.colorBlackButton = colorBlackButton;
 
@@ -318,10 +433,10 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         if([fileManager isDeletableFileAtPath:[storeURL path]]){
              imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
         } else {
-            [UIImage imageNamed:/*@"handmadepaper.png"*/@"IMG_1552.jpg"];
+           imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
         }
     } else {
-        [UIImage imageNamed:/*@"handmadepaper.png"*/@"IMG_1552.jpg"];
+        imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
 
     }
     
@@ -337,6 +452,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.photoPartView = photoPartView;
     
     TestButtonBackGroundView *photButton = [[TestButtonBackGroundView alloc]init];
+    photButton.designIndex = DESIGN_PHOTO;
     photButton.isChoosed = NO;
     [self.photoPartView addSubview:photButton];
     self.photButton = photButton;
@@ -373,6 +489,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             break;
         case DESIGN_COLOR_GRAY:
             self.colorBlackButton.isChoosed = YES;
+            break;
         case DESIGN_PHOTO:
             self.photButton.isChoosed = YES;
             break;
@@ -462,6 +579,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             break;
         case DESIGN_COLOR_GRAY:
             self.colorBlackButton.isChoosed = YES;
+            break;
         case DESIGN_PHOTO:
             self.photButton.isChoosed = YES;
             break;
@@ -675,11 +793,13 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     CGRect rct = self.view.bounds;
     [self setCViewAccordingFrameRect:rct];
     
+     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
+    [super viewWillAppear:animated];
     
 }
 -(void)willRotatetoSize:(CGSize)size
@@ -689,8 +809,19 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 }
 
 -(void)appWillGoToBackground:(NSNotification *)note{
-    [self.delegate designViewControllerDidCloseWithString:@"TO CALC"];
-    [self dismis];
+    
+   
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self dismissViewControllerAnimated:NO completion:^{
+        [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
+    }];
+   
+}
+
+-(void) dismis {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dismis];
 }
 
 @end
