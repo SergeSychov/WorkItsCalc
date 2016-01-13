@@ -10,7 +10,7 @@
 
 @interface ACalcBrain : NSObject
 -(void) pushOperand:(id) operand; //think it's neded to be argu stack
--(double) performOperationInArgu:(NSString*)operation;
+-(double) performOperationInArgu:(id)operation;
 -(void) applyArgu; //and may be this is need to be hiden
 -(void) pushArguForPerCent; //especialy for perCent function, inserts arg for percent before % operand
 -(double) checkMinusOrDivideOperationOnDubble:(NSString*)operand;
