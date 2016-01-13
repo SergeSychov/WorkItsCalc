@@ -555,6 +555,14 @@
             [resultGradArray addObject:@"″"];
             
             str = [self stringFromGrad:[resultGradArray copy]];
+        } else {
+            NSString* resStr = (NSString*)result;
+            NSString *substractedString = [resStr substringToIndex:resStr.length -3];
+            NSString *restNameOfCurrency = [@" " stringByAppendingString:[resStr substringFromIndex:resStr.length -3]];
+            NSNumber* substractedCurrency = [NSNumber numberWithDouble:[substractedString doubleValue]];
+            NSLog(@"restCurrency str %@", restNameOfCurrency);
+            str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
+            
         }
     }
     //if([str length] > self.displayLenght){
