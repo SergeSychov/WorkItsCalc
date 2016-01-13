@@ -18,6 +18,16 @@
 
 @implementation ShareButton
 
+
+-(UIColor*)shadowColor{
+    if(!_shadowColor){
+        _shadowColor = [UIColor clearColor];
+        self.shadowSize = CGSizeMake(0, 0);
+        self.shadowBlur = 0.;
+    }
+    return _shadowColor;
+}
+
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     
@@ -153,6 +163,7 @@
     
     
     CGContextAddPath(context, pathOfRect);
+    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
 
 }

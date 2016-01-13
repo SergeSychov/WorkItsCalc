@@ -37,6 +37,14 @@
                       withEvent:event];
 }
 
+-(void) cancelTrackingWithEvent:(UIEvent *)event{
+    [UIView animateWithDuration:0.1 animations:^{
+        self.alpha = 1.;
+    }];
+    [super cancelTrackingWithEvent:event];
+    
+}
+
 
 -(UIColor*) touchedColor{
     if(self.state == UIControlStateNormal){

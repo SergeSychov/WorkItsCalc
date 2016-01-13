@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface NoticeButton : UIButton
+@property (nonatomic,weak) UIColor *shadowColor;
+@property (nonatomic) CGSize shadowSize;
+@property (nonatomic) CGFloat shadowBlur;
 
 @end

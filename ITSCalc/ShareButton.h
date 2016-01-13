@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface ShareButton : UIButton
+@property (nonatomic,weak) UIColor *shadowColor;
+@property (nonatomic) CGSize shadowSize;
+@property (nonatomic) CGFloat shadowBlur;
 
 @end

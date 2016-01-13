@@ -11,6 +11,15 @@
 @implementation DownButton
 
 
+-(UIColor*)shadowColor{
+    if(!_shadowColor){
+        _shadowColor = [UIColor clearColor];
+        self.shadowSize = CGSizeMake(0, 0);
+        self.shadowBlur = 0.;
+    }
+    return _shadowColor;
+}
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -48,6 +57,7 @@
     
     
     CGContextAddPath(context, pathOfRect);
+    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
 }
 

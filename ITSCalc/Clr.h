@@ -22,31 +22,59 @@
 + (UIColor*)blueC;
 + (UIColor*)blueDigits;
 + (UIColor*)blueDisplay;
-
++ (UIColor*)blueText;
++ (UIColor*)blueFirstGradient;
++ (UIColor*)blueSecondGradient;
++ (UIColor*)blueDelButton;
++ (UIColor*)blueMoreButton;
 
 + (UIColor*)greenGround;
 + (UIColor*)greenButton;
 + (UIColor*)greenC;
 + (UIColor*)greenDigits;
 + (UIColor*)greenDisplay;
++ (UIColor*)greenText;
++ (UIColor*)greenFirstGradient;
++ (UIColor*)greenSecondGradient;
++ (UIColor*)greenDelButton;
++ (UIColor*)greenMoreButton;
 
 + (UIColor*)yellowGround;
 + (UIColor*)yellowButton;
 + (UIColor*)yellowC;
 + (UIColor*)yellowDigits;
 + (UIColor*)yellowDisplay;
++ (UIColor*)yellowText;
++ (UIColor*)yellowFirstGradient;
++ (UIColor*)yellowSecondGradient;
++ (UIColor*)yellowDelButton;
++ (UIColor*)yellowMoreButton;
 
 + (UIColor*)pinkGround;
 + (UIColor*)pinkButton;
 + (UIColor*)pinkC;
 + (UIColor*)pinkDigits;
 + (UIColor*)pinkDisplay;
++ (UIColor*)pinkText;
++ (UIColor*)pinkFirstGradient;
++ (UIColor*)pinkSecondGradient;
++ (UIColor*)pinkDelButton;
++ (UIColor*)pinkMoreButton;
 
 + (UIColor*)grayGround;
 + (UIColor*)grayButton;
 + (UIColor*)grayC;
 + (UIColor*)grayDigits;
 + (UIColor*)grayDisplay;
++ (UIColor*)grayText;
++ (UIColor*)grayFirstGradient;
++ (UIColor*)graySecondGradient;
++ (UIColor*)grayDelButton;
++ (UIColor*)grayMoreButton;
+
+
++ (UIColor*)photoFirstGradient;
++ (UIColor*)photoSecondGradient;
 
 
 + (UIColor*)cButton;

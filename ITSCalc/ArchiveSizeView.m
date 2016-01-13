@@ -77,7 +77,7 @@
     
     NSMutableAttributedString * countAtrStr = [string mutableCopy];
     
-    UIFont *font = [UIFont systemFontOfSize:rad/1.6];
+    UIFont *font = [UIFont systemFontOfSize:rad/1.8];
     UIColor *textColor = [UIColor whiteColor];
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     style.alignment = NSTextAlignmentCenter;
