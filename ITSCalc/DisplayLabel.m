@@ -176,6 +176,8 @@
     [self addSubview:secondMemoryLabel];
     self.secondMemoryLabel = secondMemoryLabel;
     
+    self.adjustsFontSizeToFitWidth = YES;
+    
     
 }
 
