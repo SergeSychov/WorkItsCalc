@@ -13,7 +13,7 @@
 
 #import "ITSCalcViewController.h"
 
-#import "ButtonsCollectionView.h"
+
 #import "NewButtonsCollectionViewCell.h"
 #import "HistroryTableViewCell.h"
 
@@ -119,7 +119,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 @property (weak, nonatomic) HintView *hintView;
 
-@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
+
 @property (weak,nonatomic) UIImageView *imageBackgroundView;
 @property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
 //important not shure its need
@@ -127,16 +127,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL willBePortraitRotated;
 //necessary height of element for 3,5" screen
 @property (nonatomic) CGFloat histroryTableViewHeight;
-@property (nonatomic) CGFloat labelViewHeight;
+//@property (nonatomic) CGFloat labelViewHeight;
 @property (nonatomic) CGFloat lastRowHistoryTableHeight;
 
-//Buttons collection
-@property (weak, nonatomic) IBOutlet ButtonsCollectionView *buttonsCollection;
+
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *collectionViewFlowLayout;
 //recognizers
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressRecognizer;
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *moveButtonsPanGestureRecognizer; //pan gesture recognizer
 
+@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 //Display view
 @property (weak, nonatomic) IBOutlet UIView *displayContainer;
 @property (weak, nonatomic) IBOutlet  DisplayLabel *display; //calc display
@@ -164,7 +164,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 //items for dynamic draging
 
-@property (weak, nonatomic) IBOutlet UIView *dynamicContainer;
+
 @property (nonatomic) CGFloat wasDynamicOriginY;
 @property (weak, nonatomic) IBOutlet HistoryTableSviper *historyTableSviper;
 @property (nonatomic) CGPoint svipeGestureLocation;
@@ -221,6 +221,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //   since the NSFetchedResultsController will notice and update the table automatically).
 // This will also automatically be called if you change the fetchedResultsController @property.
 @property (nonatomic,strong) NSArray* lastRowDataArray;
+@property (nonatomic,strong) NSAttributedString *lastRowsString;
 
 //for set values of row hight in historyTableView
 @property (nonatomic,strong) NSArray *heightsOfRows;
@@ -264,6 +265,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL isStronglyArgu; //the argument is strongly setted by user
 @property (nonatomic) BOOL isDecCounting;
 @property (nonatomic) BOOL isResultFromMemory; //is result on screen is taked up from memory
+@property (nonatomic, strong) NSString *currencyExhangeString; //striing to show currency exhange rate, setup - nil at start, setup string as currensy was checked, clear at clear brain
 
 //make int property only for test NSTimer
 @property (nonatomic,strong) NSIndexPath * patch;
@@ -760,7 +762,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             break;
         case 33 : {
             if(!IS_IPAD){
-                CGRect collectionVisibleRect = self.buttonsCollection.frame;
+                CGRect collectionVisibleRect = self.viewforCurrencyRecognizer.frame;
                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
                 collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
                 HintView *hintView =
@@ -783,7 +785,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             break;
         case 36 :{
             
-            CGRect collectionVisibleRect = self.buttonsCollection.frame;
+            CGRect collectionVisibleRect = self.viewforCurrencyRecognizer.frame;
             collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
             collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
             HintView *hintView =
@@ -1314,11 +1316,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
+
 - (IBAction)tabButtonsCollection:(UITapGestureRecognizer *)sender
 {
     if(!self.isButtonsCollectionUnderChanging){
-
-        
 
         CGPoint tapLocation = [sender locationInView:self.buttonsCollection];
         NSIndexPath *indexPath = [self.buttonsCollection indexPathForItemAtPoint:tapLocation];
@@ -1334,362 +1335,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 NewButtonsCollectionViewCell *cell =
                 (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPath];
                 NSString *title = cell.name;
-                
-                NSArray * constants = [NSArray arrayWithObjects:@"π",@"e", nil];
-                NSArray * trigonometrics = [NSArray arrayWithObjects:
-                                            @"sin",@"cos",@"tg",@"ctg",
-                                            @"asin",@"acos",@"atg",@"actg",
-                                            nil];
-                
-                NSArray *operands = [NSArray arrayWithObjects:@"x!",
-                                     @"x²",@"x³",@"2ˣ",@"√x",@"³√x",@"eˣ",
-                                     @"lg",@"log₂",@"ln",@"10ˣ",
-                                     @"sinh",@"cosh",@"tgh",@"ctgh",
-                                     nil];
-                NSArray * operandwithTwoArguments = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
-                NSArray * operation = [NSArray arrayWithObjects:@"÷", @"×",@"-",@"+", nil];
-                
-                if((([title floatValue] != 0.0) || [title isEqualToString:@"0"]) && ![operands containsObject:title] ){
-                    NSNumber *symbol = [NSNumber numberWithInt:[title intValue]];
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self.display showString:[self.displayRam addSymbol:symbol]];
-                    }else {
-                        [self.displayRam clearRam];
-                        if(!self.isProgramInProcess){
-                            [self setStoryInforamtion];
-                            [self.brain clearOperation]; //if it's just new argument, not new counting
-                        }
-                        [self.display showString:[self.displayRam addSymbol:symbol]];
-                        self.userIsInTheMidleOfEnteringNumber = YES;
-                    }
-                    
-                } else if([title isEqualToString:[self point]]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        
-                        [self.display showString:[self.displayRam addSymbol:@"."]];
-                    } else {
-                        [self.displayRam clearRam];
-                        [self.display showString:[self.displayRam addSymbol:@0]];
-                        if(!self.isProgramInProcess){
-                            [self setStoryInforamtion];
-                            [self.brain clearOperation];
-                        }
-                        [self.display showString:[self.displayRam addSymbol:@"."]];
-                        self.userIsInTheMidleOfEnteringNumber = YES;
-                    }
-                    
-                } else if([title isEqualToString:@"C"]){
-                    //check if user jus delete las number
-                    id curentresult = [self.displayRam getResult];
-                    double curentValue = 1;
-                    if( curentresult && [curentresult isKindOfClass:[NSNumber class]]){
-                        curentValue = [curentresult doubleValue];
-                    }
-                    
-                    [self.displayRam clearRam];
-                    [self.display showString:[self.displayRam addSymbol:@0]];
-                    
-                    if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
-                        [self setStoryInforamtion];
-                        [self.brain clearOperation];
-                        
-                    }
-                    self.userIsInTheMidleOfEnteringNumber = YES;
-                    self.isProgramInProcess = NO;
-                    
-                } else if([title isEqualToString:@"⌫"]){
-                    if(!self.userIsInTheMidleOfEnteringNumber){
-                        self.isStronglyArgu = [self.brain deleteLastElement];
-                        self.isProgramInProcess = YES;
-                        [self.displayRam clearRam];
-                        [self.display showString:[self.displayRam addSymbol:@0]];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        
-                    } else {
-                        
-                        [self.display showString:[self.displayRam deleteLastSymbol]];//?? what about grad
-                        if(self.displayRam.isGradMinutesSecons == 0){
-                            id currentResult = [self.displayRam getResult]; // this function add grad symbol not needed here
-                            if([currentResult isKindOfClass:[NSNumber class]] && ([currentResult doubleValue] == 0))
-                            self.userIsInTheMidleOfEnteringNumber = NO;
-                        }
-                        
-                    }
-                    [self showStringThruManageDocument];
-                    
-                    
-                } else if([constants containsObject:title]){ //if user pressed e, Pi or others constant buttons
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else {
-                        [self.brain clearArgu];
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([operands containsObject:title]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([title isEqualToString:[[self point] stringByAppendingString:@"00"]]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:@".00"]]]];
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([trigonometrics containsObject:title]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    if(self.isDecCounting == YES){
-                        title = [@"d" stringByAppendingString:title];
-                    } else {
-                        title = [@"r" stringByAppendingString:title];
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([title isEqualToString:@"%"]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.brain pushArguForPerCent];
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([operation containsObject:title]||[operandwithTwoArguments containsObject:title]){
-                    
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        self.isStronglyArgu = YES;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
-                    self.isStronglyArgu = NO;
-                    self.isProgramInProcess = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else if ([title isEqualToString:@"="]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
-                    self.isProgramInProcess = NO;
-                    self.isStronglyArgu = YES;
-                    
-                    //check the brackets
-                    [self showStringThrouhgmanagerAtEqualPress];
-                    [self.brain insertBracket:NO];
-                    //
-                    //show what i can
-                    //
-                    if(self.counterForShowingAllertView > 26){
-                        if(self.fristLunchWithicloudAvailable){
-                            //Important set heere appeared view
-                            [self askUserForiCloudStorage];
-                        }
-                    }
-                    if((25 < self.counterForShowingAllertView) && (self.counterForShowingAllertView < 37)){
-                        
-                        [self showHintViewAccordingCounter];
-
-                        //important
-                    } //else {
-                        //Important show about view
-                        //1. Check if its a trilal period
-                        if(self.isTrialPeriod){
-                            //2. Calculate current value trila period in days(trialDays - (current - start trial time)). For its necessary setup start date and fix it in cloud storage
-                            NSInteger intervalSinceStartInDays = (NSInteger)[self.startTrialDate timeIntervalSinceNow];
-                            NSInteger daysToEndOfTrialPeriod = DAYS_ALOWED_TRIAL_PERIOD + intervalSinceStartInDays/20 ; //Important 86400;// (one day
-                            NSLog(@"daysToEndOfTrialPeriod %ld", (long)daysToEndOfTrialPeriod);//Important - clear
-                            
-                            //important test
-                            [self testShowAppController];
-                            /*
-                            //3. Copare days with @property NSInteger* nexNeedShovewTrialView.
-                            if(daysToEndOfTrialPeriod < self.nexNeedShovewTrialViewDay){
-                                if(daysToEndOfTrialPeriod < 4){
-                                    self.nexNeedShovewTrialViewDay = 1;
-                                } else if(daysToEndOfTrialPeriod < 9){
-                                    self.nexNeedShovewTrialViewDay = 5;
-                                } else if(daysToEndOfTrialPeriod < 20){
-                                    self.nexNeedShovewTrialViewDay = 10;
-                                }
-                                //[set the app purcase reuest!!!
-                                //and show about trila view
-                                int64_t delayInSeconds = 0.05;
-                                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                                    //Importan. If days lees then 0, need ask user Buy or continue without additions
-                                    [self showAboutViewLeftDays:daysToEndOfTrialPeriod];
-                                });
-                                
-                            }
-                            */
-                            
-                            //4. If bigger - showAboutView and set days as argument
-                      //  }
-                        
-
-                        
-                        
-                    }
-                    
-                }else if ([title isEqualToString:@"∓"]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        double number =[[self.displayRam getResult] doubleValue];
-                        if([self.displayRam isGradValue]){
-                            [self.display showString:[self.displayRam addSymbol:@"∓°"]];
-                        } else if(number == 0){
-                            [self.display showString:[self.displayRam addSymbol:@"-"]];
-                        } else {
-                            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:number *(-1.0)]]];
-                        }
-                    } else {
-                        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
-                        self.isStronglyArgu = YES;
-                        [self showStringThruManageDocument];
-                    }
-                } else if ([title isEqualToString:@"¹/x"]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    }  else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    }
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
-                    
-                    self.isStronglyArgu = YES;
-                    [self showStringThruManageDocument];
-                    
-                } else  if ([title isEqualToString:@"("]){
-                    
-                    [self.brain insertBracket:YES];
-                    [self.displayRam clearRam];
-                    [self.display showString:[self.displayRam addSymbol:@0]];
-                    [self showStringThruManageDocument];
-                    self.userIsInTheMidleOfEnteringNumber = YES;
-                    self.isStronglyArgu = NO;
-                } else if ([title isEqualToString:@")"]){
-                    if(self.brain.isOpenBracets){
-                        if(self.userIsInTheMidleOfEnteringNumber){
-                            [self push];
-                        }  else if (self.isResultFromMemory){
-                            [self push];
-                            self.isResultFromMemory = NO;
-                        }
-                        
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        self.isProgramInProcess = NO;
-                        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
-                        [self.brain insertBracket:NO];
-                        self.isStronglyArgu = YES;
-                        [self showStringThruManageDocument];
-                    }
-                    
-                } else if ([title isEqualToString:@"Mc"]){
-                    self.display.firstMemoryLabel.text = @"";
-                    [self.displayRam clearMemory:YES];
-                    
-                } else if ([title isEqualToString:@"Mr"]){
-                    if([self.display.firstMemoryLabel.text isEqualToString:@"M"]){
-                        self.isResultFromMemory = YES;
-                        [self.display showString:[self.displayRam getResultFromMemory:YES]];
-                    }
-                    
-                } else if ([title isEqualToString:@"M+"]){
-                    self.display.firstMemoryLabel.text = @"M";
-                    [self.displayRam addResToMemory:YES inRadians:!self.isDecCounting];
-                    self.isResultFromMemory = YES;
-                    
-                } else if ([title isEqualToString:@"M-"]){
-                    self.display.firstMemoryLabel.text = @"M";
-                    [self.displayRam substractResFromMemory:YES inRadians:!self.isDecCounting];
-                    self.isResultFromMemory = YES;
-                    
-                } else if ([title isEqualToString:@"MIc"]){
-                    self.display.secondMemoryLabel.text = @"";
-                    [self.displayRam clearMemory:NO];
-                    
-                } else if ([title isEqualToString:@"MIr"]){
-                    if([self.display.secondMemoryLabel.text isEqualToString:@"MI"]){
-                        self.isResultFromMemory = YES;
-                        [self.display showString:[self.displayRam getResultFromMemory:NO]];
-                    }
-                    
-                } else if ([title isEqualToString:@"MI+"]){
-                    self.display.secondMemoryLabel.text = @"MI";
-                    [self.displayRam addResToMemory:NO inRadians:!self.isDecCounting];
-                    self.isResultFromMemory = YES;
-                    
-                } else if ([title isEqualToString:@"MI-"]){
-                    self.display.secondMemoryLabel.text = @"MI";
-                    [self.displayRam substractResFromMemory:NO inRadians:!self.isDecCounting];
-                    self.isResultFromMemory = YES;
-                    
-                } else if ([title isEqualToString:@"X"]){
-                    
-                } else if ([title isEqualToString:@"A"]){
-                    
-                } else if ([title isEqualToString:@"Tab"]){
-                    
-                } else if ([title isEqualToString:@"Grph"]){
-                    
-                } else if ([title isEqualToString:@"+f(x)"]){
-                    
-                } else if ([title isEqualToString:@"rad"] || [title isEqualToString:@"deg"] ) {
+                [self tappedButtonWithTitle: title];
+                if ([title isEqualToString:@"rad"] || [title isEqualToString:@"deg"] ) {
                     if([title isEqualToString:@"rad"]){
                         cell.name = @"deg";
-                        [self.display.decRadLabel setText:@" RAD"];
-                        self.isDecCounting = NO;
                     } else if ([title isEqualToString:@"deg"]){
                         cell.name = @"rad";
-                        [self.display.decRadLabel setText:@" DEG"];
-                        self.isDecCounting = YES;
-                    }
-                    
-                } else if ([title isEqualToString:@"° ′″"]){
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self.display showString:[self.displayRam addSymbol:@"° ′″"]];
-                    } else {
-                        [self.display showString:[self.displayRam setResult: self.isDecCounting? @"D" : @"R"]];
                     }
                     
                 }
+                
             }
             [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
         }
@@ -1697,6 +1352,412 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
     }
 }
+
+-(NSString*)currencyStringFromCurrencyArray:(NSArray*)currArr
+{
+    NSString *retStr = nil;
+    if([currArr[1] isKindOfClass:[NSString class]] && [currArr[2] isKindOfClass:[NSString class]] && [currArr[3] isKindOfClass:[NSNumber class]]){
+        
+        retStr = [(NSString*)currArr[1] stringByAppendingString:@"/"];
+        retStr = [retStr stringByAppendingString:currArr[2]];
+        retStr = [retStr stringByAppendingString:@" = "];
+        retStr = [retStr stringByAppendingString:[(NSNumber*)currArr[3] stringValue]];
+    }
+    
+    return retStr;
+}
+
+-(void)tappedButtonWithTitle:(id)title
+{
+    NSArray * constants = [NSArray arrayWithObjects:@"π",@"e", nil];
+    NSArray * trigonometrics = [NSArray arrayWithObjects:
+                                @"sin",@"cos",@"tg",@"ctg",
+                                @"asin",@"acos",@"atg",@"actg",
+                                nil];
+    
+    NSArray *operands = [NSArray arrayWithObjects:@"x!",
+                         @"x²",@"x³",@"2ˣ",@"√x",@"³√x",@"eˣ",
+                         @"lg",@"log₂",@"ln",@"10ˣ",
+                         @"sinh",@"cosh",@"tgh",@"ctgh",
+                         nil];
+    NSArray * operandwithTwoArguments = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
+    NSArray * operation = [NSArray arrayWithObjects:@"÷", @"×",@"-",@"+", nil];
+    
+    if([title isKindOfClass:[NSArray class]]){
+        if([(NSArray*)title count]==4 && [(NSString*)title[0] isEqualToString:@"$"]){
+            NSLog(@"Array from button convercion %@", title);
+            self.currencyExhangeString = [self currencyStringFromCurrencyArray:title];
+            if(self.userIsInTheMidleOfEnteringNumber){
+                //ok for that
+                [self push];
+                //ok for that
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } /*else {
+                //ok for that
+                [self.brain clearArgu];
+            }*/
+            else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+           // NSString *resStr = [NSString stringWithFormat:@"%.2f",[self.brain performOperationInArgu:title]]; //formated string from double
+            //resStr = [resStr stringByAppendingString:(NSString*)title[2]];
+            //[self.display showString:[self.displayRam setResult:resStr]];
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+            
+            
+        }
+    }else if([title isKindOfClass:[NSString class]]){
+        if((([title floatValue] != 0.0) || [title isEqualToString:@"0"]) && ![operands containsObject:title] ){
+            NSNumber *symbol = [NSNumber numberWithInt:[title intValue]];
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self.display showString:[self.displayRam addSymbol:symbol]];
+            }else {
+                [self.displayRam clearRam];
+                if(!self.isProgramInProcess){
+                    [self setStoryInforamtion];
+                    [self.brain clearOperation]; //if it's just new argument, not new counting
+                    self.currencyExhangeString = nil;
+                }
+                [self.display showString:[self.displayRam addSymbol:symbol]];
+                self.userIsInTheMidleOfEnteringNumber = YES;
+            }
+            
+        } else if([title isEqualToString:[self point]]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                
+                [self.display showString:[self.displayRam addSymbol:@"."]];
+            } else {
+                [self.displayRam clearRam];
+                [self.display showString:[self.displayRam addSymbol:@0]];
+                if(!self.isProgramInProcess){
+                    [self setStoryInforamtion];
+                    [self.brain clearOperation];
+                    self.currencyExhangeString = nil;
+                }
+                [self.display showString:[self.displayRam addSymbol:@"."]];
+                self.userIsInTheMidleOfEnteringNumber = YES;
+            }
+            
+        } else if([title isEqualToString:@"C"]){
+            //check if user jus delete las number
+            id curentresult = [self.displayRam getResult];
+            double curentValue = 1;
+            if( curentresult && [curentresult isKindOfClass:[NSNumber class]]){
+                curentValue = [curentresult doubleValue];
+            }
+            
+            [self.displayRam clearRam];
+            [self.display showString:[self.displayRam addSymbol:@0]];
+            
+            if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
+                [self setStoryInforamtion];
+                [self.brain clearOperation];
+                self.currencyExhangeString = nil;
+                
+            }
+            self.userIsInTheMidleOfEnteringNumber = YES;
+            self.isProgramInProcess = NO;
+            
+        } else if([title isEqualToString:@"⌫"]){
+            if(!self.userIsInTheMidleOfEnteringNumber){
+                self.isStronglyArgu = [self.brain deleteLastElement];
+                self.isProgramInProcess = YES;
+                [self.displayRam clearRam];
+                [self.display showString:[self.displayRam addSymbol:@0]];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                
+            } else {
+                
+                [self.display showString:[self.displayRam deleteLastSymbol]];//?? what about grad
+                if(self.displayRam.isGradMinutesSecons == 0){
+                    id currentResult = [self.displayRam getResult]; // this function add grad symbol not needed here
+                    if([currentResult isKindOfClass:[NSNumber class]] && ([currentResult doubleValue] == 0))
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                }
+                
+            }
+            [self showStringThruManageDocument];
+            
+            
+        } else if([constants containsObject:title]){ //if user pressed e, Pi or others constant buttons
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else {
+                [self.brain clearArgu];
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([operands containsObject:title]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([title isEqualToString:[[self point] stringByAppendingString:@"00"]]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:@".00"]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([trigonometrics containsObject:title]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            if(self.isDecCounting == YES){
+                title = [@"d" stringByAppendingString:title];
+            } else {
+                title = [@"r" stringByAppendingString:title];
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([title isEqualToString:@"%"]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.brain pushArguForPerCent];
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([operation containsObject:title]||[operandwithTwoArguments containsObject:title]){
+            
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            self.isStronglyArgu = NO;
+            self.isProgramInProcess = YES;
+            [self showStringThruManageDocument];
+            
+        } else if ([title isEqualToString:@"="]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+            self.isProgramInProcess = NO;
+            self.isStronglyArgu = YES;
+            
+            //check the brackets
+            [self showStringThrouhgmanagerAtEqualPress];
+            [self.brain insertBracket:NO];
+            //
+            //show what i can
+            //
+            if(self.counterForShowingAllertView > 26){
+                if(self.fristLunchWithicloudAvailable){
+                    //Important set heere appeared view
+                    [self askUserForiCloudStorage];
+                }
+            }
+            if((25 < self.counterForShowingAllertView) && (self.counterForShowingAllertView < 37)){
+                
+                [self showHintViewAccordingCounter];
+                
+                //important
+            } //else {
+            //Important show about view
+            //1. Check if its a trilal period
+            if(self.isTrialPeriod){
+                //2. Calculate current value trila period in days(trialDays - (current - start trial time)). For its necessary setup start date and fix it in cloud storage
+               // NSInteger intervalSinceStartInDays = (NSInteger)[self.startTrialDate timeIntervalSinceNow];
+               // NSInteger daysToEndOfTrialPeriod = DAYS_ALOWED_TRIAL_PERIOD + intervalSinceStartInDays/20 ; //Important 86400;// (one day
+               // NSLog(@"daysToEndOfTrialPeriod %ld", (long)daysToEndOfTrialPeriod);//Important - clear
+                
+                //important test!!!
+                
+                //!!!!![self testShowAppController];
+                /*
+                 //3. Copare days with @property NSInteger* nexNeedShovewTrialView.
+                 if(daysToEndOfTrialPeriod < self.nexNeedShovewTrialViewDay){
+                 if(daysToEndOfTrialPeriod < 4){
+                 self.nexNeedShovewTrialViewDay = 1;
+                 } else if(daysToEndOfTrialPeriod < 9){
+                 self.nexNeedShovewTrialViewDay = 5;
+                 } else if(daysToEndOfTrialPeriod < 20){
+                 self.nexNeedShovewTrialViewDay = 10;
+                 }
+                 //[set the app purcase reuest!!!
+                 //and show about trila view
+                 int64_t delayInSeconds = 0.05;
+                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                 //Importan. If days lees then 0, need ask user Buy or continue without additions
+                 [self showAboutViewLeftDays:daysToEndOfTrialPeriod];
+                 });
+                 
+                 }
+                 */
+                
+                //4. If bigger - showAboutView and set days as argument
+                //  }
+
+            }
+            
+        }else if ([title isEqualToString:@"∓"]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                double number =[[self.displayRam getResult] doubleValue];
+                if([self.displayRam isGradValue]){
+                    [self.display showString:[self.displayRam addSymbol:@"∓°"]];
+                } else if(number == 0){
+                    [self.display showString:[self.displayRam addSymbol:@"-"]];
+                } else {
+                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:number *(-1.0)]]];
+                }
+            } else {
+                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
+                self.isStronglyArgu = YES;
+                [self showStringThruManageDocument];
+            }
+        } else if ([title isEqualToString:@"¹/x"]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+            }  else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+            }
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
+            
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+            
+        } else  if ([title isEqualToString:@"("]){
+            
+            [self.brain insertBracket:YES];
+            [self.displayRam clearRam];
+            [self.display showString:[self.displayRam addSymbol:@0]];
+            [self showStringThruManageDocument];
+            self.userIsInTheMidleOfEnteringNumber = YES;
+            self.isStronglyArgu = NO;
+        } else if ([title isEqualToString:@")"]){
+            if(self.brain.isOpenBracets){
+                if(self.userIsInTheMidleOfEnteringNumber){
+                    [self push];
+                }  else if (self.isResultFromMemory){
+                    [self push];
+                    self.isResultFromMemory = NO;
+                }
+                
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isProgramInProcess = NO;
+                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+                [self.brain insertBracket:NO];
+                self.isStronglyArgu = YES;
+                [self showStringThruManageDocument];
+            }
+            
+        } else if ([title isEqualToString:@"Mc"]){
+            self.display.firstMemoryLabel.text = @"";
+            [self.displayRam clearMemory:YES];
+            
+        } else if ([title isEqualToString:@"Mr"]){
+            if([self.display.firstMemoryLabel.text isEqualToString:@"M"]){
+                self.isResultFromMemory = YES;
+                [self.display showString:[self.displayRam getResultFromMemory:YES]];
+            }
+            
+        } else if ([title isEqualToString:@"M+"]){
+            self.display.firstMemoryLabel.text = @"M";
+            [self.displayRam addResToMemory:YES inRadians:!self.isDecCounting];
+            self.isResultFromMemory = YES;
+            
+        } else if ([title isEqualToString:@"M-"]){
+            self.display.firstMemoryLabel.text = @"M";
+            [self.displayRam substractResFromMemory:YES inRadians:!self.isDecCounting];
+            self.isResultFromMemory = YES;
+            
+        } else if ([title isEqualToString:@"MIc"]){
+            self.display.secondMemoryLabel.text = @"";
+            [self.displayRam clearMemory:NO];
+            
+        } else if ([title isEqualToString:@"MIr"]){
+            if([self.display.secondMemoryLabel.text isEqualToString:@"MI"]){
+                self.isResultFromMemory = YES;
+                [self.display showString:[self.displayRam getResultFromMemory:NO]];
+            }
+            
+        } else if ([title isEqualToString:@"MI+"]){
+            self.display.secondMemoryLabel.text = @"MI";
+            [self.displayRam addResToMemory:NO inRadians:!self.isDecCounting];
+            self.isResultFromMemory = YES;
+            
+        } else if ([title isEqualToString:@"MI-"]){
+            self.display.secondMemoryLabel.text = @"MI";
+            [self.displayRam substractResFromMemory:NO inRadians:!self.isDecCounting];
+            self.isResultFromMemory = YES;
+            
+        } else if ([title isEqualToString:@"X"]){
+            
+        } else if ([title isEqualToString:@"A"]){
+            
+        } else if ([title isEqualToString:@"Tab"]){
+            
+        } else if ([title isEqualToString:@"Grph"]){
+            
+        } else if ([title isEqualToString:@"+f(x)"]){
+            
+        } else if ([title isEqualToString:@"rad"] || [title isEqualToString:@"deg"] ) {
+            if([title isEqualToString:@"rad"]){
+                //cell.name = @"deg";
+                [self.display.decRadLabel setText:@" RAD"];
+                self.isDecCounting = NO;
+            } else if ([title isEqualToString:@"deg"]){
+                //cell.name = @"rad";
+                [self.display.decRadLabel setText:@" DEG"];
+                self.isDecCounting = YES;
+            }
+            
+        } else if ([title isEqualToString:@"° ′″"]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self.display showString:[self.displayRam addSymbol:@"° ′″"]];
+            } else {
+                [self.display showString:[self.displayRam setResult: self.isDecCounting? @"D" : @"R"]];
+            }
+            
+        }
+
+    }
+    
+}
+
 
 -(void) showStringThrouhgmanagerAtEqualPress
 {
@@ -1731,7 +1792,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
    // NSDate *currDate = [NSDate date];
     NSArray *deepProgram = [self.brain.deepProgram copy];
+    
     NSArray *deepArgu = [self.brain.deepArgu copy];
+    
     
     NSArray *emptyArray = [[NSArray alloc] init];//to add empty array as no strongly argument and as result
     
@@ -1772,11 +1835,19 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSMutableArray * muttableOutputArray = [[NSMutableArray alloc] init];
         [muttableOutputArray addObject:deepProgram];
         [muttableOutputArray addObject:deepArgu];
+        
         [muttableOutputArray addObject:[NSNumber numberWithDouble:[self.brain count]]];
         
         //create new object in manageddoc with empty array
-        [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
-        
+        if(self.currencyExhangeString){
+            [History storyWithProgram:[muttableOutputArray copy]
+                               atDate:currDate
+                         currensyRate:self.currencyExhangeString
+                  variabledescription:nil
+                inManageObjectContext:self.managedObjectContext];
+        }else {
+            [History storyWithProgram:[muttableOutputArray copy] atDate:currDate inManageObjectContext:self.managedObjectContext];
+        }
         //create new object in manageddoc with empty array
 
         NSArray *new = [[NSArray alloc] init];
@@ -1871,7 +1942,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
 
             
-            CGRect buttonsCollectionViewBounds = self.buttonsCollection.frame;
+            CGRect buttonsCollectionViewBounds = self.viewforCurrencyRecognizer.frame;
             buttonsCollectionViewBounds.size.height = self.mainContainerView.frame.size.height;
             buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height - self.labelViewHeight;
 
@@ -1895,7 +1966,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                      [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
                                      [self.iAdBanner setFrame:self.bannerContainerView.bounds];
                                  }
-                                 [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
+                                // [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
+                                 [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
+                                 [self.buttonsCollection setFrame: self.viewforCurrencyRecognizer.bounds];
                                  self.display.alpha = .0;
                                  
                                  //allow show settings button only in paid version
@@ -2091,7 +2164,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
                          }
                          
-                         [self.buttonsCollection setFrame:buttonsCollectionViewBounds];
+                        [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
+                         [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
+
+
                          
                          self.settingsBottomButtn.alpha = 0.;
                          self.noticeButton.alpha = 0.;
@@ -2447,7 +2523,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     CGPoint newCenter = self.buttonsAsSubView.center;
                     newCenter.y = self.buttonsAsSubView.center.y - blockOffset;
                     
-                    [UIView animateWithDuration: 1.5 * (blockOffset / self.buttonsCollection.frame.size.height)
+                    [UIView animateWithDuration: 1.5 * (blockOffset / self.viewforCurrencyRecognizer.frame.size.height)
                                      animations:^{
                                          [self.buttonsCollection setContentOffset:newOffset];
                                          [self.buttonsAsSubView setCenter:newCenter];
@@ -2472,20 +2548,20 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             sleep(1);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if((self.buttonsAsSubView.center.y > 0) &&
-                   ((self.buttonsCollection.contentOffset.y + self.buttonsCollection.frame.size.height - self.buttonsAsSubView.center.y) <  1.5*self.subCell.bounds.size.height) &&
-                   ((self.buttonsCollection.contentOffset.y +self.buttonsCollection.frame.size.height) < self.buttonsCollection.contentSize.height)){
+                   ((self.buttonsCollection.contentOffset.y + self.viewforCurrencyRecognizer.frame.size.height - self.buttonsAsSubView.center.y) <  1.5*self.subCell.bounds.size.height) &&
+                   ((self.buttonsCollection.contentOffset.y +self.viewforCurrencyRecognizer.frame.size.height) < self.buttonsCollection.contentSize.height)){
                     self.wasInMoveOffsetSection = YES;
                     if(offset > (self.subCell.frame.size.height*4)){
                         blockOffset = self.subCell.frame.size.height*4;
                     } else {
-                        blockOffset = self.buttonsCollection.contentSize.height - self.buttonsCollection.contentOffset.y - self.buttonsCollection.frame.size.height;
+                        blockOffset = self.buttonsCollection.contentSize.height - self.buttonsCollection.contentOffset.y - self.viewforCurrencyRecognizer.frame.size.height;
                     }
                     CGPoint newOffset = self.buttonsCollection.contentOffset;
                     newOffset.y = self.buttonsCollection.contentOffset.y + blockOffset;
                     CGPoint newCenter = self.buttonsAsSubView.center;
                     newCenter.y = self.buttonsAsSubView.center.y + blockOffset;
                     
-                    [UIView animateWithDuration:1.5 * (blockOffset / self.buttonsCollection.frame.size.height)
+                    [UIView animateWithDuration:1.5 * (blockOffset / self.viewforCurrencyRecognizer.frame.size.height)
                                      animations:^{
                                          [self.buttonsCollection setContentOffset:newOffset];
                                          [self.buttonsAsSubView setCenter:newCenter];
@@ -2691,10 +2767,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     [self moveButtonsCollectioViewByOffsetDown:offset];
                 }
             } else if ((self.buttonsAsSubView.center.y > 0)
-                       && ((self.buttonsCollection.contentOffset.y + self.buttonsCollection.frame.size.height - self.buttonsAsSubView.center.y) <  1.5 *self.subCell.bounds.size.height)
-                       && ((self.buttonsCollection.contentOffset.y +self.buttonsCollection.frame.size.height) < self.buttonsCollection.contentSize.height)){
+                       && ((self.buttonsCollection.contentOffset.y + self.viewforCurrencyRecognizer.frame.size.height - self.buttonsAsSubView.center.y) <  1.5 *self.subCell.bounds.size.height)
+                       && ((self.buttonsCollection.contentOffset.y +self.viewforCurrencyRecognizer.frame.size.height) < self.buttonsCollection.contentSize.height)){
                 if(!self.wasInMoveOffsetSection){
-                    CGFloat offset = self.buttonsCollection.contentSize.height - self.buttonsCollection.contentOffset.y - self.buttonsCollection.frame.size.height;
+                    CGFloat offset = self.buttonsCollection.contentSize.height - self.buttonsCollection.contentOffset.y - self.viewforCurrencyRecognizer.frame.size.height;
                     //replace thre line above
                     [self moveButtonsCollectioViewByOffsetUp:offset];
                     
@@ -3134,7 +3210,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
     
-    NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFromArray:self.lastRowDataArray]];
+    NSAttributedString* stringInCell = [self resizeStrforFirstCell:self.lastRowsString];
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
     CGSize neededSize;
     if(IS_IPAD){
@@ -3275,10 +3351,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(NSMutableAttributedString*) getAttributedStringFromArray:(NSArray*) array
 {
    // History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
+    //NSLog(@"Get atrStr inputArray: %@", array);
     NSMutableArray *programFromHistory = [array mutableCopy];
     NSString *resultString = @"";
     id result = [programFromHistory lastObject];
+    //NSLog(@"GetAttrStr result %@",result);
     if(result){
         [programFromHistory removeLastObject];
         
@@ -3311,9 +3388,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     NSMutableArray *argArrayCopy = [[NSMutableArray alloc] init];
     NSMutableArray *wholeProgramCopy = [[NSMutableArray alloc] init];
     id top = [programFromHistory lastObject];
+    //NSLog(@"GetAttrString nextTop: %@", top);
     if(top && [top isKindOfClass:[NSArray class]]){
         [programFromHistory removeLastObject];
-        argArrayCopy = [ACalcBrain deepArrayCopy:top];
+        argArrayCopy = [ACalcBrain deepArrayCopy:top];//CHECK HEERE
         top = [programFromHistory lastObject];
         if(top && [top isKindOfClass:[NSArray class]]){
             [programFromHistory removeLastObject];
@@ -3321,23 +3399,40 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
     }
     id topOfArgArray = [argArrayCopy lastObject];
+    //NSLog(@"GetAttrString topOfArguArray: %@", topOfArgArray);
     //add arg as stack but not add argu as stack if it isn't strong argu
-    if( topOfArgArray && [topOfArgArray isKindOfClass:[NSArray class]]){
-        id topOfWhlPrgLastObj = [wholeProgramCopy lastObject];
-        if([topOfWhlPrgLastObj lastObject]){
-            [wholeProgramCopy.lastObject addObject:topOfArgArray];
+    if(topOfArgArray && [topOfArgArray isKindOfClass:[NSArray class]]){
+        if([(NSArray*)topOfArgArray count]==4 && [topOfArgArray[0] isKindOfClass:[NSString class]]){
+            if([(NSString*)topOfArgArray[0] isEqualToString:@"$"]){
+                [wholeProgramCopy.lastObject addObjectsFromArray:argArrayCopy];
+            } else {
+                id topOfWhlPrgLastObj = [wholeProgramCopy lastObject];
+                if([topOfWhlPrgLastObj lastObject]){
+                    [wholeProgramCopy.lastObject addObject:topOfArgArray];
+                } else {
+                    for(id stc in topOfArgArray){
+                        [wholeProgramCopy.lastObject addObject:stc];
+                    }
+                }
+            }
         } else {
-            for(id stc in topOfArgArray){
-                [wholeProgramCopy.lastObject addObject:stc];
+            id topOfWhlPrgLastObj = [wholeProgramCopy lastObject];
+            if([topOfWhlPrgLastObj lastObject]){
+                [wholeProgramCopy.lastObject addObject:topOfArgArray];
+            } else {
+                for(id stc in topOfArgArray){
+                    [wholeProgramCopy.lastObject addObject:stc];
+                }
             }
         }
-        
+
     } else if([argArrayCopy count] > 0){
         [wholeProgramCopy.lastObject addObjectsFromArray:argArrayCopy];
     } else if([argArrayCopy count] > 1){
         [wholeProgramCopy.lastObject addObjectsFromArray:argArrayCopy];
     }
     
+   // NSLog(@"geAttrString wholeProgCopy:%@",wholeProgramCopy);
     
     NSAttributedString *stringProgram = [ACalcBrain descriptionOfProgram:wholeProgramCopy withAttributes:self.attributes];
     [resultAtrStr insertAttributedString:stringProgram atIndex:0];
@@ -3405,8 +3500,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             ((HistroryTableViewCell*)cell).isCanDrag = NO;
 
             ((HistroryTableViewCell*)cell).historyDateString = @"";
+            ((HistroryTableViewCell*)cell).historyExchangeCurrencyString = nil;
             if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
-            NSAttributedString *resultAtrStr = [self getAttributedStringFromArray:self.lastRowDataArray];
+            NSAttributedString *resultAtrStr = self.lastRowsString;//[self getAttributedStringFromArray:self.lastRowDataArray];
             ((HistroryTableViewCell*)cell).historyProgramString = [self resizeStrforFirstCell:[resultAtrStr copy]];
             ((HistroryTableViewCell*)cell).programTextView.delegate = self;
             //if(![self.historyTable indexPathForSelectedRow]){
@@ -3423,6 +3519,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
             [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
             ((HistroryTableViewCell*)cell).historyDateString = [dateFormatter stringFromDate:story.date];
+            ((HistroryTableViewCell*)cell).historyExchangeCurrencyString = story.currensyRate;
         }
     }
     
@@ -3515,7 +3612,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 - (IBAction)historyTableLeftSwipeGesturerecognizer:(UIPanGestureRecognizer *)sender
 {
     CGPoint tapLocation = [sender locationInView:self.historyTable];
-
     NSIndexPath *indexPath = [self.historyTable indexPathForRowAtPoint:tapLocation];
     if(indexPath){
         if([[self.historyTable  cellForRowAtIndexPath:indexPath] isKindOfClass:[HistroryTableViewCell class]]){
@@ -3525,6 +3621,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             }
             [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
         }
+    }
+    if(sender.state == UIGestureRecognizerStateCancelled ||
+       sender.state == UIGestureRecognizerStateEnded ||
+       sender.state == UIGestureRecognizerStateFailed){
+
     }
     
 }
@@ -3723,6 +3824,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     [self.historyTable beginUpdates];
     _lastRowDataArray = lastRowDataArray;
+    //NSLog(@"Last row Data array %@", lastRowDataArray);
+    self.lastRowsString = [self getAttributedStringFromArray:self.lastRowDataArray];
     [self resetHeightOfFirstCell];
     NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
@@ -3989,7 +4092,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         NSMutableAttributedString *atrStrFromString;
         if(indexPath.row == ([self.historyTable numberOfRowsInSection:0]-1)){
-            atrStrFromString =  [[self getAttributedStringFromArray:self.lastRowDataArray] mutableCopy];
+            atrStrFromString = [self.lastRowsString mutableCopy];
+           // atrStrFromString =  [[self getAttributedStringFromArray:self.lastRowDataArray] mutableCopy];
         } else {
             atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
         }
@@ -4717,7 +4821,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.startTrialDate = date;
     }
     
-    
+    self.currencyExhangeString = nil;
     
     
     self.historyTable.allowsMultipleSelectionDuringEditing = NO;
@@ -4903,14 +5007,22 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self setDisplayButtonsLayout:displaySize];
     }
     
+    /*
     [self.buttonsCollection setFrame:CGRectMake(0,
                                                 self.mainContainerView.frame.size.height - self.labelViewHeight,
                                                 self.mainContainerView.bounds.size.width,
                                                 self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    */
+    [self.viewforCurrencyRecognizer setFrame:CGRectMake(0,
+                                                self.mainContainerView.frame.size.height - self.labelViewHeight,
+                                                self.mainContainerView.bounds.size.width,
+                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
+    
+    [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
+    
 
-
-        
-        
+    
+    
     CGRect sviperRect = self.historyTableSviper.frame;
     sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
     sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
@@ -5034,10 +5146,17 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
           rc.size.height);
     */
     
+    /*
     [self.buttonsCollection setFrame:CGRectMake(0,
                                                 displayViewFrame.origin.y,
                                                 size.width,
                                                 self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
+    */
+    [self.viewforCurrencyRecognizer setFrame:CGRectMake(0,
+                                                displayViewFrame.origin.y,
+                                                size.width,
+                                                self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
+    [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
     
     
     //Important may be Need to deleted it
@@ -5530,7 +5649,7 @@ sourceController:(UIViewController *)source
         NSMutableAttributedString *atrStrFromString;
         if(indexPath.row == lastRowPatch.row){
             if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
-            atrStrFromString = [self getAttributedStringFromArray:self.lastRowDataArray];
+            atrStrFromString = [self.lastRowsString mutableCopy];//[self getAttributedStringFromArray:self.lastRowDataArray];
         } else {
             atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
         }
@@ -6562,7 +6681,16 @@ sourceController:(UIViewController *)source
     return [anyFloatNumberString substringWithRange:NSMakeRange(1, 1)];
 }
 
-
+-(double) setPresisson:(NSInteger)pr forDouble:(double) number
+{
+    NSInteger integerPart = (NSInteger) number;
+    double fractionalPart = number - integerPart;
+    fractionalPart *= (10*pr);  //It is for upto two decimal values after point.
+    //You can increase the zeros to fulfill your needs.
+    NSInteger fractPart = (NSInteger) fractionalPart;
+    double resultdouble = (double) (integerPart) + (double) (fractPart)/(10*pr);
+    return fractionalPart;
+}
 
 @end
 
