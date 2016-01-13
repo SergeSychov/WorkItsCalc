@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		352856781C3D29E100D6B4D2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856771C3D29E100D6B4D2 /* MapKit.framework */; };
+		3528567A1C3D29F800D6B4D2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */; };
 		355142AB1B0BC8BE00471CCD /* ClearHistoryButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */; };
 		355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142AA1B0BC8BE00471CCD /* DesignButton.m */; };
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
 		35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */; };
 		35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */; };
 		5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5006BC90193792210081F44E /* ACalcTryViewControllerTableAdditional.strings */; };
+		500E274B1C3A878500FB5D8E /* ITSCalc.m in Sources */ = {isa = PBXBuildFile; fileRef = 500E274A1C3A878500FB5D8E /* ITSCalc.m */; };
 		50104757192BB21100A0CB1F /* HintView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50104756192BB21100A0CB1F /* HintView.m */; };
 		5010475A192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5010475C192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings */; };
 		50119EEC1B07531700E4BDE0 /* AppearedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50119EEB1B07531700E4BDE0 /* AppearedViewController.m */; };
@@ -55,16 +58,16 @@
 		5021BD2918FDB372001749D4 /* newButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2518FDB372001749D4 /* newButtonView.m */; };
 		5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2718FDB372001749D4 /* NewButtonsCollectionViewCell.m */; };
 		502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 502E82AB197EA5B800B05E83 /* IPad.storyboard */; };
-		504750131B7931BB001AD553 /* myTextureSych.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750121B7931BB001AD553 /* myTextureSych.png */; };
-		504750151B793317001AD553 /* myTextureSych2.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750141B793317001AD553 /* myTextureSych2.png */; };
+		5032B9CD1C3BBB40008C4989 /* Currensies.m in Sources */ = {isa = PBXBuildFile; fileRef = 5032B9CC1C3BBB40008C4989 /* Currensies.m */; };
 		504750171B79346C001AD553 /* myTextureSych 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750161B79346C001AD553 /* myTextureSych 3.png */; };
 		5047501D1B7BC45A001AD553 /* PlusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5047501C1B7BC45A001AD553 /* PlusButton.m */; };
 		504EA8C51A1902A300E225F7 /* recBut.m in Sources */ = {isa = PBXBuildFile; fileRef = 504EA8C41A1902A300E225F7 /* recBut.m */; };
 		505156001B01311400E2E042 /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 505155FF1B01311400E2E042 /* AddViewController.m */; };
-		50532F941B583A0000A6CC97 /* IMG_1552.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 50532F931B583A0000A6CC97 /* IMG_1552.jpg */; };
 		50545AF71AFFA9930036EAD8 /* LogoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AF61AFFA9930036EAD8 /* LogoTextView.m */; };
 		50545AFB1B00C6140036EAD8 /* AdditionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AFA1B00C6140036EAD8 /* AdditionViewController.m */; };
 		50545AFF1B00CB0C0036EAD8 /* DesignView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50545AFE1B00CB0C0036EAD8 /* DesignView.m */; };
+		5061850C1BB6AB9C005F209A /* GradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5061850B1BB6AB9C005F209A /* GradientView.m */; };
+		5061850F1BB6E99E005F209A /* LineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5061850E1BB6E99E005F209A /* LineView.m */; };
 		50702AA81914349C00274FB9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50702AA71914349C00274FB9 /* StoreKit.framework */; };
 		5073EEC91A209EF60027EE0E /* CalcButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5073EEC71A209EF60027EE0E /* CalcButton.m */; };
 		5074EB9D1B544ACE00291799 /* DesignViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5074EB9C1B544ACE00291799 /* DesignViewController.m */; };
@@ -87,7 +90,9 @@
 		50C3C4C61B981049005A6854 /* MarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3C4C51B981049005A6854 /* MarkView.m */; };
 		50C3C5071BA5AD9D005A6854 /* DesignViewFromButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */; };
 		50DF89251B2E0EA200DF6D06 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DF89241B2E0EA200DF6D06 /* SettingsViewController.m */; };
-		50ED4CE9195233A6001854C0 /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 50ED4CE8195233A6001854C0 /* handmadepaper.png */; };
+		50EFEE661C3AFE7C0004C4C0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EFEE611C3AFE7C0004C4C0 /* Reachability.m */; };
+		50EFEE671C3AFE7C0004C4C0 /* CurrencyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EFEE631C3AFE7C0004C4C0 /* CurrencyStore.m */; };
+		50EFEE681C3AFE7C0004C4C0 /* convertBut.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EFEE651C3AFE7C0004C4C0 /* convertBut.m */; };
 		50F3123C1A20AFFB002604FB /* CleanButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F3123B1A20AFFB002604FB /* CleanButton.m */; };
 		50F312421A20BA19002604FB /* CloudView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312411A20BA19002604FB /* CloudView.m */; };
 		50F312451A20CCFD002604FB /* SoundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312441A20CCFD002604FB /* SoundView.m */; };
@@ -97,6 +102,8 @@
 		50F312511A221D78002604FB /* DelButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312501A221D78002604FB /* DelButton.m */; };
 		50F312541A2222F7002604FB /* DownButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312531A2222F7002604FB /* DownButton.m */; };
 		50F312571A22448F002604FB /* CloseSetButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F312561A22448F002604FB /* CloseSetButton.m */; };
+		50FAC44D1BC1644500442FEF /* RoundedGroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50FAC44C1BC1644500442FEF /* RoundedGroundView.m */; };
+		50FAC44F1BC1781F00442FEF /* photoGround.png in Resources */ = {isa = PBXBuildFile; fileRef = 50FAC44E1BC1781F00442FEF /* photoGround.png */; };
 		50FD96D819478E5100ADCF9A /* BezierInterpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50FD96D719478E5100ADCF9A /* BezierInterpView.m */; };
 		640185DD19B05DE700D9BE5C /* GrayStyleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 640185DC19B05DE700D9BE5C /* GrayStyleView.m */; };
 		64206BCC1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 64206BCE1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings */; };
@@ -116,6 +123,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		352856771C3D29E100D6B4D2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		355142A71B0BC8BE00471CCD /* ClearHistoryButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClearHistoryButton.h; sourceTree = "<group>"; };
 		355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClearHistoryButton.m; sourceTree = "<group>"; };
 		355142A91B0BC8BE00471CCD /* DesignButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignButton.h; sourceTree = "<group>"; };
@@ -140,6 +149,8 @@
 		5006BC9C193792300081F44E /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/ACalcTryViewControllerTableAdditional.strings; sourceTree = "<group>"; };
 		5006BC9D193792300081F44E /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/ACalcTryViewControllerTableAdditional.strings"; sourceTree = "<group>"; };
 		5006BC9E193792340081F44E /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ACalcTryViewControllerTableAdditional.strings; sourceTree = "<group>"; };
+		500E27491C3A878500FB5D8E /* ITSCalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITSCalc.h; sourceTree = "<group>"; };
+		500E274A1C3A878500FB5D8E /* ITSCalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSCalc.m; sourceTree = "<group>"; };
 		50104755192BB21100A0CB1F /* HintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HintView.h; sourceTree = "<group>"; };
 		50104756192BB21100A0CB1F /* HintView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HintView.m; sourceTree = "<group>"; };
 		5010475B192BB2FB00A0CB1F /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/ACalcTryViewControllerTable.strings; sourceTree = "<group>"; };
@@ -258,8 +269,8 @@
 		5021BD5018FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5021BD5118FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		502E82AB197EA5B800B05E83 /* IPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = IPad.storyboard; sourceTree = "<group>"; };
-		504750121B7931BB001AD553 /* myTextureSych.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myTextureSych.png; sourceTree = "<group>"; };
-		504750141B793317001AD553 /* myTextureSych2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myTextureSych2.png; sourceTree = "<group>"; };
+		5032B9CB1C3BBB40008C4989 /* Currensies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Currensies.h; sourceTree = "<group>"; };
+		5032B9CC1C3BBB40008C4989 /* Currensies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Currensies.m; sourceTree = "<group>"; };
 		504750161B79346C001AD553 /* myTextureSych 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "myTextureSych 3.png"; sourceTree = "<group>"; };
 		5047501B1B7BC45A001AD553 /* PlusButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlusButton.h; sourceTree = "<group>"; };
 		5047501C1B7BC45A001AD553 /* PlusButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlusButton.m; sourceTree = "<group>"; };
@@ -267,13 +278,16 @@
 		504EA8C41A1902A300E225F7 /* recBut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = recBut.m; sourceTree = "<group>"; };
 		505155FE1B01311400E2E042 /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddViewController.h; sourceTree = "<group>"; };
 		505155FF1B01311400E2E042 /* AddViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddViewController.m; sourceTree = "<group>"; };
-		50532F931B583A0000A6CC97 /* IMG_1552.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_1552.jpg; sourceTree = "<group>"; };
 		50545AF51AFFA9930036EAD8 /* LogoTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogoTextView.h; path = ../LogoTextView.h; sourceTree = "<group>"; };
 		50545AF61AFFA9930036EAD8 /* LogoTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LogoTextView.m; path = ../LogoTextView.m; sourceTree = "<group>"; };
 		50545AF91B00C6140036EAD8 /* AdditionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdditionViewController.h; sourceTree = "<group>"; };
 		50545AFA1B00C6140036EAD8 /* AdditionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdditionViewController.m; sourceTree = "<group>"; };
 		50545AFD1B00CB0C0036EAD8 /* DesignView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignView.h; sourceTree = "<group>"; };
 		50545AFE1B00CB0C0036EAD8 /* DesignView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignView.m; sourceTree = "<group>"; };
+		5061850A1BB6AB9C005F209A /* GradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientView.h; sourceTree = "<group>"; };
+		5061850B1BB6AB9C005F209A /* GradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GradientView.m; sourceTree = "<group>"; };
+		5061850D1BB6E99E005F209A /* LineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineView.h; sourceTree = "<group>"; };
+		5061850E1BB6E99E005F209A /* LineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineView.m; sourceTree = "<group>"; };
 		50702AA71914349C00274FB9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5073EEC71A209EF60027EE0E /* CalcButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalcButton.m; sourceTree = "<group>"; };
 		5073EEC81A209EF60027EE0E /* CalcButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalcButton.h; sourceTree = "<group>"; };
@@ -312,7 +326,12 @@
 		50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignViewFromButton.m; sourceTree = "<group>"; };
 		50DF89231B2E0EA200DF6D06 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		50DF89241B2E0EA200DF6D06 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		50ED4CE8195233A6001854C0 /* handmadepaper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = handmadepaper.png; sourceTree = "<group>"; };
+		50EFEE601C3AFE7C0004C4C0 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		50EFEE611C3AFE7C0004C4C0 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		50EFEE621C3AFE7C0004C4C0 /* CurrencyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrencyStore.h; sourceTree = "<group>"; };
+		50EFEE631C3AFE7C0004C4C0 /* CurrencyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrencyStore.m; sourceTree = "<group>"; };
+		50EFEE641C3AFE7C0004C4C0 /* convertBut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = convertBut.h; sourceTree = "<group>"; };
+		50EFEE651C3AFE7C0004C4C0 /* convertBut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = convertBut.m; sourceTree = "<group>"; };
 		50F3123A1A20AFFB002604FB /* CleanButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanButton.h; sourceTree = "<group>"; };
 		50F3123B1A20AFFB002604FB /* CleanButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanButton.m; sourceTree = "<group>"; };
 		50F312401A20BA19002604FB /* CloudView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudView.h; sourceTree = "<group>"; };
@@ -331,6 +350,9 @@
 		50F312531A2222F7002604FB /* DownButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DownButton.m; sourceTree = "<group>"; };
 		50F312551A22448F002604FB /* CloseSetButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseSetButton.h; sourceTree = "<group>"; };
 		50F312561A22448F002604FB /* CloseSetButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseSetButton.m; sourceTree = "<group>"; };
+		50FAC44B1BC1644500442FEF /* RoundedGroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundedGroundView.h; sourceTree = "<group>"; };
+		50FAC44C1BC1644500442FEF /* RoundedGroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundedGroundView.m; sourceTree = "<group>"; };
+		50FAC44E1BC1781F00442FEF /* photoGround.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photoGround.png; sourceTree = "<group>"; };
 		50FD96D619478E5100ADCF9A /* BezierInterpView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierInterpView.h; sourceTree = "<group>"; };
 		50FD96D719478E5100ADCF9A /* BezierInterpView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BezierInterpView.m; sourceTree = "<group>"; };
 		640185DC19B05DE700D9BE5C /* GrayStyleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrayStyleView.m; sourceTree = "<group>"; };
@@ -361,6 +383,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3528567A1C3D29F800D6B4D2 /* MobileCoreServices.framework in Frameworks */,
+				352856781C3D29E100D6B4D2 /* MapKit.framework in Frameworks */,
 				64E0CC0319B8BC8A00E86D60 /* Accelerate.framework in Frameworks */,
 				50702AA81914349C00274FB9 /* StoreKit.framework in Frameworks */,
 				5021BCBE18FDAEDA001749D4 /* QuartzCore.framework in Frameworks */,
@@ -386,6 +410,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		500E274C1C3AD88600FB5D8E /* CurrensiesPicker */ = {
+			isa = PBXGroup;
+			children = (
+				50EFEE601C3AFE7C0004C4C0 /* Reachability.h */,
+				50EFEE611C3AFE7C0004C4C0 /* Reachability.m */,
+				50EFEE621C3AFE7C0004C4C0 /* CurrencyStore.h */,
+				50EFEE631C3AFE7C0004C4C0 /* CurrencyStore.m */,
+				50EFEE641C3AFE7C0004C4C0 /* convertBut.h */,
+				50EFEE651C3AFE7C0004C4C0 /* convertBut.m */,
+				5032B9CB1C3BBB40008C4989 /* Currensies.h */,
+				5032B9CC1C3BBB40008C4989 /* Currensies.m */,
+			);
+			name = CurrensiesPicker;
+			sourceTree = "<group>";
+		};
 		5021BC7618FDAE3C001749D4 = {
 			isa = PBXGroup;
 			children = (
@@ -409,6 +448,8 @@
 		5021BC8118FDAE3C001749D4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */,
+				352856771C3D29E100D6B4D2 /* MapKit.framework */,
 				64E0CC0219B8BC8900E86D60 /* Accelerate.framework */,
 				50702AA71914349C00274FB9 /* StoreKit.framework */,
 				5021BCBD18FDAEDA001749D4 /* QuartzCore.framework */,
@@ -437,10 +478,13 @@
 				50DF89221B2E0E6500DF6D06 /* SettingsViewController */,
 				5074EB9F1B544B1000291799 /* DesignViewcontroller */,
 				50A666931B16FEB1005ABB39 /* ShowedViewConroller */,
+				500E274C1C3AD88600FB5D8E /* CurrensiesPicker */,
 				5021BC9118FDAE3C001749D4 /* ITSCalcAppDelegate.h */,
 				5021BC9218FDAE3C001749D4 /* ITSCalcAppDelegate.m */,
 				5021BC9718FDAE3C001749D4 /* ITSCalcViewController.h */,
 				5021BC9818FDAE3C001749D4 /* ITSCalcViewController.m */,
+				500E27491C3A878500FB5D8E /* ITSCalc.h */,
+				500E274A1C3A878500FB5D8E /* ITSCalc.m */,
 				5021BC9A18FDAE3C001749D4 /* Images.xcassets */,
 				640185DC19B05DE700D9BE5C /* GrayStyleView.m */,
 				5021BCBF18FDB066001749D4 /* Sourse */,
@@ -481,8 +525,12 @@
 		5021BCBF18FDB066001749D4 /* Sourse */ = {
 			isa = PBXGroup;
 			children = (
+				50FAC44B1BC1644500442FEF /* RoundedGroundView.h */,
+				50FAC44C1BC1644500442FEF /* RoundedGroundView.m */,
 				50A7D6FE1BAC33B900ABCB0C /* Clr.h */,
 				50A7D6FF1BAC33B900ABCB0C /* Clr.m */,
+				5061850D1BB6E99E005F209A /* LineView.h */,
+				5061850E1BB6E99E005F209A /* LineView.m */,
 				50C3C4C41B981049005A6854 /* MarkView.h */,
 				50C3C4C51B981049005A6854 /* MarkView.m */,
 				5047501B1B7BC45A001AD553 /* PlusButton.h */,
@@ -520,13 +568,12 @@
 				50961B621A1A875C00868777 /* SettingButton.h */,
 				50961B631A1A875C00868777 /* SettingButton.m */,
 				504EA8A51A17C6E000E225F7 /* iPads */,
+				50FAC44E1BC1781F00442FEF /* photoGround.png */,
 				504750161B79346C001AD553 /* myTextureSych 3.png */,
-				504750141B793317001AD553 /* myTextureSych2.png */,
 				5080B9541965F0F90004EEED /* bluePanSelected2.png */,
 				5080B9551965F0F90004EEED /* bluePanUnselected2.png */,
 				5080B95D1965F0F90004EEED /* redPanUnselected2.png */,
 				5080B95E1965F0F90004EEED /* redPanSelected2.png */,
-				50ED4CE8195233A6001854C0 /* handmadepaper.png */,
 				5021BCC618FDB08B001749D4 /* blank.m4a */,
 				5021BCC718FDB08B001749D4 /* shutter.caf */,
 				5080B952196477CB0004EEED /* tap2.caf */,
@@ -557,6 +604,8 @@
 			children = (
 				5021BD2118FDB372001749D4 /* HistroryTableViewCell.h */,
 				5021BD2218FDB372001749D4 /* HistroryTableViewCell.m */,
+				5061850A1BB6AB9C005F209A /* GradientView.h */,
+				5061850B1BB6AB9C005F209A /* GradientView.m */,
 				5021BD2318FDB372001749D4 /* cmyk.h */,
 				5021BD2418FDB372001749D4 /* newButtonView.h */,
 				5021BD2518FDB372001749D4 /* newButtonView.m */,
@@ -608,8 +657,6 @@
 		504EA8A51A17C6E000E225F7 /* iPads */ = {
 			isa = PBXGroup;
 			children = (
-				504750121B7931BB001AD553 /* myTextureSych.png */,
-				50532F931B583A0000A6CC97 /* IMG_1552.jpg */,
 			);
 			name = iPads;
 			sourceTree = "<group>";
@@ -754,7 +801,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = ITSCalc;
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Sergey Sychov";
 				TargetAttributes = {
 					5021BC7E18FDAE3C001749D4 = {
@@ -811,8 +858,8 @@
 				504750171B79346C001AD553 /* myTextureSych 3.png in Resources */,
 				5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */,
 				5021BCE318FDB08B001749D4 /* tap.caf in Resources */,
+				50FAC44F1BC1781F00442FEF /* photoGround.png in Resources */,
 				64206BCC1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings in Resources */,
-				504750131B7931BB001AD553 /* myTextureSych.png in Resources */,
 				5021BCE218FDB08B001749D4 /* shutter.caf in Resources */,
 				502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */,
 				5010475A192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings in Resources */,
@@ -821,13 +868,10 @@
 				5021BCE418FDB08B001749D4 /* error.caf in Resources */,
 				50142CF81ADC3B64006CB247 /* Launch Screen.xib in Resources */,
 				357DE42D1ADAF20C0065C256 /* Logo.png in Resources */,
-				50ED4CE9195233A6001854C0 /* handmadepaper.png in Resources */,
 				5021BC8D18FDAE3C001749D4 /* InfoPlist.strings in Resources */,
 				5080B953196477CB0004EEED /* tap2.caf in Resources */,
 				5080B9631965F0F90004EEED /* bluePanUnselected2.png in Resources */,
 				5080B96B1965F0F90004EEED /* redPanUnselected2.png in Resources */,
-				504750151B793317001AD553 /* myTextureSych2.png in Resources */,
-				50532F941B583A0000A6CC97 /* IMG_1552.jpg in Resources */,
 				5080B96C1965F0F90004EEED /* redPanSelected2.png in Resources */,
 				5021BCE118FDB08B001749D4 /* blank.m4a in Resources */,
 				5021BC9618FDAE3C001749D4 /* Main.storyboard in Resources */,
@@ -855,10 +899,12 @@
 				5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */,
 				5073EEC91A209EF60027EE0E /* CalcButton.m in Sources */,
 				5021BD2918FDB372001749D4 /* newButtonView.m in Sources */,
+				5032B9CD1C3BBB40008C4989 /* Currensies.m in Sources */,
 				50A7D7001BAC33B900ABCB0C /* Clr.m in Sources */,
 				50F312541A2222F7002604FB /* DownButton.m in Sources */,
 				5021BC9918FDAE3C001749D4 /* ITSCalcViewController.m in Sources */,
 				5021BD0F18FDB146001749D4 /* ShowedView.m in Sources */,
+				5061850C1BB6AB9C005F209A /* GradientView.m in Sources */,
 				50F312511A221D78002604FB /* DelButton.m in Sources */,
 				50DF89251B2E0EA200DF6D06 /* SettingsViewController.m in Sources */,
 				355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */,
@@ -875,6 +921,7 @@
 				50B991CA1B0E5E8600BDCBC5 /* BackTransition.m in Sources */,
 				5021BD2018FDB242001749D4 /* ACalcBrain.m in Sources */,
 				50545AF71AFFA9930036EAD8 /* LogoTextView.m in Sources */,
+				50EFEE681C3AFE7C0004C4C0 /* convertBut.m in Sources */,
 				5021BD0A18FDB11E001749D4 /* HistoryTableView.m in Sources */,
 				50B991D01B0E5FAD00BDCBC5 /* AppearedController.m in Sources */,
 				5074EBA21B55815C00291799 /* TestButtonBackGroundView.m in Sources */,
@@ -882,11 +929,13 @@
 				35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */,
 				5021BD1718FDB1E6001749D4 /* DisplayRam.m in Sources */,
 				50C3C5071BA5AD9D005A6854 /* DesignViewFromButton.m in Sources */,
+				50EFEE671C3AFE7C0004C4C0 /* CurrencyStore.m in Sources */,
 				50F312571A22448F002604FB /* CloseSetButton.m in Sources */,
 				50545AFB1B00C6140036EAD8 /* AdditionViewController.m in Sources */,
 				640185DD19B05DE700D9BE5C /* GrayStyleView.m in Sources */,
 				50A7D7031BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m in Sources */,
 				50FD96D819478E5100ADCF9A /* BezierInterpView.m in Sources */,
+				50FAC44D1BC1644500442FEF /* RoundedGroundView.m in Sources */,
 				50C3C4C61B981049005A6854 /* MarkView.m in Sources */,
 				50545AFF1B00CB0C0036EAD8 /* DesignView.m in Sources */,
 				50F3123C1A20AFFB002604FB /* CleanButton.m in Sources */,
@@ -904,6 +953,9 @@
 				5021BC8F18FDAE3C001749D4 /* main.m in Sources */,
 				50A666961B16FFE3005ABB39 /* ShowedViewController.m in Sources */,
 				64DAEDB1198AEDAF002A8EF3 /* History.xcdatamodel in Sources */,
+				5061850F1BB6E99E005F209A /* LineView.m in Sources */,
+				50EFEE661C3AFE7C0004C4C0 /* Reachability.m in Sources */,
+				500E274B1C3A878500FB5D8E /* ITSCalc.m in Sources */,
 				5021BD1818FDB1E6001749D4 /* DisplayLabel.m in Sources */,
 				505156001B01311400E2E042 /* AddViewController.m in Sources */,
 				50F312481A20DCEE002604FB /* ArchiveSizeView.m in Sources */,
@@ -1089,7 +1141,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "8b97b138-c373-40fb-98ad-fe325c8eca0e";
 				SDKROOT = iphoneos;
@@ -1105,11 +1157,13 @@
 				CODE_SIGN_ENTITLEMENTS = "Its Calc.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_OPTIMIZATION_LEVEL = 1;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1134,6 +1188,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalcTests/ITSCalcTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.SergeSychov.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Its Calc.app/Its Calc";
@@ -1168,7 +1223,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "8b97b138-c373-40fb-98ad-fe325c8eca0e";
 				SDKROOT = iphoneos;
@@ -1184,10 +1239,12 @@
 				CODE_SIGN_ENTITLEMENTS = "Its Calc.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_OPTIMIZATION_LEVEL = 1;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1212,6 +1269,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalcTests/ITSCalcTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.SergeSychov.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Its Calc.app/Its Calc";
