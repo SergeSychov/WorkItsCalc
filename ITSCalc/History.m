@@ -13,5 +13,7 @@
 
 @dynamic date;
 @dynamic program;
+@dynamic currensyRate;
+@dynamic variableDescription;
 
 @end

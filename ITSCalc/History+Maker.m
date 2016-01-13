@@ -9,8 +9,7 @@
 #import "History+Maker.h"
 
 @implementation History (Maker)
-
-+(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date inManageObjectContext:(NSManagedObjectContext*) context
++(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date currensyRate:(NSString*)currensyRate variabledescription:(NSString*)variableDescription inManageObjectContext:(NSManagedObjectContext*) context
 {
     History *history = nil;
     
@@ -31,8 +30,40 @@
         
         history.program = [NSKeyedArchiver archivedDataWithRootObject:program];
         history.date = date;
+        history.currensyRate = currensyRate;
+        history.variableDescription = variableDescription;
     }
     
+    return history;
+}
+
++(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date inManageObjectContext:(NSManagedObjectContext*) context
+{
+    History *history = [History storyWithProgram:program atDate:date currensyRate:nil variabledescription:nil inManageObjectContext:context];
+    /*
+    History *history = nil;
+    
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+    request.predicate = [NSPredicate predicateWithFormat:@"date = %@", date];
+    
+    NSError *error;
+    NSArray *matches = [context executeFetchRequest:request error:&error];
+    
+    
+    if(!matches || error || ([matches count] > 1)){
+        
+    } else if ([matches count]){
+        //history = [matches firstObject];
+    }
+    else {
+        history = [NSEntityDescription insertNewObjectForEntityForName:@"History" inManagedObjectContext:context];
+        
+        history.program = [NSKeyedArchiver archivedDataWithRootObject:program];
+        history.date = date;
+        history.currensyRate = nil;
+        history.variableDescription = nil;
+    }
+    */
     return history;
 }
 

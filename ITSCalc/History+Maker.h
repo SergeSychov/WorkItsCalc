@@ -9,7 +9,7 @@
 #import "History.h"
 
 @interface History (Maker)
-
++(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date currensyRate:(NSString*)currensyRate variabledescription:(NSString*)variableDescription inManageObjectContext:(NSManagedObjectContext*) context;
 +(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date inManageObjectContext:(NSManagedObjectContext*) context;
 +(void) clearContext:(NSManagedObjectContext *)context;
 

@@ -14,5 +14,7 @@
 
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSData * program;
+@property (nonatomic, retain) NSString *currensyRate;
+@property (nonatomic, retain) NSString * variableDescription;
 
 @end
