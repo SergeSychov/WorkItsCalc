@@ -10,5 +10,6 @@
 
 @interface HistoryTableSviper : UIView
 @property (nonatomic) CGFloat pattOfDown;
+@property (nonatomic) NSInteger design;
 
 @end
