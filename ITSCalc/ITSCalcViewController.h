@@ -12,6 +12,9 @@
 
 #import "ButtonsCollectionView.h"
 
+#import "Currensies.h"
+#import "ACalcBrain.h"
+
 //important delete
 //#import <StoreKit/StoreKit.h>
 
@@ -27,6 +30,14 @@
 //initial layout
 @property (weak, nonatomic) IBOutlet UIView *viewforCurrencyRecognizer; //dublicate area of button collection
 
+//Models
+@property (nonatomic, strong) ACalcBrain *brain; //main brain
+
+#pragma mark CURRENSIES
+
+
+@property (nonatomic,strong) Currensies *currensies;
+
 -(void) initialLayoutDynamicContainerWithSize:(CGSize)size;//for initial layout in ItsCalc
 
 -(void)tappedButtonWithTitle:(id)title; //for convert button tapped in ItsCalc.
@@ -34,6 +45,8 @@
 -(void)discardChanging; //to renew currency convrter
 
 - (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender;
+
+-(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies;
 
 @end
 

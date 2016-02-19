@@ -47,6 +47,12 @@
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes;
 +(id) deepArrayCopy:(NSArray*) arrayToCopy;
 
+//check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
++(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
+
+//replace arrays with currencies in program with new values of currencies exhange
++(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
+
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu;

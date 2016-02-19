@@ -10,6 +10,8 @@
 #import "recBut.h"
 #import "DelButton.h"
 #import "Clr.h"
+#import "GradientView.h"
+#import "LineView.h"
 /////////test4
 
 
@@ -35,6 +37,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 
 @property (nonatomic) BOOL isButtonShowed;
+@property (nonatomic) BOOL sel;
 @property (nonatomic,strong) DelButton *deleteButton;
 @property (nonatomic,strong) UIImageView* deleteImage;
 
@@ -42,40 +45,267 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 @property (nonatomic,strong) recBut *moreButton;
 @property (nonatomic,strong) UIImageView* moreImage;
 
-@property (nonatomic,strong) UIView *scrollViewContentView;
+@property (nonatomic,strong) GradientView *scrollGradientView;
+//@property (nonatomic,strong) UIView *scrollViewContentView;
 @property (nonatomic, strong) UILabel *datelabel;
+@property (nonatomic, strong) UILabel *currencyLabel;
 @property (nonatomic, strong) UILabel *programLabel;
+@property (nonatomic,weak) LineView* lineView;
 
-@property (nonatomic, strong) CAGradientLayer *backgroundGradient;
-@property (nonatomic, strong) CAGradientLayer *scrollGradientLayer;
+//@property (nonatomic, strong) CAGradientLayer *backgroundGradient;
+//@property (nonatomic, strong) CAGradientLayer *scrollGradientLayer;
 
 @property (nonatomic) CGFloat curentXofSwiper;
 @property (nonatomic) CGFloat deltaXofSwiper;
 
+@property (nonatomic, strong)UIColor* colorSelectedFirstGradient;
+@property (nonatomic, strong)UIColor* colorSelectedSecondGradient;
+@property (nonatomic, strong)UIColor* colorUnselectedFirstGradient;
+@property (nonatomic, strong)UIColor* colorUnselectedSecondGradient;
+@property (nonatomic, strong)UIColor* colorForSelectedText;
+@property (nonatomic, strong)UIColor* colorForUnselectedText;
+
+@property (nonatomic, strong)UIColor *moreButtonColor;
+@property (nonatomic, strong)UIColor *moreButtonBackgroundColor;
+@property (nonatomic, strong)UIColor *buttonShadowColor;
+@property (nonatomic)CGSize buttonShadowSize;
+@property (nonatomic)CGFloat buttonShadowBlur;
+
+@property (nonatomic, strong)UIColor *deleteButtonColor;
+@property (nonatomic, strong)UIColor *deleteButtonBackgroundColor;
+
 @end
 
 @implementation HistroryTableViewCell
-
--(void)awakeFromNib {
-    [super awakeFromNib];
+-(void)setup {
+    self.isButtonShowed = NO;
+    self.backgroundColor = [UIColor clearColor];
     
-    [self setup];
+    GradientView *scrollGradientView = [[GradientView alloc] init];
+    scrollGradientView.backgroundColor = [UIColor clearColor];
+    [self.contentView addSubview:scrollGradientView];
+    self.scrollGradientView = scrollGradientView;
+    
+    UILabel *dateLabel = [[UILabel alloc] init];
+    dateLabel.backgroundColor = [UIColor clearColor];
+    [self.scrollGradientView addSubview:dateLabel];
+    self.datelabel = dateLabel;
+    self.historyExchangeCurrencyString = nil;
+    /*
+    if(self.historyExchangeCurrencyString){
+        UILabel *currencyLabel = [[UILabel alloc] init];
+        currencyLabel.backgroundColor = [UIColor clearColor];
+        [self.scrollGradientView addSubview:currencyLabel];
+        self.currencyLabel = currencyLabel;
+    }*/
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enclosingTableViewDidScroll) name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
+    
 }
 
--(id) initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    return self;
-}
+-(void)setDesign:(NSInteger)design{
+    _design = design;
+    switch (self.design) {
+        case DESIGN_CLASSIC:
+            self.colorSelectedFirstGradient = [UIColor whiteColor];
+            self.colorSelectedSecondGradient = [UIColor whiteColor];
+            self.colorUnselectedFirstGradient = [UIColor colorWithWhite:0.95 alpha:1];
+            self.colorUnselectedSecondGradient = [UIColor colorWithWhite:0.9 alpha:1];
+            self.colorForSelectedText = [UIColor darkTextColor];
+            self.colorForUnselectedText = [UIColor grayColor];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+            
+        case DESIGN_PAPER:
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        [self setup];
+            self.colorSelectedFirstGradient = [UIColor clearColor];
+            self.colorSelectedSecondGradient = [UIColor clearColor];
+            self.colorUnselectedFirstGradient = [UIColor clearColor];
+            self.colorUnselectedSecondGradient = [UIColor clearColor];
+            self.colorForSelectedText = [Clr paperButton];
+            self.colorForUnselectedText = [[Clr paperButton] colorWithAlphaComponent:0.6];
+            if(!self.lineView){
+                LineView *lineView = [[LineView alloc] init];
+                lineView.backgroundColor = [UIColor clearColor];
+                [self.contentView addSubview:lineView];
+                self.lineView = lineView;
+            }
+
+            //[self.contentView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]]];
+            self.lineView.color = self.colorForUnselectedText;
+            self.lineView.shadowColor = [UIColor whiteColor];
+            self.lineView.shadowBlur = 0.5;
+            self.lineView.shadowSize = CGSizeMake(1., 1.);
+            
+            self.moreButtonColor = [Clr paperEqual];
+            self.moreButtonBackgroundColor = [UIColor clearColor];
+            self.deleteButtonColor =[UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
+            self.deleteButtonBackgroundColor = [UIColor clearColor];
+            self.buttonShadowColor = [UIColor whiteColor];
+            self.buttonShadowSize = CGSizeMake(1., 1.);
+            self.buttonShadowBlur = 0.5;
+
+            break;
+            
+        case DESIGN_COLOR_BLUE:
+            self.colorSelectedFirstGradient = [UIColor whiteColor];
+            self.colorSelectedSecondGradient = [UIColor whiteColor];
+            self.colorUnselectedFirstGradient = [Clr blueFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr blueSecondGradient];
+            self.colorForSelectedText = [Clr blueDisplay];
+            self.colorForUnselectedText =  [[Clr blueDisplay] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [Clr blueMoreButton];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [Clr blueDelButton];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        case DESIGN_COLOR_GREEN:
+            self.colorSelectedFirstGradient = [Clr greenFirstGradient];
+            self.colorSelectedSecondGradient = [Clr greenFirstGradient];
+            self.colorUnselectedFirstGradient = [Clr greenFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr greenSecondGradient];
+            self.colorForSelectedText = [Clr greenDisplay];
+            self.colorForUnselectedText =  [[Clr greenDisplay] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [Clr greenMoreButton];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [Clr greenDelButton];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        case DESIGN_COLOR_YELOW:
+            self.colorSelectedFirstGradient = [Clr yellowFirstGradient];
+            self.colorSelectedSecondGradient = [Clr yellowFirstGradient];
+            self.colorUnselectedFirstGradient = [Clr yellowFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr yellowSecondGradient];
+            self.colorForSelectedText = [Clr yellowText];
+            self.colorForUnselectedText =  [[Clr yellowText] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [Clr yellowMoreButton];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [Clr yellowDelButton];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        case DESIGN_COLOR_PINK:
+            self.colorSelectedFirstGradient = [Clr pinkFirstGradient];
+            self.colorSelectedSecondGradient = [Clr pinkFirstGradient];
+            self.colorUnselectedFirstGradient = [Clr pinkFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr pinkSecondGradient];
+            self.colorForSelectedText = [Clr pinkText];
+            self.colorForUnselectedText =  [[Clr pinkDisplay] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [Clr pinkMoreButton];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [Clr pinkDelButton];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        case DESIGN_COLOR_GRAY:
+            self.colorSelectedFirstGradient = [Clr grayFirstGradient];
+            self.colorSelectedSecondGradient = [Clr grayFirstGradient];
+            self.colorUnselectedFirstGradient = [Clr grayFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr graySecondGradient];
+            self.colorForSelectedText = [Clr grayText];
+            self.colorForUnselectedText =  [[Clr grayText] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [Clr grayMoreButton];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [Clr grayDelButton];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        case DESIGN_PHOTO:
+            self.colorSelectedFirstGradient = [UIColor colorWithWhite:0 alpha:0.2];
+            self.colorSelectedSecondGradient = [UIColor colorWithWhite:0 alpha:0.2];
+            self.colorUnselectedFirstGradient = [Clr photoFirstGradient];
+            self.colorUnselectedSecondGradient = [Clr photoSecondGradient];
+            self.colorForSelectedText = [UIColor whiteColor];
+            self.colorForUnselectedText =  [[UIColor whiteColor] colorWithAlphaComponent:0.6];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [UIColor colorWithWhite:0 alpha:0.1];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [UIColor colorWithWhite:0 alpha:0.1];
+            self.buttonShadowColor = [UIColor grayColor];
+            self.buttonShadowSize = CGSizeMake(2, 2.);
+            self.buttonShadowBlur = 3.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            break;
+        default:
+            self.colorSelectedFirstGradient = [UIColor whiteColor];
+            self.colorSelectedSecondGradient = [UIColor whiteColor];
+            self.colorUnselectedFirstGradient = [Clr blueButton];
+            self.colorUnselectedSecondGradient =[UIColor colorWithWhite:0.8 alpha:1];
+            
+            self.colorForSelectedText = [UIColor darkTextColor];
+            self.colorForUnselectedText = [UIColor grayColor];
+            [self.contentView setBackgroundColor:[UIColor clearColor]];
+            
+            self.moreButtonColor = [UIColor whiteColor];
+            self.moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
+            self.deleteButtonColor = [UIColor whiteColor];
+            self.deleteButtonBackgroundColor = [UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
+            self.buttonShadowColor = [UIColor clearColor];
+            self.buttonShadowSize = CGSizeMake(0, 0.);
+            self.buttonShadowBlur = 0.;
+            if(self.lineView){
+                [self.lineView removeFromSuperview];
+                self.lineView = nil;
+            }
+            
+            break;
     }
-    return self;
+
+    [self setNeedsDisplay];
 }
+
+
 
 -(void) makeProgramLabel
 {
@@ -91,7 +321,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     programLabel.numberOfLines = 0;
     
-    [self.scrollViewContentView addSubview:programLabel];
+    [self.scrollGradientView addSubview:programLabel];
     _programLabel = programLabel;
 }
 
@@ -118,146 +348,22 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     UIView* dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     programTextView.inputView = dummyView;
     
-    [self.scrollViewContentView addSubview:programTextView];
+    [self.scrollGradientView addSubview:programTextView];
     _programTextView = programTextView;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
-    CGFloat colorClear;
-    CGFloat colorFirstGradient;
-    CGFloat colorSecondGradient;
-    CGFloat colorForSelectedText;
-    CGFloat colorForUnselectedText;
-    CGFloat firstAlphaForGradient;
-    CGFloat secondAlphaForGradient;
-    CGFloat selectedAlpha;
-    
-    switch (self.design) {
-        case DESIGN_CLASSIC:
-            colorClear = .9;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            firstAlphaForGradient = 1;
-            secondAlphaForGradient = 1;
-            
-            colorForSelectedText = 0.0;
-            colorForUnselectedText = 0.3;
-            selectedAlpha = 0.;
-            
-            break;
-        case DESIGN_PAPER:
-            colorClear = 0.1;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            //colorFirstGradient = 0.12;
-            //colorSecondGradient = 0.17;
-            firstAlphaForGradient = 0.05;
-            secondAlphaForGradient = 0.1;
-            
-            selectedAlpha = 0.;
-            
-            colorForSelectedText = 1.;
-            colorForUnselectedText = 0.8;
-            [self setBackgroundColor:[UIColor clearColor]];
-            
-            break;
-        default:
-            colorClear = .9;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            firstAlphaForGradient = 1;
-            secondAlphaForGradient = 1;
-            
-            colorForSelectedText = 0.0;
-            colorForUnselectedText = 0.3;
-            
-            selectedAlpha = 0.;
-            
-            break;
-    }
-    /*
-    
-    if(IS_BLACK_MODE){
-        colorClear = 0.1;
-        colorFirstGradient = 0.88;
-        colorSecondGradient = 0.83;
-        //colorFirstGradient = 0.12;
-        //colorSecondGradient = 0.17;
-        firstAlphaForGradient = 0.05;
-        secondAlphaForGradient = 0.1;
-        
-        selectedAlpha = 0.;
-        
-        colorForSelectedText = 1.;
-        colorForUnselectedText = 0.8;
-        [self setBackgroundColor:[UIColor clearColor]];
-        
-    } else {
-        colorClear = .9;
-        colorFirstGradient = 0.88;
-        colorSecondGradient = 0.83;
-        firstAlphaForGradient = 1;
-        secondAlphaForGradient = 1;
-        
-        colorForSelectedText = 0.0;
-        colorForUnselectedText = 0.3;
-        
-        selectedAlpha = 0.;
-        
-    }
-    */
-    
-    if(selected){
-        
-        self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorClear alpha:selectedAlpha] CGColor], (id)[[UIColor colorWithWhite:colorClear alpha:selectedAlpha] CGColor],nil];
-        
-        self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorClear alpha:selectedAlpha] CGColor], (id)[[UIColor colorWithWhite:colorClear alpha:selectedAlpha] CGColor], nil];
-        
-        
-        //set black color for selected cell
-        NSMutableAttributedString *atrStr = [self.historyProgramString mutableCopy];
-        NSRange wholeRange = NSMakeRange(0, [atrStr  length]);
-        UIColor *textColor = [UIColor colorWithWhite:colorForSelectedText alpha:1.0];
-        [self.programTextView setTextColor:textColor];
-        
-        [atrStr beginEditing];
-        [atrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-        [atrStr endEditing];
-        self.historyProgramString = [atrStr copy];
-        
-        //set color for data label
-        self.datelabel.textColor = textColor;
-        
-        [self.delegate cellDidSelect:self];
-    } else {
-        
-        self.backgroundGradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:firstAlphaForGradient] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:secondAlphaForGradient] CGColor], nil];
-        
-        self.scrollGradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:firstAlphaForGradient] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:secondAlphaForGradient] CGColor], nil];
-        
-        NSMutableAttributedString *atrStr = [self.historyProgramString mutableCopy];
-        NSRange wholeRange = NSMakeRange(0, [atrStr  length]);
-        UIColor *textColor = [UIColor colorWithWhite:colorForUnselectedText alpha:1.0];
-        [self.programTextView setTextColor:textColor];
-        
-        [atrStr beginEditing];
-        [atrStr addAttribute:NSForegroundColorAttributeName value:textColor range:wholeRange];
-        [atrStr endEditing];
-        self.historyProgramString = [atrStr copy];
-        //set color for data label
-        self.datelabel.textColor = textColor;
-        
-        [self hideButtons];
-        if(self.deleteButton){
-            [self.deleteButton removeFromSuperview];
-            [self.moreButton removeFromSuperview];
-            self.deleteButton = nil;
-            self.moreButton = nil;
-            
+    if(self.sel != selected){
+        self.sel = selected;
+        [self setHistoryProgramString:self.historyProgramString];
+        if(!selected && self.deleteButton)[self hideButtons];
+        [self setNeedsDisplay];
+        if(selected){
+            [self.delegate cellDidSelect:self];
         }
     }
-    
+
 }
 
 
@@ -270,45 +376,95 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     } else {
         font = [UIFont systemFontOfSize:9.];
     }
-    
-    switch (self.design) {
-        case DESIGN_CLASSIC:
-            [self.datelabel setTextColor:[UIColor grayColor]];
 
-            break;
-        case DESIGN_PAPER:
-            [self.datelabel setTextColor:[Clr paperButton]];
-            break;
-
-        default:
-            [self.datelabel setTextColor:[UIColor grayColor]];
-
-            break;
-    }
-    /*
-    if(IS_BLACK_MODE){
-        [self.datelabel setTextColor:[UIColor darkGrayColor]];
-    } else {
-        [self.datelabel setTextColor:[UIColor grayColor]];
-    }
-    */
     [self.datelabel  setFont:font];
     self.datelabel.text = historyDateString;
 }
 
+-(void) setHistoryExchangeCurrencyString:(NSString *)historyExchangeCurrencyString
+{
+    if(historyExchangeCurrencyString){
+        UIFont *font;
+        CGRect labelFrame;
+        if(IS_IPAD){
+            font = [UIFont systemFontOfSize:15.];
+            labelFrame = CGRectMake(170, 0, 150, 18);
+        } else {
+            font = [UIFont systemFontOfSize:9.];
+            labelFrame = CGRectMake(120, 0, 200, 12);
+
+        }
+        
+        if(!self.currencyLabel){
+            UILabel *currencyLabel = [[UILabel alloc] init];
+            currencyLabel.backgroundColor = [UIColor clearColor];
+            currencyLabel.adjustsFontSizeToFitWidth = YES;
+            [self.scrollGradientView addSubview:currencyLabel];
+            self.currencyLabel = currencyLabel;
+            [self.currencyLabel  setFrame:labelFrame];
+        }
+
+        
+        [self.currencyLabel  setFont:font];
+        
+        self.currencyLabel.text = historyExchangeCurrencyString;
+        self.currencyLabel.textColor = self.colorForUnselectedText;
+
+    } else {
+        
+        if(self.currencyLabel){
+            self.currencyLabel.text = @"";
+            [self.currencyLabel removeFromSuperview];
+            self.currencyLabel = nil;
+        }
+    }
+
+}
+
 -(void) setHistoryProgramString:(NSAttributedString *)historyProgramString
 {
-    _historyProgramString = historyProgramString;
+    if(self.sel){
+        NSMutableAttributedString *atrStr = [historyProgramString mutableCopy];
+        NSRange wholeRange = NSMakeRange(0, [atrStr  length]);
+        //UIColor *textColor = self.colorForUnselectedText;
+        [self.programTextView setTextColor:self.colorForSelectedText];
+        
+        [atrStr beginEditing];
+        [atrStr addAttribute:NSForegroundColorAttributeName value:self.colorForSelectedText range:wholeRange];
+        if(self.design == DESIGN_PAPER){
+            [atrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
+        } else if(self.design == DESIGN_PHOTO){
+            NSShadow *shadow = [[NSShadow alloc] init];
+            shadow.shadowBlurRadius = 3.;
+            shadow.shadowColor = [UIColor blackColor];
+            shadow.shadowOffset = CGSizeMake(2, 2);
+            [atrStr addAttribute:NSShadowAttributeName value:shadow range:wholeRange];
+        }
+        [atrStr endEditing];
+        _historyProgramString = [atrStr copy];
+    } else {
+        NSMutableAttributedString *atrStr = [historyProgramString mutableCopy];
+        NSRange wholeRange = NSMakeRange(0, [atrStr  length]);
+
+        
+        [atrStr beginEditing];
+        [atrStr addAttribute:NSForegroundColorAttributeName value:self.colorForUnselectedText range:wholeRange];
+        
+        
+        [atrStr endEditing];
+        _historyProgramString = [atrStr copy];
+    }
+
     if(!self.isCanDrag){
         if(!self.programTextView) [self makeProgramTextView];
-        self.programTextView.attributedText = historyProgramString;
+        self.programTextView.attributedText = _historyProgramString;
         if(self.programLabel){
             [self.programLabel removeFromSuperview];
             self.programLabel = nil;
         }
     } else {
         if(!self.programLabel) [self makeProgramLabel];
-        self.programLabel.attributedText = historyProgramString;
+        self.programLabel.attributedText = _historyProgramString;
         if(self.programTextView){
             [self.programTextView removeFromSuperview];
             self.programTextView = nil;
@@ -340,124 +496,65 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     }
 }
 
--(void)setup {
-    self.isButtonShowed = NO;
-    
-    CGFloat colorClear;
-    CGFloat colorFirstGradient;
-    CGFloat colorSecondGradient;
-    CGFloat colorForSelectedText;
-    CGFloat colorForUnselectedText;
-    CGFloat firstAlphaForGradient;
-    CGFloat secondAlphaForGradient;
-    
-    switch (self.design) {
-        case DESIGN_CLASSIC:
-            colorClear = .9;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            firstAlphaForGradient = 1;
-            secondAlphaForGradient = 1;
-            
-            colorForSelectedText = 0.0;
-            colorForUnselectedText = 0.3;
 
-            break;
-        case DESIGN_PAPER:
-            colorClear = 0.1;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            //colorFirstGradient = 0.12;
-            //colorSecondGradient = 0.17;
-            firstAlphaForGradient = 0.1;
-            secondAlphaForGradient = 0.2;
-            
-            colorForSelectedText = 0.9;
-            colorForUnselectedText = 0.7;
-            
-            break;
-        default:
-            colorClear = .9;
-            colorFirstGradient = 0.88;
-            colorSecondGradient = 0.83;
-            firstAlphaForGradient = 1;
-            secondAlphaForGradient = 1;
-            
-            colorForSelectedText = 0.0;
-            colorForUnselectedText = 0.3;
-
-            break;
+-(void)drawRect:(CGRect)rect
+{
+    self.contentView.frame = rect;
+    self.scrollGradientView.frame = rect;
+    if(self.lineView){
+        self.lineView.frame = CGRectMake(0, rect.size.height - 2, rect.size.width, 3);
     }
-    /*
-    if(IS_BLACK_MODE){
-        colorClear = 0.1;
-        colorFirstGradient = 0.88;
-        colorSecondGradient = 0.83;
-        //colorFirstGradient = 0.12;
-        //colorSecondGradient = 0.17;
-        firstAlphaForGradient = 0.1;
-        secondAlphaForGradient = 0.2;
-        
-        colorForSelectedText = 0.9;
-        colorForUnselectedText = 0.7;
-    } else {
-        colorClear = .9;
-        colorFirstGradient = 0.88;
-        colorSecondGradient = 0.83;
-        firstAlphaForGradient = 1;
-        secondAlphaForGradient = 1;
-        
-        colorForSelectedText = 0.0;
-        colorForUnselectedText = 0.3;
-    }
-    */
-    
-    CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = self.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:firstAlphaForGradient] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:secondAlphaForGradient] CGColor], nil];
-    
-    [self.layer insertSublayer:gradient atIndex:0];
-    self.backgroundGradient = gradient;
-    
-    UIView *scrollViewContentView = [[UIView alloc] initWithFrame:self.bounds];
-    scrollViewContentView.backgroundColor = [UIColor colorWithWhite:colorFirstGradient alpha:0.0];
-    [self.contentView addSubview:scrollViewContentView];
-    self.scrollViewContentView = scrollViewContentView;
-    
-    CAGradientLayer *gradientForScroll = [CAGradientLayer layer];
-    gradientForScroll.frame = self.bounds;
-    gradientForScroll.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:colorFirstGradient alpha:firstAlphaForGradient] CGColor], (id)[[UIColor colorWithWhite:colorSecondGradient alpha:secondAlphaForGradient] CGColor], nil];
-    
-    [self.scrollViewContentView.layer insertSublayer:gradientForScroll atIndex:0];
-    self.scrollGradientLayer = gradientForScroll;
-    
     CGRect labelFrame;
     if(IS_IPAD){
         labelFrame = CGRectMake(20, 0, 150, 18);
     } else {
-        labelFrame = CGRectMake(20, 0, 150, 12);
         
+        labelFrame = CGRectMake(20, 0, 80, 12);
     }
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:labelFrame];
-    [self.scrollViewContentView addSubview:dateLabel];
-    dateLabel.backgroundColor = [UIColor clearColor];
-    self.datelabel = dateLabel;
+    [self.datelabel  setFrame:labelFrame];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enclosingTableViewDidScroll) name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
-
-}
-
--(void)drawRect:(CGRect)rect
-{
-    self.contentView.frame = self.bounds;
+    if(self.historyExchangeCurrencyString){
+        if(IS_IPAD){
+            labelFrame = CGRectMake(170, 0, 150, 18);
+        } else {
+        
+        labelFrame = CGRectMake(self.datelabel.frame.size.width+40, 0, rect.size.width-self.datelabel.frame.size.width -60, 12);
+        }
     
-    self.backgroundGradient.frame = self.bounds;
-
-    self.scrollGradientLayer.frame = self.bounds;
+        [self.currencyLabel  setFrame:labelFrame];
+    }
     
-    [self setHistoryProgramString:self.historyProgramString];
+    if(self.sel){
+        
+        self.scrollGradientView.firstGradientColor = self.colorSelectedFirstGradient;
+        self.scrollGradientView.secondGradientColor = self.colorSelectedSecondGradient;
+        [self.scrollGradientView setNeedsDisplay];
+
+        self.datelabel.textColor = self.colorForSelectedText;
+        if(self.historyExchangeCurrencyString){
+            self.currencyLabel.textColor = self.colorForSelectedText;
+        }
+        if(self.lineView){
+            self.lineView.alpha = 0;
+        }
+        
+    } else {
+        self.scrollGradientView.firstGradientColor = self.colorUnselectedFirstGradient;
+        self.scrollGradientView.secondGradientColor = self.colorUnselectedSecondGradient;
+        [self.scrollGradientView setNeedsDisplay];
 
 
+        [self.programTextView setTextColor:self.colorForUnselectedText];
+        //set color for data label
+        self.datelabel.textColor = self.colorForUnselectedText;
+        if(self.historyExchangeCurrencyString){
+            self.currencyLabel.textColor = self.colorForUnselectedText;
+        }
+        if(self.lineView){
+            self.lineView.alpha = 1;
+        }
+
+    }
     
 }
 /*
@@ -490,13 +587,20 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void) hideButtons
 {
-
+    CGFloat needWidth;
+    if(IS_IPAD){
+        needWidth = 160;
+    } else {
+        needWidth = 120;
+    }
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     [UIView animateWithDuration:0.2
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
-                         [self.scrollViewContentView setFrame:self.bounds];
+                         [self.scrollGradientView setFrame:self.bounds];
+                         self.moreButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
+                         self.deleteButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
                      } completion:^(BOOL finished) {
 
                      }];
@@ -519,63 +623,34 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     if(sender.state == UIGestureRecognizerStateBegan){
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"HistoryTableViewCellViewDidBeginScrolingNotification" object:nil]];
 
-    
-        // Set up our two buttons
-        //set allowed to show recound button only in purchsed version
-        //if(self.wasPurhased){
-        UIColor *moreButtonColor;
-        UIColor *moreButtonBackgroundColor;
-        UIColor *deleteButtonColor;
-        UIColor *deleteButtonBackgroundColor;
-        switch (self.design) {
-            case DESIGN_CLASSIC:
-                moreButtonColor = [UIColor whiteColor];
-                moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];     deleteButtonColor = [UIColor whiteColor];
-                deleteButtonBackgroundColor = [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0f];
-                break;
-            
-            case DESIGN_PAPER:
-                moreButtonColor = [Clr paperButton];
-                moreButtonBackgroundColor = [UIColor clearColor];
-                deleteButtonColor = [Clr paperButton];
-                deleteButtonBackgroundColor = [UIColor clearColor];
-                break;
-            
-            default:
-                moreButtonColor = [UIColor whiteColor];
-                moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];     deleteButtonColor = [UIColor whiteColor];
-                deleteButtonBackgroundColor = [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0f];
-                break;
-        }
+
         if(!self.moreButton){
             self.moreButton = [recBut buttonWithType:UIButtonTypeCustom];
-        //
             self.moreButton.contentMode = UIViewContentModeRedraw;
-        //HERE
-            self.moreButton.tintColor = moreButtonColor;
             [self.moreButton addTarget:self action:@selector(userPressedMoreButton:) forControlEvents:UIControlEventTouchUpInside];
-            //HERE
-            self.moreButton.backgroundColor = moreButtonBackgroundColor;
             [self.contentView insertSubview:self.moreButton atIndex:0];
-
         }
-    
+
+        self.moreButton.tintColor = self.moreButtonColor;
+        self.moreButton.backgroundColor = self.moreButtonBackgroundColor;
+        self.moreButton.shadowColor = self.buttonShadowColor;
+        self.moreButton.shadowBlur = self.buttonShadowBlur;
+        self.moreButton.shadowSize = self.buttonShadowSize;
        
 
         if(!self.deleteButton){
             self.deleteButton = [DelButton buttonWithType:UIButtonTypeCustom];
-        //
             self.deleteButton.contentMode = UIViewContentModeRedraw;
-        
-        //HERE
-            self.deleteButton.tintColor = deleteButtonColor;
             [self.deleteButton addTarget:self action:@selector(userPressedDeleteButton:) forControlEvents:UIControlEventTouchDown];
-            //HERE
-            self.deleteButton.backgroundColor = deleteButtonBackgroundColor;
             [self.contentView insertSubview:self.deleteButton atIndex:1];
-        
-        
         }
+
+        self.deleteButton.tintColor = self.deleteButtonColor;
+        self.deleteButton.backgroundColor = self.deleteButtonBackgroundColor;
+        self.deleteButton.shadowColor = self.buttonShadowColor;
+        self.deleteButton.shadowBlur = self.buttonShadowBlur;
+        self.deleteButton.shadowSize = self.buttonShadowSize;
+
         self.moreButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
         self.deleteButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
         self.curentXofSwiper = [sender locationInView:self].x;
@@ -585,48 +660,43 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     } else if (sender.state == UIGestureRecognizerStateChanged){
         self.deltaXofSwiper = self.curentXofSwiper - [sender locationInView:self].x;
         if((self.deltaXofSwiper >0) && (self.deltaXofSwiper < needWidth)){
-            NSLog(@"needWidth %f", needWidth);
-            NSLog(@"delta x %f", self.deltaXofSwiper);
-            CGRect newFrame = self.scrollViewContentView.frame;
+
+            CGRect newFrame = self.scrollGradientView.frame;
             newFrame.origin.x = -self.deltaXofSwiper;
-            [self.scrollViewContentView setFrame:newFrame];
+            [self.scrollGradientView setFrame:newFrame];
             self.moreButton.center = CGPointMake(self.bounds.size.width-self.deltaXofSwiper + needWidth/4., self.bounds.size.height/2);
             self.deleteButton.center = CGPointMake(self.bounds.size.width-self.deltaXofSwiper/2 + needWidth/4, self.bounds.size.height/2);
-            //self.moreButton.frame = CGRectMake(self.bounds.size.width-self.deltaXofSwiper, 0, needWidth / 2.0f, self.bounds.size.height);
-            //self.deleteButton.frame = CGRectMake(self.bounds.size.width-self.deltaXofSwiper/2, 0, needWidth / 2.0f, self.bounds.size.height);
+
         }
         
     }  else if (sender.state == UIGestureRecognizerStateEnded){
         self.deltaXofSwiper = self.curentXofSwiper - [sender locationInView:self].x;
-        NSLog(@"delta at end x %f", self.deltaXofSwiper);
+
         if(self.deltaXofSwiper < needWidth/2){
-            CGRect scrollFrame = self.scrollViewContentView.frame;
+            CGRect scrollFrame = self.scrollGradientView.frame;
             scrollFrame.origin.x = 0;
             [UIView animateWithDuration:0.2
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
-                                 [self.scrollViewContentView setFrame:scrollFrame];
+                                 [self.scrollGradientView setFrame:scrollFrame];
                                  self.moreButton.center = CGPointMake(self.bounds.size.width+ needWidth/4., self.bounds.size.height/2);
                                  self.deleteButton.center = CGPointMake(self.bounds.size.width + needWidth/4, self.bounds.size.height/2);
-                                 //self.moreButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
-                                 //self.deleteButton.frame = CGRectMake(self.bounds.size.width, 0, needWidth / 2.0f, self.bounds.size.height);
                              } completion:^(BOOL finished) {
 
                                  
                              }];
         } else {
-            CGRect scrollFrame = self.scrollViewContentView.frame;
+            CGRect scrollFrame = self.scrollGradientView.frame;
             scrollFrame.origin.x = -needWidth;
             [UIView animateWithDuration:0.2
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
-                                 [self.scrollViewContentView setFrame:scrollFrame];
+                                 [self.scrollGradientView setFrame:scrollFrame];
                                  self.moreButton.center = CGPointMake(self.bounds.size.width - needWidth+needWidth/4., self.bounds.size.height/2);
                                  self.deleteButton.center = CGPointMake(self.bounds.size.width - needWidth/2+ needWidth/4, self.bounds.size.height/2);
-                                 //self.moreButton.frame = CGRectMake(self.bounds.size.width - needWidth - nee, 0, needWidth / 2.0f, self.bounds.size.height);
-                                 //self.deleteButton.frame = CGRectMake(self.bounds.size.width - needWidth / 2.0f, 0, needWidth / 2.0f, self.bounds.size.height);
+
                              } completion:^(BOOL finished) {
                                  
                                  
@@ -634,33 +704,33 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
         }
     }
-
-    /*
-    CGRect newFrame = self.scrollViewContentView.frame;
-    //CGFloat finalOffsetScrollView = self.wasPurhased ? kCatchWidth : kCatchWidth/2;
-    CGFloat finalOffsetScrollView = needWidth;
-    newFrame.origin.x = -finalOffsetScrollView -28;
-    CGRect finalFrame = newFrame;
-    finalFrame.origin.x += 28;
-    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView animateWithDuration:0.2
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         [self.scrollViewContentView setFrame:newFrame];
-                     } completion:^(BOOL finished) {
-                         [UIView animateWithDuration:0.3
-                                               delay:0
-                                             options:UIViewAnimationOptionBeginFromCurrentState
-                                          animations:^{
-                                              [self.scrollViewContentView setFrame:finalFrame];
-                                          } completion:^(BOOL finished) {
-                                              
-                                          }];
-
-                     }];
-    */
     
+}
+
+-(void)awakeFromNib {
+    [super awakeFromNib];
+    
+    [self setup];
+}
+
+-(id) initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    return self;
+}
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        [self setup];
+    }
+    return self;
+}
+
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
 }
 #define textView delegate
 

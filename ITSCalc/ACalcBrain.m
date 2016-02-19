@@ -79,7 +79,16 @@
 
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu
 {
-    ACalcBrain *newBrain = [[ACalcBrain alloc ] init];
+    //add from this
+    static ACalcBrain *newBrain = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        newBrain = [[ACalcBrain alloc] init];
+        // Do any other initialisation stuff here
+    });
+    //to this
+   // ACalcBrain *newBrain = [[ACalcBrain alloc ] init];
+    
     newBrain.programStacks = program;
     newBrain.arguStack = argu;
     newBrain.isStronglyArgu = isStronglyArgu;
@@ -113,8 +122,8 @@
 -(NSDictionary *) variableValue
 {
     if(!_variableValue){
-        NSArray *keys = [NSArray arrayWithObjects:@"x",@"a",@"b", nil];
-        NSNumber * value = [NSNumber numberWithDouble:0.00];
+        NSArray *keys = [NSArray arrayWithObjects:@"x",@"z",@"b", nil];
+        NSNumber * value = [NSNumber numberWithDouble:1.00];
         NSArray *values = [NSArray arrayWithObjects:value, value, value, nil];
         _variableValue = [[NSDictionary alloc] initWithObjects:values forKeys:keys];
     }
@@ -199,6 +208,7 @@
         }
     }
     */
+    NSLog(@"performOperationInArgu self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority];
         
@@ -433,6 +443,76 @@
     return deepCopy;
 }
 
+//check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
++(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm {
+
+    NSArray* currenciesArray = nil;
+    @autoreleasepool {
+        NSMutableArray *mutableProgramm = [programm mutableCopy];
+
+        NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
+        id top = [mutableProgramm lastObject];
+        if(top) {
+            [mutableProgramm removeLastObject];
+        
+
+            if([top isKindOfClass:[NSArray class]]){
+           
+                if([[top firstObject] isKindOfClass:[NSString class]] && [[top firstObject] isEqualToString:@"$"]){
+                    
+                    [mutableCurrenciesArray addObject:top];
+                } else {
+                    [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:top]];
+                }
+            }
+            [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:[mutableProgramm copy]]];
+       
+
+            if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
+        }
+    }
+
+    return currenciesArray;
+}
+    
+//replace arrays with currencies in program with new values of currencies exhange
+//for each element chek if array
+// if - currencies - replace, else - recrucive call
++(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies{
+
+    NSArray *retProgramm = nil;
+    NSMutableArray *mutableProgramm = [programm mutableCopy];
+    if(currensies ) {
+        @autoreleasepool {
+
+            for(NSInteger i = 0; i < mutableProgramm.count; i++){
+                id obj = [mutableProgramm objectAtIndex:i];
+
+                if([obj isKindOfClass:[NSArray class]]){
+
+                    if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
+                        
+                        for(NSArray* currPair in currensies){ //check for each exchange pair
+                            if([(NSString*)obj[1] isEqualToString:(NSString*)currPair[1]] && [(NSString*)obj[2] isEqualToString:(NSString*)currPair[2]] ){
+                                [mutableProgramm replaceObjectAtIndex:i withObject:currPair];
+                            }
+                        }
+
+                    } else {
+                        [mutableProgramm replaceObjectAtIndex:i withObject:[ACalcBrain programm:obj withReplaceWithCurrencies:currensies]];
+                    }
+                } else {
+
+                }
+            }
+            retProgramm = [mutableProgramm copy];
+        }
+    
+    }
+  
+    return retProgramm;
+}
+
 +(BOOL) needBractesForStack: (NSMutableArray*) stack SymbYesArray: (NSArray*) plusOrMinuslySymbols SymbNOArray: (NSArray*)divideOrMultiplySymbols
 {
     BOOL result = NO;
@@ -541,27 +621,6 @@
     self.arguStack = [copyArgu copy];
 }
 
--(double) count
-{
-    NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
-    [self applyArgu];
-    //set result stack as new argument
-    [self getResultAndPutAsArguByPriotiy:0];
-    double result = [self countWithStack:self.program];
-    if([self.programStacks count] > 1){
-        [programCopy removeLastObject];
-    } else {
-        [programCopy.lastObject removeAllObjects];
-    }
-    self.programStacks = [programCopy copy];
-    return result;
-}
-
--(double) countWithStack:(id) stack
-{
-    return [ACalcBrain runProgram:stack usingVariableValue:self.variableValue];
-}
-
 
 -(void) getResultAndPutAsArguByPriotiy:(int)priority
 {
@@ -631,8 +690,31 @@
     }
     return wholeProgramCopy;
 }
+#pragma mark COUNT
+
+-(double) count
+{
+    NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
+    [self applyArgu];
+    //set result stack as new argument
+    [self getResultAndPutAsArguByPriotiy:0];
+    double result = [self countWithStack:self.program];
+    if([self.programStacks count] > 1){
+        [programCopy removeLastObject];
+    } else {
+        [programCopy.lastObject removeAllObjects];
+    }
+    self.programStacks = [programCopy copy];
+    return result;
+}
+
+-(double) countWithStack:(id) stack
+{
+    return [ACalcBrain runProgram:stack usingVariableValue:self.variableValue];
+}
 
 
+#pragma mark RUN PROGRAN
 +(double) runProgram:(id)program
 {
     NSMutableArray *stack;
@@ -651,17 +733,37 @@
 {
     NSMutableArray *stack;
     if([program isKindOfClass:[NSArray class]]) {
-        stack = [ACalcBrain deepArrayCopy:program];
+        stack = [[ACalcBrain deepArrayCopy:program] mutableCopy];
     }
-    NSArray *variablesArray = [variableValues allKeys];
-    for (NSInteger i = 0; i < [stack count]; i++){
-        id anObject = [stack objectAtIndex:i];
-        if([variablesArray containsObject:anObject])
-            [stack replaceObjectAtIndex:i withObject:[variableValues objectForKey:anObject]];
-    }
+
+    //NSLog(@"runProgram stack %@", stack);
+    stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
+     //NSLog(@"runProgram second stack %@", stack);
+
     return [self popOperandOfStack:stack accordingPriority:priority];
 }
 
++(NSMutableArray*) arrayFromArray:(NSMutableArray*)stack WithValueFromVariabledictionary:(NSDictionary*)vaiableValues
+{
+    NSMutableArray *workArray = [[NSMutableArray alloc] init];
+    @autoreleasepool {
+        NSArray *variablesArray = [vaiableValues allKeys];
+
+        for(id obj in stack){
+            if([obj isKindOfClass:[NSArray class]]){
+                [workArray addObject:[self arrayFromArray:obj WithValueFromVariabledictionary:vaiableValues]];
+            } else if ([variablesArray containsObject:obj]){
+                [workArray addObject:[vaiableValues objectForKey:obj]];
+            }else {
+                [workArray addObject:obj];
+            }
+        }
+
+    }
+
+    return workArray;
+}
+#pragma mark POP OPERAND
 
 +(double) popOperandOfStack:(NSMutableArray*) stack
 {
@@ -684,7 +786,7 @@
     } else if (value){
         result = [value doubleValue];
     }
-    
+    //NSLog(@"popOperandOfStack topOfStack:%@", topOfStack);
     if([topOfStack isKindOfClass:[NSArray class]]){
         
         
@@ -716,7 +818,16 @@
             //think if topOfstack dosn't use put it back to stack for next operation
             [stack addObject:topOfStack];
         } else {
-            if([operation isEqualToString:@"e"]){
+            if([operation isEqualToString:@"X"]){
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+               // NSNumber *valueOfVariable = [self.varia]
+                if(arg == 0.0) {
+                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:M_E] accordingPriority:priority];
+                } else {
+                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * M_E)] accordingPriority:priority];
+                }
+                
+            } else if([operation isEqualToString:@"e"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(arg == 0.0) {
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:M_E] accordingPriority:priority];
@@ -1028,6 +1139,7 @@
 }
 
 
+#pragma mark DESCRIPTION
 
 -(NSAttributedString*)stringInBrainWithAtributes:(NSDictionary *)attributes
 {
@@ -1110,15 +1222,13 @@
 
             NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:initStr attributes:attributes];
-            
-           // NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-           // NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+
             
             id nextTopOfStack = [arguArray lastObject];
             if(nextTopOfStack && [nextTopOfStack isKindOfClass:[NSNumber class]] && ([nextTopOfStack doubleValue] == 0)){
                 [arguArray removeLastObject];
             }
-            //NSAttributedString *attTopOfStack = [[NSAttributedString alloc] initWithString:initStr attributes:attributes];
+
             NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
             [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                withNextArguString:empty
@@ -1131,38 +1241,6 @@
             resultStr = [[self popStringOfStack:stack
                              withNextArguString:attArg
                                  withAttributes:attributes] mutableCopy];
-            /*
-            //NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@" × (-1)" attributes:attributes];
-            
-            //check the lenght of argu stack if more then one add brackets
-            NSArray *testArray = [[NSArray alloc] init];
-            testArray = [arguArray copy];
-            if([testArray count] > 1){
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                   withNextArguString:empty
-                                                       withAttributes:attributes] atIndex:0];
-                bracet = [bracet initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
-                
-            } else {
-                id lastObj = [arguArray lastObject];
-                if(lastObj && [lastObj isKindOfClass:[NSNumber class]]){
-                    [arguArray removeLastObject];
-                    double argDouble = trunc([lastObj doubleValue]);
-                    [arguArray addObject:[NSNumber numberWithDouble:argDouble]];
-                }
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                   withNextArguString:empty
-                                                       withAttributes:attributes] atIndex:0];
-            }
-            resultStr = [[self popStringOfStack:stack
-                             withNextArguString:attArg
-                                 withAttributes:attributes] mutableCopy];
-             */
             
         } else {
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -1353,34 +1431,6 @@
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
 
-                /*
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
-                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSAttributedString* attrVal = [[NSAttributedString alloc] initWithString:@" × (-1)" attributes:attributes];
-                [attArg insertAttributedString:attrVal atIndex:0];
-                
-                //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    resultStr = [[self popStringOfStack:arguArray
-                                     withNextArguString:empty withAttributes:attributes] mutableCopy];
-                    [resultStr insertAttributedString:attArg atIndex:[resultStr length]];
-                }
-                resultStr = [[self popStringOfStack:stack
-                                 withNextArguString:attArg
-                                     withAttributes:attributes] mutableCopy];
-                */
                 
             } else if([topOfStack isEqualToString:@"x!"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
@@ -2050,7 +2100,7 @@
                                 withNextArguString:attArg
                                     withAttributes:attributes] mutableCopy];
                 
-            } else if ([topOfStack isEqualToString:@"π"] || [topOfStack isEqualToString:@"e"]){
+            } else if ([topOfStack isEqualToString:@"π"] || [topOfStack isEqualToString:@"e"] || [topOfStack isEqualToString:@"x"] || [topOfStack isEqualToString:@"z"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
@@ -2100,7 +2150,42 @@
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
+            } /*else if ([topOfStack isEqualToString:@"X"] || [topOfStack isEqualToString:@"e"]){
+                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+                
+                id nextTopOfStack = [arguArray lastObject];
+                if(nextTopOfStack && [nextTopOfStack isKindOfClass:[NSNumber class]] && ([nextTopOfStack doubleValue] == 0)){
+                    [arguArray removeLastObject];
+                }
+                NSAttributedString *attTopOfStack = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
+                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                [attArg insertAttributedString:[self popStringOfStack:arguArray
+                                                   withNextArguString:empty
+                                                       withAttributes:attributes] atIndex:0];
+                [attArg insertAttributedString:attTopOfStack atIndex:[attArg length]];
+                resultStr = [[self popStringOfStack:stack
+                                 withNextArguString:attArg
+                                     withAttributes:attributes] mutableCopy];
+            } else if ([topOfStack isEqualToString:@"π"] || [topOfStack isEqualToString:@"e"]){
+                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+                
+                id nextTopOfStack = [arguArray lastObject];
+                if(nextTopOfStack && [nextTopOfStack isKindOfClass:[NSNumber class]] && ([nextTopOfStack doubleValue] == 0)){
+                    [arguArray removeLastObject];
+                }
+                NSAttributedString *attTopOfStack = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
+                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                [attArg insertAttributedString:[self popStringOfStack:arguArray
+                                                   withNextArguString:empty
+                                                       withAttributes:attributes] atIndex:0];
+                [attArg insertAttributedString:attTopOfStack atIndex:[attArg length]];
+                resultStr = [[self popStringOfStack:stack
+                                 withNextArguString:attArg
+                                     withAttributes:attributes] mutableCopy];
             }
+               */
         }
     return  [resultStr copy];
 }

@@ -34,8 +34,6 @@
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *showCurrensiesGestureRecognizer;
 
 
-@property (nonatomic,strong) Currensies *currensies;
-
 @property (nonatomic,strong) NSArray* listCurrensiesForPicker;//list of currensies for pickers, save inusers default
 
 @property (nonatomic) CurrencyStore *converter;//initial and string curensies storage
@@ -582,6 +580,10 @@
             self.resultLabel.alpha = alpha;
         }];
     }];
+}
+
+-(void) getCurrensiesArray:(NSArray *)currensiesExhangeRates {
+    [super resetProgrammAfterCurrensiesChecked:currensiesExhangeRates];
 }
 
 #pragma mark NOTIFICATION HANDLING

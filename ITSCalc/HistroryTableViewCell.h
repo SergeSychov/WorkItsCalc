@@ -21,6 +21,7 @@
 
 @property (nonatomic,strong) NSAttributedString *historyProgramString;
 @property (nonatomic, strong) NSString *historyDateString;
+@property (nonatomic,strong) NSString *historyExchangeCurrencyString;
 @property (nonatomic) BOOL isCanDrag; //can't drag last cell also set changeble uitextview
 @property (nonatomic, strong) UITextView *programTextView;
 @property (nonatomic) NSInteger design;

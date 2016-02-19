@@ -30,6 +30,7 @@
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
 @property (nonatomic) struct Color buttonColor;
 @property (nonatomic) CGRect rectArchive;
+@property (nonatomic,weak) UIView *paperFillView;
 
 @end
 
@@ -100,14 +101,37 @@
 -(void) myTouchBegan
 {
     if(!self.isUnderChanging){
-        
-        //self.rectArchive = self.cellSubView.frame;
         self.rectArchive = self.frame;
-        //[UIView animateWithDuration:0.03 animations:^{
-        //    self.cellSubView.frame = [self getRect];
-        //}];
         if(self.design == DESIGN_PAPER){
-            [self.cellSubView fillButton:YES];
+            CGFloat radiusCorner;
+            if(IS_IPAD){
+               radiusCorner = (self.frame.size.height-4)/ 3.;
+
+            } else {
+                radiusCorner = (self.frame.size.height-4)/ 3.2;
+            }
+            
+            CGFloat borderWidth = radiusCorner / 8.2;
+            CGFloat x = borderWidth /2+0.5;
+            CGFloat y = borderWidth /2;
+            CGRect rct = CGRectInset(self.frame,2,2);
+            rct.origin = CGPointMake(x, y);
+            
+            UIView *paperFillView = [[UIView alloc] initWithFrame:rct];
+            paperFillView.layer.cornerRadius = radiusCorner;
+            paperFillView.backgroundColor = self.cellSubView.buttonColor;
+            paperFillView.alpha = 0;
+            [self addSubview:paperFillView];
+            self.paperFillView = paperFillView;
+            [UIView animateWithDuration:0.2
+                                  delay:0.0
+                                options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 self.paperFillView.alpha = .8;
+                             } completion:^(BOOL finished) {
+                                 
+                             }];
+            
         } else {
         [UIView animateWithDuration:0.15
                               delay:0
@@ -115,15 +139,13 @@
               initialSpringVelocity:0.1
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                             //self.cellSubView.frame = [self getRect];
+
                              [self setFrame:[self getRect]];
                          } completion:nil];
         }
         self.cellSubView.isTaped = YES;
     } else {
-        
-       // self.rectArchive = self.cellSubView.frame;
-        self.rectArchive = self.frame;
+
         self.cellSubView.isTaped = YES;
         
     }
@@ -132,12 +154,18 @@
 -(void) myTouchEnded
 {
     if(!self.isUnderChanging){
-        //
-        //[UIView animateWithDuration:0.03 animations:^{
-          //  self.cellSubView.frame = self.rectArchive;
-       // }];
+
         if(self.design == DESIGN_PAPER){
-            [self.cellSubView fillButton:NO];
+
+            [UIView animateWithDuration:0.8
+                                  delay:0.0
+                                options:UIViewAnimationCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 self.paperFillView.alpha = .0;
+                             } completion:^(BOOL finished) {
+                                 [self.paperFillView removeFromSuperview];
+                             }];
+
         } else {
         [UIView animateWithDuration:0.15
                               delay:0
@@ -152,9 +180,10 @@
         self.cellSubView.isTaped = NO;
     } else {
        // self.cellSubView.frame = self.rectArchive;
-        self.frame = self.rectArchive;
+        //self.frame = self.rectArchive;
+        //[self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
         self.cellSubView.isTaped = NO;
-        
+        if([self.cellSubView.title isEqualToString:@"M-"]) NSLog(@"REct %f", self.frame.size.height);
     }
 }
 
@@ -310,22 +339,6 @@
         subY = self.superview.bounds.size.height - subHeight + collectionYOffset;
     }
     
-    /*
-     if((originInwindow.x - self.superview.frame.origin.x + subX) < 0){
-     subX = -(originInwindow.x - self.superview.frame.origin.x);
-     }
-     if((originInwindow.y - self.superview.frame.origin.y -collectionInsect + subY) < 0){ //66 - add ofset from collectionView
-     subY = -(originInwindow.y - self.superview.frame.origin.y -collectionInsect);
-     }
-     CGFloat oversize = self.superview.bounds.size.width - (originInwindow.x - self.superview.frame.origin.x + subX + subWidth);
-     if(oversize < 0){
-     subX += oversize;
-     }
-     oversize = self.superview.bounds.size.height - (originInwindow.y - self.superview.frame.origin.y +subY + subHeight);
-     if(oversize < 0){
-     subY += oversize;
-     }
-     */
     return  CGRectMake(subX, subY, subWidth, subHeight);
 }
 

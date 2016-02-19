@@ -15,7 +15,7 @@
 @class ButtonsStore;
 @protocol ButtonsStoreProtocol <NSObject>
 -(NSInteger)numberColumsInCollectionView;
--(void)buttonsArrayDidChanged;
+-(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload;
 @end
 
 
@@ -29,12 +29,15 @@
 @property (nonatomic,strong) NSArray *workButtonsNames;
 
 -(ButtonsStore*)initWithContext:(NSManagedObjectContext*) context;
+-(void)setUpArrays;
+-(void)setButtonsByDefault;
 -(void)renewArryasAfterChanging;
 -(void)renewArraysAccordingNewButtonsSize;
--(void) resaveCoreButtons;
+//-(void) resaveCoreButtons;
 -(void)changeContext:(NSManagedObjectContext*)context;
--(void)addNewButtonWithButtonObj:(NSArray*)butObjs;
+//-(void)addNewButtonWithButtonObj:(NSArray*)butObjs;
 -(void) checkButtonsArray;
+-(void) moveButton:(Buttons*)btn fromPosition:(NSNumber*)posFrom toPosition:(NSNumber*)posTo;
 
 
 

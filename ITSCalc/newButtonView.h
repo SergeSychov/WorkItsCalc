@@ -23,8 +23,6 @@
 @property (nonatomic) NSInteger design; //number of design 
 
 
--(void) fillButton:(BOOL) filling;
-
 //-(void) setTextSize:(CGFloat)ratio;
 
 @end

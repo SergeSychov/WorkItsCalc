@@ -10,8 +10,12 @@
 #import "ButtonObject.h"
 
 @interface Buttons (Buttons_Maker)
-+(Buttons *) buttonWithObj:(ButtonObject*)obj inManageObjectContext:(NSManagedObjectContext *)context;
++(Buttons*) buttonWithName:(NSString*)name position:(NSNumber*)position alowDeletting:(BOOL)alowDelete dateDeleting:(NSDate*)delDate enabling:(BOOL)enabling Main:(BOOL)isMain Program:(NSArray*)program inManageObjectContext:(NSManagedObjectContext *)context;
+//+(Buttons *) buttonWithObj:(ButtonObject*)obj inManageObjectContext:(NSManagedObjectContext *)context;
 +(void) clearContext:(NSManagedObjectContext *)context;
-+(void) reSaveKeyboardWithArray:(NSArray*)objArray inManageObjectContext:(NSManagedObjectContext *)context;
+//+(void) reSaveKeyboardWithArray:(NSArray*)objArray inManageObjectContext:(NSManagedObjectContext *)context;
++(void) insertButton:(Buttons*)button toPosition:(NSNumber*)position inManageObjectContext:(NSManagedObjectContext*)context;
++(void) moveButton:(Buttons*)button fromPosition:(NSNumber*)positionFrom toPosition:(NSNumber*)positionTo inManageObjectContext:(NSManagedObjectContext*)context;
+
 
 @end

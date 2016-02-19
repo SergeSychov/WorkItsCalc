@@ -14,6 +14,7 @@
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
 		35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */; };
 		35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */; };
+		35EF55381C46D55F007B4087 /* ButtonsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EF55371C46D55F007B4087 /* ButtonsStore.m */; };
 		5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5006BC90193792210081F44E /* ACalcTryViewControllerTableAdditional.strings */; };
 		500E274B1C3A878500FB5D8E /* ITSCalc.m in Sources */ = {isa = PBXBuildFile; fileRef = 500E274A1C3A878500FB5D8E /* ITSCalc.m */; };
 		50104757192BB21100A0CB1F /* HintView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50104756192BB21100A0CB1F /* HintView.m */; };
@@ -134,6 +135,8 @@
 		35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		35EAE2AB1AD5A5D400F428BC /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AboutViewController.h; path = ../AboutViewController.h; sourceTree = "<group>"; };
 		35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AboutViewController.m; path = ../AboutViewController.m; sourceTree = "<group>"; };
+		35EF55361C46D55F007B4087 /* ButtonsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonsStore.h; sourceTree = "<group>"; };
+		35EF55371C46D55F007B4087 /* ButtonsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonsStore.m; sourceTree = "<group>"; };
 		5006BC8F193792210081F44E /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/ACalcTryViewControllerTableAdditional.strings; sourceTree = "<group>"; };
 		5006BC91193792270081F44E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ACalcTryViewControllerTableAdditional.strings; sourceTree = "<group>"; };
 		5006BC92193792280081F44E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/ACalcTryViewControllerTableAdditional.strings; sourceTree = "<group>"; };
@@ -650,6 +653,8 @@
 				5021BD1E18FDB242001749D4 /* ACalcBrain.m */,
 				64616FCA19BF53C7009DA6B2 /* TextEditController.h */,
 				64616FCB19BF53C7009DA6B2 /* TextEditController.m */,
+				35EF55361C46D55F007B4087 /* ButtonsStore.h */,
+				35EF55371C46D55F007B4087 /* ButtonsStore.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -942,6 +947,7 @@
 				50119EEC1B07531700E4BDE0 /* AppearedViewController.m in Sources */,
 				5047501D1B7BC45A001AD553 /* PlusButton.m in Sources */,
 				504EA8C51A1902A300E225F7 /* recBut.m in Sources */,
+				35EF55381C46D55F007B4087 /* ButtonsStore.m in Sources */,
 				5021BD0118FDB0C8001749D4 /* Buttons+Buttons_Maker.m in Sources */,
 				35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */,
 				64616FCC19BF53C7009DA6B2 /* TextEditController.m in Sources */,

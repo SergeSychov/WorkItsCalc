@@ -12,6 +12,7 @@
 
 @protocol GetPairCurrensiesProtocol <NSObject>
 -(void) getCurrensiesFrom:(NSString*)firstSymbol To:(NSString*)secondSymbol AndValue:(NSNumber*)value;
+-(void) getCurrensiesArray:(NSArray*)currensiesExhangeRates;
 @end
 
 @interface Currensies : NSObject
@@ -23,6 +24,7 @@
 
 -(void) askResultForm:(NSString*)fromCur To:(NSString*)toCur;
 -(void) renewUsersCurrensies:(NSArray*)currArray;
+-(void) askResultForCurrensiesArray:(NSArray*)curArray;
 -(void) renewPairsDictionary;
 -(void) makeNewCurrensiesList;
 

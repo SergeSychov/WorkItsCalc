@@ -31,13 +31,16 @@
 @property (strong,nonatomic) NSString* requestString; //string for check last request
 @property (strong,nonatomic) NSString* requestList;// string as list of requested pairs
 
+
 //consatanst that show that list is need to be renew
+@property (nonatomic) NSArray* wasAkingArray; // array was requested from recount function in calc
 @property (nonatomic) BOOL flagRenewList;//shows that list must be renewed
 @property (nonatomic) NSInteger renewCounter;// count that all properties is checked
 @property (nonatomic) BOOL isPairsLoaded;//flag tht show loaded or not dictionary of currensies
 
 //for locationManager
 @property (strong, nonatomic) CLLocationManager *locationManager;
+
 
 @property (nonatomic) BOOL allertNoConnectionWasShowed;//show is allert of lost connection was showed to user, save in archive
 
@@ -53,6 +56,7 @@
 }
 
 #pragma mark REQESTS MAKE
+//for one pair
 -(void) askResultForm:(NSString*)fromCur To:(NSString*)toCur
 {
     //makerequest string
@@ -63,6 +67,28 @@
     self.requestString = requestStr;
     
     [self requestForPairdictionary:requestStr];
+}
+
+-(void) askResultForCurrensiesArray:(NSArray*)currensies{
+    NSString *request = @"";
+    
+    if([[currensies firstObject] isKindOfClass:[NSArray class]] && [[[currensies firstObject] firstObject] isKindOfClass:[NSString class]] && [[[currensies firstObject] firstObject] isEqualToString:@"$"]){
+        for(NSArray *currPairArr in currensies){
+            request = [request stringByAppendingString:currPairArr[1]];
+            request = [request stringByAppendingString:currPairArr[2]];
+            request = [request stringByAppendingString:@"=X,"];
+            
+        }
+        request = [@"http://download.finance.yahoo.com/d/quotes.csv?s=" stringByAppendingString:request];
+        request = [request substringToIndex:[request length]-1];
+        request = [request stringByAppendingString:@"&f=l1&e=.csv"];
+        self.requestString = request;
+        
+        NSLog(@"Asking arrays %@", request);
+        [self requestForPairdictionary:request];
+        self.wasAkingArray = currensies;
+    }
+
 }
 
 -(void) renewPairsDictionary
@@ -132,8 +158,24 @@
     NSString *str = [NSString stringWithContentsOfURL:location encoding:NSASCIIStringEncoding error:NULL];
 
     NSArray *separated = [str componentsSeparatedByString:@"\n"];
-
-    if([separated count]>2){ //if getting whole list for pair dictionary
+    //NSLog(@"separated str %@", separated);
+    if(self.wasAkingArray){
+        NSMutableArray *currensies = [self.wasAkingArray mutableCopy];
+        if([[currensies firstObject] isKindOfClass:[NSArray class]] && [[[currensies firstObject] firstObject] isKindOfClass:[NSString class]] && [[[currensies firstObject] firstObject] isEqualToString:@"$"]){
+            for(NSInteger i = 0; i < separated.count-1; i++){
+                NSNumber *value = [NSNumber numberWithFloat:[(NSString*)separated[i] floatValue]];
+                NSMutableArray *pair = [currensies[i] mutableCopy];
+                [pair replaceObjectAtIndex:3 withObject:value];
+                [currensies replaceObjectAtIndex:i withObject:pair];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                 [self.delegate getCurrensiesArray:[currensies copy]];
+            });
+           
+            //NSLog(@"result array %@", [currensies copy]);
+            self.wasAkingArray = nil;
+        }
+    } else if([separated count]>2){ //if getting whole list for pair dictionary
         NSMutableArray* mutCopy = [separated mutableCopy];
         [mutCopy removeObjectAtIndex:[separated count]-1];
         separated = [mutCopy copy];
@@ -670,6 +712,7 @@
     
     //set main arrais from uses defaults
     [self setPropertiesFromUserdefault];
+    self.wasAkingArray = nil;
 }
 -(id) init
 {

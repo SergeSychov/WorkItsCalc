@@ -25,16 +25,98 @@
     self = [super init];
     if(self){
         self.buttonManagedObjectContext = context;
-        [self setUpArrays];
+        self.mainButtonsStartWithPosition = nil; //need set be at neel at stronge setuo
     }
     return self;
 }
 
 
+-(void) setUpArrays
+{
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    NSManagedObjectContext *context = self.buttonManagedObjectContext;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
+    
+    NSError *error;
+    NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+    NSLog(@"buttons quantity in core data %lu", (unsigned long)buttonsFromCoreData.count);
+    if(!buttonsFromCoreData || (buttonsFromCoreData.count < 65)){//if array empty or wrong quantity
+        
+        //1. find changable and enable buttons
+        NSMutableArray* changebleButtonsArray = [[NSMutableArray alloc] init];
+        for(NSString *name in self.startArray){
+            Buttons *newButton = [Buttons buttonWithName:name
+                                                position:[NSNumber numberWithInteger:[self.startArray indexOfObject:name]]
+                                           alowDeletting:YES
+                                            dateDeleting:[NSDate distantFuture]
+                                                enabling:YES
+                                                    Main:NO
+                                                 Program:nil
+                                   inManageObjectContext:context];
+            [changebleButtonsArray addObject:newButton];
+        }
+        self.changebleButtonObjs = [changebleButtonsArray copy];
+
+        
+        //2. make Main buttons 1,2,3... +,-,=...
+        NSMutableArray* mainButtonsArray = [[NSMutableArray alloc] init];
+        NSArray *mainNames = [self mainButtonNames];
+        for(NSString *name in mainNames){
+            Buttons *newButton = [Buttons buttonWithName:name
+                                                position:[self.mainButtonsStartWithPosition objectForKey:name]
+                                           alowDeletting:NO
+                                            dateDeleting:[NSDate distantFuture]
+                                                enabling:YES
+                                                    Main:YES
+                                                 Program:nil
+                                   inManageObjectContext:context];
+            [mainButtonsArray addObject:newButton];
+        }
+        self.mainButtonObjs = [mainButtonsArray copy];
+        self.delettedButtonObjs = [[NSArray alloc] init];
+
+    }
+    else {
+        
+        //1. find changable and enable buttons
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
+        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
+        NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        if(error){
+            NSLog(@"Error %@", error);
+        }
+        self.changebleButtonObjs = buttonsFromCoreData;
+        
+        //2. check Main buttons 1,2,3... +,-,=... and resetPositionValue according screen
+        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@", [NSNumber numberWithBool:YES]];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
+        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        for(NSInteger i = 0; i < buttonsFromCoreData.count; i++){
+            Buttons *btn = buttonsFromCoreData[i];
+            btn.position = [self.mainButtonsStartWithPosition objectForKey:btn.nameButton];
+        }
+
+        self.mainButtonObjs = buttonsFromCoreData;
+        
+        //3. make "deleted@ buttons array ascending according deleting date
+        request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
+        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO]];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"dateOfDeletting" ascending:NO]];
+        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        self.delettedButtonObjs = buttonsFromCoreData;
+
+    }
+
+    [self makeTwoArraysWithReload:YES];
+
+}
+
 -(void) renewArryasAfterChanging
 {
-    [self makeTwoArraysWithReload:NO];
+    [self makeTwoArraysWithReload:YES];
 }
+
 
 -(void) renewArraysAccordingNewButtonsSize
 {
@@ -43,15 +125,6 @@
     [self makeTwoArraysWithReload:YES];
 }
 
--(void) resaveCoreButtons
-{
-    // NSManagedObjectContext *context = self.buttonManagedObjectContext;
-    
-    [Buttons reSaveKeyboardWithArray:self.allButtonObj inManageObjectContext:self.buttonManagedObjectContext];
-    // NSError *error;
-    // [context save:&error];
-    
-}
 
 -(void)changeContext:(NSManagedObjectContext *)context
 {
@@ -59,22 +132,10 @@
     [self setUpArrays];
 }
 
--(void)addNewButtonWithButtonObj:(NSArray *)butObjs
+-(void)setButtonsByDefault
 {
-   NSMutableArray *mutableAllButtons = [self.allButtonObj mutableCopy];
-    for(ButtonObject *butObj in butObjs){
-        if(butObj.position != 0){
-            [mutableAllButtons insertObject:butObj atIndex:butObj.position];
-        } else {
-            NSUInteger newPosition = [mutableAllButtons count];
-            butObj.position = newPosition;
-            [mutableAllButtons addObject:butObj];
-        }
-    }
-    self.allButtonObj = [mutableAllButtons copy];
-    [self resaveCoreButtons];
-    [self changeContext:self.buttonManagedObjectContext];
-    //[self makeTwoArraysWithReload:YES];
+    [Buttons clearContext:self.buttonManagedObjectContext];
+    [self setUpArrays];
 }
 
 #pragma mark CHECK BUTTONS ARRAY
@@ -82,37 +143,36 @@
 -(void) checkButtonsArray
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
+        BOOL needToReloadArrays = NO;
         //firat make array from all buttons names
         NSMutableArray *mutNames = [[NSMutableArray alloc] init];
-        for(ButtonObject* butObj in self.allButtonObj){
+        for(Buttons* butObj in self.allButtonObj){
             [mutNames addObject:butObj.nameButton];
         }
         NSArray *startArray = [self startArray];
-        NSMutableArray *newButtonsObjs = [[NSMutableArray alloc] init];
-        
         for(NSString *stArrStr in startArray){
             if(![mutNames containsObject:stArrStr]){
-                ButtonObject *btnObj = [[ButtonObject alloc] init];
                 
-                btnObj.enable = YES;
-                btnObj.isMain = NO;
-                btnObj.alowedTodelete = YES;
-                btnObj.nameButton = stArrStr;
-                btnObj.position = [startArray indexOfObject:stArrStr];
-                btnObj.dateOfDeletting = [NSDate distantFuture];
+                needToReloadArrays = YES;
+                NSNumber *position = [NSNumber numberWithInteger:[startArray indexOfObject:stArrStr]];
+                Buttons *newBtn = [Buttons buttonWithName:stArrStr
+                                                 position:position
+                                            alowDeletting:YES
+                                             dateDeleting:[NSDate distantFuture]
+                                                 enabling:YES
+                                                     Main:NO
+                                                  Program:nil
+                                    inManageObjectContext:self.buttonManagedObjectContext];
                 
-                [newButtonsObjs addObject:btnObj];
-                if([stArrStr isEqualToString:@"X"] || [stArrStr isEqualToString:@"Z"]){
-                    NSLog(@" %@ position is %ul",stArrStr,btnObj.position);
-                }
+                //need to reset positions property fro all buttons
+                [Buttons insertButton:newBtn toPosition:position inManageObjectContext:self.buttonManagedObjectContext];
 
             }
         }
-        NSLog(@"NewButtonObj %@", newButtonsObjs);
+        //NSLog(@"NewButtonObj %@", newButtonsObjs);
         dispatch_async(dispatch_get_main_queue(), ^{
-            if([newButtonsObjs count]>0){
-                [self addNewButtonWithButtonObj:[newButtonsObjs copy]];
+            if(needToReloadArrays){
+                [self setUpArrays];
             }
             
         });
@@ -120,6 +180,18 @@
 }
 
 #pragma mark BUTTONS ARRAYS
+
+-(NSArray*)mainButtonNames
+{
+    NSArray *names = [[NSArray alloc] initWithObjects: @"∓",@"C",
+                      @"7",@"8",@"9",@"÷",
+                      @"4",@"5",@"6",@"×",
+                      @"1",@"2",@"3",@"-",
+                      @"0",@".",@"⌫",@"+",
+                      @"=",
+                      nil];
+    return names;
+}
 
 //initial array of function for star
 -(NSArray*) startArray
@@ -131,7 +203,7 @@
                            @"M+",
                            @"M-",
                            @"Mr",@"Mc",
-                           //@"X",@"Z",//added two variables
+                           @"X",@"Z",//added two variables
                            @"° ′″",@".00",
                            @"e",@"π",@"x²",@"x³",@"xʸ",
                            @"yˣ",@"2ˣ",@"10ˣ",@"eˣ",@"x!",
@@ -146,33 +218,21 @@
     return startArray;
 }
 
-//initial array for main buttons for start
--(NSArray*) mainButtonsStartArray
-{
-    NSArray* mainArray = [[NSArray alloc] initWithObjects:@"∓",@"C",
-                          @"7",@"8",@"9",@"÷",
-                          @"4",@"5",@"6",@"×",
-                          @"1",@"2",@"3",@"-",
-                          @"0",@".",@"⌫",@"+",
-                          @"=",
-                          nil];
-    return mainArray;
-}
-
 //setup position for main button according numbers of colums
 //need be setted at start with init function initWithNumberOfColums:(NSInteger)colums
 
 
 -(void) setUpMainButtonsStartWithPosition
 {
-    NSArray *names = [[NSArray alloc] initWithObjects: @"∓",@"C",
-                      @"7",@"8",@"9",@"÷",
-                      @"4",@"5",@"6",@"×",
-                      @"1",@"2",@"3",@"-",
-                      @"0",@".",@"⌫",@"+",
-                      @"=",
-                      nil];
+
+    NSArray *names = [self mainButtonNames];
     _mainButtonsStartWithPosition = [[NSDictionary alloc] initWithObjects:[self mainButtonsPositions]forKeys:names];
+    
+    if(self.mainButtonObjs){
+        for(Buttons *btn in self.mainButtonObjs){
+            btn.position = [self.mainButtonsStartWithPosition objectForKey:btn.nameButton];
+        }
+    }
     
 }
 
@@ -213,7 +273,9 @@
 -(NSDictionary*) mainButtonsStartWithPosition
 {
     if(!_mainButtonsStartWithPosition){
-        [self setUpMainButtonsStartWithPosition];
+
+        NSArray *names = [self mainButtonNames];
+        _mainButtonsStartWithPosition = [[NSDictionary alloc] initWithObjects:[self mainButtonsPositions]forKeys:names];
     }
     return _mainButtonsStartWithPosition;
 }
@@ -221,139 +283,54 @@
 -(void) setAllButtonObj:(NSArray *)allButtonObj
 {
     _allButtonObj = allButtonObj;
-    //[self resaveCoreButtons];
 }
 
 
 
--(void) setUpArrays
+
+//make workbuttons array and names array together
+-(void) makeTwoArraysWithReload:(BOOL)isNeedreload;
 {
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    NSManagedObjectContext *context = self.buttonManagedObjectContext;
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
-    
-    NSError *error;
-    NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
-    if(!buttonsFromCoreData || (buttonsFromCoreData.count < 65)){
-        if(buttonsFromCoreData){
-            [Buttons clearContext:context];
+    // self.buttonsCollection.scrollEnabled = NO;
+    NSLog(@"makeTwoArraysWithReload");
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
+        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
+        
+        //1. add to allButtons changeble
+        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
+
+        //2. insert Main buttons according right position
+        for(Buttons *btn in self.mainButtonObjs){
+            [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
         }
         
-        
-        NSMutableArray *buttonsObjs = [[NSMutableArray alloc] init]; //array from obj not from core data
-        for(NSInteger i = 0; i < self.startArray.count; i++){
-            ButtonObject *btnObj = [[ButtonObject alloc] init];
-            
-            btnObj.enable = YES;
-            btnObj.isMain = NO;
-            btnObj.alowedTodelete = YES;
-            btnObj.nameButton = self.startArray[i];
-            btnObj.position = i;
-            btnObj.dateOfDeletting = [NSDate distantFuture];
-            
-            [buttonsObjs addObject:btnObj];
-            
+        //3.make string array for work condition of buttoncollectionView
+        //workButtonNames
+        for(Buttons *btn in allButtonsArray){
+            [workButtonNames addObject:btn.nameButton];
         }
-        self.changebleButtonObjs = [buttonsObjs copy];
-        //clear deletted button objs
-        //---
-        self.delettedButtonObjs = [[NSArray alloc] init];
-        //---
-        //
-        NSMutableArray *mainButtonObjs = [[NSMutableArray alloc] init];
+        self.workButtonsNames = [workButtonNames copy];
         
-        for(NSInteger i = 0; i < self.mainButtonsStartArray.count; i++){
-            NSString *name = self.mainButtonsStartArray[i];
-            NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:name] integerValue];
-            ButtonObject *btnObj = [[ButtonObject alloc] init];
-            
-            btnObj.nameButton =  name;
-            btnObj.enable = YES;
-            btnObj.isMain = YES;
-            btnObj.alowedTodelete = NO;
-            btnObj.position = index;
-            btnObj.dateOfDeletting = [NSDate distantFuture];
-            
-            [mainButtonObjs addObject:btnObj];
-        }
-        
-        self.mainButtonObjs = [mainButtonObjs copy];
-        
-        //[self makeTwoArrays];
-    }
-    else {
-        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
-        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-        //NSError *error;
-        NSMutableArray *allButtons = [[NSMutableArray alloc] init];
-        NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
-        for(NSInteger i = 0; i < buttonsFromCoreData.count; i++){
-            Buttons *button = buttonsFromCoreData[i];
-            ButtonObject *butObj = [[ButtonObject alloc] init];
-            butObj.nameButton = button.nameButton;
-            butObj.dateOfDeletting = button.dateOfDeletting;
-            butObj.alowedTodelete = [button.aloweToDelete boolValue];
-            butObj.isMain = [button.isMain boolValue];
-            butObj.position = [button.position integerValue];
-            butObj.enable = [button.enable boolValue];
-            
-            [allButtons addObject:butObj];
-        }
-        self.changebleButtonObjs = [allButtons copy];
-        
-        
-        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@", [NSNumber numberWithBool:YES]]; //hope it will work
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-        
-        NSMutableArray *mainButtons = [[NSMutableArray alloc] init];
-        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
-        //NSLog(@"Fetched Main objs %@", buttonsFromCoreData);
-        for(NSInteger i = 0; i < buttonsFromCoreData.count; i++){
-            Buttons *button = buttonsFromCoreData[i];
-            ButtonObject *butObj = [[ButtonObject alloc] init];
-            NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:button.nameButton] integerValue];
-            
-            butObj.nameButton = button.nameButton;
-            butObj.dateOfDeletting = button.dateOfDeletting;
-            butObj.alowedTodelete = [button.aloweToDelete boolValue];
-            butObj.isMain = [button.isMain boolValue];
-            butObj.position = index;//[button.position integerValue];
-            butObj.enable = [button.enable boolValue];
-            
-            [mainButtons addObject:butObj];
-        }
-        self.mainButtonObjs = [mainButtons copy];
-        
-        request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
-        request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO]]; //hope it will work
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"dateOfDeletting" ascending:NO]];
-        //NSError *error;
-        NSMutableArray *delettedButtonObjs = [[NSMutableArray alloc] init];
-        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
-        for(NSInteger i = 0; i < buttonsFromCoreData.count; i++){
-            Buttons *button = buttonsFromCoreData[i];
-            ButtonObject *butObj = [[ButtonObject alloc] init];
-            butObj.nameButton = button.nameButton;
-            butObj.dateOfDeletting = button.dateOfDeletting;
-            butObj.alowedTodelete = [button.aloweToDelete boolValue];
-            butObj.isMain = [button.isMain boolValue];
-            butObj.position = [button.position integerValue];
-            butObj.enable = [button.enable boolValue];
-            
-            [delettedButtonObjs addObject:butObj];
-        }
-        self.delettedButtonObjs = [delettedButtonObjs copy];
-        
-        //[self makeTwoArrays];
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self makeTwoArraysWithReload:YES];
-        
+        //4. compleet all buttons array with deleted (not enabled) buttons
+        [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];
+        self.allButtonObj = [allButtonsArray copy];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate buttonsArrayDidChangedWithReload:isNeedreload];
+
+        });
     });
-});
-    //if main array from core dont equal main buttons obj from brog/ reload core
 }
+
+-(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
+{
+    NSLog(@"moveButton:(Buttons *)btn fromPosition:");
+    [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
+    [self makeTwoArraysWithReload:NO];
+}
+
 
 -(NSArray*) changebleButtonObjs
 {
@@ -382,114 +359,38 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     return _mainButtonObjs;
 }
 
--(void) makeAllButtonObjsArray
-{
-    //self.buttonsCollection.scrollEnabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
-    
-        //make initial array from enable changeble button objects
-        for (int i = 0; i < self.changebleButtonObjs.count; i++){
-            [allButtonsArray addObject:self.changebleButtonObjs[i]];
-        }
-        //insert main button objects att position according mainButtonWithStartPosition dictionary
-        for(NSUInteger i = 0; i < self.mainButtonObjs.count; i++){
-            ButtonObject *buttonObj = self.mainButtonObjs[i];
-            NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:buttonObj.nameButton] integerValue];
-            buttonObj.position = index;
-            [allButtonsArray insertObject:self.mainButtonObjs[i] atIndex:index];
-        }
-        //add deleted buttons
-        for (int i = 0; i < self.delettedButtonObjs.count; i++){
-            [allButtonsArray addObject:self.delettedButtonObjs[i]];
-        }
-    
-        self.allButtonObj = [allButtonsArray copy];
-        //self.buttonsCollection.scrollEnabled = YES;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate buttonsArrayDidChanged];
-        });
-    });
-
-}
-
 -(void) makeWorkButoonNamesArray
 {
     //self.buttonsCollection.scrollEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
-    
-        //set up initial array from changeble buttons arrays names
-        for(int i = 0; i < self.changebleButtonObjs.count; i++){
-            ButtonObject *buttonObj = self.changebleButtonObjs[i];
-            [workButtonNames addObject:buttonObj.nameButton];
-        }
-        //insert mainButtons as names
-        for(NSUInteger i = 0; i < self.mainButtonObjs.count; i++){
-            ButtonObject *buttonObj = self.mainButtonObjs[i];
-            NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:buttonObj.nameButton] integerValue];
-        
-            [workButtonNames insertObject:buttonObj.nameButton atIndex:index];
-        }
-    
-        self.workButtonsNames = [workButtonNames copy];
-    
-    //self.buttonsCollection.scrollEnabled = YES;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate buttonsArrayDidChanged];
-        });
-    });
-}
-
-
-//make workbuttons array and names array together
--(void) makeTwoArraysWithReload:(BOOL)isNeedreload;
-{
-   // self.buttonsCollection.scrollEnabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
         NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
         NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
-    
-        //make initial array from enable changeble button objects
-        for (int i = 0; i < self.changebleButtonObjs.count; i++){
-            ButtonObject *buttonObj = self.changebleButtonObjs[i];
-            [workButtonNames addObject:buttonObj.nameButton];
-            [allButtonsArray addObject:self.changebleButtonObjs[i]];
         
+        //1. add to allButtons changeble
+        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
+        
+        //2. insert Main buttons according right position
+        for(Buttons *btn in self.mainButtonObjs){
+            [allButtonsArray insertObject:btn atIndex:[btn.position integerValue]];
         }
-        //insert main button objects att position according mainButtonWithStartPosition dictionary
-        for(NSUInteger i = 0; i < self.mainButtonObjs.count; i++){
-            ButtonObject *buttonObj = self.mainButtonObjs[i];
-            NSInteger index = [[self.mainButtonsStartWithPosition objectForKey:buttonObj.nameButton] integerValue];
         
-            [workButtonNames insertObject:buttonObj.nameButton atIndex:index];
-            [allButtonsArray insertObject:self.mainButtonObjs[i] atIndex:index];
+        //3.make string array for work condition of buttoncollectionView
+        //workButtonNames
+        for(Buttons *btn in allButtonsArray){
+            [workButtonNames addObject:btn.nameButton];
         }
         self.workButtonsNames = [workButtonNames copy];
     
-        //add deleted buttons
-        for (int i = 0; i < self.delettedButtonObjs.count; i++){
-            [allButtonsArray addObject:self.delettedButtonObjs[i]];
-        }
-    
-        self.allButtonObj = [allButtonsArray copy];
-        
     //self.buttonsCollection.scrollEnabled = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
-            if(isNeedreload){
-                
-                [self.delegate buttonsArrayDidChanged];
-                
-                //IMPORTANT ADD HEERE BUT IT MUST BE EXTERNAL FUNCTIONS
-                //CHECK BUTTONS ARREY AFTER RENEW Version
-               // [self checkButtonsArray];
-            }
+            [self.delegate buttonsArrayDidChangedWithReload:YES];
         });
     });
 }
+
+
+
 
 -(NSArray*) workButtonsNames
 {
