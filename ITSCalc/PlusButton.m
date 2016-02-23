@@ -16,67 +16,16 @@
 
 @implementation PlusButton
 
--(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
-{
-    [UIView animateWithDuration:0.1 animations:^{
-        self.alpha = 0.15;
-    }];
-    
-    return [super beginTrackingWithTouch:touch withEvent:event];
-    
-}
-
--(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
-{
-    [UIView animateWithDuration:0.1 animations:^{
-        self.alpha = 1.;
-    }];
-    
-    [super endTrackingWithTouch:touch
-                      withEvent:event];
-}
-
--(void) cancelTrackingWithEvent:(UIEvent *)event{
-    [UIView animateWithDuration:0.1 animations:^{
-        self.alpha = 1.;
-    }];
-    [super cancelTrackingWithEvent:event];
-    
-}
-
-
--(UIColor*) normalColor{
-    
-    if(self.state != UIControlStateDisabled){
-        _normalColor = self.currentTitleColor;
-    } else {
-        _normalColor = [UIColor grayColor];
+-(UIColor*)shadowColor{
+    if(!_shadowColor){
+        _shadowColor = [UIColor clearColor];
+        self.shadowSize = CGSizeMake(0, 0);
+        self.shadowBlur = 0.;
     }
-    return _normalColor;
+    return _shadowColor;
 }
 
--(UIColor*) touchedColor{
-    if(self.state == UIControlStateNormal){
-        if(!_touchedColor){
-            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
-        }
-    } else {
-        _touchedColor = [UIColor grayColor];
-    }
-    return _touchedColor;
-    
-}
--(UIColor*) storkeColor
-{
-    
-    if(!_storkeColor){
-        _storkeColor = self.normalColor;
-    }
-    
-    return _storkeColor;
-}
-
--(void) drawHistoryTrashWithContect:(CGContextRef)contex inRect:(CGRect)rect
+-(void) drawHistoryTrashWithContect:(CGContextRef)context inRect:(CGRect)rect
 {
     //calculate border width
     CGFloat borderWidth;
@@ -97,13 +46,6 @@
     
     CGPathRef pathOfRect;
 
-    CGContextSetLineWidth(contex, borderWidth);
-    UIColor *fillColor = [UIColor clearColor];
-    CGContextSetLineCap(contex, kCGLineCapRound);
-    CGContextSetFillColorWithColor(contex, fillColor.CGColor);
-    
-    UIColor *storkecolor = self.storkeColor;
-    CGContextSetStrokeColorWithColor(contex, storkecolor.CGColor);
 
     CGFloat plusPart = rect.size.width/3;
     
@@ -118,13 +60,20 @@
     [patch addLineToPoint:pointFour];
     pathOfRect = patch.CGPath;
     
-    CGFloat shadowBlur = 0.5;
-    UIColor *shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-    CGSize shadowOffset = CGSizeMake(1, 1);
+    CGContextSetLineWidth(context, rect.size.width/35);
+    UIColor *fillColor = [UIColor clearColor];
+    CGContextSetLineCap(context, kCGLineCapRound);
+    CGContextSetFillColorWithColor(context, fillColor.CGColor);
+    if(self.state == UIControlStateNormal){
+        UIColor *color = self.tintColor;
+        CGContextSetStrokeColorWithColor(context, color.CGColor);
+    }else if (self.state == UIControlStateDisabled){
+        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
+    }
     
-    CGContextSetShadowWithColor(contex, shadowOffset, shadowBlur, shadowColor.CGColor);
-    CGContextAddPath(contex, pathOfRect);
-    CGContextDrawPath(contex, kCGPathFillStroke);
+    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
+    CGContextAddPath(context, pathOfRect);
+    CGContextDrawPath(context, kCGPathFillStroke);
 
 }
 

@@ -10,7 +10,11 @@
 
 @interface PlusButton : UIButton
 
-@property (nonatomic,strong) UIColor *normalColor;
-@property (nonatomic,strong) UIColor *touchedColor;
+//@property (nonatomic,strong) UIColor *normalColor;
+//@property (nonatomic,strong) UIColor *touchedColor;
+
+@property (nonatomic,weak) UIColor *shadowColor;
+@property (nonatomic) CGSize shadowSize;
+@property (nonatomic) CGFloat shadowBlur;
 
 @end

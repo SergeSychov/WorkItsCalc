@@ -70,22 +70,44 @@
 }
 
 -(void) askResultForCurrensiesArray:(NSArray*)currensies{
-    NSString *request = @"";
+    NSString *requestString = @"";
     
     if([[currensies firstObject] isKindOfClass:[NSArray class]] && [[[currensies firstObject] firstObject] isKindOfClass:[NSString class]] && [[[currensies firstObject] firstObject] isEqualToString:@"$"]){
+        //NSLog(@"Currensies %@", currensies);
+        NSMutableArray *mutCurrensies = [currensies mutableCopy];
         for(NSArray *currPairArr in currensies){
-            request = [request stringByAppendingString:currPairArr[1]];
-            request = [request stringByAppendingString:currPairArr[2]];
-            request = [request stringByAppendingString:@"=X,"];
+            
+            //check availibility this currensies in existing array
+            NSString *currFromStr = currPairArr[1];
+            NSString *currToStr = currPairArr[2];
+            //checking
+            if([self.mainPairsdictionary objectForKey:currFromStr] && [self.mainPairsdictionary objectForKey:currToStr]){
+                NSMutableArray* mutPairArray = [currPairArr mutableCopy];
+                NSDictionary *insideDict = (NSDictionary*)[self.mainPairsdictionary objectForKey:currFromStr];
+                
+                [mutPairArray replaceObjectAtIndex:3 withObject:[insideDict valueForKey:currToStr]]; //set value from existing dictionary
+
+                NSInteger indexOfExistPair = [currensies indexOfObject:currPairArr];//get index from nonmutable array
+                //and replace in mut array
+                [mutCurrensies replaceObjectAtIndex:indexOfExistPair withObject:mutPairArray];//and replace it in completed array
+            }
+
+
+            //make string for HTTP request
+            requestString = [requestString stringByAppendingString:currFromStr];
+            requestString = [requestString stringByAppendingString:currToStr];
+            requestString = [requestString stringByAppendingString:@"=X,"];
             
         }
-        request = [@"http://download.finance.yahoo.com/d/quotes.csv?s=" stringByAppendingString:request];
-        request = [request substringToIndex:[request length]-1];
-        request = [request stringByAppendingString:@"&f=l1&e=.csv"];
-        self.requestString = request;
+        requestString = [@"http://download.finance.yahoo.com/d/quotes.csv?s=" stringByAppendingString:requestString];
+        requestString = [requestString substringToIndex:[requestString length]-1];
+        requestString = [requestString stringByAppendingString:@"&f=l1&e=.csv"];
+        self.requestString = requestString;
         
-        NSLog(@"Asking arrays %@", request);
-        [self requestForPairdictionary:request];
+        //NSLog(@"Asking arrays %@", requestString);
+       // NSLog(@"Mutcurrensies %@", mutCurrensies);
+         [self.delegate getCurrensiesArray:[mutCurrensies copy]];
+        [self requestForPairdictionary:requestString];
         self.wasAkingArray = currensies;
     }
 
@@ -136,13 +158,18 @@
     
     //check for coonection
     [[session downloadTaskWithURL:url completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if(error && !self.allertNoConnectionWasShowed){
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:self.dateLastUpdateDictionary, @"LastUpDataDate",nil];
-                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:NOT_AVAILABLE_SERVISE_NOTIFICATION object:nil userInfo:userInfo]];
-                self.allertNoConnectionWasShowed=YES;
-            }];
+        if(error){
+            NSLog(@"Something wrong with connection");
+            //delete previos request array - no connection to server
+            self.wasAkingArray = nil;
+            if(!self.allertNoConnectionWasShowed){
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:self.dateLastUpdateDictionary, @"LastUpDataDate",nil];
+                    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:NOT_AVAILABLE_SERVISE_NOTIFICATION object:nil userInfo:userInfo]];
+                    self.allertNoConnectionWasShowed=YES;
+                }];
             
+            }
         }
     }] resume];
     
@@ -398,7 +425,7 @@
             usersList = [usersList arrayByAddingObjectsFromArray:fourPart];
             
         }
-        if(self.geoCurrency){
+        if(self.geoCurrency && ![self.geoCurrency isEqualToString:self.localCurrecy]){
             wholeList = [wholeList arrayByAddingObject:self.geoCurrency];
             usersList = [usersList arrayByAddingObject:self.geoCurrency];
         }

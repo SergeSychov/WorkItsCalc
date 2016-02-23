@@ -188,6 +188,8 @@
 -(double) performOperationInArgu:(id)operation
 {
     NSInteger operationPriority;
+    //NSLog(@"Operation %@",operation);
+   // NSLog(@"self.arguStack %@",self.arguStack);
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
    // NSString *stringOperation = (NSString*)operation;
     [copyArgu addObject:operation];
@@ -208,7 +210,7 @@
         }
     }
     */
-    NSLog(@"performOperationInArgu self.argu %@", self.argu);
+    //NSLog(@"performOperationInArgu self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority];
         
@@ -245,6 +247,7 @@
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     [copyArgu removeAllObjects];
     self.arguStack = [copyArgu copy];
+    //NSLog(@"self.arguStack from clear argu %@", self.arguStack);
 }
 
 -(void) pushArguForPerCent
@@ -736,9 +739,9 @@
         stack = [[ACalcBrain deepArrayCopy:program] mutableCopy];
     }
 
-    //NSLog(@"runProgram stack %@", stack);
+   // NSLog(@"runProgram stack %@", stack);
     stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
-     //NSLog(@"runProgram second stack %@", stack);
+   //  NSLog(@"runProgram second stack %@", stack);
 
     return [self popOperandOfStack:stack accordingPriority:priority];
 }

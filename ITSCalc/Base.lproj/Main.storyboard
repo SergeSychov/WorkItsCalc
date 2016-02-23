@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15E27e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <scenes>
         <!--Calc-->
@@ -173,7 +173,7 @@
                                                             <action selector="pressedSelectedButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="tpS-Ul-vpM"/>
                                                         </connections>
                                                     </button>
-                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="cQM-fq-L7J" userLabel="recountButton" customClass="recBut">
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="cQM-fq-L7J" userLabel="PlusButton" customClass="PlusButton">
                                                         <rect key="frame" x="130" y="6" width="60" height="60"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <color key="tintColor" red="0.25882352939999997" green="0.57254901960000004" blue="0.70196078429999997" alpha="1" colorSpace="calibratedRGB"/>
@@ -181,7 +181,7 @@
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="pressedSelectedButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="p4M-L3-8fM"/>
+                                                            <action selector="plusButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="mwP-Rh-kTI"/>
                                                         </connections>
                                                     </button>
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="Xlh-66-Cnf" userLabel="upButton">
@@ -292,6 +292,7 @@
                         <outlet property="mainContainerView" destination="2Y9-ja-9gk" id="Wy0-zo-byx"/>
                         <outlet property="moveButtonsPanGestureRecognizer" destination="urn-UF-2ek" id="5iS-f2-ZQ1"/>
                         <outlet property="noticeButton" destination="X3S-Ye-W5h" id="b3F-Zb-J3O"/>
+                        <outlet property="plusButton" destination="cQM-fq-L7J" id="fh7-BJ-ehB"/>
                         <outlet property="recountButton" destination="tfA-Ug-Kr6" id="hI7-k0-Uu2"/>
                         <outlet property="settingsBottomButtn" destination="50a-i4-Tew" id="eFA-CZ-lz3"/>
                         <outlet property="settingsButton" destination="n9w-vx-hp3" id="4fa-lo-Gpv"/>

@@ -135,14 +135,14 @@
         request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and position < %@ and position >= %@",[NSNumber numberWithBool:NO], positionFrom, positionTo];
         NSError *error;
         NSArray *buttonsArray = [context executeFetchRequest:request error:&error];
-        NSLog(@"But array %@", buttonsArray);
+        //NSLog(@"But array %@", buttonsArray);
         for(Buttons *btn in buttonsArray){
-            NSLog(@"Choosed positions %@", btn.nameButton);
+           // NSLog(@"Choosed positions %@", btn.nameButton);
         }
         for(Buttons *btn in buttonsArray){
-            NSLog(@"buton :%@ position from:%@", btn.nameButton, btn.position);
+           // NSLog(@"buton :%@ position from:%@", btn.nameButton, btn.position);
             btn.position = [NSNumber numberWithInteger:[btn.position integerValue]+1];
-            NSLog(@"buton :%@,set position to:%@", btn.nameButton, btn.position);
+           // NSLog(@"buton :%@,set position to:%@", btn.nameButton, btn.position);
         }
         
     } else if(positionFrom.integerValue < positionTo.integerValue){
@@ -152,16 +152,16 @@
         NSArray *buttonsArray = [context executeFetchRequest:request error:&error];
         
         for(Buttons *btn in buttonsArray){
-            NSLog(@"Choosed positions %@", btn.nameButton);
+           // NSLog(@"Choosed positions %@", btn.nameButton);
         }
         
         for(Buttons *btn in buttonsArray){
-            NSLog(@"buton :%@ position from:%@", btn.nameButton, btn.position);
+           // NSLog(@"buton :%@ position from:%@", btn.nameButton, btn.position);
             btn.position = [NSNumber numberWithInteger:[btn.position integerValue]-1];
-            NSLog(@"buton :%@,set position to:%@", btn.nameButton, btn.position);
+           // NSLog(@"buton :%@,set position to:%@", btn.nameButton, btn.position);
         }
     }
-    NSLog(@"Position from:%@, position to:%@", positionFrom, positionTo);
+    //NSLog(@"Position from:%@, position to:%@", positionFrom, positionTo);
     button.position = positionTo;
     NSError *error;
     [context save:&error];

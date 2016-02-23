@@ -39,6 +39,7 @@
 
 #import "ShareButton.h"
 #import "NoticeButton.h"
+#import "PlusButton.h"
 #import "DelButton.h"
 #import "DownButton.h"
 
@@ -144,6 +145,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //fix button to fix changes and settibgs
 @property (weak, nonatomic) IBOutlet ShareButton *noticeButton;
 @property (weak, nonatomic) IBOutlet NoticeButton *noticeRealButton;
+
+@property (weak, nonatomic) IBOutlet PlusButton *plusButton;
+
 @property (weak, nonatomic) IBOutlet recBut *recountButton;
 @property (weak, nonatomic) IBOutlet UIButton *upButton;
 @property (weak, nonatomic) IBOutlet DelButton *deleteButton;
@@ -245,7 +249,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic, assign) BOOL isStronglyArgu; //the argument is strongly setted by user
 @property (nonatomic,assign) BOOL isDecCounting;
 @property (nonatomic,assign) BOOL isResultFromMemory; //is result on screen is taked up from memory
-@property (nonatomic, strong) NSString *currencyExhangeString; //striing to show currency exhange rate, setup - nil at start, setup string as currensy was checked, clear at clear brain
 
 //make int property only for test NSTimer
 @property (nonatomic,strong) NSIndexPath * patch;
@@ -531,6 +534,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
     [self.historyTable reloadData];
     [self.buttonsCollection reloadData];
+    
+    self.plusButton.shadowColor = buttonShadowColor;
+    self.plusButton.shadowBlur = buttonShadowBlur;
+    self.plusButton.shadowSize = buttonShadowSize;
+    [self.plusButton setNeedsDisplay];
     
     self.recountButton.shadowColor = buttonShadowColor;
     self.recountButton.shadowBlur = buttonShadowBlur;
@@ -868,6 +876,24 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 #pragma mark ACTIONS
+- (IBAction)plusButtonTapped:(UIButton *)sender {
+    if(self.selectedRow){
+        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
+        NSLog(@"Program from selected histroy row: %@", programFromHistory);
+        } else {
+             NSLog(@"Program from selected histroy row: %@", [self.brain program]);
+             NSLog(@"Argu from selected histroy row: %@", [self.brain argu]);
+        }
+        
+    } else {
+        NSLog(@"Program from selected histroy row: %@", [self.brain program]);
+    }
+    
+}
 
 - (IBAction)pressedSelectedButton:(UIButton *)sender
 {
@@ -887,11 +913,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
         if([programFromHistory lastObject]) [programFromHistory removeLastObject];
 
-        
-        if([ACalcBrain chekForCurrensiesProgramm:[programFromHistory copy]]){
-            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-            [self.currensies askResultForCurrensiesArray:[ACalcBrain chekForCurrensiesProgramm:[programFromHistory copy]]];
-        }
+        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+        NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
+       
 
         id top = [programFromHistory lastObject];
         //remove result from pprogramm array!
@@ -916,6 +940,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self showStringThrouhgmanagerAtEqualPress];
         
         [self discardChanging];
+        
+        
+        if([ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]){
+            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+            [self.currensies askResultForCurrensiesArray:[ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]];
+        }
     }
 }
 
@@ -953,7 +983,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
         self.brain = newBrain;
-        NSLog(@"[NSNumber numberWithDouble:[self.brain count]]] %@", [NSNumber numberWithDouble:[self.brain count]]);
+
         
         [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
         self.isProgramInProcess = NO;
@@ -1002,13 +1032,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 NSArray *matches = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
                 
                 if(!matches || error ){
-                    NSLog(@"Button not fetched");
+                  //  NSLog(@"Button not fetched");
                 } else {
                     Buttons *obj = [matches firstObject];
                     if(obj.program == nil){
-                        NSLog(@"Program haven't program");
+                       // NSLog(@"Program haven't program");
                     } else {
-                        NSLog(@"Button has a program");
+                      //  NSLog(@"Button has a program");
                     }
                 }
  
@@ -1063,8 +1093,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     if([title isKindOfClass:[NSArray class]]){
         if([(NSArray*)title count]==4 && [(NSString*)title[0] isEqualToString:@"$"]){
-            NSLog(@"Array from button convercion %@", title);
-            self.currencyExhangeString = [self currencyStringFromCurrencyArray:title];
             if(self.userIsInTheMidleOfEnteringNumber){
                 //ok for that
                 [self push];
@@ -1098,7 +1126,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 if(!self.isProgramInProcess){
                     [self setStoryInforamtion];
                     [self.brain clearOperation]; //if it's just new argument, not new counting
-                    self.currencyExhangeString = nil;
                 }
                 [self.display showString:[self.displayRam addSymbol:symbol]];
                 self.userIsInTheMidleOfEnteringNumber = YES;
@@ -1114,7 +1141,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 if(!self.isProgramInProcess){
                     [self setStoryInforamtion];
                     [self.brain clearOperation];
-                    self.currencyExhangeString = nil;
                 }
                 [self.display showString:[self.displayRam addSymbol:@"."]];
                 self.userIsInTheMidleOfEnteringNumber = YES;
@@ -1134,10 +1160,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
                 [self setStoryInforamtion];
                 [self.brain clearOperation];
-                self.currencyExhangeString = nil;
-                
             }
-            self.userIsInTheMidleOfEnteringNumber = YES;
+            self.userIsInTheMidleOfEnteringNumber = NO;
+
             self.isProgramInProcess = NO;
             
         } else if([title isEqualToString:@"⌫"]){
@@ -1166,7 +1191,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
             } else {
-                [self.brain clearArgu];
+                [self.displayRam clearRam];
+                if(!self.isProgramInProcess){
+                    [self setStoryInforamtion];
+                    [self.brain clearOperation]; //if it's just new argument, not new counting
+                } else {
+                    [self.brain clearArgu];
+                }
             }
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
@@ -1403,26 +1434,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.isResultFromMemory = YES;
             
         } else if ([title isEqualToString:@"X"] || [title isEqualToString:@"Z"]){
-            //add number value string code
-            /*
-            NSNumber *symbol = [NSNumber numberWithInt:[title intValue]];
-            if(self.userIsInTheMidleOfEnteringNumber){
-                [self.display showString:[self.displayRam addSymbol:symbol]];
-            }else {
-            
-                [self.displayRam clearRam];
-                if(!self.isProgramInProcess){
-                    [self setStoryInforamtion];
-                    [self.brain clearOperation]; //if it's just new argument, not new counting
-                    self.currencyExhangeString = nil;
-                }
-                //[self.display showString:[self.displayRam addSymbol:title]];
-                self.userIsInTheMidleOfEnteringNumber = NO;
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-            self.isStronglyArgu = YES;
-            [self showStringThruManageDocument];
-           //}
-             */
             
             //add
             
@@ -1430,11 +1441,17 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
             } else {
-                [self.brain clearArgu];
+                [self.displayRam clearRam];
+                if(!self.isProgramInProcess){
+                    [self setStoryInforamtion];
+                    [self.brain clearOperation]; //if it's just new argument, not new counting
+                } else {
+                    [self.brain clearArgu];
+                }
             }
             [self.display showString:[self.displayRam addSymbol:[title lowercaseString]]];
             [self.brain performOperationInArgu:[title lowercaseString]];
-            //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1496,7 +1513,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(!self.brain.isOpenBracets){
             [muttableOutputArray addObject:@" ="];
         }
-        NSLog(@"muttableOutputArray %@", muttableOutputArray);
+        //NSLog(@"muttableOutputArray %@", muttableOutputArray);
         self.lastRowDataArray = [muttableOutputArray copy];
 
     }
@@ -1552,21 +1569,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         //if programm has currensies, get currencies array
         NSArray* currensies = [ACalcBrain chekForCurrensiesProgramm:[muttableOutputArray copy]];
-        NSLog(@"Currensies %@", currensies);
         
         //add result to array
         [muttableOutputArray addObject:[NSNumber numberWithDouble:[self.brain count]]];
         
-        //create new object in manageddoc with empty array
-        /*
-        if(self.currencyExhangeString){
-            [History storyWithProgram:[muttableOutputArray copy]
-                               atDate:currDate
-                         currensyRate:self.currencyExhangeString
-                  variabledescription:nil
-                inManageObjectContext:self.managedObjectContext];
-        }
-        */
         //if currensies was, make string from each pair in array and add to currString
         if(currensies){
             NSString *currStr = @"";
@@ -1920,12 +1926,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          if(IS_IPAD){
                              self.noticeRealButton.alpha = 0.;
                          }
+                         
                          self.recountButton.alpha = 0.;
                          self.upButton.alpha = 0.;
                          self.deleteButton.alpha = 0.;
                          //allow show settings button only in paid version
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 0.;
                          self.downButton.alpha = 0.;
+                         self.plusButton.alpha = 0.;
                          
                          self.display.alpha = 1.;
                          
@@ -1942,6 +1950,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          //allow show settings button only in paid version
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = YES;
                          self.downButton.hidden = YES;
+                         self.plusButton.hidden = YES;
 
                          //think about it
                          if(!self.wasPurshaised){
@@ -2002,6 +2011,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(IS_IPAD){
             self.noticeRealButton.hidden = NO;
         }
+        self.plusButton.hidden = NO;
         self.recountButton.hidden = NO;
         self.deleteButton.hidden = NO;
         
@@ -2019,6 +2029,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(IS_IPAD){
                 self.noticeRealButton.alpha = 1 - opacityMark;
             }
+            self.plusButton.alpha = 1 - opacityMark;
             self.recountButton.alpha = 1 - opacityMark;
             self.deleteButton.alpha = 1 - opacityMark;
             self.isHistoryWholeShowed = 1 - opacityMark;
@@ -2043,6 +2054,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(IS_IPAD){
                 self.noticeRealButton.alpha = 1 - opacityMark;
             }
+            self.plusButton.alpha = 1 - opacityMark;
             self.recountButton.alpha = 1 - opacityMark;
             self.deleteButton.alpha = 1 - opacityMark;
             self.isHistoryWholeShowed = 1 - opacityMark;
@@ -2104,6 +2116,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(IS_IPAD){
             strongSelf.noticeRealButton.alpha = 1 - opacityMark;
         }
+        strongSelf.plusButton.alpha = 1-opacityMark;
         strongSelf.recountButton.alpha = 1-opacityMark;
         strongSelf.deleteButton.alpha = 1-opacityMark;
         strongSelf.isHistoryWholeShowed = 1-opacityMark;
@@ -2122,6 +2135,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(IS_IPAD){
                 strongSelf.noticeRealButton.alpha = 0.;
             }
+            strongSelf.plusButton.alpha = 0;
             strongSelf.recountButton.alpha = 0;
             strongSelf.deleteButton.alpha = 0;
             strongSelf.isHistoryWholeShowed = 0;
@@ -2184,6 +2198,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(IS_IPAD){
             strongSelf.noticeRealButton.alpha = 1 - opacityMark;
         }
+        strongSelf.plusButton.alpha = 1- opacityMark;
         strongSelf.recountButton.alpha = 1- opacityMark;
         strongSelf.deleteButton.alpha = 1- opacityMark;
         self.isHistoryWholeShowed = 1- opacityMark;
@@ -2204,6 +2219,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(IS_IPAD){
                 strongSelf.noticeRealButton.alpha = 1.;
             }
+            strongSelf.plusButton.alpha = 1.;
             strongSelf.recountButton.alpha = 1.;
             strongSelf.deleteButton.alpha = 1.;
             strongSelf.isHistoryWholeShowed = 1.;
@@ -2234,6 +2250,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.noticeRealButton.hidden = NO;
                 self.noticeRealButton.alpha = .01;
             }
+            
+            self.plusButton.hidden = NO;
+            self.plusButton.alpha = .01;
             
             self.recountButton.hidden = NO;
             self.recountButton.alpha = .01;
@@ -3463,12 +3482,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         _selectedRow = selectedRow;
         if(!indexPath){
+            self.plusButton.enabled = YES;
             self.recountButton.enabled = NO;
             self.deleteButton.enabled = NO;
         }else if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+            self.plusButton.enabled = YES;
             self.recountButton.enabled = YES;
             self.deleteButton.enabled = YES;
         } else {
+            self.plusButton.enabled = YES;
             self.recountButton.enabled = NO;
             self.deleteButton.enabled = NO;
             
@@ -4590,6 +4612,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.noticeRealButton.alpha = 0.;
     }
     
+    self.plusButton.hidden = YES;
+    self.plusButton.enabled = NO;
+    self.plusButton.alpha = 0;
+    
     self.recountButton.hidden = YES;
     self.recountButton.enabled = NO;
     self.recountButton.alpha = 0;
@@ -4651,8 +4677,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSDate *date = [NSDate date];
         self.startTrialDate = date;
     }
-    
-    self.currencyExhangeString = nil;
     
     
     self.historyTable.allowsMultipleSelectionDuringEditing = NO;
@@ -5195,10 +5219,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
     NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
-    
+    /*
     for(Buttons *btn in buttonsFromCoreData){
         NSLog(@"Button %@ position %@",btn.nameButton, btn.position);
     }
+    */
     
     //[self.buttonManagedObjectContext save:&error];
     [self.buttonManagedObjectContext save: &error];
@@ -5328,6 +5353,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     if(IS_IPAD){
         self.noticeRealButton.alpha = 0.;
     }
+    self.plusButton.alpha = 0;
     self.recountButton.alpha = 0;
     self.deleteButton.alpha = 0;
     self.isHistoryWholeShowed = 0;

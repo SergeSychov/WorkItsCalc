@@ -414,7 +414,11 @@
 
 -(NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    return self.listCurrensiesForPicker.count*100;
+    NSInteger rows = 1;
+    if(self.listCurrensiesForPicker){
+        rows = self.listCurrensiesForPicker.count*100;
+    }
+    return rows;
 }
 
 -(UIView*)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
@@ -432,7 +436,6 @@
                                         pickerView.bounds.size.width/3,
                                         [pickerView rowSizeForComponent:component].height);
         UILabel *flagLabel = [[UILabel alloc] initWithFrame:rectForFlag];
-        flagLabel.text = (NSString*)[curArr objectAtIndex:1];
         flagLabel.font = [UIFont systemFontOfSize:40];
         flagLabel.textColor = [UIColor whiteColor];
         //flagLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
@@ -446,7 +449,7 @@
                                         pickerView.bounds.size.width/3,
                                         [pickerView rowSizeForComponent:component].height);
         UILabel *textLabel = [[UILabel alloc] initWithFrame:rectForText];
-        textLabel.text = (NSString*)[curArr objectAtIndex:0];
+
         textLabel.font = [UIFont systemFontOfSize:40];
         textLabel.textColor = [UIColor whiteColor];
         textLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
@@ -456,12 +459,17 @@
         [textLabel setCenter:CGPointMake(pickerView.bounds.size.width*2/3, picView.center.y)];
         [picView addSubview:textLabel];
         
+        if(curArr){
+            flagLabel.text = (NSString*)[curArr objectAtIndex:1];
+            textLabel.text = (NSString*)[curArr objectAtIndex:0];
+        }
+
+        
     } else if (pickerView.tag == 2002){
         CGRect rectForFlag = CGRectMake(0, 2*pickerView.bounds.size.width/3,
                                         pickerView.bounds.size.width/3,
                                         [pickerView rowSizeForComponent:component].height);
         UILabel *flagLabel = [[UILabel alloc] initWithFrame:rectForFlag];
-        flagLabel.text = (NSString*)[curArr objectAtIndex:1];
         flagLabel.font = [UIFont systemFontOfSize:40];
         //flagLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
         flagLabel.numberOfLines = 0;
@@ -474,7 +482,6 @@
                                         pickerView.bounds.size.width/3,
                                         [pickerView rowSizeForComponent:component].height);
         UILabel *textLabel = [[UILabel alloc] initWithFrame:rectForText];
-        textLabel.text = (NSString*)[curArr objectAtIndex:0];
         textLabel.font = [UIFont systemFontOfSize:40];
         textLabel.textColor = [UIColor whiteColor];
         textLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
@@ -482,7 +489,14 @@
         //textLabel.numberOfLines = 0;
         textLabel.adjustsFontSizeToFitWidth = YES;
         [textLabel setCenter:CGPointMake(pickerView.bounds.size.width/3, picView.center.y)];
-        [picView addSubview:textLabel];    }
+        [picView addSubview:textLabel];
+    
+        if(curArr){
+            flagLabel.text = (NSString*)[curArr objectAtIndex:1];
+            textLabel.text = (NSString*)[curArr objectAtIndex:0];
+        }
+    
+    }
     
     return picView;
 }
