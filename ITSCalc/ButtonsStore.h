@@ -39,6 +39,8 @@
 -(void) checkButtonsArray;
 -(void) moveButton:(Buttons*)btn fromPosition:(NSNumber*)posFrom toPosition:(NSNumber*)posTo;
 
+-(BOOL)removeUsersButton:(Buttons*)usersButton;
+
 
 
 

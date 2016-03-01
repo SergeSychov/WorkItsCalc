@@ -8,9 +8,10 @@
 
 
 #import "ButtonsStore.h"
+#import "CreateNewButtonViewController.h"
 
 
-@interface ButtonsStore()
+@interface ButtonsStore() <CreateNewButtonController>
 
 
 @property (nonatomic,strong) NSDictionary *mainButtonsStartWithPosition;
@@ -203,7 +204,7 @@
                            @"M+",
                            @"M-",
                            @"Mr",@"Mc",
-                           @"X",@"Z",//added two variables
+                           @"X",@"Y",//added two variables
                            @"° ′″",@".00",
                            @"e",@"π",@"x²",@"x³",@"xʸ",
                            @"yˣ",@"2ˣ",@"10ˣ",@"eˣ",@"x!",
@@ -392,6 +393,7 @@
 
 
 
+
 -(NSArray*) workButtonsNames
 {
     if(!_workButtonsNames){
@@ -401,6 +403,44 @@
     return _workButtonsNames;
 }
 
+#pragma mark DELEGATE CreateNewButtonController
+-(BOOL)createNewButtonWith:(NSString*)name andProgramm:(NSArray*)programm {
+    
+    NSLog(@"Assking to make new button with name:%@ and program: %@", name, programm);
+
+    Buttons *newButton = [Buttons buttonWithName:name
+                                        position:[NSNumber numberWithInteger:[self.changebleButtonObjs count]]
+                                   alowDeletting:YES
+                                    dateDeleting:[NSDate distantFuture]
+                                        enabling:YES
+                                            Main:NO
+                                         Program:programm
+                           inManageObjectContext:self.buttonManagedObjectContext];
+    if(newButton){
+        NSMutableArray *mutableChangebleButtonsArray = [self.changebleButtonObjs mutableCopy];
+        [mutableChangebleButtonsArray addObject:newButton];
+        self.changebleButtonObjs = [mutableChangebleButtonsArray copy];
+    
+        [self makeTwoArraysWithReload:NO];
+    }
+    
+    return newButton?YES:NO;
+}
+
+#pragma mark DELETE USES BUTTON
+
+-(BOOL)removeUsersButton:(Buttons*)usersButton {
+    NSMutableArray *mutableDeleteButtonsArray = [self.delettedButtonObjs mutableCopy];
+    [mutableDeleteButtonsArray removeObject:usersButton];
+    self.delettedButtonObjs = [mutableDeleteButtonsArray copy];
+    
+    [self.buttonManagedObjectContext deleteObject:usersButton];
+    
+    [self makeTwoArraysWithReload:NO];
+    
+    return YES;
+
+}
 
 
 @end

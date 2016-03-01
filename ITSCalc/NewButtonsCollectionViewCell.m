@@ -190,30 +190,41 @@
 
 //setting of enabling of close button and ist image
 -(void) setIsEnable:(BOOL)isEnable{
-    if(_isEnable != isEnable){
+    //if(_isEnable != isEnable){
         _isEnable = isEnable;
+    /*
         if(isEnable){
             self.closeAndSetButton.isClose = YES;
-            //[self.closeAndSetButton setImage:[UIImage imageNamed:@"close_3.png"] forState:UIControlStateNormal];
 
         } else {
             self.closeAndSetButton.isClose = NO;
-           // [self.closeAndSetButton setImage:[UIImage imageNamed:@"check_3.png"] forState:UIControlStateNormal];
+            if(self.isCanBeRemoved){
+                self.removeButton.isRemoveButton = YES;
+            }
 
         }
     }
+*/
 }
 
 -(void)setIsAllovedToDelete:(BOOL)isAllovedToDelete
 {
    // if(_isAllovedToDelete != isAllovedToDelete){
+    /*
         _isAllovedToDelete = isAllovedToDelete;
         if((self.isChangeble)&&(self.isUnderChanging)&&(isAllovedToDelete)){
             self.closeAndSetButton.hidden = NO;
+            if(self.isCanBeRemoved){
+                self.removeButton.hidden = NO;
+            }
 
         } else {
             self.closeAndSetButton.hidden = YES;
+            if(self.isCanBeRemoved){
+                self.removeButton.hidden = YES;
+            }
         }
+    */
     //}
 }
 
@@ -224,8 +235,7 @@
 -(void)setIsUnderChanging:(BOOL)is
 {
     _isUnderChanging = is;
-    //self.cellButton.isButtonUnderChanging = is;
-    
+   
     if(self.isChangeble && self.isEnable){
         if((![self isShakeAnimationRunning])&&(is)){
             [self startShakeAnimation];
@@ -233,11 +243,14 @@
             [self stopShakeanimation];
         }
     }
+    
+     /*
     if((self.isChangeble)&&(is)&&(self.isAllovedToDelete) && (self.isEnable)){
         self.closeAndSetButton.hidden = NO;
     } else {
         self.closeAndSetButton.hidden = YES;
     }
+    */
 }
 //shake animation functions
 -(BOOL) isShakeAnimationRunning
@@ -351,6 +364,8 @@
         self.incr = 2.1;
     }
     self.closeAndSetButton.hidden = YES;
+    self.removeButton.hidden = YES;
+    self.removeButton.isRemoveButton = YES;
     self.isEnable = YES;
     self.isAllovedToDelete = self.isEnable; //to set alloved to delete according quantity of buttons in view
     [self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
@@ -388,6 +403,11 @@
     [self.closeAndSetButton setFrame:CGRectMake(rect.size.width-closeCheckWidth*2/3-4,
                                                 -closeCheckWidth/3-4,
                                                 closeCheckWidth, closeCheckWidth)];
+    if(self.removeButton){
+        [self.removeButton setFrame:CGRectMake(0,
+                                               -closeCheckWidth/3-4,
+                                               closeCheckWidth, closeCheckWidth)];
+    }
     // Drawing code
 }
 

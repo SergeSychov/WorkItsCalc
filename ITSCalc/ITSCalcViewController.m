@@ -57,6 +57,8 @@
 
 #import "Clr.h"
 
+#import "CreateNewButtonViewController.h"
+
 
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
@@ -868,6 +870,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     if(isNeedReload){
         [self.buttonsCollection reloadData];
+    } else {
+        [self.buttonsCollection performBatchUpdates:^{
+            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:self.patch, nil];
+            [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
+        } completion:nil];
     }
      [self.doc updateChangeCount:UIDocumentChangeDone];
     if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
@@ -877,21 +884,104 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 #pragma mark ACTIONS
 - (IBAction)plusButtonTapped:(UIButton *)sender {
-    if(self.selectedRow){
-        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-        if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
-        NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
-        History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
-        NSLog(@"Program from selected histroy row: %@", programFromHistory);
-        } else {
-             NSLog(@"Program from selected histroy row: %@", [self.brain program]);
-             NSLog(@"Argu from selected histroy row: %@", [self.brain argu]);
+    NSArray *programm;
+    NSString *programmDescription = @"";
+    if(self.selectedRow){ //if there is not first row
+            NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+            if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+                NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+                History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        
+        
+                NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
+
+                if([programFromHistory lastObject]) [programFromHistory removeLastObject];
+                if([programFromHistory lastObject]){
+                    programm = [self arrayForNewButtonFromArgu:[programFromHistory lastObject]]; //set attributes as program
+                    //check if constant add value as description
+                    if([[programm firstObject] isKindOfClass:[NSNumber class]]){
+                        programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+                    } else {
+                        programmDescription = [ACalcBrain descriptionOfProgram:[[programFromHistory lastObject] mutableCopy] withAttributes:self.attributes].string;
+                    }
+                }
+                
+            
+            } else {//if its first row
+                programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
+                //check if constant add value as description
+                if([[programm firstObject] isKindOfClass:[NSNumber class]]){
+                    programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+                } else {
+                      programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+                }
+
+              
         }
         
-    } else {
-        NSLog(@"Program from selected histroy row: %@", [self.brain program]);
+    } else { //if not selected ctach programm from first row
+        programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
+        //check if constant add value as description
+        if([[programm firstObject] isKindOfClass:[NSNumber class]]){
+            programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+        } else {
+            programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+        }
+  
     }
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    CreateNewButtonViewController *createNewButtonViewController = [storyBoard instantiateViewControllerWithIdentifier:@"CreateNewButtonViewController"];
+    createNewButtonViewController.program = programm;
+    createNewButtonViewController.programDescription = programmDescription;
+    createNewButtonViewController.delegate = self.buttonsStore;
+    [self presentViewController:createNewButtonViewController animated:YES completion:^{
+        nil;
+    }];
+}
+
+-(NSArray*)arrayForNewButtonFromArgu:(NSArray*)argu{
+    NSMutableArray* outputButtonProgram = [[NSMutableArray alloc] init];
+    NSMutableArray* signArray = [NSMutableArray arrayWithObjects:@"", @"",@"",@"", nil];
+
+    //check argu array
+    //if argu contains $, X of Y
+    
+    //  make first obj - @"f"
+    //  then create array of three objects: @"",@"",@"" - if there are set 1 - $, 2 - x, 3 - y
+    //  if 1 == $, next array set as currensies exchange pairs
+    NSArray* currencies = [ACalcBrain chekForCurrensiesProgramm:argu];
+    if(currencies){
+
+        signArray[0] = @"f";//this is a function
+        signArray[1] = @"$";//this is currensies pair in function
+    }
+    
+    NSSet *variables = [ACalcBrain chekForVariablesInProgramm:argu];
+    if([variables count]){
+
+        signArray[0] = @"f"; //this is a function
+        if([variables containsObject:@"x"]){
+            signArray[2] = @"x";
+        }
+        if([variables containsObject:@"y"]){
+            signArray[3] = @"y";
+        }
+    }
+    
+    //else if program equal constant - set just number value
+    if(![signArray[0] isEqualToString:@"f"]){
+
+        NSNumber *constantFromProgramm = [NSNumber numberWithDouble:[ACalcBrain runProgram:argu]];
+        [outputButtonProgram addObject:constantFromProgramm];
+    }else {
+        [outputButtonProgram addObject:signArray];
+        if(currencies){
+            [outputButtonProgram addObject:currencies];
+        }
+        [outputButtonProgram addObject:argu];
+    }
+    
+    return [outputButtonProgram copy];
     
 }
 
@@ -911,7 +1001,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
         NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
 
-        if([programFromHistory lastObject]) [programFromHistory removeLastObject];
+        
+        if([programFromHistory lastObject]){
+            NSLog(@"Last obj:%@",[programFromHistory lastObject] );
+            [programFromHistory removeLastObject];
+        }
 
         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
         NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
@@ -924,11 +1018,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(top){
            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
         }
+        
+        NSLog(@"Argu %@", argArrayCopy);
 
         
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [programFromHistory lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
+        NSLog(@"program %@", programCopy);
 
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
@@ -1061,6 +1158,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
+/*
 -(NSString*)currencyStringFromCurrencyArray:(NSArray*)currArr
 {
     NSString *retStr = nil;
@@ -1074,6 +1172,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     return retStr;
 }
+*/
 
 -(void)tappedButtonWithTitle:(id)title
 {
@@ -1433,7 +1532,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [self.displayRam substractResFromMemory:NO inRadians:!self.isDecCounting];
             self.isResultFromMemory = YES;
             
-        } else if ([title isEqualToString:@"X"] || [title isEqualToString:@"Z"]){
+        } else if ([title isEqualToString:@"X"] || [title isEqualToString:@"Y"]){
             
             //add
             
@@ -2643,6 +2742,147 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //[self.buttonsCollection reloadData];
     _isAllowedToDelete = isAllowedToDelete;
 }
+#define DELETE_BUTTON_REQUEST NSLocalizedStringFromTable(@"DELETE_BUTTON_REQUEST",@"ACalcTryViewControllerTableNew", @"DELETE_BUTTON_REQUEST")
+#define CANCEL NSLocalizedStringFromTable(@"CANCEL",@"ACalcTryViewControllerTableNew", @"CANCEL")
+#define CONFIRM NSLocalizedStringFromTable(@"CONFIRM",@"ACalcTryViewControllerTableNew", @"CONFIRM")
+- (IBAction)tapRemoveItsButton:(UIButton *)sender {
+    //call buttonsStore to remove users button
+    CGPoint necessaryPoint = CGPointMake(sender.bounds.origin.x, sender.bounds.size.height);
+    CGPoint buttonsLocation = [sender convertPoint:necessaryPoint toView:self.buttonsCollection];
+    NSIndexPath *indexPath = [self.buttonsCollection indexPathForItemAtPoint:buttonsLocation];
+    Buttons* button = [self.buttonsStore.allButtonObj objectAtIndex:indexPath.item];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:DELETE_BUTTON_REQUEST
+                                                                   message:button.nameButton
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:CANCEL style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {;
+                                                              
+                                                          }];
+    UIAlertAction* deleteAction = [UIAlertAction actionWithTitle:CONFIRM style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {;
+
+                                                              [self removeFromCollectionViewUsersButton:button forIndexPatch:indexPath];
+                                                          }];
+    
+    [alert addAction:defaultAction];
+    [alert addAction:deleteAction];
+    [self presentViewController:alert animated:YES completion:nil];
+    
+}
+
+-(void)removeFromCollectionViewUsersButton:(Buttons*)button forIndexPatch:(NSIndexPath*)patch{
+    NewButtonsCollectionViewCell *delCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
+    CGRect subViewFrame;
+    subViewFrame = ((NewButtonsCollectionViewCell*)delCell).cellSubView.frame;
+    subViewFrame.origin = [delCell convertPoint:subViewFrame.origin toView:self.buttonsCollection];
+
+    newButtonView* buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
+    buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)delCell).cellSubView.title;
+    buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)delCell).cellSubView.buttonColor;
+    buttonsAsSubView.design = self.design;
+    [self.buttonsCollection addSubview:buttonsAsSubView];
+    delCell.alpha = 0.0;
+
+    CGRect newRect = CGRectInset(subViewFrame,-subViewFrame.size.width*0.1, -subViewFrame.size.height*0.1);
+    
+    [UIView animateWithDuration:.2
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         [buttonsAsSubView setFrame:newRect];
+                     } completion:^(BOOL finished) {
+                         CGPoint center = buttonsAsSubView.center;
+                         CGRect zeroRect = CGRectMake(center.x, center.y, 0., 0.);
+                         
+                         [UIView animateWithDuration:.4
+                                               delay:0
+                                             options:UIViewAnimationOptionBeginFromCurrentState
+                                          animations:^{
+                                              [buttonsAsSubView setFrame:zeroRect];
+                                              
+                                          } completion:^(BOOL finished){
+                                              [buttonsAsSubView removeFromSuperview ];
+                                              [self.buttonsStore removeUsersButton:button];
+                                              self.patch = patch;
+                                              
+                                              //[self.buttonsCollection performBatchUpdates:^{
+                                              //    NSArray *indexPatchs = [[NSArray alloc]initWithObjects:patch, nil];
+                                             //     [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
+                                            //  } completion:nil];
+
+                                             // [self moveButtonOneByOneUpfromIndex:patch];
+
+
+                                          }];
+                         
+                         
+                     }];
+    
+    
+}
+
+-(void)moveButtonOneByOneUpfromIndex:(NSIndexPath*)indexPatch{
+    NewButtonsCollectionViewCell *delCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPatch];
+    NSInteger lenght = indexPatch.length;
+    NSInteger patch = indexPatch.item;
+    
+    NSIndexPath *movedButtonPatch = [NSIndexPath indexPathForItem:indexPatch.item+1 inSection:indexPatch.section];//indexPathWithIndex:[indexPatch item]+1];
+    NSLog(@"indexPatch and nextPatch %@, %@", indexPatch,movedButtonPatch);
+    
+    
+    NewButtonsCollectionViewCell *movedCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:movedButtonPatch];
+    
+    CGRect initialFrame;
+    initialFrame = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.frame;
+    initialFrame.origin = [movedCell convertPoint:initialFrame.origin toView:self.buttonsCollection];
+    
+    CGRect finishFrame;
+    finishFrame = ((NewButtonsCollectionViewCell*)delCell).cellSubView.frame;
+    finishFrame.origin = [delCell convertPoint:finishFrame.origin toView:self.buttonsCollection];
+    
+    
+    
+    newButtonView* buttonsAsSubView = [[newButtonView alloc] initWithFrame:initialFrame];
+    buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.title;
+    buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.buttonColor;
+    buttonsAsSubView.design = self.design;
+    [self.buttonsCollection addSubview:buttonsAsSubView];
+    movedCell.alpha = 0.0;
+    
+    
+    [UIView animateWithDuration:.05
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         [buttonsAsSubView setFrame:finishFrame];
+                     } completion:^(BOOL finished) {
+                         //replace button
+                         delCell.isChangeble = movedCell.isChangeble;
+                         delCell.closeAndSetButton.hidden = movedCell.closeAndSetButton.hidden;
+                         delCell.removeButton.hidden = movedCell.removeButton.hidden;
+                         delCell.isEnable = movedCell.isEnable;
+                         delCell.closeAndSetButton.isClose = movedCell.closeAndSetButton.isClose;
+                         delCell.isCanBeRemoved = movedCell.isCanBeRemoved;
+                         delCell.removeButton.hidden = movedCell.removeButton.hidden;
+                         delCell.isAllovedToDelete = movedCell.isAllovedToDelete;
+                         delCell.isUnderChanging = movedCell.isUnderChanging;
+                         delCell.name = movedCell.name;
+                         [delCell.cellSubView setNeedsDisplay];
+                         delCell.alpha = 1.0;
+                         
+                         //remove subviews
+                         [buttonsAsSubView removeFromSuperview];
+                          NSIndexPath *nextButtonPatch = [NSIndexPath indexPathForItem:movedButtonPatch.item+1 inSection:movedButtonPatch.section];//indexPathWithIndex:
+                         NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:nextButtonPatch];
+                         if(nextCell){
+                             [self moveButtonOneByOneUpfromIndex:movedButtonPatch];
+                         }
+                     }];
+    
+    
+
+}
 
 - (IBAction)tapCloseCheckButton:(UIButton *)sender
 {
@@ -2855,12 +3095,42 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSInteger item = indexPath.item;
         ((NewButtonsCollectionViewCell*)cell).design = self.design;
         if(self.isButtonsCollectionUnderChanging){
-            Buttons *button = [self.buttonsStore.allButtonObj objectAtIndex:item];
+           
+             Buttons *button = [self.buttonsStore.allButtonObj objectAtIndex:item];
+            //if its main button
+            if([button.isMain boolValue]){
+                ((NewButtonsCollectionViewCell*)cell).isChangeble = NO;
+                ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
+                ((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
+            } else {
+                ((NewButtonsCollectionViewCell*)cell).isChangeble = YES;
+                ((NewButtonsCollectionViewCell*)cell).isEnable = [button.enable boolValue];
+                ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.isClose = [button.enable boolValue];
+                ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = NO;
+                //((NewButtonsCollectionViewCell*)cell).closeAndSetButton.isClose = [button.enable boolValue];
+                 //if it 's users button
+                if(button.program && ![button.enable boolValue]){
+                    ((NewButtonsCollectionViewCell*)cell).isCanBeRemoved = YES;
+                    ((NewButtonsCollectionViewCell*)cell).removeButton.hidden = NO;
+                } else {
+                    ((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
+                }
+                
+                ((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = [button.aloweToDelete boolValue];
+                 ((NewButtonsCollectionViewCell*)cell).isUnderChanging = self.isButtonsCollectionUnderChanging;
+            }
+           
+           /*
+            if(button.program && ![button.enable boolValue]){
+                ((NewButtonsCollectionViewCell*)cell).isCanBeRemoved = YES;
+            }
             
             ((NewButtonsCollectionViewCell*)cell).isEnable = [button.enable boolValue];
+
             ((NewButtonsCollectionViewCell*)cell).isChangeble = ![button.isMain boolValue];
-            ((NewButtonsCollectionViewCell*)cell).isUnderChanging = self.isButtonsCollectionUnderChanging;
+            
             ((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = [button.aloweToDelete boolValue];
+            */
             
             if([button.nameButton isEqualToString:@"."]){
                 ((NewButtonsCollectionViewCell *)cell).name = [self point];
@@ -2878,7 +3148,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         } else {
             NSString* nameFromModel = [self.buttonsStore.workButtonsNames objectAtIndex:item];
+
             ((NewButtonsCollectionViewCell*)cell).design = self.design;
+            ((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
+            ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
+            
             
             if([nameFromModel isEqualToString:@"."]){
                 ((NewButtonsCollectionViewCell *)cell).name = [self point];

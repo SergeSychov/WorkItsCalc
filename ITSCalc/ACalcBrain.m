@@ -122,7 +122,7 @@
 -(NSDictionary *) variableValue
 {
     if(!_variableValue){
-        NSArray *keys = [NSArray arrayWithObjects:@"x",@"z",@"b", nil];
+        NSArray *keys = [NSArray arrayWithObjects:@"x",@"y",@"b", nil];
         NSNumber * value = [NSNumber numberWithDouble:1.00];
         NSArray *values = [NSArray arrayWithObjects:value, value, value, nil];
         _variableValue = [[NSDictionary alloc] initWithObjects:values forKeys:keys];
@@ -446,16 +446,53 @@
     return deepCopy;
 }
 
++(NSSet*) chekForVariablesInProgramm:(NSArray*)programm {
+    
+    NSMutableSet* variableSet = [[NSMutableSet alloc]init];
+
+    for(id obj in programm){
+
+        if([obj isKindOfClass:[NSArray class]]){
+            if([ACalcBrain chekForVariablesInProgramm:obj]){
+                [variableSet unionSet:[ACalcBrain chekForVariablesInProgramm:obj]];
+            }
+        } else if ([obj isKindOfClass:[NSString class]] && ([obj isEqualToString:@"x"] || [obj isEqualToString:@"y"])){
+            [variableSet addObject:obj];
+        }
+
+    }
+
+    return [variableSet copy];
+}
+
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm {
 
     NSArray* currenciesArray = nil;
+    NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
+    for(id obj in programm){
+        if([obj isKindOfClass:[NSArray class]]){
+            
+            if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
+                
+                [mutableCurrenciesArray addObject:obj];
+            } else {
+                if([ACalcBrain chekForCurrensiesProgramm:obj]){
+                    [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
+                }
+            }
+        }
+    }
+    //if there is currencies
+    if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
+    
+    /*
     @autoreleasepool {
         NSMutableArray *mutableProgramm = [programm mutableCopy];
 
         NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
         id top = [mutableProgramm lastObject];
-        if(top) {
+        while(top) {
             [mutableProgramm removeLastObject];
         
 
@@ -470,10 +507,11 @@
             }
             [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:[mutableProgramm copy]]];
        
-
+            top = [mutableProgramm lastObject];
             if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
         }
     }
+    */
 
     return currenciesArray;
 }
@@ -732,7 +770,7 @@
     return [self runProgram:program usingVariableValue:variableValues withPriority:0];
 }
 
-+(double) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withPriority: (int) priority
++(double) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withPriority: (NSInteger) priority
 {
     NSMutableArray *stack;
     if([program isKindOfClass:[NSArray class]]) {
@@ -821,7 +859,7 @@
             //think if topOfstack dosn't use put it back to stack for next operation
             [stack addObject:topOfStack];
         } else {
-            if([operation isEqualToString:@"X"]){
+            /*if([operation isEqualToString:@"X"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                // NSNumber *valueOfVariable = [self.varia]
                 if(arg == 0.0) {
@@ -830,7 +868,7 @@
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * M_E)] accordingPriority:priority];
                 }
                 
-            } else if([operation isEqualToString:@"e"]){
+            } else */if([operation isEqualToString:@"e"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(arg == 0.0) {
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:M_E] accordingPriority:priority];
@@ -1154,6 +1192,7 @@
     NSMutableAttributedString * atrStr = [[NSMutableAttributedString alloc] initWithString:@"" attributes:atributes];
     
     id topOfStacs = [program lastObject];
+
     if(topOfStacs) [program removeLastObject];
     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:atributes];
     [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:[atrStr length]];
@@ -2103,7 +2142,7 @@
                                 withNextArguString:attArg
                                     withAttributes:attributes] mutableCopy];
                 
-            } else if ([topOfStack isEqualToString:@"π"] || [topOfStack isEqualToString:@"e"] || [topOfStack isEqualToString:@"x"] || [topOfStack isEqualToString:@"z"]){
+            } else if ([topOfStack isEqualToString:@"π"] || [topOfStack isEqualToString:@"e"] || [topOfStack isEqualToString:@"x"] || [topOfStack isEqualToString:@"y"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 

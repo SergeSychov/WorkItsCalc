@@ -355,7 +355,7 @@
                 self.gradArray = [copyGradArray copy];
                 str = [self stringFromGrad:self.gradArray];
             }
-        } else if([symbol isEqualToString:@"x"] || [symbol isEqualToString:@"z"]){
+        } else if([symbol isEqualToString:@"x"] || [symbol isEqualToString:@"y"]){
             str = symbol;
         } else {
             if(self.isGradMinutesSecons ==0){

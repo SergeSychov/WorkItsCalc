@@ -9,6 +9,13 @@
 #import "CloseSetButton.h"
 
 @implementation CloseSetButton
+
+-(void)setIsRemoveButton:(BOOL)isRemoveButton{
+    _isRemoveButton = isRemoveButton;
+     [self setNeedsDisplay];
+    
+}
+
 -(void)setIsClose:(BOOL)isClose
 {
     if(_isClose != isClose){
@@ -24,7 +31,10 @@
     CGPathRef pathOfRect;
 
     UIColor *fillColor;
-    if(self.isClose){
+    if(self.isRemoveButton){
+        fillColor = [UIColor redColor];
+    }
+    else if(self.isClose){
         fillColor= [UIColor lightGrayColor];
     } else {
         fillColor = [UIColor greenColor];
@@ -46,7 +56,20 @@
     
     CGFloat width = rect.size.width/4;
     UIColor *storkeColor;
-    if(self.isClose){
+    if(self.isRemoveButton){
+        CGPoint pointOne = CGPointMake(center.x+width/1.5, center.y-width/1.5);
+        CGPoint pointTwo = CGPointMake(center.x-width/1.5, center.y+width/1.5);
+        CGPoint pointThree = CGPointMake(center.x-width/1.5, center.y-width/1.5);
+        CGPoint pointFour = CGPointMake(center.x+width/1.5, center.y+width/1.5);
+        
+        [patch moveToPoint:pointOne];
+        [patch addLineToPoint:pointTwo];
+        [patch moveToPoint:pointThree];
+        [patch addLineToPoint:pointFour];
+        
+        storkeColor = [UIColor whiteColor];
+        
+    } else if(self.isClose){
         CGPoint pointOne = CGPointMake(center.x+width/1.5, center.y-width/1.5);
         CGPoint pointTwo = CGPointMake(center.x-width/1.5, center.y+width/1.5);
         CGPoint pointThree = CGPointMake(center.x-width/1.5, center.y-width/1.5);

@@ -85,6 +85,7 @@
 		50A666961B16FFE3005ABB39 /* ShowedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A666951B16FFE3005ABB39 /* ShowedViewController.m */; };
 		50A7D7001BAC33B900ABCB0C /* Clr.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D6FF1BAC33B900ABCB0C /* Clr.m */; };
 		50A7D7031BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D7021BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m */; };
+		50A801B71C7CB3CC00836CE6 /* CreateNewButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A801B61C7CB3CC00836CE6 /* CreateNewButtonViewController.m */; };
 		50B991C91B0E5E8600BDCBC5 /* Transition.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991C61B0E5E8600BDCBC5 /* Transition.m */; };
 		50B991CA1B0E5E8600BDCBC5 /* BackTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991C81B0E5E8600BDCBC5 /* BackTransition.m */; };
 		50B991D01B0E5FAD00BDCBC5 /* AppearedController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B991CF1B0E5FAD00BDCBC5 /* AppearedController.m */; };
@@ -221,8 +222,8 @@
 		5021BD1318FDB1E6001749D4 /* DisplayRam.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayRam.m; sourceTree = "<group>"; };
 		5021BD1418FDB1E6001749D4 /* DisplayLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplayLabel.h; sourceTree = "<group>"; };
 		5021BD1518FDB1E6001749D4 /* DisplayLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayLabel.m; sourceTree = "<group>"; };
-		5021BD1B18FDB242001749D4 /* ButtonObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonObject.h; sourceTree = "<group>"; };
-		5021BD1C18FDB242001749D4 /* ButtonObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonObject.m; sourceTree = "<group>"; };
+		5021BD1B18FDB242001749D4 /* ButtonObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonObject.h; path = ITSCalc/ButtonObject.h; sourceTree = "<group>"; };
+		5021BD1C18FDB242001749D4 /* ButtonObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ButtonObject.m; path = ITSCalc/ButtonObject.m; sourceTree = "<group>"; };
 		5021BD1D18FDB242001749D4 /* ACalcBrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACalcBrain.h; sourceTree = "<group>"; };
 		5021BD1E18FDB242001749D4 /* ACalcBrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACalcBrain.m; sourceTree = "<group>"; };
 		5021BD2118FDB372001749D4 /* HistroryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistroryTableViewCell.h; sourceTree = "<group>"; };
@@ -317,6 +318,8 @@
 		50A7D6FF1BAC33B900ABCB0C /* Clr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Clr.m; sourceTree = "<group>"; };
 		50A7D7011BAC42B600ABCB0C /* RoundViewForDesignChooseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundViewForDesignChooseButton.h; sourceTree = "<group>"; };
 		50A7D7021BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundViewForDesignChooseButton.m; sourceTree = "<group>"; };
+		50A801B51C7CB3CC00836CE6 /* CreateNewButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNewButtonViewController.h; sourceTree = "<group>"; };
+		50A801B61C7CB3CC00836CE6 /* CreateNewButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateNewButtonViewController.m; sourceTree = "<group>"; };
 		50B991C51B0E5E8600BDCBC5 /* Transition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transition.h; sourceTree = "<group>"; };
 		50B991C61B0E5E8600BDCBC5 /* Transition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Transition.m; sourceTree = "<group>"; };
 		50B991C71B0E5E8600BDCBC5 /* BackTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackTransition.h; sourceTree = "<group>"; };
@@ -477,6 +480,7 @@
 				5021BD0C18FDB12E001749D4 /* ViewsAndLabels */,
 				5021BD0518FDB0F5001749D4 /* ScrollViews */,
 				5021BCF618FDB0AB001749D4 /* CoreData */,
+				50A801B81C7CC54000836CE6 /* CreateNewButtonController */,
 				50A6668B1B16F6D1005ABB39 /* AbstractControllers */,
 				50DF89221B2E0E6500DF6D06 /* SettingsViewController */,
 				5074EB9F1B544B1000291799 /* DesignViewcontroller */,
@@ -647,8 +651,6 @@
 			children = (
 				5021BD1218FDB1E6001749D4 /* DisplayRam.h */,
 				5021BD1318FDB1E6001749D4 /* DisplayRam.m */,
-				5021BD1B18FDB242001749D4 /* ButtonObject.h */,
-				5021BD1C18FDB242001749D4 /* ButtonObject.m */,
 				5021BD1D18FDB242001749D4 /* ACalcBrain.h */,
 				5021BD1E18FDB242001749D4 /* ACalcBrain.m */,
 				64616FCA19BF53C7009DA6B2 /* TextEditController.h */,
@@ -657,6 +659,15 @@
 				35EF55371C46D55F007B4087 /* ButtonsStore.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		5022730B1C8306B30021968A /* need to delete */ = {
+			isa = PBXGroup;
+			children = (
+				5021BD1B18FDB242001749D4 /* ButtonObject.h */,
+				5021BD1C18FDB242001749D4 /* ButtonObject.m */,
+			);
+			name = "need to delete";
 			sourceTree = "<group>";
 		};
 		504EA8A51A17C6E000E225F7 /* iPads */ = {
@@ -697,6 +708,7 @@
 		5074EB9E1B544AE500291799 /* New Group */ = {
 			isa = PBXGroup;
 			children = (
+				5022730B1C8306B30021968A /* need to delete */,
 				5021BC8818FDAE3C001749D4 /* ITSCalc */,
 			);
 			name = "New Group";
@@ -739,6 +751,15 @@
 				50FD96D719478E5100ADCF9A /* BezierInterpView.m */,
 			);
 			name = ShowedViewConroller;
+			sourceTree = "<group>";
+		};
+		50A801B81C7CC54000836CE6 /* CreateNewButtonController */ = {
+			isa = PBXGroup;
+			children = (
+				50A801B51C7CB3CC00836CE6 /* CreateNewButtonViewController.h */,
+				50A801B61C7CB3CC00836CE6 /* CreateNewButtonViewController.m */,
+			);
+			name = CreateNewButtonController;
 			sourceTree = "<group>";
 		};
 		50B991C41B0E5E5E00BDCBC5 /* Transition */ = {
@@ -936,6 +957,7 @@
 				50C3C5071BA5AD9D005A6854 /* DesignViewFromButton.m in Sources */,
 				50EFEE671C3AFE7C0004C4C0 /* CurrencyStore.m in Sources */,
 				50F312571A22448F002604FB /* CloseSetButton.m in Sources */,
+				50A801B71C7CB3CC00836CE6 /* CreateNewButtonViewController.m in Sources */,
 				50545AFB1B00C6140036EAD8 /* AdditionViewController.m in Sources */,
 				640185DD19B05DE700D9BE5C /* GrayStyleView.m in Sources */,
 				50A7D7031BAC42B600ABCB0C /* RoundViewForDesignChooseButton.m in Sources */,

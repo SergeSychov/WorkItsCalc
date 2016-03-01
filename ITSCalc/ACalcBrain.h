@@ -47,6 +47,9 @@
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes;
 +(id) deepArrayCopy:(NSArray*) arrayToCopy;
 
+//check if programm has variables inside
++(NSSet*) chekForVariablesInProgramm:(NSArray*)programm;
+
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
 

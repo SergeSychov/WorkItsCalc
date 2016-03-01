@@ -11,5 +11,6 @@
 @interface CloseSetButton : UIButton
 
 @property (nonatomic) BOOL isClose;
+@property (nonatomic) BOOL isRemoveButton;
 
 @end
