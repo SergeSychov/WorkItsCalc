@@ -16,6 +16,7 @@
 @protocol ButtonsStoreProtocol <NSObject>
 -(NSInteger)numberColumsInCollectionView;
 -(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload;
+-(void)buttonsArrayDidChangedWithReloadOperation:(NSInteger)operation;
 @end
 
 
@@ -38,6 +39,8 @@
 //-(void)addNewButtonWithButtonObj:(NSArray*)butObjs;
 -(void) checkButtonsArray;
 -(void) moveButton:(Buttons*)btn fromPosition:(NSNumber*)posFrom toPosition:(NSNumber*)posTo;
+-(void) setEnablingForButton:(Buttons*)button;
+-(void) setDisablingForButton:(Buttons*)button;
 
 -(BOOL)removeUsersButton:(Buttons*)usersButton;
 

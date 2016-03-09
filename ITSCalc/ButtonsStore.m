@@ -113,19 +113,6 @@
 
 }
 
--(void) renewArryasAfterChanging
-{
-    [self makeTwoArraysWithReload:YES];
-}
-
-
--(void) renewArraysAccordingNewButtonsSize
-{
-    //1 Finf new positions for main button
-    [self setUpMainButtonsStartWithPosition];
-    [self makeTwoArraysWithReload:YES];
-}
-
 
 -(void)changeContext:(NSManagedObjectContext *)context
 {
@@ -289,48 +276,7 @@
 
 
 
-//make workbuttons array and names array together
--(void) makeTwoArraysWithReload:(BOOL)isNeedreload;
-{
-    // self.buttonsCollection.scrollEnabled = NO;
-    NSLog(@"makeTwoArraysWithReload");
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
-        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
-        
-        //1. add to allButtons changeble
-        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
 
-        //2. insert Main buttons according right position
-        for(Buttons *btn in self.mainButtonObjs){
-            [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
-        }
-        
-        //3.make string array for work condition of buttoncollectionView
-        //workButtonNames
-        for(Buttons *btn in allButtonsArray){
-            [workButtonNames addObject:btn.nameButton];
-        }
-        self.workButtonsNames = [workButtonNames copy];
-        
-        //4. compleet all buttons array with deleted (not enabled) buttons
-        [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];
-        self.allButtonObj = [allButtonsArray copy];
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate buttonsArrayDidChangedWithReload:isNeedreload];
-
-        });
-    });
-}
-
--(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
-{
-    NSLog(@"moveButton:(Buttons *)btn fromPosition:");
-    [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
-    [self makeTwoArraysWithReload:NO];
-}
 
 
 -(NSArray*) changebleButtonObjs
@@ -402,6 +348,85 @@
     }
     return _workButtonsNames;
 }
+#pragma mark RESET ARRAYS AND CALLDELEGATE
+
+#define INSERT_BUTTON 1
+#define DELETE_BUTTON 2
+#define CHANGE_BUTTON_POISTION 3
+#define MOVE_TO_ENABLE 4
+#define MOVE_TO_DISABLE 5
+#define RELOAD 0
+//make workbuttons array and names array together
+-(void) makeTwoArraysWithReload:(BOOL)isNeedreload;
+{
+    // self.buttonsCollection.scrollEnabled = NO;
+    NSLog(@"makeTwoArraysWithReload");
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
+        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
+        
+        //1. add to allButtons changeble
+        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
+        
+        //2. insert Main buttons according right position
+        for(Buttons *btn in self.mainButtonObjs){
+            [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
+        }
+        
+        //3.make string array for work condition of buttoncollectionView
+        //workButtonNames
+        for(Buttons *btn in allButtonsArray){
+            [workButtonNames addObject:btn.nameButton];
+        }
+        self.workButtonsNames = [workButtonNames copy];
+        
+        //4. compleet all buttons array with deleted (not enabled) buttons
+        [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];
+        self.allButtonObj = [allButtonsArray copy];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate buttonsArrayDidChangedWithReload:isNeedreload];
+            
+        });
+    });
+}
+
+-(void) makeTwoArraysWithReloadOperation:(NSInteger)operation;
+{
+    // self.buttonsCollection.scrollEnabled = NO;
+    NSLog(@"makeTwoArraysWithReload");
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
+        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
+        
+        //1. add to allButtons changeble
+        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
+        
+        //2. insert Main buttons according right position
+        for(Buttons *btn in self.mainButtonObjs){
+            [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
+        }
+        
+        //3.make string array for work condition of buttoncollectionView
+        //workButtonNames
+        for(Buttons *btn in allButtonsArray){
+            [workButtonNames addObject:btn.nameButton];
+        }
+        self.workButtonsNames = [workButtonNames copy];
+        
+        //4. compleet all buttons array with deleted (not enabled) buttons
+        [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];
+        self.allButtonObj = [allButtonsArray copy];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate buttonsArrayDidChangedWithReloadOperation:operation];
+            
+        });
+    });
+}
+
 
 #pragma mark DELEGATE CreateNewButtonController
 -(BOOL)createNewButtonWith:(NSString*)name andProgramm:(NSArray*)programm {
@@ -427,7 +452,75 @@
     return newButton?YES:NO;
 }
 
-#pragma mark DELETE USES BUTTON
+#pragma mark MOVE BUTTONS
+
+
+-(void) renewArryasAfterChanging
+{
+    [self makeTwoArraysWithReload:YES];
+}
+
+
+-(void) renewArraysAccordingNewButtonsSize
+{
+    //1 Finf new positions for main button
+    [self setUpMainButtonsStartWithPosition];
+    [self makeTwoArraysWithReload:YES];
+}
+
+
+-(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
+{
+    NSLog(@"moveButton:(Buttons *)btn fromPosition:");
+    [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
+    [self makeTwoArraysWithReloadOperation:CHANGE_BUTTON_POISTION];
+}
+
+-(void) setEnablingForButton:(Buttons*)button{
+    NSMutableArray *mutableChangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
+    NSMutableArray *mutableDeletedButtonObjs = [self.delettedButtonObjs mutableCopy];
+    NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+
+    
+    [mutableDeletedButtonObjs removeObject:button];
+
+    //find neede position in short array
+    NSInteger i = 0;
+    while (i  < mutableChangebleButtonObjs.count){
+        Buttons *butObj = mutableChangebleButtonObjs[i];
+        if([butObj.position integerValue] > [button.position integerValue]) break;
+        i++;
+    }
+    button.enable = [NSNumber numberWithBool:![button.enable boolValue]];
+    button.dateOfDeletting = [NSDate distantFuture];
+    
+    [mutableChangebleButtonObjs insertObject:button atIndex:i];
+    
+    
+    self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
+    self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
+
+    NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    
+    [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
+}
+
+-(void) setDisablingForButton:(Buttons*)button{
+    NSMutableArray *mutableChangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
+    NSMutableArray *mutableDeletedButtonObjs = [self.delettedButtonObjs mutableCopy];
+    
+    button.enable = [NSNumber numberWithBool:![button.enable boolValue]];
+    button.dateOfDeletting = [NSDate date];
+    
+    [mutableChangebleButtonObjs removeObject:button];
+    [mutableDeletedButtonObjs insertObject:button atIndex:0];
+    
+    self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
+    self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
+    [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
+}
+
+#pragma mark DELETE USERS BUTTON
 
 -(BOOL)removeUsersButton:(Buttons*)usersButton {
     NSMutableArray *mutableDeleteButtonsArray = [self.delettedButtonObjs mutableCopy];
@@ -436,7 +529,7 @@
     
     [self.buttonManagedObjectContext deleteObject:usersButton];
     
-    [self makeTwoArraysWithReload:NO];
+    [self makeTwoArraysWithReloadOperation:DELETE_BUTTON];
     
     return YES;
 
