@@ -92,13 +92,20 @@
 #define DESIGN_COLOR_GRAY 34
 #define DESIGN_PHOTO 4
 
+//types of calculator buttons
+#define MAIN_BUTTON 1
+#define CHANGE_BUTTON 2
+#define CHANGE_BUTTON_NOT_DELETABLE 3
+#define DELETED_BUTTON 4
+#define DELETED_USER_BUTTON 5
+
 
 //NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
 //NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate>
 
 
 //outlets
@@ -844,127 +851,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     return YES;
 }
-#pragma mark BUTTONS DELEGATE
--(NSInteger) numberColumsInCollectionView
-{
-    CGFloat oneButtonWidth = [self collectionView:self.buttonsCollection
-                                           layout:self.collectionViewFlowLayout
-                           sizeForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]].width;
-    CGFloat collectionWidth;
-    if(IS_IPAD) {
-        
-        
-        
-        if(self.willBePortraitRotated){
-            collectionWidth = 768;
-        } else {
-            collectionWidth = 1024;
-        }
-    } else { //if it's iPhone ore iPod
-        collectionWidth = 320;
-    }
-    return ABS(collectionWidth/oneButtonWidth);
-}
-#define INSERT_BUTTON 1
-#define DELETE_BUTTON 2
-#define CHANGE_BUTTON_POISTION 3
-#define MOVE_TO_ENABLE 4
-#define MOVE_TO_DISABLE 5
-#define RELOAD 0
 
--(void)buttonsArrayDidChangedWithReloadOperation:(NSInteger)operation
-{
-    //don't know why but switch not works
-
-    if(operation == RELOAD){
-        [self.buttonsCollection reloadData];
-    } else if(operation == INSERT_BUTTON){
-        
-    } else if(operation == DELETE_BUTTON){
-        [self.buttonsCollection performBatchUpdates:^{
-            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:self.patch, nil];
-            [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
-        } completion:^(BOOL finished) {
-            nil;
-        }];
-    } else if(operation == CHANGE_BUTTON_POISTION){
-        //NSLog(@"Movedcells: %@", movedCells);
-        [self.buttonsCollection performBatchUpdates:^{
-            NSMutableArray* mutPatchsArray = [movedCells mutableCopy];
-            while ([mutPatchsArray firstObject]) {
-                NSIndexPath *subPatch = [mutPatchsArray firstObject];
-                [mutPatchsArray removeObjectAtIndex:0];
-                if([mutPatchsArray firstObject]){
-                    NSIndexPath *findPatch = [mutPatchsArray firstObject];
-                    [mutPatchsArray removeObjectAtIndex:0];
-                   [self.buttonsCollection moveItemAtIndexPath:subPatch toIndexPath:findPatch];
-                }
-            }
-
-            
-        } completion:^(BOOL finished) {
-            //subCell.hidden = NO;
-            moveIsAvailable = YES;
-            movedCells = nil;
-        }];
-        
-    } else if(operation == MOVE_TO_ENABLE){
-        [self.buttonsCollection performBatchUpdates:^{
-            NSMutableArray* mutPatchsArray = [movedCells mutableCopy];
-            while ([mutPatchsArray firstObject]) {
-                NSIndexPath *subPatch = [mutPatchsArray firstObject];
-                [mutPatchsArray removeObjectAtIndex:0];
-                if([mutPatchsArray firstObject]){
-                    NSIndexPath *findPatch = [mutPatchsArray firstObject];
-                    [mutPatchsArray removeObjectAtIndex:0];
-                    [self.buttonsCollection moveItemAtIndexPath:subPatch toIndexPath:findPatch];
-                }
-            }
-
-        } completion:^(BOOL finished) {
-            //subCell.hidden = NO;
-            //moveIsAvailable = YES;
-            //subCell.hidden = NO;
-            //[buttonsAsSubView removeFromSuperview ];
-            //buttonsAsSubView = nil;
-            movedCells = nil;
-            
-            if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
-                self.isAllowedToDelete = NO;
-            } else {
-                self.isAllowedToDelete = YES;
-            }
-        }];
-    }else if(operation == MOVE_TO_DISABLE){
-        
-    }else{
-        //default
-    }
-
-/*
-    [self.doc updateChangeCount:UIDocumentChangeDone];
-    if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
-        // NSLog(@"All buttons obj in changing version %@", self.buttonsStore.allButtonObj);
-        [self.buttonsStore checkButtonsArray];
-    }
-    */
-}
--(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload
-{
-    if(isNeedReload){
-        [self.buttonsCollection reloadData];
-    } else {
-        //[self.buttonsCollection performBatchUpdates:^{
-        //    NSArray *indexPatchs = [[NSArray alloc]initWithObjects:self.patch, nil];
-       //     [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
-       // } completion:nil];
-    }
-     [self.doc updateChangeCount:UIDocumentChangeDone];
-    if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
-       // NSLog(@"All buttons obj in changing version %@", self.buttonsStore.allButtonObj);
-        [self.buttonsStore checkButtonsArray];
-    }
-}
 #pragma mark ACTIONS
 - (IBAction)plusButtonTapped:(UIButton *)sender {
     NSArray *programm;
@@ -1864,7 +1751,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
             //lock interaction
             self.buttonsCollection.userInteractionEnabled = NO;
-            self.isButtonsCollectionUnderChanging = YES;
+            
             
             CGRect newDynamicFrame = self.dynamicContainer.frame;
             newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
@@ -1912,7 +1799,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                      [self showSettingsViewcontroller];
 
                                 }
-                                 
+                                 self.isButtonsCollectionUnderChanging = YES;
                                  [self.buttonsCollection reloadData];
                                  //ulock interaction
                                  self.buttonsCollection.userInteractionEnabled = YES;
@@ -1926,7 +1813,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(indexPath){
                 if([[self.buttonsCollection cellForItemAtIndexPath:indexPath] isKindOfClass:[NewButtonsCollectionViewCell class]]){
                     subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPath];
-                    if((subCell.isChangeble) && (subCell.isEnable)){
+                    if((subCell.typeOfButton != MAIN_BUTTON) /*&& (subCell.isEnable)*/){
                         CGRect subViewFrame;
                         subViewFrame = ((NewButtonsCollectionViewCell*)subCell).cellSubView.frame;
                         
@@ -2049,15 +1936,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 
     if(self.isButtonsCollectionUnderChanging){
-        self.isButtonsCollectionUnderChanging = NO;
+        
         for(UICollectionViewCell* cell in [self.buttonsCollection visibleCells]){
             ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
         }
-        // NSError *error;
-       // [self.buttonManagedObjectContext save:&error];
-        //[self.doc.managedObjectContext save: &error];
+        
+
         [self.doc updateChangeCount:UIDocumentChangeDone];
-      //  [self.buttonsStore resaveCoreButtons];
+
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
@@ -2114,6 +2000,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          self.display.alpha = 1.;
                          
                      } completion:^(BOOL finished){
+                         self.isButtonsCollectionUnderChanging = NO;
 
                          self.settingsBottomButtn.hidden = YES;
                          self.noticeButton.hidden = YES;
@@ -2444,6 +2331,23 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 #pragma mark - MOVE BUTTONS Methods
+
+//define properties of each button
+#define INSERT_BUTTON 1
+#define DELETE_BUTTON 2
+#define CHANGE_BUTTON_POISTION 3
+#define MOVE_TO_ENABLE 4
+#define MOVE_TO_DISABLE 5
+#define RELOAD 0
+
+
+#pragma mark MOVE BUTTON STATIC PROPERTIES
+static newButtonView* buttonsAsSubView;
+static NewButtonsCollectionViewCell* findCell;
+static NewButtonsCollectionViewCell* subCell;
+static NSArray *movedCells;
+static BOOL moveIsAvailable;
+
 //method change offset in pan gesture is included new Thread
 -(CGFloat) moveButtonsCollectioViewByOffsetDown:(CGFloat) offset
 {
@@ -2517,266 +2421,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     return retOffset;
 }
 
-//HERE
-//main method to move buttonView from one position in buttonsCollection to another
--(void) moveCellFromPosition: (NSIndexPath*) patchFrom toPosition: (NSIndexPath*) patchTo withDuration: (CGFloat) duration
-{
-    UICollectionViewCell* cellTo = [self.buttonsCollection cellForItemAtIndexPath:patchTo];
-    UICollectionViewCell* cellFrom = [self.buttonsCollection cellForItemAtIndexPath:patchFrom];
-    
-    newButtonView * subView = [[newButtonView alloc] init];
-    if([cellFrom isKindOfClass:[NewButtonsCollectionViewCell class]] && [cellTo isKindOfClass:[NewButtonsCollectionViewCell class]]){
-        CGRect subViewFrame;
-        subViewFrame = ((NewButtonsCollectionViewCell*)cellFrom).cellSubView.frame;
-        
-        CGRect subViewFrameTo;
-        
-        //in case that suview's frame dos'nt equal view frame
-        subViewFrame.origin.x =cellFrom.frame.origin.x;
-        subViewFrame.origin.y =cellFrom.frame.origin.y;
-        [subView setFrame:subViewFrame];
-        subView.buttonColor = ((NewButtonsCollectionViewCell*)cellFrom).cellSubView.buttonColor;
-        subView.title = ((NewButtonsCollectionViewCell*)cellFrom).cellSubView.title;
-        
-        [self.buttonsCollection addSubview:subView];
-        cellTo.alpha = 0.;
-        cellFrom.alpha = 0.;
-        
-        subViewFrameTo = ((NewButtonsCollectionViewCell*)cellTo).cellSubView.frame;
-        //in case that suview's frame dos'nt equal view frame
-        subViewFrameTo.origin.x =cellTo.frame.origin.x;
-        subViewFrameTo.origin.y =cellTo.frame.origin.y;
-        
-        [UIView animateWithDuration:duration
-                              delay:0
-                            options:UIViewAnimationOptionBeginFromCurrentState
-                         animations:^{
-                             [subView setFrame:subViewFrameTo];
-                         } completion:^(BOOL finished){
-                             
-                             //set to cellButtonTO properies of cellButtonFrom
-                             ((NewButtonsCollectionViewCell*)cellTo).name = ((NewButtonsCollectionViewCell*)cellFrom).name;
-                             ((NewButtonsCollectionViewCell*)cellTo).isUnderChanging = ((NewButtonsCollectionViewCell*)cellFrom).isUnderChanging;
-                             ((NewButtonsCollectionViewCell*)cellTo).isEnable = ((NewButtonsCollectionViewCell*)cellFrom).isEnable;
-                             ((NewButtonsCollectionViewCell*)cellTo).isChangeble = ((NewButtonsCollectionViewCell*)cellFrom).isChangeble;
-                             ((NewButtonsCollectionViewCell*)cellTo).isAllovedToDelete = ((NewButtonsCollectionViewCell*)cellFrom).isAllovedToDelete;
-                             [UIView animateWithDuration:.02
-                                                   delay:0.
-                                                 options:UIViewAnimationOptionBeginFromCurrentState
-                                              animations:^{
-                                                  NSArray * pathesToReload = [NSArray arrayWithObjects:
-                                                                              patchTo,
-                                                                              nil];
-                                                  [self.buttonsCollection reloadItemsAtIndexPaths:pathesToReload];
-                                                  
-                                                  [subView removeFromSuperview];
-                                                  
-                                              } completion:^(BOOL finished){
-                                                  cellTo.alpha = 1.;
-                                                  subView.alpha = 0.;
-                                                  
-                                              }
-                              ];
-                         }];
-    }
-    
-}
 
-//HERE
-//move array of buttonView inside NSTimer
--(void) moveButtonOfArray
-{
-    NSLog(@"moveButtonOfArray");
-    if(self.buttonsToMoveArray.count > 1){
-        [self moveCellFromPosition:self.buttonsToMoveArray[1] toPosition:self.buttonsToMoveArray[0] withDuration:0.04];
-        [self.buttonsToMoveArray removeObjectAtIndex:0];
-    } else {
-        //
-        [self.secondTimer invalidate];
-    }
-}
-
-#pragma mark MOVE BUTTON STATIC PROPERTIES
-static newButtonView* buttonsAsSubView;
-static NewButtonsCollectionViewCell* findCell;
-static NewButtonsCollectionViewCell* subCell;
-static NSArray *movedCells;
-static BOOL moveIsAvailable;
-//move buttonView from global variable subCell and findCell
--(void) move
-{
-    NSLog(@"move");
-    //here is ok for all buttons
-    NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
-    Buttons *findButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:findPatch.item];
-    NSNumber* findButtonObjPositionInCoreData = findButtonObj.position;
-    //new position in changeble  array
-    NSInteger indexFindButtonObjInChangebleArray = [self.buttonsStore.changebleButtonObjs indexOfObject:findButtonObj];
-    
-    NSIndexPath *subPatch = [self.buttonsCollection indexPathForCell:subCell];
-    Buttons *subButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:subPatch.item];
-    NSNumber *subButtonObjPositionInCoreData = subButtonObj.position;
-   
-    if(!self.secondTimer.isValid){
-        
-        NSMutableArray *mutableCahngebleArray = [self.buttonsStore.changebleButtonObjs mutableCopy];
-        [mutableCahngebleArray removeObject:subButtonObj];
-        [mutableCahngebleArray insertObject:subButtonObj atIndex:indexFindButtonObjInChangebleArray];
-        self.buttonsStore.changebleButtonObjs = [mutableCahngebleArray copy];
-        //findButtonObjPositionInCoreData
-        //subButtonObjPositionInCoreData
-        movedCells = [self findMovedCellsForReplacePatch:subPatch toPatch:findPatch];
-
-        [self.buttonsStore moveButton:subButtonObj fromPosition:subButtonObjPositionInCoreData toPosition:findButtonObjPositionInCoreData];
-
-    }
-}
-
--(NSArray*)findMovedCellsForReplacePatch:(NSIndexPath*)subPatch toPatch:(NSIndexPath*)findPatch{
-    NSMutableArray *returnArray = [[NSMutableArray alloc]init];
-
-    //add cell wich be moved
-    [returnArray addObject:subPatch];
-    
-    //add finded cell - cell in wich need set new cell
-    [returnArray addObject:findPatch];
-    
-    if(findPatch.item > subPatch.item){//if move done
-        NSIndexPath* tempPatch = findPatch;
-        NSIndexPath* nextPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];//+
-        
-        
-        while (tempPatch.item>subPatch.item) {
-            NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
-            if(!nextCell.isChangeble){//if its not changeble//main button
-                [returnArray addObject:tempPatch];//add to array patch that need be replaced
-                nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
-                
-                while (true && (nextPatch.item>=subPatch.item)) {
-                    nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
-
-                    if(nextCell.isChangeble){//find first changeble cells patch and add to array
-                        [returnArray addObject:nextPatch];
-                        tempPatch = nextPatch;
-                         nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
-
-                        break;
-                    } else {
-                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
-                    }
-                    
-                }
-            } else {
-                tempPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];
-                nextPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];
-            }
-        }
-    } else if (findPatch.item < subPatch.item){
-        NSIndexPath* tempPatch = findPatch;
-        NSIndexPath* nextPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];//+
-        
-
-        while (tempPatch.item<subPatch.item) {
-            NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
-
-            if(!nextCell.isChangeble){//if its not changeble//main button
-                [returnArray addObject:tempPatch];//add to array patch that need be replaced
-
-                nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
-
-                while (true && (nextPatch.item<=subPatch.item)) {
-                    nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
-
-                    if(nextCell.isChangeble){//find first changeble cells patch and add to array
-                        [returnArray addObject:nextPatch];
-
-                        tempPatch = nextPatch;
-                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
-
-                        break;
-                    } else {
-                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
-                    }
-                    
-                }
-            } else {
-                tempPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];
-                nextPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];
-            }
-        }
-    }
-    return [returnArray copy];
-}
-/*
-
-//move buttons view from global subCell to view according data model changeble position
--(void) moveButtonObjFromPosition:(NSNumber*)subPuttonObjPosition toPosition:(NSNumber*)finButtonObjPosition
-{
-    [self.buttonsStore mo]
-        if(subPuttonObjPosition > finButtonObjPosition){
-        for(ButtonObject *buttonObj in self.buttonsStore.allButtonObj){
-            if(!buttonObj.isMain){
-                if((buttonObj.position < subPuttonObjPosition)&& (buttonObj.position >= finButtonObjPosition)){
-                    buttonObj.position +=1;
-                } else if (buttonObj.position == subPuttonObjPosition){
-                    buttonObj.position = finButtonObjPosition;
-                }
-            }
-        }
-    }else if (subPuttonObjPosition < finButtonObjPosition){
-        for(ButtonObject *buttonObj in self.buttonsStore.allButtonObj){
-            if(!buttonObj.isMain){
-                if((buttonObj.position > subPuttonObjPosition)&& (buttonObj.position <= finButtonObjPosition)){
-                    buttonObj.position -=1;
-                } else if (buttonObj.position == subPuttonObjPosition){
-                    buttonObj.position = finButtonObjPosition;
-                }
-            }
-        }
-    }
-    [self.buttonsStore renewArryasAfterChanging];
-    //[self makeTwoArrays];
-
-}
-*/
-
-//HERE
--(void) moveCellsFromPatch:(NSIndexPath*)subPatch toPatch:(NSIndexPath*)findPatch
-{
-    
-    NSLog(@"moveCellsFromPatch");
-    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
-    NSIndexPath *patch = [self.buttonsCollection indexPathForCell:findCell];
-    
-    if(subPatch.item > findPatch.item){
-        for(NSInteger i = subPatch.item; i >= findPatch.item; i-- ){
-            Buttons* changeObject = [self.buttonsStore.allButtonObj objectAtIndex:i];
-            if((![changeObject.isMain boolValue]) && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
-                
-                [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
-        }
-        
-    } else if(subPatch.item < findPatch.item){
-        for(NSInteger i = subPatch.item; i <= findPatch.item; i++ ){
-            Buttons * changeObject = [self.buttonsStore.allButtonObj objectAtIndex:i];
-            if((![changeObject.isMain boolValue])  && ([self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patch]]))
-                [mutArray addObject:[NSIndexPath indexPathForItem:i inSection:subPatch.section]];
-        }
-        
-    }
-    
-    subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
-    self.buttonsToMoveArray = [NSMutableArray arrayWithArray:mutArray];
-    self.secondTimer = [NSTimer scheduledTimerWithTimeInterval:0.04
-                                                        target:self
-                                                      selector:@selector(moveButtonOfArray)
-                                                      userInfo:nil
-                                                       repeats:YES];
-}
-
-
-//pan gesture
-//two methodes to delet and redelete buttons with animation
 - (IBAction)moveButtonToNewPosition:(UIPanGestureRecognizer *)panGesture
 {
     if(panGesture.state == UIGestureRecognizerStateBegan){
@@ -2823,7 +2468,7 @@ static BOOL moveIsAvailable;
                 
                 while (YES){
                     if(([self.buttonsStore.changebleButtonObjs containsObject:[self.buttonsStore.allButtonObj objectAtIndex:[self.buttonsCollection indexPathForCell:findCell].item]])
-                       && (findCell.isEnable)){
+                       && ((findCell.typeOfButton == CHANGE_BUTTON)||(findCell.typeOfButton == CHANGE_BUTTON_NOT_DELETABLE))){
                         break;
                     } else {
                         findCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:[NSIndexPath indexPathForItem:patch.item -1 inSection:patch.section]];
@@ -2838,94 +2483,133 @@ static BOOL moveIsAvailable;
                 
                 if(![findCell isEqual:subCell]){
                     if (moveIsAvailable){
-                       [self move];
+                        [self move];
                         moveIsAvailable = NO;
                     }
                 }
             }
         }
     }
-    //2. calculate nearest enable cell
-    //3. change the model???? ( needed to change this function in model
-    //4. move the cells buttons views
+    
     if (panGesture.state == UIGestureRecognizerStateEnded) {
-        //1. change the model!!
-        /*
-        if(self.isButtonsCollectionUnderChanging){
-            if(buttonsAsSubView){
-                CGRect subFrame = subCell.frame;
-                [UIView animateWithDuration:0.2
-                                 animations:^{
-                                     [buttonsAsSubView setFrame:subFrame];
-                                     
-                                 } completion:^(BOOL finished) {
-
-                                     subCell.hidden = NO;
-                                     [buttonsAsSubView removeFromSuperview];
-                                     buttonsAsSubView = nil;
-                                 }];
-                
-            }
-        }
-        */
+        
     }
 }
+//move buttonView from global variable subCell and findCell
+-(void) move
+{
+    NSLog(@"move");
+    //here is ok for all buttons
+    NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
+    Buttons *findButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:findPatch.item];
+    NSNumber* findButtonObjPositionInCoreData = findButtonObj.position;
+    //new position in changeble  array
+    NSInteger indexFindButtonObjInChangebleArray = [self.buttonsStore.changebleButtonObjs indexOfObject:findButtonObj];
+    
+    NSIndexPath *subPatch = [self.buttonsCollection indexPathForCell:subCell];
+    Buttons *subButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:subPatch.item];
+    NSNumber *subButtonObjPositionInCoreData = subButtonObj.position;
+   
+    if(!self.secondTimer.isValid){
+        
+        NSMutableArray *mutableCahngebleArray = [self.buttonsStore.changebleButtonObjs mutableCopy];
+        [mutableCahngebleArray removeObject:subButtonObj];
+        [mutableCahngebleArray insertObject:subButtonObj atIndex:indexFindButtonObjInChangebleArray];
+        self.buttonsStore.changebleButtonObjs = [mutableCahngebleArray copy];
+        //findButtonObjPositionInCoreData
+        //subButtonObjPositionInCoreData
+        movedCells = [self findMovedCellsForReplacePatch:subPatch toPatch:findPatch];
+
+        [self.buttonsStore moveButton:subButtonObj fromPosition:subButtonObjPositionInCoreData toPosition:findButtonObjPositionInCoreData];
+
+    }
+}
+
+-(NSArray*)findMovedCellsForReplacePatch:(NSIndexPath*)subPatch toPatch:(NSIndexPath*)findPatch{
+    NSMutableArray *returnArray = [[NSMutableArray alloc]init];
+
+    //add cell wich be moved
+    [returnArray addObject:subPatch];
+    
+    //add finded cell - cell in wich need set new cell
+    [returnArray addObject:findPatch];
+    
+    if(findPatch.item > subPatch.item){//if move done
+        NSIndexPath* tempPatch = findPatch;
+        NSIndexPath* nextPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];//+
+        
+        
+        while (tempPatch.item>subPatch.item) {
+            NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
+            if(nextCell.typeOfButton == MAIN_BUTTON){//if its not changeble//main button
+                [returnArray addObject:tempPatch];//add to array patch that need be replaced
+                nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
+                
+                while (true && (nextPatch.item>=subPatch.item)) {
+                    nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
+
+                    if(nextCell.typeOfButton != MAIN_BUTTON){//find first changeble cells patch and add to array
+                        [returnArray addObject:nextPatch];
+                        tempPatch = nextPatch;
+                         nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
+
+                        break;
+                    } else {
+                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item-1 inSection:nextPatch.section];
+                    }
+                    
+                }
+            } else {
+                tempPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];
+                nextPatch = [NSIndexPath indexPathForItem:tempPatch.item-1 inSection:tempPatch.section];
+            }
+        }
+    } else if (findPatch.item < subPatch.item){
+        NSIndexPath* tempPatch = findPatch;
+        NSIndexPath* nextPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];//+
+        
+
+        while (tempPatch.item<subPatch.item) {
+            NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
+
+            if(nextCell.typeOfButton == MAIN_BUTTON){//if its not changeble//main button
+                [returnArray addObject:tempPatch];//add to array patch that need be replaced
+
+                nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
+
+                while (true && (nextPatch.item<=subPatch.item)) {
+                    nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:nextPatch];
+
+                    if(nextCell.typeOfButton != MAIN_BUTTON){//find first changeble cells patch and add to array
+                        [returnArray addObject:nextPatch];
+
+                        tempPatch = nextPatch;
+                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
+
+                        break;
+                    } else {
+                        nextPatch =[NSIndexPath indexPathForItem:nextPatch.item+1 inSection:nextPatch.section];
+                    }
+                    
+                }
+            } else {
+                tempPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];
+                nextPatch = [NSIndexPath indexPathForItem:tempPatch.item+1 inSection:tempPatch.section];
+            }
+        }
+    }
+    return [returnArray copy];
+}
+
+//pan gesture
+//two methodes to delet and redelete buttons with animation
+
 
 //DELET and SET BUTTONS
-//ok
-//if allowedToDelete condition changed set alowedToDelete condition for each buttons
--(void)setIsAllowedToDelete:(BOOL)isAllowedToDelete
-{
-    if(_isAllowedToDelete != isAllowedToDelete){
-        if(!isAllowedToDelete){
-            /*
-            for(NSInteger i = 0; i < self.buttonsStore.changebleButtonObjs.count; i++){
-                ButtonObject *butObj = self.buttonsStore.changebleButtonObjs[i];
-                butObj.alowedTodelete = NO;
-            }
-            */
-            for (Buttons* butObj in self.buttonsStore.changebleButtonObjs){
-                butObj.aloweToDelete = [NSNumber numberWithBool:NO];// NO;
-            }
-            [self.buttonsStore renewArryasAfterChanging];
-            //[self makeTwoArrays];
-
-            for(int i = 0; i < ([self.buttonsStore.changebleButtonObjs  count] + 19); i ++){
-                NSIndexPath * index = [NSIndexPath indexPathForItem:i inSection:0];
-                UICollectionViewCell* cell =[self.buttonsCollection cellForItemAtIndexPath:index];
-                ((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = NO;
-            }
-            
-        } else {
-            /*
-            for(NSInteger i = 0; i < self.buttonsStore.changebleButtonObjs.count; i++){
-                ButtonObject *butObj = self.buttonsStore.changebleButtonObjs[i];
-                butObj.alowedTodelete = YES;
-            }
-            */
-            for (Buttons* butObj in self.buttonsStore.changebleButtonObjs){
-                butObj.aloweToDelete = [NSNumber numberWithBool:YES];//YES;
-            }
-            //[self makeTwoArrays];
-            [self.buttonsStore renewArryasAfterChanging];
-            
-            for(int i = 0; i <self.buttonsStore.allButtonObj.count; i ++){
-                NSIndexPath * indexToCheck = [NSIndexPath indexPathForItem:i inSection:0];
-                UICollectionViewCell* cellToCheck = [self.buttonsCollection cellForItemAtIndexPath:indexToCheck];
-                if (((NewButtonsCollectionViewCell*)cellToCheck).isChangeble) {
-                    ((NewButtonsCollectionViewCell*)cellToCheck).isAllovedToDelete = YES;
-                }
-            }
-        }
-    }
-    
-    //[self.buttonsCollection reloadData];
-    _isAllowedToDelete = isAllowedToDelete;
-}
 #define DELETE_BUTTON_REQUEST NSLocalizedStringFromTable(@"DELETE_BUTTON_REQUEST",@"ACalcTryViewControllerTableNew", @"DELETE_BUTTON_REQUEST")
 #define CANCEL NSLocalizedStringFromTable(@"CANCEL",@"ACalcTryViewControllerTableNew", @"CANCEL")
 #define CONFIRM NSLocalizedStringFromTable(@"CONFIRM",@"ACalcTryViewControllerTableNew", @"CONFIRM")
-- (IBAction)tapRemoveItsButton:(UIButton *)sender {
+- (void)tapRemoveItsButton:(UIButton *)sender {
     //call buttonsStore to remove users button
     CGPoint necessaryPoint = CGPointMake(sender.bounds.origin.x, sender.bounds.size.height);
     CGPoint buttonsLocation = [sender convertPoint:necessaryPoint toView:self.buttonsCollection];
@@ -2957,7 +2641,7 @@ static BOOL moveIsAvailable;
     subViewFrame = ((NewButtonsCollectionViewCell*)delCell).cellSubView.frame;
     subViewFrame.origin = [delCell convertPoint:subViewFrame.origin toView:self.buttonsCollection];
 
-    newButtonView* buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
+    buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
     buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)delCell).cellSubView.title;
     buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)delCell).cellSubView.buttonColor;
     buttonsAsSubView.design = self.design;
@@ -2983,91 +2667,22 @@ static BOOL moveIsAvailable;
                                               
                                           } completion:^(BOOL finished){
                                               [buttonsAsSubView removeFromSuperview ];
+                                              buttonsAsSubView = nil;
                                               [self.buttonsStore removeUsersButton:button];
                                               self.patch = patch;
                                           }];
                      }];
 }
 
-//HERE
--(void)moveButtonOneByOneUpfromIndex:(NSIndexPath*)indexPatch{
-    NewButtonsCollectionViewCell *delCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPatch];
-    NSInteger lenght = indexPatch.length;
-    NSInteger patch = indexPatch.item;
-    
-    NSIndexPath *movedButtonPatch = [NSIndexPath indexPathForItem:indexPatch.item+1 inSection:indexPatch.section];//indexPathWithIndex:[indexPatch item]+1];
-    NSLog(@"indexPatch and nextPatch %@, %@", indexPatch,movedButtonPatch);
-    
-    
-    NewButtonsCollectionViewCell *movedCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:movedButtonPatch];
-    
-    CGRect initialFrame;
-    initialFrame = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.frame;
-    initialFrame.origin = [movedCell convertPoint:initialFrame.origin toView:self.buttonsCollection];
-    
-    CGRect finishFrame;
-    finishFrame = ((NewButtonsCollectionViewCell*)delCell).cellSubView.frame;
-    finishFrame.origin = [delCell convertPoint:finishFrame.origin toView:self.buttonsCollection];
-    
-    
-    
-    newButtonView* buttonsAsSubView = [[newButtonView alloc] initWithFrame:initialFrame];
-    buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.title;
-    buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)movedCell).cellSubView.buttonColor;
-    buttonsAsSubView.design = self.design;
-    [self.buttonsCollection addSubview:buttonsAsSubView];
-    movedCell.alpha = 0.0;
-    
-    
-    [UIView animateWithDuration:.05
-                          delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         [buttonsAsSubView setFrame:finishFrame];
-                     } completion:^(BOOL finished) {
-                         //replace button
-                         delCell.isChangeble = movedCell.isChangeble;
-                         delCell.closeAndSetButton.hidden = movedCell.closeAndSetButton.hidden;
-                         delCell.removeButton.hidden = movedCell.removeButton.hidden;
-                         delCell.isEnable = movedCell.isEnable;
-                         delCell.closeAndSetButton.isClose = movedCell.closeAndSetButton.isClose;
-                         delCell.isCanBeRemoved = movedCell.isCanBeRemoved;
-                         delCell.removeButton.hidden = movedCell.removeButton.hidden;
-                         delCell.isAllovedToDelete = movedCell.isAllovedToDelete;
-                         delCell.isUnderChanging = movedCell.isUnderChanging;
-                         delCell.name = movedCell.name;
-                         [delCell.cellSubView setNeedsDisplay];
-                         delCell.alpha = 1.0;
-                         
-                         //remove subviews
-                         [buttonsAsSubView removeFromSuperview];
-                          NSIndexPath *nextButtonPatch = [NSIndexPath indexPathForItem:movedButtonPatch.item+1 inSection:movedButtonPatch.section];//indexPathWithIndex:
-                         NewButtonsCollectionViewCell *nextCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:nextButtonPatch];
-                         if(nextCell){
-                             [self moveButtonOneByOneUpfromIndex:movedButtonPatch];
-                         }
-                     }];
-    
-    
-
-}
-
-- (IBAction)tapCloseCheckButton:(UIButton *)sender
+- (void)tapCloseCheckButton:(UIButton *)sender
 {
-    //pasr here
-    //don't allow user to tap this button if there are button as subview in buttoncollection
-    
-    //if(!self.buttonsAsSubView && !self.animationTimer.isValid){
-        //self.buttonsCollection.scrollEnabled = NO;
         CGPoint necessaryPoint = CGPointMake(sender.bounds.origin.x, sender.bounds.size.height);
         CGPoint buttonsLocation = [sender convertPoint:necessaryPoint toView:self.buttonsCollection];
         NSIndexPath *indexPath = [self.buttonsCollection indexPathForItemAtPoint:buttonsLocation];
         if(indexPath){
             
             subCell =(NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPath];
-            subCell.isEnable  = !subCell.isEnable;
-            
-            //if([cell isKindOfClass:[NewButtonsCollectionViewCell class]]){
+            //subCell.isEnable  = !subCell.isEnable;
                 
                 Buttons* button = [self.buttonsStore.allButtonObj objectAtIndex:indexPath.item];
                 
@@ -3081,117 +2696,14 @@ static BOOL moveIsAvailable;
                     
                     //make array for muving cellc
                     movedCells = [self findMovedCellsForReplacePatch:indexPath toPatch:findPatch];
-                    
+                    if(button.program){
+                        subCell.typeOfButton = DELETED_USER_BUTTON;
+                    } else {
+                        subCell.typeOfButton = DELETED_BUTTON;
+                    }
                     //call buttonsStore function to setEnable button
                     [self.buttonsStore setDisablingForButton:button];
 
-
-                    //animation moving
-                    /*
-                    CGRect subViewFrame;
-                    subViewFrame = subCell.cellSubView.frame;
-                    subViewFrame.origin = [subCell convertPoint:subViewFrame.origin toView:self.buttonsCollection];
-                    
-                    buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
-                    buttonsAsSubView.title = subCell.cellSubView.title;
-                    buttonsAsSubView.buttonColor = subCell.cellSubView.buttonColor;
-                    buttonsAsSubView.design = self.design;
-                    [self.buttonsCollection addSubview:buttonsAsSubView];
-                    subCell.hidden = YES;
-                    
-                    CGRect newRect = CGRectInset(subViewFrame,-subViewFrame.size.width*0.1, -subViewFrame.size.height*0.1);
-                    
-                    [UIView animateWithDuration:.2
-                                          delay:0
-                                        options:UIViewAnimationOptionBeginFromCurrentState
-                                     animations:^{
-                                         [buttonsAsSubView setFrame:newRect];
-                                     } completion:^(BOOL finished) {
-                                         
-                     
-                                         CGRect findPatchRect;
-                                         UICollectionViewCell* findCell =[self.buttonsCollection cellForItemAtIndexPath:findPatch];
-                                         if([self.buttonsCollection.visibleCells containsObject:findCell]){
-                                             findPatchRect = findCell.frame;
-                                             findPatchRect.origin = [findCell convertPoint:findPatchRect.origin toView:self.buttonsCollection];
-                                             
-                                         } else {
-                                             findPatchRect = subViewFrame;
-                                             findPatchRect.origin.y = self.buttonsCollection.bounds.size.height+10;
-                                             
-                                         }
-                                         
-                                         [UIView animateWithDuration:.4
-                                                               delay:0
-                                                             options:UIViewAnimationOptionBeginFromCurrentState
-                                                          animations:^{
-                                                              [buttonsAsSubView setFrame:findPatchRect];
-                                                              
-                                                          } completion:^(BOOL finished){
-                                                              //[buttonsAsSubView removeFromSuperview ];
-                                                              //[self.buttonsStore removeUsersButton:button];
-                                                             //self.patch = patch;
-                                                              
-                                                              //[self.buttonsCollection performBatchUpdates:^{
-                                                              //    NSArray *indexPatchs = [[NSArray alloc]initWithObjects:patch, nil];
-                                                              //     [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
-                                                              //  } completion:nil];
-                                                              
-                                                              // [self moveButtonOneByOneUpfromIndex:patch];
-                                                              
-                                                              
-                                                          }];
-                                         
-                                         
-                                     }];
-                    
-                   */
-                    
-                    /*
-                    NSMutableArray *mutableChangebleButtonObjs = [self.buttonsStore.changebleButtonObjs mutableCopy];
-                    NSMutableArray *mutableDeletedButtonObjs = [self.buttonsStore.delettedButtonObjs mutableCopy];
-                    
-                    button.enable = [NSNumber numberWithBool:![button.enable boolValue]];
-                    button.dateOfDeletting = [NSDate date];
-                    
-                    [mutableChangebleButtonObjs removeObject:button];
-                    [mutableDeletedButtonObjs insertObject:button atIndex:0];
-                    
-                    self.buttonsStore.changebleButtonObjs = [mutableChangebleButtonObjs copy];
-                    self.buttonsStore.delettedButtonObjs = [mutableDeletedButtonObjs copy];
-                    
-                    //[self makeTwoArrays];
-                    //[self.buttonsStore renewArryasAfterChanging];
-                    
-                   
-                    
-                    //[self makeTwoArrays];
-                    
-                    [self.buttonsStore renewArryasAfterChanging];
-                    */
-                    
-                    /*
-                    self.patch = indexPath; //set the start patch for moveButtonDownSelector
-                    self.animationTimer  = [NSTimer scheduledTimerWithTimeInterval: 0.07
-                                                                            target: self
-                                                                          selector:@selector(moveButtonsDown)  //find the selector moveButtonsDown early
-                                                                          userInfo: nil repeats:YES];
-                    */
-                    
-                    /*
-                     cjeck the quantity of buttons and if ti less then 11 not main
-                     buttons set AllovedToDelete in NO condition for all not hiden
-                     buttons, another - set YES
-                     */
-                    
-                    /*
-                    if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
-                        self.isAllowedToDelete = NO;
-                    } else {
-                        self.isAllowedToDelete = YES;
-                    }
-                    */
-                    
                 } else {
                     //1 find the ordering number from button data
                     NSInteger numerOfOrdering = [button.position integerValue];
@@ -3204,150 +2716,190 @@ static BOOL moveIsAvailable;
                             break;
                         }
                     }
+
                     //3 find position in allButtonsarray
-                    NSInteger findPosition = 0;//if there no needed button
+                    NSInteger findPosition;//if there no needed button
                     if(nextOrderingButton){
-                    findPosition = [self.buttonsStore.allButtonObj indexOfObject:nextOrderingButton];
+                        findPosition = [self.buttonsStore.allButtonObj indexOfObject:nextOrderingButton];
+                    } else {
+                        findPosition = [self.buttonsStore.allButtonObj indexOfObject:[self.buttonsStore.changebleButtonObjs lastObject]]+1;
                     }
                     //4 make necessary indexPatch
                     NSIndexPath *findPatch = [NSIndexPath indexPathForItem:findPosition inSection:indexPath.section];
                     
                     //make array for muving cellc
                     movedCells = [self findMovedCellsForReplacePatch:indexPath toPatch:findPatch];
-                    NSLog(@"movedCells %@",movedCells);
-                    
+
+                    subCell.typeOfButton = CHANGE_BUTTON;
                     //call buttonsStore function to setEnable button
                     [self.buttonsStore setEnablingForButton:button];
                     
-                    /*
-                    NSMutableArray *mutableChangebleButtonObjs = [self.buttonsStore.changebleButtonObjs mutableCopy];
-                    NSMutableArray *mutableDeletedButtonObjs = [self.buttonsStore.delettedButtonObjs mutableCopy];
-                    
-                    [mutableDeletedButtonObjs removeObject:button];
-                    //find neede position in short array
-                    NSInteger i = 0;
-                    while (i  < mutableChangebleButtonObjs.count){
-                        Buttons *butObj = mutableChangebleButtonObjs[i];
-                        if([butObj.position integerValue] > [button.position integerValue]) break;
-                        i++;
-                    }
-                    button.enable = [NSNumber numberWithBool:![button.enable boolValue]];
-                    button.dateOfDeletting = [NSDate distantFuture];
-                    
-                    [mutableChangebleButtonObjs insertObject:button atIndex:i];
-                    
-                    self.buttonsStore.changebleButtonObjs = [mutableChangebleButtonObjs copy];
-                    self.buttonsStore.delettedButtonObjs = [mutableDeletedButtonObjs copy];
-                    
-                    //[self makeTwoArrays];
-                    [self.buttonsStore renewArryasAfterChanging];
 
-                    subCell.isEnable  = !subCell.isEnable;
-                    self.itemOfNeedPosition = [self.buttonsStore.allButtonObj indexOfObject:button];
-                    self.patch = indexPath; //set the start patch for moveButtonDownSelector
-                    self.animationTimer  = [NSTimer scheduledTimerWithTimeInterval: 0.02
-                                                                            target: self
-                                                                          selector:@selector(moveButtonsUp)  //find the selector moveButtonsDown early
-                                                                          userInfo: nil repeats:YES];
-                    
-                    if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
-                        self.isAllowedToDelete = NO;
-                    } else {
-                        self.isAllowedToDelete = YES;
-                    }
-                    */
                 }
             }
-        //}
-     //   self.buttonsCollection.scrollEnabled = YES;
-    //}
+}
+#pragma mark BUTTONS DELEGATE
+-(NSInteger) numberColumsInCollectionView
+{
+    CGFloat oneButtonWidth = [self collectionView:self.buttonsCollection
+                                           layout:self.collectionViewFlowLayout
+                           sizeForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]].width;
+    CGFloat collectionWidth;
+    if(IS_IPAD) {
+        if(self.willBePortraitRotated){
+            collectionWidth = 768;
+        } else {
+            collectionWidth = 1024;
+        }
+    } else { //if it's iPhone ore iPod
+        collectionWidth = 320;
+    }
+    return ABS(collectionWidth/oneButtonWidth);
 }
 
-//HERE
-
--(void) moveButtonsDown
+-(void)buttonsArrayDidChangedWithReloadOperation:(NSInteger)operation
 {
-    NSIndexPath * patchFrom =[NSIndexPath indexPathForItem: self.patch.item+1 inSection:self.patch.section];
+    //don't know why but switch not works
     
-    if(self.patch.item == (self.buttonsStore.changebleButtonObjs.count +19)){
-        [self.animationTimer invalidate];
-        
-        NSArray * pathesToReload = [NSArray arrayWithObjects:
-                                    self.patch,
-                                    nil];
-        [self.buttonsCollection reloadItemsAtIndexPaths:pathesToReload];
-        
-    } else {
-        //find next chngeble position
-        //while position is lees than quantity of work button and cell is visible
-        while ((patchFrom.item < (self.buttonsStore.changebleButtonObjs.count +19)) &&
-               
-               [self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patchFrom]] && (self.isButtonsCollectionUnderChanging)){
-            
-            Buttons *buttonObject = [self.buttonsStore.allButtonObj objectAtIndex:patchFrom.item];
-            
-            if(![buttonObject.isMain boolValue]) {
-                break;
-            } else {
-                patchFrom = [NSIndexPath indexPathForItem:patchFrom.item +1 inSection:patchFrom.section];
-            }
+    if(operation == RELOAD){
+        if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+            self.isAllowedToDelete = NO;
+        } else {
+            self.isAllowedToDelete = YES;
         }
+        [self.buttonsCollection reloadData];
+    } else if(operation == INSERT_BUTTON){
+        [self.buttonsCollection performBatchUpdates:^{
+            NSIndexPath *newIndex = [NSIndexPath indexPathForItem:[self.buttonsStore.workButtonsNames count]-1 inSection:0];
+            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:newIndex, nil];
+            [self.buttonsCollection insertItemsAtIndexPaths:indexPatchs];
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+        if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+            self.isAllowedToDelete = NO;
+        } else {
+            self.isAllowedToDelete = YES;
+        }
+    } else if(operation == DELETE_BUTTON){
+        [self.buttonsCollection performBatchUpdates:^{
+            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:self.patch, nil];
+            [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+    } else if(operation == CHANGE_BUTTON_POISTION){
+        [self.buttonsCollection performBatchUpdates:^{
+            NSMutableArray* mutPatchsArray = [movedCells mutableCopy];
+            while ([mutPatchsArray firstObject]) {
+                NSIndexPath *subPatch = [mutPatchsArray firstObject];
+                [mutPatchsArray removeObjectAtIndex:0];
+                if([mutPatchsArray firstObject]){
+                    NSIndexPath *findPatch = [mutPatchsArray firstObject];
+                    [mutPatchsArray removeObjectAtIndex:0];
+                    [self.buttonsCollection moveItemAtIndexPath:subPatch toIndexPath:findPatch];
+                }
+            }
+            
+            
+        } completion:^(BOOL finished) {
+            //subCell.hidden = NO;
+            moveIsAvailable = YES;
+            movedCells = nil;
+        }];
         
-        [self moveCellFromPosition:patchFrom toPosition:self.patch withDuration:0.02];
-        self.patch = patchFrom;
+    } else if(operation == MOVE_TO_ENABLE){
+        [self.buttonsCollection performBatchUpdates:^{
+            if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+                self.isAllowedToDelete = NO;
+            } else {
+                self.isAllowedToDelete = YES;
+            }
+            
+            NSMutableArray* mutPatchsArray = [movedCells mutableCopy];
+            while ([mutPatchsArray firstObject]) {
+                NSIndexPath *subPatch = [mutPatchsArray firstObject];
+                [mutPatchsArray removeObjectAtIndex:0];
+                if([mutPatchsArray firstObject]){
+                    NSIndexPath *findPatch = [mutPatchsArray firstObject];
+                    [mutPatchsArray removeObjectAtIndex:0];
+                    [self.buttonsCollection moveItemAtIndexPath:subPatch toIndexPath:findPatch];
+                }
+            }
+            
+        } completion:^(BOOL finished) {
+            movedCells = nil;
+
+        }];
+    }else if(operation == MOVE_TO_DISABLE){
+        [self.buttonsCollection performBatchUpdates:^{
+            if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+                self.isAllowedToDelete = NO;
+            } else {
+                self.isAllowedToDelete = YES;
+            }
+            NSMutableArray* mutPatchsArray = [movedCells mutableCopy];
+            while ([mutPatchsArray firstObject]) {
+                NSIndexPath *subPatch = [mutPatchsArray firstObject];
+                [mutPatchsArray removeObjectAtIndex:0];
+                if([mutPatchsArray firstObject]){
+                    NSIndexPath *findPatch = [mutPatchsArray firstObject];
+                    [mutPatchsArray removeObjectAtIndex:0];
+                    [self.buttonsCollection moveItemAtIndexPath:subPatch toIndexPath:findPatch];
+                }
+            }
+            
+        } completion:^(BOOL finished) {
+            
+            movedCells = nil;
+        }];
         
-        if((self.patch.item > ((self.buttonsStore.changebleButtonObjs.count +19) - 1))||
-           (![self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:self.patch]])){
-            [self.animationTimer invalidate];
-            NSArray * pathesToReload = [NSArray arrayWithObjects:
-                                        [NSIndexPath indexPathForItem: self.patch.item -1 inSection:self.patch.section],
-                                        self.patch,
-                                        nil];
-            [self.buttonsCollection reloadItemsAtIndexPaths:pathesToReload];
+    }else{
+        //default
+    }
+    
+    
+}
+-(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload
+{
+    if(isNeedReload){
+        if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+            self.isAllowedToDelete = NO;
+        } else {
+            self.isAllowedToDelete = YES;
+        }
+        [self.buttonsCollection reloadData];
+    } else {
+
+    }
+    [self.doc updateChangeCount:UIDocumentChangeDone];
+    if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
+        [self.buttonsStore checkButtonsArray];
+    }
+}
+
+//ok
+//if allowedToDelete condition changed set alowedToDelete condition for each buttons
+-(void)setIsAllowedToDelete:(BOOL)isAllowedToDelete
+{
+    if(_isAllowedToDelete != isAllowedToDelete){
+        _isAllowedToDelete = isAllowedToDelete;
+        if(!isAllowedToDelete){
+            for(NewButtonsCollectionViewCell* cell in self.buttonsCollection.visibleCells){
+                if(cell.typeOfButton == CHANGE_BUTTON){
+                    cell.typeOfButton = CHANGE_BUTTON_NOT_DELETABLE;
+                }
+            }
+        } else {
+            for(NewButtonsCollectionViewCell* cell in self.buttonsCollection.visibleCells){
+                if(cell.typeOfButton == CHANGE_BUTTON_NOT_DELETABLE){
+                    cell.typeOfButton = CHANGE_BUTTON;
+                }
+            }
         }
     }
 }
 
-//HERE
--(void) moveButtonsUp
-{
-    NSIndexPath * patchFrom =[NSIndexPath indexPathForItem: self.patch.item - 1 inSection:self.patch.section];
-    
-    if(self.patch.item == self.itemOfNeedPosition){
-        [self.animationTimer invalidate];
-        NSArray * pathesToReload = [NSArray arrayWithObjects:
-                                    self.patch,
-                                    nil];
-        [self.buttonsCollection reloadItemsAtIndexPaths:pathesToReload];
-        
-    } else {
-        //find next chngeble position
-        //while position is lees than quantity of work button and cell is visible
-        while ((patchFrom.item > self.itemOfNeedPosition) &&
-               [self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:patchFrom]] && (self.isButtonsCollectionUnderChanging)){
-            Buttons *buttonObject = [self.buttonsStore.allButtonObj objectAtIndex:patchFrom.item];
-            if(![buttonObject.isMain boolValue]) {
-                break;
-            } else {
-                patchFrom = [NSIndexPath indexPathForItem:patchFrom.item - 1 inSection:patchFrom.section];
-            }
-        }
-        
-        [self moveCellFromPosition:patchFrom toPosition:self.patch withDuration:0.02];
-        self.patch = patchFrom;
-        
-        if((self.patch.item == self.itemOfNeedPosition)||
-           (![self.buttonsCollection.visibleCells containsObject:[self.buttonsCollection cellForItemAtIndexPath:self.patch]])){
-            [self.animationTimer invalidate];
-            
-            NSArray * pathesToReload = [NSArray arrayWithObjects:
-                                        [NSIndexPath indexPathForItem: self.patch.item +1 inSection:self.patch.section],
-                                        self.patch,
-                                        nil];
-            [self.buttonsCollection reloadItemsAtIndexPaths:pathesToReload];
-        }
-    }
-}
 
 #pragma mark - UICOLLECTIONS VIEW DELEGATE
 -(NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -3365,6 +2917,7 @@ static BOOL moveIsAvailable;
     return self.isButtonsCollectionUnderChanging? [self.buttonsStore.allButtonObj count] : [self.buttonsStore.workButtonsNames count] ;
 }
 
+
 -(UICollectionViewCell*) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Button" forIndexPath:indexPath];
@@ -3379,7 +2932,58 @@ static BOOL moveIsAvailable;
         if(self.isButtonsCollectionUnderChanging){
            
              Buttons *button = [self.buttonsStore.allButtonObj objectAtIndex:item];
+            ((NewButtonsCollectionViewCell*)cell).actionDelegate = self;
+            ((NewButtonsCollectionViewCell*)cell).isUnderChanging = YES;
+            
+            if([button.nameButton isEqualToString:@"."]){
+                ((NewButtonsCollectionViewCell *)cell).name = [self point];
+            } else if([button.nameButton isEqualToString:@".00"]){
+                ((NewButtonsCollectionViewCell *)cell).name = [[self point] stringByAppendingString:@"00"];
+            } else if ([button.nameButton isEqualToString:@"rad"]){
+                if(self.isDecCounting){
+                    ((NewButtonsCollectionViewCell *)cell).name = @"rad";
+                } else {
+                    ((NewButtonsCollectionViewCell *)cell).name = @"deg";
+                }
+            } else {
+                ((NewButtonsCollectionViewCell *)cell).name = button.nameButton;
+            }
+
             //if its main button
+            if([button.isMain boolValue]){
+                ((NewButtonsCollectionViewCell*)cell).typeOfButton = MAIN_BUTTON;
+            } else if ([button.enable boolValue] && self.isAllowedToDelete){
+                //((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = self.isAllowedToDelete;
+                //((NewButtonsCollectionViewCell*)cell).isEnable = YES;
+                ((NewButtonsCollectionViewCell*)cell).typeOfButton = CHANGE_BUTTON;
+               // [((NewButtonsCollectionViewCell*)cell).closeAndSetButton addTarget:self action:@selector(tapCloseCheckButton:) forControlEvents:UIControlEventTouchUpInside];
+                //((NewButtonsCollectionViewCell*)cell).isUnderChanging = YES;
+                
+                /*
+                if(button.program){
+                    ((NewButtonsCollectionViewCell*)cell).typeOfButton = USER_BUTTON;
+                } else {
+                    ((NewButtonsCollectionViewCell*)cell).typeOfButton = CHANGE_BUTTON;
+                }
+            
+                ((NewButtonsCollectionViewCell*)cell).isEnable = [button.enable boolValue];
+                ((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = self.isAllowedToDelete;
+                ((NewButtonsCollectionViewCell*)cell).isUnderChanging = YES;
+                */
+            } else if([button.enable boolValue] && !self.isAllowedToDelete){
+                ((NewButtonsCollectionViewCell*)cell).typeOfButton = CHANGE_BUTTON_NOT_DELETABLE;
+            } else if(![button.enable boolValue] && button.program ){
+                ((NewButtonsCollectionViewCell*)cell).typeOfButton = DELETED_USER_BUTTON;
+                //[((NewButtonsCollectionViewCell*)cell).closeAndSetButton addTarget:self action:@selector(tapCloseCheckButton:) forControlEvents:UIControlEventTouchUpInside];
+                
+            } else if(![button.enable boolValue]){
+                ((NewButtonsCollectionViewCell*)cell).typeOfButton = DELETED_BUTTON;
+                //[((NewButtonsCollectionViewCell*)cell).closeAndSetButton addTarget:self action:@selector(tapCloseCheckButton:) forControlEvents:UIControlEventTouchUpInside];
+            }
+            
+            //}
+            
+            /*
             if([button.isMain boolValue]){
                 ((NewButtonsCollectionViewCell*)cell).isChangeble = NO;
                 ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
@@ -3402,7 +3006,7 @@ static BOOL moveIsAvailable;
                  ((NewButtonsCollectionViewCell*)cell).isUnderChanging = self.isButtonsCollectionUnderChanging;
             }
            
-           /*
+           
             if(button.program && ![button.enable boolValue]){
                 ((NewButtonsCollectionViewCell*)cell).isCanBeRemoved = YES;
             }
@@ -3414,26 +3018,13 @@ static BOOL moveIsAvailable;
             ((NewButtonsCollectionViewCell*)cell).isAllovedToDelete = [button.aloweToDelete boolValue];
             */
             
-            if([button.nameButton isEqualToString:@"."]){
-                ((NewButtonsCollectionViewCell *)cell).name = [self point];
-            } else if([button.nameButton isEqualToString:@".00"]){
-                ((NewButtonsCollectionViewCell *)cell).name = [[self point] stringByAppendingString:@"00"];
-            } else if ([button.nameButton isEqualToString:@"rad"]){
-                if(self.isDecCounting){
-                    ((NewButtonsCollectionViewCell *)cell).name = @"rad";
-                } else {
-                    ((NewButtonsCollectionViewCell *)cell).name = @"deg";
-                }
-            } else {
-                ((NewButtonsCollectionViewCell *)cell).name = button.nameButton;
-            }
-            
         } else {
             NSString* nameFromModel = [self.buttonsStore.workButtonsNames objectAtIndex:item];
-
+            ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
             ((NewButtonsCollectionViewCell*)cell).design = self.design;
-            ((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
-            ((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
+            
+            //((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
+            //((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
             
             
             if([nameFromModel isEqualToString:@"."]){
@@ -3449,6 +3040,7 @@ static BOOL moveIsAvailable;
             } else {
                 ((NewButtonsCollectionViewCell *)cell).name = nameFromModel;
             }
+
         }
         
     }

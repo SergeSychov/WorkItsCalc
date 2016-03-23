@@ -26,6 +26,13 @@
 #define DESIGN_COLOR_GRAY 34
 #define DESIGN_PHOTO 4
 
+//define type of buttons
+#define MAIN_BUTTON 1
+#define CHANGE_BUTTON 2
+#define CHANGE_BUTTON_NOT_DELETABLE 3
+#define DELETED_BUTTON 4
+#define DELETED_USER_BUTTON 5
+
 @interface NewButtonsCollectionViewCell() 
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
 @property (nonatomic) struct Color buttonColor;
@@ -74,9 +81,7 @@
     
 -(void)refreshButtonView
 {
-        self.cellSubView.title = self.name;
-       
-        
+    self.cellSubView.title = self.name;
 }
 
 
@@ -186,71 +191,267 @@
         if([self.cellSubView.title isEqualToString:@"M-"]) NSLog(@"REct %f", self.frame.size.height);
     }
 }
-
-
-//setting of enabling of close button and ist image
--(void) setIsEnable:(BOOL)isEnable{
-    //if(_isEnable != isEnable){
-        _isEnable = isEnable;
-    /*
-        if(isEnable){
-            self.closeAndSetButton.isClose = YES;
-
-        } else {
-            self.closeAndSetButton.isClose = NO;
-            if(self.isCanBeRemoved){
-                self.removeButton.isRemoveButton = YES;
-            }
-
-        }
+-(void)setTypeOfButton:(NSInteger)typeOfButton{
+    
+    _typeOfButton = typeOfButton;
+    
+    switch (typeOfButton) {
+        case MAIN_BUTTON:
+            [self stopShakeanimation];
+            [self removeCheckButtons];
+            [self removeRemButton];
+            break;
+            
+        case CHANGE_BUTTON:
+            [self showCheckButtons];
+            [self removeRemButton];
+            [self startShakeAnimation];
+            break;
+            
+        case CHANGE_BUTTON_NOT_DELETABLE:
+            [self removeCheckButtons];
+            [self removeRemButton];
+            [self startShakeAnimation];
+            break;
+            
+        case DELETED_BUTTON:
+            [self animateAppearanceForDeletedButtons];
+            [self showCheckButtons];
+            [self removeRemButton];
+            [self stopShakeanimation];
+            break;
+            
+        case DELETED_USER_BUTTON:
+            [self animateAppearanceForDeletedButtons];
+            [self showCheckButtons];
+            [self showRemoveButton];
+            [self stopShakeanimation];
+            break;
+            
+        default:
+            [self stopShakeanimation];
+            [self removeCheckButtons];
+            [self removeRemButton];
+            break;
     }
-*/
 }
 
--(void)setIsAllovedToDelete:(BOOL)isAllovedToDelete
-{
-   // if(_isAllovedToDelete != isAllovedToDelete){
-    /*
-        _isAllovedToDelete = isAllovedToDelete;
-        if((self.isChangeble)&&(self.isUnderChanging)&&(isAllovedToDelete)){
-            self.closeAndSetButton.hidden = NO;
-            if(self.isCanBeRemoved){
-                self.removeButton.hidden = NO;
-            }
 
-        } else {
-            self.closeAndSetButton.hidden = YES;
-            if(self.isCanBeRemoved){
-                self.removeButton.hidden = YES;
-            }
-        }
-    */
-    //}
-}
-
--(void) setIsChangeble:(BOOL)isChangeble
-{
-    _isChangeble = isChangeble;
-}
 -(void)setIsUnderChanging:(BOOL)is
 {
-    _isUnderChanging = is;
-   
-    if(self.isChangeble && self.isEnable){
-        if((![self isShakeAnimationRunning])&&(is)){
-            [self startShakeAnimation];
-        } else if (!is){
-            [self stopShakeanimation];
+
+        _isUnderChanging = is;
+    if(!_isUnderChanging){
+        //_typeOfButton = MAIN_BUTTON;
+        [self stopShakeanimation];
+        [self removeCheckButtons];
+        if(self.typeOfButton == DELETED_BUTTON || self.typeOfButton == DELETED_USER_BUTTON){
+            [self animateDisapearenceForDeletedButtons];
         }
     }
+
+}
+
+// button action delegate
+- (void)tapRemoveItsButton:(UIButton *)sender{
+    [self.actionDelegate tapRemoveItsButton:sender];
+}
+-(void)tapCloseCheckButton:(UIButton *)sender{
+    [self.actionDelegate tapCloseCheckButton:sender];
+}
+-(void) showCheckButtons {
     
-     /*
-    if((self.isChangeble)&&(is)&&(self.isAllovedToDelete) && (self.isEnable)){
-        self.closeAndSetButton.hidden = NO;
+        CGFloat closeCheckWidth;
+        if(IS_IPAD) {
+            closeCheckWidth = 36.;
+        } else {
+            closeCheckWidth = 28.;
+            
+        }
+        CGRect frameStartCloseButton = CGRectMake(self.bounds.size.width-closeCheckWidth*2/3+closeCheckWidth/2-4,
+                                             -closeCheckWidth/3-4+closeCheckWidth/2,
+                                             0, 0);
+        CGRect frameCloseButton = CGRectMake(self.bounds.size.width-closeCheckWidth*2/3-4,
+                                             -closeCheckWidth/3-4,
+                                             closeCheckWidth, closeCheckWidth);
+
+
+        if(self.typeOfButton == CHANGE_BUTTON){
+            if(!self.closeAndSetButton){
+                CloseSetButton* closeAndSetButton = [[CloseSetButton alloc]initWithFrame:frameStartCloseButton];
+                [self addSubview:closeAndSetButton];
+                self.closeAndSetButton = closeAndSetButton;
+                [self.closeAndSetButton addTarget:self action:@selector(tapCloseCheckButton:) forControlEvents:UIControlEventTouchUpInside];
+            } else {
+                [self.closeAndSetButton setFrame:frameStartCloseButton];
+            }
+            self.closeAndSetButton.isClose = YES;
+            
+            
+        
+        } else if(self.typeOfButton == DELETED_BUTTON || self.typeOfButton == DELETED_USER_BUTTON){
+            if(!self.closeAndSetButton){
+                CloseSetButton* closeAndSetButton = [[CloseSetButton alloc]initWithFrame:frameStartCloseButton];
+                [self addSubview:closeAndSetButton];
+                self.closeAndSetButton = closeAndSetButton;
+                [self.closeAndSetButton addTarget:self action:@selector(tapCloseCheckButton:) forControlEvents:UIControlEventTouchUpInside];
+            } else {
+                [self.closeAndSetButton setFrame:frameStartCloseButton];
+            }
+            self.closeAndSetButton.isClose = NO;
+            
+        }
+
+        //animation
+        [UIView animateWithDuration:0.2
+                              delay:0
+             usingSpringWithDamping:0.8
+              initialSpringVelocity:0
+                            options:0
+                         animations:^{
+                            [self.closeAndSetButton setFrame:frameCloseButton];
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+    
+}
+
+-(void) showRemoveButton{
+    CGFloat closeCheckWidth;
+    if(IS_IPAD) {
+        closeCheckWidth = 36.;
     } else {
-        self.closeAndSetButton.hidden = YES;
+        closeCheckWidth = 28.;
+        
     }
-    */
+
+    
+    CGRect frameStartRemoveButton = CGRectMake(closeCheckWidth/2,
+                                               -closeCheckWidth/3-4+closeCheckWidth/2,
+                                               0, 0);
+    
+    CGRect frameRemoveButton = CGRectMake(0,
+                                          -closeCheckWidth/3-4,
+                                          closeCheckWidth, closeCheckWidth);
+    
+    
+    if(self.typeOfButton == DELETED_USER_BUTTON){
+        if(!self.removeButton){
+            CloseSetButton* removeButton = [[CloseSetButton alloc]initWithFrame:frameStartRemoveButton];
+            [self addSubview:removeButton];
+            self.removeButton = removeButton;
+            [self.removeButton addTarget:self action:@selector(tapRemoveItsButton:) forControlEvents:UIControlEventTouchUpInside];
+        } else {
+            [self.removeButton setFrame:frameStartRemoveButton];
+        }
+        self.removeButton.isRemoveButton = YES;
+            
+    }
+    
+    //animation
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:0
+                     animations:^{
+                         if(self.typeOfButton == DELETED_USER_BUTTON)[self.removeButton setFrame:frameRemoveButton];
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
+}
+
+
+-(void) removeCheckButtons {
+    //if(self.typeOfButton != MAIN_BUTTON){
+    CGFloat closeCheckWidth;
+    if(IS_IPAD) {
+        closeCheckWidth = 36.;
+    } else {
+        closeCheckWidth = 28.;
+        
+    }
+    CGRect frameEndCloseButton = CGRectMake(self.bounds.size.width-closeCheckWidth*2/3+closeCheckWidth/2-4,
+                                              -closeCheckWidth/3-4+closeCheckWidth/2,
+                                              0, 0);
+    //animation
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:0
+                     animations:^{
+                         if(self.closeAndSetButton)
+                            [self.closeAndSetButton setFrame:frameEndCloseButton];
+                         } completion:^(BOOL finished) {
+                            if(self.closeAndSetButton){
+                                 [self.closeAndSetButton removeFromSuperview];
+                                 self.closeAndSetButton = nil;
+                             }
+                         }];
+    
+}
+
+-(void)removeRemButton {
+    //if(self.typeOfButton != MAIN_BUTTON){
+    CGFloat closeCheckWidth;
+    if(IS_IPAD) {
+        closeCheckWidth = 36.;
+    } else {
+        closeCheckWidth = 28.;
+        
+    }
+
+    CGRect frameEndRemoveButton = CGRectMake(self.bounds.size.width-closeCheckWidth*2/3+closeCheckWidth/2-4,
+                                             -closeCheckWidth/3-4+closeCheckWidth/2,
+                                             0, 0);
+    //animation
+
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:0
+                     animations:^{
+                         if(self.removeButton)
+                             [self.removeButton setFrame:frameEndRemoveButton];
+                     } completion:^(BOOL finished) {
+                         if(self.removeButton){
+                             [self.closeAndSetButton removeFromSuperview];
+                             self.removeButton = nil;
+                         }
+                         
+                     }];
+}
+
+//appearence animation of deleted buttons
+-(void) animateAppearanceForDeletedButtons {
+    self.alpha = 0;
+
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:0
+                     animations:^{
+                         self.alpha = 1;
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
+}
+-(void) animateDisapearenceForDeletedButtons{
+    self.alpha = 0;
+    
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:0
+                     animations:^{
+                         self.alpha = 1;
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
 }
 //shake animation functions
 -(BOOL) isShakeAnimationRunning
@@ -326,14 +527,12 @@
         }
     }
     [self.superview bringSubviewToFront:self]; //set cell on the top of collectionView
-   // CGPoint originInwindow = [self convertPoint:CGPointZero toView:self.window];
     
     CGFloat subX = self.frame.origin.x - (self.incr -1)*self.frame.size.width /2;
     CGFloat subY = self.frame.origin.y - (self.incr -1)*self.frame.size.height /2;
     CGFloat subWidth = self.frame.size.width * self.incr;
     CGFloat subHeight = self.frame.size.height * self.incr;
     
-    //CGFloat collect = self.collectionViewOffset.y;
     CGFloat collectionYOffset = [self.delegate buttonCollectionOffset];
     
 
@@ -363,13 +562,8 @@
     } else {
         self.incr = 2.1;
     }
-    self.closeAndSetButton.hidden = YES;
-    self.removeButton.hidden = YES;
-    self.removeButton.isRemoveButton = YES;
-    self.isEnable = YES;
-    self.isAllovedToDelete = self.isEnable; //to set alloved to delete according quantity of buttons in view
-    [self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
     
+    [self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -391,23 +585,7 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-   // [self.cellSubView setFrame:CGRectMake(0, 0, rect.size.width -4, rect.size.height - 4)];
     [self.cellSubView setFrame:rect];
-    CGFloat closeCheckWidth;
-    if(IS_IPAD) {
-        closeCheckWidth = 36.;
-    } else {
-        closeCheckWidth = 28.;
-
-    }
-    [self.closeAndSetButton setFrame:CGRectMake(rect.size.width-closeCheckWidth*2/3-4,
-                                                -closeCheckWidth/3-4,
-                                                closeCheckWidth, closeCheckWidth)];
-    if(self.removeButton){
-        [self.removeButton setFrame:CGRectMake(0,
-                                               -closeCheckWidth/3-4,
-                                               closeCheckWidth, closeCheckWidth)];
-    }
     // Drawing code
 }
 

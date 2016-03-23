@@ -446,7 +446,7 @@
         [mutableChangebleButtonsArray addObject:newButton];
         self.changebleButtonObjs = [mutableChangebleButtonsArray copy];
     
-        [self makeTwoArraysWithReload:NO];
+        [self makeTwoArraysWithReloadOperation:INSERT_BUTTON];
     }
     
     return newButton?YES:NO;
@@ -517,7 +517,7 @@
     
     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
-    [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
+    [self makeTwoArraysWithReloadOperation:MOVE_TO_DISABLE];
 }
 
 #pragma mark DELETE USERS BUTTON
