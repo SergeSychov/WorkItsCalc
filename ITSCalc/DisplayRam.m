@@ -366,7 +366,10 @@
         }
 
         
-    } else {
+    } else if ([symbol isKindOfClass:[NSDictionary class]]){
+       // NSLog(@"That's constant or function. Lets Check it");
+        str = [[symbol allKeys]firstObject];
+    }else {
         if(self.isGradMinutesSecons ==0){
         str = [self.formatter stringFromNumber:self.resultNumber];
         } else {
