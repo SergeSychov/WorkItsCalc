@@ -567,6 +567,9 @@
         
     } else {
         self.geoCurrency = nil;
+        self.flagRenewList = YES;
+        self.renewCounter++;
+
     }
     //launch location request
     [self.locationManager requestLocation];
@@ -577,6 +580,7 @@
         self.mainUsesCurensies = listData;
         self.renewCounter++;
     } else {
+        self.flagRenewList = YES;
         self.mainUsesCurensies = nil;
         self.renewCounter++;
     }

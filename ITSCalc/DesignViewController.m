@@ -18,7 +18,7 @@
 #import "RoundedGroundView.h"
 
 
-NSString *const SendChangedNotification=@"SendChangedNotification";
+NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define INDENT 20.0f
@@ -82,7 +82,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.design = design;
     NSNumber *message = [NSNumber numberWithInteger:design];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:nil userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:DesignSendChangedNotification object:nil userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -98,9 +98,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
             
             if ([fileManager fileExistsAtPath:[storeURL path]]) {
-
-                    [self sendNoteChangeDesign:design];
-
+                
+                [self sendNoteChangeDesign:design];
+                
             } else {
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:@""
                                                                                message:ALERT_MESSAGE_CHOOSE_NEW_PHOTO
@@ -114,20 +114,20 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             }
             //if send user to photo library throug message
         } else {
-             if (design == DESIGN_COLOR_BLUE){
-                 [self setNewBackgroundImageForColor:[Clr blueGround]];
-             }else if (design == DESIGN_COLOR_GRAY){
-                 [self setNewBackgroundImageForColor:[Clr grayGround]];
-             }else if (design == DESIGN_COLOR_GREEN){
-                 [self setNewBackgroundImageForColor:[Clr greenGround]];
-             }else if (design == DESIGN_COLOR_PINK){
-                 [self setNewBackgroundImageForColor:[Clr pinkGround]];
-             }else if (design == DESIGN_COLOR_YELOW){
-                 [self setNewBackgroundImageForColor:[Clr yellowGround]];
-             }
+            if (design == DESIGN_COLOR_BLUE){
+                [self setNewBackgroundImageForColor:[Clr blueGround]];
+            }else if (design == DESIGN_COLOR_GRAY){
+                [self setNewBackgroundImageForColor:[Clr grayGround]];
+            }else if (design == DESIGN_COLOR_GREEN){
+                [self setNewBackgroundImageForColor:[Clr greenGround]];
+            }else if (design == DESIGN_COLOR_PINK){
+                [self setNewBackgroundImageForColor:[Clr pinkGround]];
+            }else if (design == DESIGN_COLOR_YELOW){
+                [self setNewBackgroundImageForColor:[Clr yellowGround]];
+            }
             [self sendNoteChangeDesign:design];
         }
-
+        
     }
 }
 -(void) setNewBackgroundImageForColor:(UIColor*)color
@@ -166,7 +166,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             NSLog(@"But not created");
         }
     }
-
+    
 }
 
 #pragma mark ROTATION
@@ -190,7 +190,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
     }];
     [self.delegate designViewControllerDidCloseWithString:@"BACK"];
-
+    
 }
 #pragma mark RECIVE CHANGE DESIGN NOTIFICATION
 -(void) recivedNotification:(NSNotification*)notification
@@ -200,7 +200,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
         NSString *key = keys[0];
         if([key isEqualToString:@"ChangedDesign"]){
-        
+            
             self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
             
         }
@@ -249,10 +249,10 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         }
     }
     
-
+    
     [picker dismissViewControllerAnimated:YES completion:^{
-       if(succes) [self sendNoteChangeDesign:DESIGN_PHOTO];
-
+        if(succes) [self sendNoteChangeDesign:DESIGN_PHOTO];
+        
     }];
 }
 
@@ -285,7 +285,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     if([sender isKindOfClass:[UITapGestureRecognizer class]]){
         senderView = ((UITapGestureRecognizer*)sender).view;
     }
-
+    
     if(senderView){
         if([senderView isKindOfClass:[TestButtonBackGroundView class]]){
             design = ((TestButtonBackGroundView*)senderView).designIndex;
@@ -297,7 +297,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     }
     
     [self trySetDesign:design];
-
+    
 }
 
 -(void)setNeedViews
@@ -334,7 +334,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     UIView *classicPartView = [[UIView alloc] init];
     classicPartView.backgroundColor = [UIColor blackColor];
-
+    
     [self.cView addSubview:classicPartView];
     self.classicPartView = classicPartView;
     //need to set button classic button
@@ -376,7 +376,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //blue
     TestButtonBackGroundView *clolorBlueButton = [[TestButtonBackGroundView alloc]init];
-
+    
     clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
     clolorBlueButton.isChoosed = NO;
     [self.cView addSubview:clolorBlueButton];
@@ -384,8 +384,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //pink
     TestButtonBackGroundView *colorPinkButton = [[TestButtonBackGroundView alloc]init];
-
-
+    
+    
     colorPinkButton.designIndex = DESIGN_COLOR_PINK;
     colorPinkButton.isChoosed = NO;
     [self.cView addSubview:colorPinkButton];
@@ -393,8 +393,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //green
     TestButtonBackGroundView *colorGreenButton = [[TestButtonBackGroundView alloc]init];
-
-
+    
+    
     colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
     colorGreenButton.isChoosed = NO;
     [self.cView addSubview:colorGreenButton];
@@ -402,24 +402,24 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     //yelow
     TestButtonBackGroundView *colorYelowButton = [[TestButtonBackGroundView alloc]init];
-
-   
+    
+    
     colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
-     colorYelowButton.isChoosed = NO;
+    colorYelowButton.isChoosed = NO;
     [self.cView addSubview:colorYelowButton];
     self.colorYelowButton = colorYelowButton;
     
     //black
     TestButtonBackGroundView *colorBlackButton = [[TestButtonBackGroundView alloc]init];
-
+    
     
     colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
     colorBlackButton.isChoosed = NO;
     [self.cView addSubview:colorBlackButton];
     self.colorBlackButton = colorBlackButton;
-
+    
     UIView *photoPartView = [[UIView alloc] init];
-
+    
     photoPartView.clipsToBounds = YES;
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -431,13 +431,13 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     if ([fileManager fileExistsAtPath:[storeURL path]]) {
         if([fileManager isDeletableFileAtPath:[storeURL path]]){
-             imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
+            imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
         } else {
-           imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
+            imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
         }
     } else {
         imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
-
+        
     }
     
     UIImageView *photo = [[UIImageView alloc] initWithImage:imageForPhotoPart];
@@ -456,7 +456,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     photButton.isChoosed = NO;
     [self.photoPartView addSubview:photButton];
     self.photButton = photButton;
-
+    
     //need to set button classic button
     designButtonView *photoButtonView= [[designButtonView alloc] init];
     photoButtonView.backgroundColor = [UIColor clearColor];
@@ -499,19 +499,19 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     
     UITapGestureRecognizer *tapOnView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView4 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView5 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView6 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView7 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView8 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView9 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView10 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView11 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView12 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-     UITapGestureRecognizer *tapOnView13 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView4 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView5 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView6 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView7 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView8 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView9 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView10 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView11 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView12 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
+    UITapGestureRecognizer *tapOnView13 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
     
     [self.classicPartView addGestureRecognizer:tapOnView];
     [self.classicButton addGestureRecognizer:tapOnView1];
@@ -589,7 +589,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     
     if(IS_IPAD){
-
+        
         onePart = rect.size.height/7;
         origHeight  = rect.origin.y;
         origWidth = rect.origin.x;
@@ -602,10 +602,10 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
         CGRect rct = CGRectMake(firstPositionStart+origWidth+addToColorButtonX, (onePart-quardSide)/2, quardSide, quardSide);
         /*
-        CGRect rctforButtonView = CGRectMake(2*firstPositionStart+origWidth+quardSide-addition/2,
-                                             (onePart-quardSide)/2-addition/2,
-                                             rect.size.width -2*quardSide - 4*firstPositionStart+addition, quardSide+addition);
-        */
+         CGRect rctforButtonView = CGRectMake(2*firstPositionStart+origWidth+quardSide-addition/2,
+         (onePart-quardSide)/2-addition/2,
+         rect.size.width -2*quardSide - 4*firstPositionStart+addition, quardSide+addition);
+         */
         CGRect rctforButtonView = CGRectMake(origWidth+(rect.size.width*3/10),
                                              (onePart-quardSide)/2-addition/2,
                                              rect.size.width/2.5,
@@ -663,7 +663,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                                                     (onePart-quardSide)/2+origHeight+5*onePart,
                                                     quardSide,
                                                     quardSide)];
-
+        
     } else {
         onePart = rect.size.height/7;
         origHeight  = rect.origin.y;
@@ -682,9 +682,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
         [self.chooseDesignLabel setFrame:CGRectInset(partRect, origWidth, 0)];
         [self.chooseDesignLabel setCenter:CGPointMake(origWidth+rect.size.width/2,origHeight+onePart/2)];
-
+        
         [self.classicPartView setFrame:CGRectMake(0, origHeight+onePart, self.cView.bounds.size.width, onePart)];
-
+        
         [self.classicButton setFrame:rct];
         [self.classicButtonView setFrame:rctforButtonView];
         
@@ -727,7 +727,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                                                     (onePart-quardSide)/2+origHeight+5*onePart,
                                                     quardSide,
                                                     quardSide)];
-
+        
     }
 }
 
@@ -793,7 +793,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     CGRect rct = self.view.bounds;
     [self setCViewAccordingFrameRect:rct];
     
-     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SendChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
@@ -810,13 +810,13 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 -(void)appWillGoToBackground:(NSNotification *)note{
     
-   
-
+    
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self dismissViewControllerAnimated:NO completion:^{
         [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
     }];
-   
+    
 }
 
 -(void) dismis {

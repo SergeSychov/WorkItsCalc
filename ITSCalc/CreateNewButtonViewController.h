@@ -12,11 +12,15 @@
 
 -(BOOL)createNewButtonWith:(NSString*)name andProgramm:(NSArray*)programm;
 
+-(NSString*)getPossibleButtonNameWithInitial:(NSString*)initStr;
 @end
+
 
 @interface CreateNewButtonViewController : SecondViewController
 @property (nonatomic) NSArray* program;
 @property (nonatomic) NSString* programDescription;
-@property (weak,nonatomic) id delegate;
+@property (weak,nonatomic) id delegate; //buttonsStore class with two function:
+//1. get possible name from enity buttons
+//2. create new button
 
 @end

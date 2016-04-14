@@ -27,7 +27,7 @@
 #define DESIGN_COLOR_GRAY 34
 #define DESIGN_PHOTO 4
 
-NSString *const ReciveChangedNotification=@"SendChangedNotification";
+NSString *const TestButtonReciveChangedNotification=@"SendChangedNotification";
 
 @interface TestButtonBackGroundView()
 
@@ -302,8 +302,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 -(void) setup
 {
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:TestButtonReciveChangedNotification object:nil];
 }
 -(void) dealloc
 {

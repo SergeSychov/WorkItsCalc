@@ -52,7 +52,7 @@
 
 #pragma mark DRAG GESTURE RECOGNIZERS
 - (IBAction)currencyDragGestureRecognizer:(UIPanGestureRecognizer *)sender {
-    
+    if(self.listCurrensiesForPicker){
     CGPoint currencySvipeGestureLocation = [sender locationInView:self.blur];
     
     if(sender.state == UIGestureRecognizerStateBegan){
@@ -156,6 +156,7 @@
         
     } else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
         // NSLog(@"filed or canceled");
+    }
     }
     
 }
@@ -414,7 +415,7 @@
 
 -(NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    NSInteger rows = 1;
+    NSInteger rows = 0;
     if(self.listCurrensiesForPicker){
         rows = self.listCurrensiesForPicker.count*100;
     }

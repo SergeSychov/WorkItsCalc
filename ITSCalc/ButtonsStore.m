@@ -360,7 +360,7 @@
 -(void) makeTwoArraysWithReload:(BOOL)isNeedreload;
 {
     // self.buttonsCollection.scrollEnabled = NO;
-    NSLog(@"makeTwoArraysWithReload");
+   // NSLog(@"makeTwoArraysWithReload");
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
@@ -451,6 +451,30 @@
     
     return newButton?YES:NO;
 }
+-(NSString*)getPossibleButtonNameWithInitial:(NSString*)initStr {
+    NSString *retStr = initStr;
+
+    while ([self isEntity:@"Buttons" HasName:retStr]) {
+        retStr = [self increasedStringWithSubSymbols:retStr];
+    }
+    return retStr;
+}
+
+-(BOOL) isEntity:(NSString*)entityName HasName:(NSString*)str
+{
+    NSFetchRequest *request;
+    
+    request = [NSFetchRequest fetchRequestWithEntityName:entityName];
+    request.predicate = [NSPredicate predicateWithFormat:@"nameButton = %@", str];
+    
+    NSError *error;
+    NSArray *matches = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
+    if([matches count]>0) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
 
 #pragma mark MOVE BUTTONS
 
@@ -471,7 +495,7 @@
 
 -(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
 {
-    NSLog(@"moveButton:(Buttons *)btn fromPosition:");
+    //NSLog(@"moveButton:(Buttons *)btn fromPosition:");
     [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
     [self makeTwoArraysWithReloadOperation:CHANGE_BUTTON_POISTION];
 }
@@ -479,7 +503,7 @@
 -(void) setEnablingForButton:(Buttons*)button{
     NSMutableArray *mutableChangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
     NSMutableArray *mutableDeletedButtonObjs = [self.delettedButtonObjs mutableCopy];
-    NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    //NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
 
     
     [mutableDeletedButtonObjs removeObject:button];
@@ -500,7 +524,7 @@
     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
 
-    NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    //NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
     
     [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
 }
@@ -533,6 +557,66 @@
     
     return YES;
 
+}
+#pragma mark WORK WITH STRING
+-(NSString*)increasedStringWithSubSymbols:(NSString*)str{
+    NSArray* strAndNumber = [self stringAndNumberFromStringWithSubSymbols:str];
+    NSString* mainPart = [strAndNumber firstObject];
+    NSInteger num = [[strAndNumber lastObject] integerValue];
+    NSString* lastPart = strAndNumber[1];
+    
+    num++;
+    NSString* subNumber = @"";
+    while (num >0){
+        //add rest of deviding on 10 to sub "1" unichar
+        const unichar numChar[] = {[@"\u2080" characterAtIndex:0]+num % 10};
+        subNumber = [[NSString stringWithCharacters:numChar length:1] stringByAppendingString:subNumber];
+        num = num/10;
+    }
+    return [[mainPart stringByAppendingString:subNumber] stringByAppendingString:lastPart];
+    
+}
+-(NSArray*)stringAndNumberFromStringWithSubSymbols:(NSString*)str{
+    //return an array:
+    //first object - mainPart ofString
+    //second object - last part of string (example: (x,y))
+    //last object - number value of subCript symbols
+    
+    NSString *mainName = @"";
+    NSString *lastPart = @"";
+    NSInteger strNumber = 0;
+    //definde explisit symbols
+    NSSet *closureSet = [[NSSet alloc]initWithObjects:@"(",@")",/*@"x",@"X",@"y",@"Y",*/ nil];
+    
+    NSInteger index = 0;
+    while (index<str.length){
+        //while symbols is not subscript and not contained in clouser set
+        while((index<str.length) &&
+              (([str characterAtIndex:index]<[@"\u2080" characterAtIndex:0]) ||
+               ([str characterAtIndex:index]>[@"\u2089" characterAtIndex:0]))
+              && (![closureSet containsObject:[str substringWithRange:NSMakeRange(index, 1)]])
+              ){
+            mainName = [mainName stringByAppendingString:[str substringWithRange:NSMakeRange(index, 1)]];
+            index++;
+        }
+        //make number with subscript string
+        while ((index<str.length)&&
+               ([str characterAtIndex:index]>=[@"\u2080" characterAtIndex:0]) &&
+               ([str characterAtIndex:index]<=[@"\u2089" characterAtIndex:0])) {
+            strNumber = strNumber*10+ ([str characterAtIndex:index]- [@"\u2080" characterAtIndex:0]);
+            index++;
+        }
+        //add the rest
+        while (index<str.length){
+            lastPart = [lastPart stringByAppendingString:[str substringWithRange:NSMakeRange(index, 1)]];
+            index++;
+        }
+        
+    }
+    return [[NSArray alloc] initWithObjects:mainName,
+            lastPart,
+            [NSNumber numberWithInteger:strNumber],
+            nil];
 }
 
 

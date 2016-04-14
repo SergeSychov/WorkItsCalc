@@ -861,13 +861,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
                 NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
                 History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        
-        
                 NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
 
+                //remover result
                 if([programFromHistory lastObject]) [programFromHistory removeLastObject];
+
+                
                 if([programFromHistory lastObject]){
                     programm = [self arrayForNewButtonFromArgu:[programFromHistory lastObject]]; //set attributes as program
+
                     //check if constant add value as description
                     if([[programm firstObject] isKindOfClass:[NSNumber class]]){
                         programmDescription = [(NSNumber*)[programm firstObject] stringValue];
@@ -970,12 +972,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
         NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
-
         
-        if([programFromHistory lastObject]){
-            NSLog(@"Last obj:%@",[programFromHistory lastObject] );
-            [programFromHistory removeLastObject];
-        }
+        if([programFromHistory lastObject])[programFromHistory removeLastObject];
+
 
         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
         NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
@@ -1103,14 +1102,20 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 } else {
                     Buttons *obj = [matches firstObject];
                     if(obj.program == nil){
-                       // NSLog(@"Program haven't program");
+                        [self tappedButtonWithTitle: title];
                     } else {
+                        NSArray *prog = [NSKeyedUnarchiver unarchiveObjectWithData:obj.program];
+                        //NSLog(@"obj.program: %@", prog);
+                        if([prog.firstObject isKindOfClass:[NSNumber class]]){
+                            NSDictionary *buttonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:prog, title, nil];
+                            [self tappedButtonWithTitle: buttonDictionary];
+                        }
                       //  NSLog(@"Button has a program");
                     }
                 }
  
 
-                [self tappedButtonWithTitle: title];
+                //[self tappedButtonWithTitle: title];
                 if ([title isEqualToString:@"rad"] || [title isEqualToString:@"deg"] ) {
                     if([title isEqualToString:@"rad"]){
                         cell.name = @"deg";
@@ -1185,6 +1190,32 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
             
         }
+    }else if ([title isKindOfClass:[NSDictionary class]]){
+        //if there is constant or function
+        //add
+        //NSString *keyTitle = [[title allKeys]firstObject];
+        //NSLog(@"keyTitle: %@",keyTitle);
+        //NSNumber *valueProg = [title objectForKey:keyTitle];
+        //NSLog(@"valueProg %@", valueProg);
+        
+        if(self.userIsInTheMidleOfEnteringNumber){
+            //[self push];
+            self.userIsInTheMidleOfEnteringNumber = NO;
+        } else {
+            [self.displayRam clearRam];
+            if(!self.isProgramInProcess){
+                [self setStoryInforamtion];
+                [self.brain clearOperation]; //if it's just new argument, not new counting
+            } else {
+                [self.brain clearArgu];
+            }
+        }
+        [self.display showString:[self.displayRam addSymbol:title]];
+        [self.brain performOperationInArgu:title];
+        
+        self.isStronglyArgu = YES;
+        [self showStringThruManageDocument];
+        
     }else if([title isKindOfClass:[NSString class]]){
         if((([title floatValue] != 0.0) || [title isEqualToString:@"0"]) && ![operands containsObject:title] ){
             NSNumber *symbol = [NSNumber numberWithInt:[title intValue]];
@@ -1813,7 +1844,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(indexPath){
                 if([[self.buttonsCollection cellForItemAtIndexPath:indexPath] isKindOfClass:[NewButtonsCollectionViewCell class]]){
                     subCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:indexPath];
-                    if((subCell.typeOfButton != MAIN_BUTTON) /*&& (subCell.isEnable)*/){
+                    if((subCell.typeOfButton == CHANGE_BUTTON) || (subCell.typeOfButton == CHANGE_BUTTON_NOT_DELETABLE)){
                         CGRect subViewFrame;
                         subViewFrame = ((NewButtonsCollectionViewCell*)subCell).cellSubView.frame;
                         
@@ -2498,7 +2529,6 @@ static BOOL moveIsAvailable;
 //move buttonView from global variable subCell and findCell
 -(void) move
 {
-    NSLog(@"move");
     //here is ok for all buttons
     NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
     Buttons *findButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:findPatch.item];
@@ -3052,6 +3082,7 @@ static BOOL moveIsAvailable;
 #pragma mark - UICollectionViewDelegateFlowLayout
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+  //fix there to change buttons for iphone 6 and ipad
     CGSize result;
     if(IS_IPAD) {
                 if(self.willBePortraitRotated){
@@ -3309,11 +3340,12 @@ static BOOL moveIsAvailable;
     NSMutableArray *argArrayCopy = [[NSMutableArray alloc] init];
     NSMutableArray *wholeProgramCopy = [[NSMutableArray alloc] init];
     id top = [programFromHistory lastObject];
-    //NSLog(@"GetAttrString nextTop: %@", top);
+    //NSLog(@"GetAttrString Top: %@", top);
     if(top && [top isKindOfClass:[NSArray class]]){
         [programFromHistory removeLastObject];
         argArrayCopy = [ACalcBrain deepArrayCopy:top];//CHECK HEERE
         top = [programFromHistory lastObject];
+        //NSLog(@"GetAttrString nextTop: %@", top);
         if(top && [top isKindOfClass:[NSArray class]]){
             [programFromHistory removeLastObject];
             wholeProgramCopy = [ACalcBrain deepArrayCopy:top];
@@ -3352,8 +3384,7 @@ static BOOL moveIsAvailable;
     } else if([argArrayCopy count] > 1){
         [wholeProgramCopy.lastObject addObjectsFromArray:argArrayCopy];
     }
-    
-   // NSLog(@"geAttrString wholeProgCopy:%@",wholeProgramCopy);
+
     
     NSAttributedString *stringProgram = [ACalcBrain descriptionOfProgram:wholeProgramCopy withAttributes:self.attributes];
     [resultAtrStr insertAttributedString:stringProgram atIndex:0];

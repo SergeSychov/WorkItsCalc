@@ -189,13 +189,17 @@
 {
     NSInteger operationPriority;
     //NSLog(@"Operation %@",operation);
-   // NSLog(@"self.arguStack %@",self.arguStack);
+    NSLog(@"self.arguStack before %@",self.arguStack);
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
    // NSString *stringOperation = (NSString*)operation;
     [copyArgu addObject:operation];
     self.arguStack = [copyArgu copy];
-    //NSLog(@"brain argu:%@, brain argustack: %@",self.arguStack, self.arguStack);
-    operationPriority = [ACalcBrain getPriorityOf:operation];
+    NSLog(@"brain argustack a: %@", self.arguStack);
+    if([operation isKindOfClass:[NSString class]]){
+        operationPriority = [ACalcBrain getPriorityOf:operation];
+    } else {
+        operationPriority = 3;
+    }
     
     /*
     if([operation isKindOfClass:[NSString class]]){
@@ -210,7 +214,7 @@
         }
     }
     */
-    //NSLog(@"performOperationInArgu self.argu %@", self.argu);
+    NSLog(@"performOperationInArgu self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority];
         
@@ -779,7 +783,7 @@
 
    // NSLog(@"runProgram stack %@", stack);
     stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
-   //  NSLog(@"runProgram second stack %@", stack);
+    // NSLog(@"runProgram second stack %@", stack);
 
     return [self popOperandOfStack:stack accordingPriority:priority];
 }
@@ -828,11 +832,26 @@
         result = [value doubleValue];
     }
     //NSLog(@"popOperandOfStack topOfStack:%@", topOfStack);
-    if([topOfStack isKindOfClass:[NSArray class]]){
+    if([topOfStack isKindOfClass:[NSDictionary class]]){
+        //if it is constant or function
+        NSLog(@"there is constant or function in popOperandOfStack");
+        NSString *key = [[topOfStack allKeys]firstObject];
+        //NSLog(@"keyTitle: %@",keyTitle);
+        id valueProg = [topOfStack objectForKey:key];
+        if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
+            result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:valueProg]] accordingPriority:priority];
+        } else {
+            
+        }
+        //NSLog(@"valueProg %@", valueProg);
+        
+
+    }else if([topOfStack isKindOfClass:[NSArray class]]){
         
         
         
         if([(NSArray*)topOfStack count]==4 && [topOfStack[0] isKindOfClass:[NSString class]]&&[topOfStack[0] isEqualToString:@"$"]){
+            //if there is exhange currency rate
             NSNumber *exchangeRate = (NSNumber*)[topOfStack lastObject];
             double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
             if(arg == 0.0) {
@@ -1190,22 +1209,26 @@
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes
 {
     NSMutableAttributedString * atrStr = [[NSMutableAttributedString alloc] initWithString:@"" attributes:atributes];
-    
-    id topOfStacs = [program lastObject];
-
-    if(topOfStacs) [program removeLastObject];
     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:atributes];
-    [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:[atrStr length]];
+
+    id topOfStacs = [program lastObject];
     
-    topOfStacs = [program lastObject];
-    while (topOfStacs) {
-        //NSLog(@"last obj %@", topOfStacs);
-        NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:atributes];
-        [atrStr insertAttributedString:bracet atIndex:0];
-        [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:0];
+    if(topOfStacs && (![topOfStacs isKindOfClass:[NSArray class]])){
+        [atrStr insertAttributedString:[self popStringOfStack:program withNextArguString:empty withAttributes:atributes] atIndex:[atrStr length]];
+    } else if (topOfStacs){
         [program removeLastObject];
+        [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:[atrStr length]];
         topOfStacs = [program lastObject];
+
+        while (topOfStacs) {
+            NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:atributes];
+            [atrStr insertAttributedString:bracet atIndex:0];
+            [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:0];
+            [program removeLastObject];
+            topOfStacs = [program lastObject];
+        }
     }
+   
     return  [atrStr copy];
 }
 

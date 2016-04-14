@@ -12,7 +12,7 @@
 #define INDENT 20.0f
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
-NSString *const SendChangedNotification=@"SendChangedNotification";
+NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 
 
 @interface SecondViewController() <UIViewControllerTransitioningDelegate>
@@ -29,7 +29,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 {
     //NSLog(@"userPressedChangeButton");
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"Done",@"Message", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SecondVCSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -57,12 +57,12 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 //avstract functions
 -(void)setNeedViews
 {
-
+    
 }
 
 -(void) viewDidLayoutSubviewsWithRect:(CGRect)rect
 {
-
+    
 }
 
 #pragma mark VIEW DID LOAD
@@ -75,11 +75,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                    blue:.80
                                                   alpha:1.]];
     
-
+    
     
     UIView *cView = [[UIView alloc] init];
     cView.center = self.view.center;
-
+    
     [cView setBackgroundColor:self.view.backgroundColor];
     [self.view addSubview:cView];
     self.cView = cView;

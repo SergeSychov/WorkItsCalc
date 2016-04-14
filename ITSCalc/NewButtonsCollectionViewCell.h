@@ -31,25 +31,21 @@
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
 
 @property (weak,nonatomic) UIColor *drawColor;
-//@property (nonatomic) CGPoint collectionViewOffset;
 @property (nonatomic,strong) NSString* name;
 
 @property (nonatomic) NSInteger typeOfButton;//main, changeble or users button
 @property (nonatomic) BOOL isUnderChanging;//is there buttons in underchangeble condition
-//@property (nonatomic) BOOL isEnable; //is button normaly enabled
-//@property (nonatomic) BOOL isCanBeRemoved;//is button was create by user and can be removed from arrays
-//@property (nonatomic) BOOL isChangeble; //is button can change;
-//@property (nonatomic) BOOL isAllovedToDelete; //is button alloved to be hiden
+
 
 @property (nonatomic) BOOL isIpadPortraitView;
 
 //for buttons animation
--(BOOL) isShakeAnimationRunning;
--(void) startShakeAnimation;
--(void) stopShakeanimation;
+//-(BOOL) isShakeAnimationRunning;
+//-(void) startShakeAnimation;
+//-(void) stopShakeanimation;
 
--(void) myTouchBegan;
--(void) myTouchEnded;
+//-(void) myTouchBegan;
+//-(void) myTouchEnded;
 
 @property (nonatomic,weak) id <ButtonCellSource> delegate;
 @property (nonatomic,weak) id <CellButtonActionDelegate> actionDelegate;

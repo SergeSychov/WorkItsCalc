@@ -43,7 +43,7 @@
 #define DESIGN_PHOTO 4
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
-NSString *const ReciveChangedNotification=@"SendChangedNotification";
+NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 
 @interface SettingsViewController() <SKPaymentTransactionObserver, SKProductsRequestDelegate, DesignViewControllerProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design>
 
@@ -144,7 +144,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
             
         }
-       //NSLog(@"recived wrong notification");
+        //NSLog(@"recived wrong notification");
     }
 }
 #define ALERT_MESSAGE_CHOOSE_NEW_PHOTO NSLocalizedStringFromTable(@"ALERT_MESSAGE_CHOOSE_NEW_PHOTO",@"ACalcTryViewControllerTableNew", @"Выберите фотографию из Вашего фотоархива")
@@ -156,7 +156,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     self.design = design;
     NSNumber *message = [NSNumber numberWithInteger:design];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:nil userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingReciveChangedNotification object:nil userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 -(void)trySetDesign:(NSInteger)design
@@ -248,7 +248,7 @@ sourceController:(UIViewController *)source
 {
     Transition* trans = [[Transition alloc] init];
     self.rightTransition = trans;
-
+    
     self.rightTransition.isGravity = NO;
     self.rightTransition.isForward = NO;
     
@@ -316,20 +316,20 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-   
+    
     if([title isEqualToString:ALERT_RESTORE_BUTTON_TITLE]){
-       
+        
         NSNumber *message = [NSNumber numberWithBool:YES];
         NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"setKeyboardDefaultAction",nil];
-        NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+        NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
         [[NSNotificationCenter defaultCenter] postNotification:note];
-
+        
         
     }  else if ([title isEqualToString:ALERT_CLEAR_BUTTON_TITLE]){
         
         NSNumber *message = [NSNumber numberWithBool:YES];
         NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"cleanHistoryArchive",nil];
-        NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+        NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
         [[NSNotificationCenter defaultCenter] postNotification:note];
         
     } else if ([title isEqualToString:ALLERT_BUTTON_RESTORE]){
@@ -387,14 +387,14 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 #pragma mark SWITCHER ACTIONS
 
-NSString *const SendChangedNotification=@"SendChangedNotification";
+NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
 - (void)isBigSizeButtonSwitch:(UISwitch *)sender
 {
     self.isBigSizeButtons = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isBigSizeButtons",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -403,7 +403,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.isSoundOn = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isSoundOn",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -412,7 +412,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.isBigDataBase = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isBigDataBase", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -421,7 +421,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     self.isiCloudInUse = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isiCloudInUse", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 #pragma mark UIImagePickerControllerDelegate
@@ -476,7 +476,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-   [picker dismissViewControllerAnimated:YES completion:^{ }];
+    [picker dismissViewControllerAnimated:YES completion:^{ }];
 }
 
 
@@ -541,7 +541,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     [self.cView addSubview:calcButton];
     self.calcButton = calcButton;
-
+    
     //SIZE BUTTON
     struct Color clr;
     clr.r = 0.95;//0.26;
@@ -555,7 +555,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     isBigSizeSwitcher.onTintColor = [UIColor whiteColor];
     [self.cView addSubview:isBigSizeSwitcher];
     self.isBigSizeSwitcher = isBigSizeSwitcher;
-
+    
     UIView *smallButtonView = [[UIView alloc] init];
     
     [self.cView addSubview:smallButtonView];
@@ -583,7 +583,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [soundSwitcher setOn:self.isSoundOn];
     [soundSwitcher addTarget:self action:@selector(isSoundSwitch:) forControlEvents:UIControlEventValueChanged];
     soundSwitcher.onTintColor = [UIColor whiteColor];
-
+    
     [self.cView addSubview:soundSwitcher];
     self.soundSwitcher = soundSwitcher;
     
@@ -606,7 +606,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [isBigDataBaseSwitcher setOn:self.isBigDataBase];
     [isBigDataBaseSwitcher addTarget:self action:@selector(switchIsBigDataBase:) forControlEvents:UIControlEventValueChanged];
     isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
-
+    
     [self.cView addSubview:isBigDataBaseSwitcher];
     self.isBigDataBaseSwitcher = isBigDataBaseSwitcher;
     
@@ -622,14 +622,14 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [self.cView addSubview:archivesizeBigView];
     self.archivesizeBigView = archivesizeBigView;
     
-
+    
     //iCloud use
     UISwitch *isiCloudUseSwitcher = [[UISwitch alloc] init];
     [isiCloudUseSwitcher setOn:self.isiCloudInUse];
     isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
     [isiCloudUseSwitcher addTarget:self action:@selector(isiCloudSwitch:) forControlEvents:UIControlEventValueChanged];
     isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
-
+    
     [self.cView addSubview:isiCloudUseSwitcher];
     self.isiCloudUseSwitcher = isiCloudUseSwitcher;
     
@@ -645,21 +645,21 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [self.cView addSubview:cloudOffView];
     self.cloudOffView = cloudOffView;
     
-
+    
     //CLEAR HISTORY
     
     ClearHistoryButton *clearHistoryButton = [[ClearHistoryButton alloc]init];
     [clearHistoryButton addTarget:self action:@selector(pressedClearHistoryButton:) forControlEvents:UIControlEventTouchUpInside];
     [self.cView addSubview:clearHistoryButton];
     self.clearHistoryButton = clearHistoryButton;
-
+    
     
     
     //CHANGE DESIGN BUTTON
     if((self.wasPurshaised) || (self.isTrialPeriod)){
         if(!IS_IPAD){
             DesignButton *changeDesignButton = [[DesignButton alloc]init];
-         //fro iPad its only pictures
+            //fro iPad its only pictures
             [changeDesignButton addTarget:self action:@selector(pressedDesignButton:) forControlEvents:UIControlEventTouchUpInside];
             [self.cView addSubview:changeDesignButton];
             self.changeDesignButton = changeDesignButton;
@@ -690,9 +690,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             chooseDesignLabel.textAlignment = NSTextAlignmentCenter;
             chooseDesignLabel.numberOfLines = 0;
             chooseDesignLabel.textColor = [UIColor whiteColor];
-
+            
             chooseDesignLabel.font = [UIFont systemFontOfSize:18];
-
+            
             chooseDesignLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
             chooseDesignLabel.adjustsFontSizeToFitWidth = YES;
             [self.cView addSubview:chooseDesignLabel];
@@ -708,7 +708,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             //need to set button classic button
             designButtonView *classicButtonView= [[designButtonView alloc] init];
             classicButtonView.backgroundColor = [UIColor clearColor];
-
+            
             [self.classicPartView addSubview:classicButtonView];
             self.classicButtonView = classicButtonView;
             
@@ -768,7 +768,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             
             //yelow
             TestButtonBackGroundView *colorYelowButton = [[TestButtonBackGroundView alloc]init];
-
+            
             
             colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
             colorYelowButton.isChoosed = NO;
@@ -777,7 +777,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             
             //black
             TestButtonBackGroundView *colorBlackButton = [[TestButtonBackGroundView alloc]init];
-
+            
             
             colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
             colorBlackButton.isChoosed = NO;
@@ -900,53 +900,53 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     
     //set BUY ADDITIONS BUTTON
-        if(!self.wasPurshaised){
-
-            UIButton *buyAdditionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
-            [buyAdditionsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            buyAdditionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
-            buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-            buyAdditionsButton.titleLabel.numberOfLines = 0;
-            buyAdditionsButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-            buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-            [buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-            [buyAdditionsButton addTarget:self action:@selector(pressedBuyAdditionsButton:) forControlEvents:UIControlEventTouchUpInside];
+    if(!self.wasPurshaised){
+        
+        UIButton *buyAdditionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        [buyAdditionsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        buyAdditionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
+        buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        buyAdditionsButton.titleLabel.numberOfLines = 0;
+        buyAdditionsButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+        buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
+        [buyAdditionsButton addTarget:self action:@selector(pressedBuyAdditionsButton:) forControlEvents:UIControlEventTouchUpInside];
+        
+        buyAdditionsButton.enabled = NO;
+        [buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+        
+        [self.cView addSubview:buyAdditionsButton];
+        self.buyAdditionsButton = buyAdditionsButton;
+        
+        
+        //setProcessSpiner
+        
+        UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
+        [processSpinner startAnimating];
+        [self.cView addSubview:processSpinner];
+        self.processSpinner = processSpinner;
+        
+        
+        
+        
+        //make product request
+        if([SKPaymentQueue canMakePayments]) {
             
-            buyAdditionsButton.enabled = NO;
-            [buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+            SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
+            request.delegate = self;
+            self.request = request;
             
-            [self.cView addSubview:buyAdditionsButton];
-            self.buyAdditionsButton = buyAdditionsButton;
-            
-            
-            //setProcessSpiner
-            
-             UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
-            [processSpinner startAnimating];
-            [self.cView addSubview:processSpinner];
-             self.processSpinner = processSpinner;
-            
-            
-            
-            
-            //make product request
-            if([SKPaymentQueue canMakePayments]) {
-                
-                SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
-                request.delegate = self;
-                self.request = request;
-                
-                [request start];
-                [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-            } else {
-                //if cant make purchaising stop and remove spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
-            }
-    
-           
+            [request start];
+            [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        } else {
+            //if cant make purchaising stop and remove spinner
+            [self.processSpinner stopAnimating];
+            [self.processSpinner removeFromSuperview];
+            self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
         }
+        
+        
+    }
     
     if(IS_IPAD){
         UILabel *soundSwitcherLabel = [[UILabel alloc]init];
@@ -1007,7 +1007,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 -(void) setLayOutOfSettingsView:(CGRect)rect
 {
-
+    
     CGFloat mainHeight = rect.size.height;
     CGFloat mainWidth = rect.size.width;
     
@@ -1042,7 +1042,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
         //determine x centers for one and second pictures
         CGFloat part = (mainWidth-2*INDENT) /3; //whole line size
-
+        
         CGFloat firstLinePicture = centeSettingsLine - part/3;
         CGFloat secondLinePicture = centeSettingsLine + part/3;
         
@@ -1103,8 +1103,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         [self.clearHistoryButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 5*measure)];
         [self.clearHistoryButtonLabel setBounds:CGRectMake(0,0, 250, 20)];
         [self.clearHistoryButtonLabel setCenter:CGPointMake(centeSettingsLine,yLabelCenter+5*measure)];
-
-
+        
+        
         CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 4*INDENT)/3, measure-2*INDENT);
         
         //BUY ANDDEFAULT KEYBOARD BUTTONS
@@ -1168,14 +1168,14 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                 default:
                     break;
             }
-
+            
             
             CGRect rctForDesignView = CGRectMake(0, 0, (mainWidth/3)*1.3, measure*0.8);
             
             CGFloat markSide =rect.size.width > rect.size.height? rect.size.height/13: rect.size.width/13 ;
-                
+            
             CGRect rctForMark = CGRectMake(0, 0, markSide, markSide);
-
+            
             CGRect rctForButtonView = CGRectMake(0,0, rctForDesignView.size.width/2, markSide*1.2);
             
             [self.designViewFromButton setFrame:rctForMark];
@@ -1184,9 +1184,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             [self.chooseDesignLabel setFrame:CGRectMake(0, 0, rctForDesignView.size.width/2+rctForButtonView.size.width/2, rctForButtonView.size.height) ];
             CGFloat deltaCenter = (rctForDesignView.size.width/2+rctForButtonView.size.width/2)/2- rctForButtonView.size.width/2;
             [self.chooseDesignLabel setCenter:CGPointMake(centerDesignLine + deltaCenter,
-                                                         yCenterDesignView+measure)];
+                                                          yCenterDesignView+measure)];
             
-
+            
             [self.classicPartView setFrame:rctForDesignView];
             [self.classicPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 2*measure)];
             self.classicPartView.layer.cornerRadius = rctForDesignView.size.height/6;
@@ -1197,7 +1197,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             [self.classicButtonView setFrame:rctForButtonView];
             [self.classicButtonView setCenter:CGPointMake(rctForDesignView.size.width/2, rctForDesignView.size.height/2)];
             
-
+            
             [self.paperPartView setFrame:rctForDesignView];
             [self.paperPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 3*measure)];
             self.paperPartView.layer.cornerRadius = rctForDesignView.size.height/6;
@@ -1211,7 +1211,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             [self.colorButtonView setFrame:rctForButtonView];
             [self.colorButtonView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 4*measure)];
             
-                
+            
             [self.clolorBlueButton setFrame:rctForMark];
             [self.clolorBlueButton setCenter:CGPointMake(centerDesignLine - rctForDesignView.size.width/2 + rctForButtonView.size.width/3.5, yCenterDesignView+5*measure)];
             
@@ -1225,8 +1225,8 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             [self.colorBlackButton setFrame:rctForMark];
             [self.colorBlackButton setCenter:CGPointMake(centerDesignLine + rctForDesignView.size.width/2 - rctForButtonView.size.width/3.5,
                                                          yCenterDesignView+5*measure)];
-                
-
+            
+            
             [self.photoPartView setFrame:CGRectMake(0,origHeight+5*onePart, self.cView.bounds.size.width, onePart)];
             [self.photoPartView setFrame:rctForDesignView];
             [self.photoPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 6*measure)];
@@ -1239,15 +1239,15 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             
             [self.photoButtonView setFrame:rctForButtonView];
             [self.photoButtonView setCenter:CGPointMake(self.photoPartView.bounds.size.width/2,self.photoPartView.bounds.size.height/2) ];
-                
-                
+            
+            
             [self.addNewPhotoButton setFrame:rctForMark];
             [self.addNewPhotoButton setCenter:CGPointMake(centerDesignLine + rctForDesignView.size.width/2 - rctForButtonView.size.width/3.5,
-                                                         yCenterDesignView+6*measure)];
-
-
+                                                          yCenterDesignView+6*measure)];
+            
+            
         } else {
-
+            
             [self.buyAdditionsButton setBounds:buttonsBounds];
             [self.buyAdditionsButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 6*measure)];
             
@@ -1272,7 +1272,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
         CGFloat viewSide = (self.view.bounds.size.height>self.view.bounds.size.width)? self.view.bounds.size.height/10 : self.view.bounds.size.width/10;
         CGRect rectForView = CGRectMake(0, 0, viewSide, viewSide);
-
+        
         //first line
         [self.smallButtonView setBounds:CGRectMake(0, 0, viewSide/1.1, (viewSide/1.1)*0.7)];
         [self.smallButtonView setCenter:CGPointMake(xCenterLineOne, y+measure)];
@@ -1281,9 +1281,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         
         [self.bigbuttonView setBounds:CGRectMake(0, 0, viewSide*1.2, (viewSide*1.2)*0.7)];
         [self.bigbuttonView setCenter:CGPointMake(xCenterLineThree, y+measure)];
-
         
-       //second line
+        
+        //second line
         [self.soundOff setBounds:rectForView];
         [self.soundOff setCenter:CGPointMake(xCenterLineOne, y+2*measure)];
         
@@ -1315,14 +1315,14 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
             [self.clearHistoryButton setBounds:rectForView];
             [self.clearHistoryButton setCenter:CGPointMake(xCenterLineTwo, y+5*measure)];
         } else {
-        
+            
             [self.clearHistoryButton setBounds:rectForView];
             [self.clearHistoryButton setCenter:CGPointMake(xCenterLineOne, y+5*measure)];
             
             [self.changeDesignButton setBounds:rectForView];
             [self.changeDesignButton setCenter:CGPointMake(xCenterLineThree, y+5*measure)];
         }
-
+        
         
         //line six
         CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 2*INDENT), measure-1.5*INDENT);
@@ -1343,7 +1343,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
         //line eight
         [self.calcButton setBounds:rectForView];
         [self.calcButton setCenter:CGPointMake(xCenterLineTwo, y+(parts-1)*measure)];
-
+        
     }
     struct Color clr;
     clr.r = 0.95;//0.26;
@@ -1355,7 +1355,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     smalLook.size.width = smalLook.size.width -4;
     smalLook.size.height =smalLook.size.height-4;
     [self.smalButtonLook setFrame:self.smallButtonView.bounds];
-
+    
     self.bigbuttonView.backgroundColor = [UIColor clearColor];
     CGRect bigLook = self.bigbuttonView.bounds;
     bigLook.size.width =-4;
@@ -1366,9 +1366,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 -(void) viewDidLayoutSubviewsWithRect:(CGRect)rect
 {
-
+    
     [self setLayOutOfSettingsView:rect];
-
+    
 }
 
 -(void) setCViewAccordingFrameRect:(CGRect)rctIn
@@ -1416,13 +1416,13 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     [self.cView setFrame:rct];
     
     [self viewDidLayoutSubviewsWithRect:rect];
-
+    
 }
 
 
 -(void)viewDidLoad{
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SettingReciveChangedNotification object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -1455,7 +1455,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 -(void) dismis
 {
-
+    
     [self.request cancel];
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
     [self.processSpinner stopAnimating];
@@ -1465,7 +1465,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     
     [super dismis];
     
-
+    
 }
 
 
@@ -1475,9 +1475,9 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     } else {
         [self dismis];
     }
-
-}
     
+}
+
 -(void)viewDidDisappear:(BOOL)animated{
     NSLog(@"setting view disapear");
 }
@@ -1485,7 +1485,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 #pragma mark IN-APP PURSHASE
 -(void) startSpinner
 {
-
+    
     
     UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc] init];
     [processSpinner setCenter:self.buyAdditionsButton.center];
@@ -1498,12 +1498,12 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
 
 -(void) wasSuccesTransaction
 {
-
+    
     
     self.wasPurshaised = YES;
     NSNumber *message = self.wasPurshaised? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"wasPurshaised", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
     [self setNeedViews];
     
@@ -1513,17 +1513,17 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
                           delay:0.1
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
-
+                         
                          [self setCViewAccordingFrameRect:rect];
                          
                      } completion:^(BOOL finished) {
                          [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-
+                         
                          NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
                          [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
                          [defaults synchronize];
                          
-
+                         
                      }];
 }
 
@@ -1585,7 +1585,7 @@ NSString *const SendChangedNotification=@"SendChangedNotification";
     //stop and remove process spinner
     [self.processSpinner stopAnimating];
     [self.processSpinner removeFromSuperview];
-
+    
 }
 
 -(void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions

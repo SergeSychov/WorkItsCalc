@@ -24,18 +24,49 @@
 #pragma mark SETUP
 -(void) viewDidLoad{
     [super viewDidLoad];
-    self.buttonView.buttonColor = [UIColor whiteColor];
+    
     //self.buttonView.title = @"";
     if(_programDescription){
         self.labelProgrammDescription.text = _programDescription;
     }
     if(_program){
         if([[_program firstObject] isKindOfClass:[NSNumber class]]){
+            NSNumber* num = [_program firstObject];
+            
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setExponentSymbol:@"e"];
+            if (fabs([num doubleValue])>9e9 || fabs([num doubleValue])<9e-9) {
+                [numberFormatter setNumberStyle:NSNumberFormatterScientificStyle];
+                [numberFormatter setMaximumFractionDigits:7];
+            }
+            else{
+                [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+                double intPartLenght = log10(fabs([num doubleValue]));
+                double  intPart;//fractPart,
+                modf(intPartLenght, &intPart);//fractPart =
+                if(intPart <0) intPart = 0;
+                [numberFormatter setMaximumFractionDigits:(9 - (int)intPart)];
+            }
+            self.labelProgrammDescription.text = [numberFormatter stringFromNumber:num];
+            
+            self.buttonView.title = [self.delegate getPossibleButtonNameWithInitial:@"k"];
+           
+            
             self.labelActionName.text = @"создание новой кнопки для константы:";
+            
+           
         } else {
             self.labelActionName.text = @"создание новой кнопки для выражения:";
+            self.buttonView.title = @"New";
         }
     }
+    self.buttonView.buttonColor = [UIColor whiteColor];
+    
+    self.textFildForNewButton.textColor  =[UIColor whiteColor];
+    self.textFildForNewButton.tintColor = [UIColor whiteColor];
+    UIColor *placeHolderColor = [UIColor lightTextColor];
+    self.textFildForNewButton.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Введите имя новой кнопки" attributes:@{NSForegroundColorAttributeName: placeHolderColor}];
+    [self.textFildForNewButton becomeFirstResponder];
 
 }
 
@@ -48,9 +79,12 @@
     }];
 }
 - (IBAction)okButtonTapped:(UIButton *)sender {
-    [self.delegate createNewButtonWith:@"New" andProgramm:_program];
+    if([[self.program firstObject] isKindOfClass:[NSNumber class]]){
+         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:[self.program firstObject]];
+    } else {
+         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:_program];
+    }
     [self dismissViewControllerAnimated:YES completion:^{
-        
     }];
 }
 
