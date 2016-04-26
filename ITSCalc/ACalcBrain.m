@@ -180,7 +180,10 @@
         [copyArgu addObject:operand];
     } else if([operand isKindOfClass:[NSArray class]]){
         [copyArgu addObject:operand];
+    } else if([operand isKindOfClass:[NSDictionary class]]){
+        [copyArgu addObject:operand];
     }
+
     self.arguStack = [copyArgu copy];
     //NSLog(@"arguStack %@",self.arguStack);
 }
@@ -189,12 +192,12 @@
 {
     NSInteger operationPriority;
     //NSLog(@"Operation %@",operation);
-    NSLog(@"self.arguStack before %@",self.arguStack);
+    //NSLog(@"self.arguStack before %@",self.arguStack);
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
    // NSString *stringOperation = (NSString*)operation;
     [copyArgu addObject:operation];
     self.arguStack = [copyArgu copy];
-    NSLog(@"brain argustack a: %@", self.arguStack);
+    //NSLog(@"brain argustack a: %@", self.arguStack);
     if([operation isKindOfClass:[NSString class]]){
         operationPriority = [ACalcBrain getPriorityOf:operation];
     } else {
@@ -214,7 +217,7 @@
         }
     }
     */
-    NSLog(@"performOperationInArgu self.argu %@", self.argu);
+    //NSLog(@"performOperationInArgu self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority];
         
@@ -823,31 +826,38 @@
 +(double) popOperandOfStack: (NSMutableArray*) stack withPreviousValue: (NSNumber*) value accordingPriority: (NSInteger) priority
 {
     double result = 0.0;
+    //NSLog(@"popOperandOfStack Stack:%@",  stack);
 
     id topOfStack = [stack lastObject];
+    //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
+
     if(topOfStack){
         [stack removeLastObject];
         
     } else if (value){
         result = [value doubleValue];
     }
-    //NSLog(@"popOperandOfStack topOfStack:%@", topOfStack);
+
+    //NSLog(@"popOperandOfStack topOfStack:%@",  stack);
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function
-        NSLog(@"there is constant or function in popOperandOfStack");
+        //NSLog(@"there is constant or function in popOperandOfStack");
         NSString *key = [[topOfStack allKeys]firstObject];
-        //NSLog(@"keyTitle: %@",keyTitle);
+        //NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
-            result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:valueProg]] accordingPriority:priority];
-        } else {
-            
+            result = [self popOperandOfStack:stack withPreviousValue:valueProg accordingPriority:priority];
+        } else if ([valueProg isKindOfClass:[NSArray class]]){
+            if([valueProg containsObject:@"°"]){
+                result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:[valueProg mutableCopy]]] accordingPriority:priority];
+            } else {
+                NSLog(@"valueProg %@", valueProg);
+            }
         }
-        //NSLog(@"valueProg %@", valueProg);
+        
         
 
     }else if([topOfStack isKindOfClass:[NSArray class]]){
-        
         
         
         if([(NSArray*)topOfStack count]==4 && [topOfStack[0] isKindOfClass:[NSString class]]&&[topOfStack[0] isEqualToString:@"$"]){
@@ -1265,6 +1275,19 @@
     NSArray *operations = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²",@"÷", @"×",@"-",@"+", nil];
     NSArray *nextOperations = [NSArray arrayWithObjects: @"÷", @"×",@"-",@"+", nil];
    // NSLog(@"top of stack in pop %@", topOfStack);
+    if([topOfStack isKindOfClass:[NSDictionary class]]){
+        //if it is constant or function created by user
+        NSString *key = [[topOfStack allKeys]firstObject];
+        //NSLog(@"keyTitle: %@",key);
+        id valueProg = [topOfStack objectForKey:key];
+        if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
+            NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
+            resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+        } else {
+            NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
+            resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+        }
+    } else
     if([topOfStack isKindOfClass:[NSArray class]]){
 //#pragma mark WORK with CURRENSIES
         if([(NSArray*)topOfStack count]==4 && [topOfStack[0] isKindOfClass:[NSString class]]&&[topOfStack[0] isEqualToString:@"$"]){

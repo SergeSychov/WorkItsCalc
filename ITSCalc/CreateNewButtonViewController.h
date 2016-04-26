@@ -17,7 +17,7 @@
 
 
 @interface CreateNewButtonViewController : SecondViewController
-@property (nonatomic) NSArray* program;
+@property (nonatomic) id program;
 @property (nonatomic) NSString* programDescription;
 @property (weak,nonatomic) id delegate; //buttonsStore class with two function:
 //1. get possible name from enity buttons

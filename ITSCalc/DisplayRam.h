@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSArray* secondMemoryStack;
 @property (nonatomic, strong) NSArray* gradArray;
 @property (nonatomic,strong) NSNumber* resultNumber;
+@property (nonatomic,strong) NSDictionary* resDictionary;
 
 @property (nonatomic) int isGradMinutesSecons;//if isn't - 0, if grad - 1, if min - 2, if sec - 3
 //

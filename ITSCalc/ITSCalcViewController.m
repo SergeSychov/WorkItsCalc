@@ -883,7 +883,21 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
                 //check if constant add value as description
                 if([[programm firstObject] isKindOfClass:[NSNumber class]]){
-                    programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+
+                    if([[self.displayRam getResult]isKindOfClass:[NSNumber class]]){
+                        programm = [self.displayRam getResult];
+                        programmDescription =[[self.displayRam getResult] stringValue];
+                    } else if([[self.displayRam getResult] isKindOfClass:[NSArray class]]){
+                        programm = [[NSArray alloc] initWithArray:[self.displayRam getResult]];
+                        
+                        
+                        NSMutableArray *copyGradArray = [[self.displayRam getResult] mutableCopy];
+                        [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
+                        programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.attributes].string;
+                        //programmDescription =[[self.displayRam getResult] stringValue];
+                    } else {//if for eaxample it is grad value
+                        programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+                    }
                 } else {
                       programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
                 }
@@ -1104,9 +1118,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     if(obj.program == nil){
                         [self tappedButtonWithTitle: title];
                     } else {
-                        NSArray *prog = [NSKeyedUnarchiver unarchiveObjectWithData:obj.program];
+                        id prog = [NSKeyedUnarchiver unarchiveObjectWithData:obj.program];
                         //NSLog(@"obj.program: %@", prog);
-                        if([prog.firstObject isKindOfClass:[NSNumber class]]){
+                        if([prog isKindOfClass:[NSNumber class]]){
+                            NSDictionary *buttonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:prog, title, nil];
+                            [self tappedButtonWithTitle: buttonDictionary];
+                        } else if ([prog isKindOfClass:[NSArray class]]){
                             NSDictionary *buttonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:prog, title, nil];
                             [self tappedButtonWithTitle: buttonDictionary];
                         }
@@ -1193,28 +1210,52 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }else if ([title isKindOfClass:[NSDictionary class]]){
         //if there is constant or function
         //add
-        //NSString *keyTitle = [[title allKeys]firstObject];
+        NSString *keyTitle = [[title allKeys]firstObject];
         //NSLog(@"keyTitle: %@",keyTitle);
-        //NSNumber *valueProg = [title objectForKey:keyTitle];
+        id valueProg = [title objectForKey:keyTitle];
         //NSLog(@"valueProg %@", valueProg);
-        
-        if(self.userIsInTheMidleOfEnteringNumber){
+        if([valueProg isKindOfClass:[NSNumber class]]){
+            if(self.userIsInTheMidleOfEnteringNumber){
             //[self push];
-            self.userIsInTheMidleOfEnteringNumber = NO;
-        } else {
-            [self.displayRam clearRam];
-            if(!self.isProgramInProcess){
-                [self setStoryInforamtion];
-                [self.brain clearOperation]; //if it's just new argument, not new counting
+                self.userIsInTheMidleOfEnteringNumber = NO;
             } else {
-                [self.brain clearArgu];
+                [self.displayRam clearRam];
+                if(!self.isProgramInProcess){
+                    [self setStoryInforamtion];
+                    [self.brain clearOperation]; //if it's just new argument, not new counting
+                } else {
+                    [self.brain clearArgu];
+                }
+            }
+            [self.display showString:[self.displayRam addSymbol:title]];
+            //[self.brain performOperationInArgu:title];
+            self.isResultFromMemory = YES;
+            self.isStronglyArgu = YES;
+            [self showStringThruManageDocument];
+        } else if([valueProg isKindOfClass:[NSArray class]]){
+            if([valueProg containsObject:@"°"]){
+               // NSLog(@"OK it was graduses");
+                if(self.userIsInTheMidleOfEnteringNumber){
+                    //[self push];
+                    self.userIsInTheMidleOfEnteringNumber = NO;
+                } else {
+                    [self.displayRam clearRam];
+                    if(!self.isProgramInProcess){
+                        [self setStoryInforamtion];
+                        [self.brain clearOperation]; //if it's just new argument, not new counting
+                    } else {
+                        [self.brain clearArgu];
+                    }
+                }
+                [self.display showString:[self.displayRam addSymbol:title]];
+                //[self.brain performOperationInArgu:title];
+                self.isResultFromMemory = YES;
+                self.isStronglyArgu = YES;
+                [self showStringThruManageDocument];
+            } else {
+                NSLog(@"There no graduses");
             }
         }
-        [self.display showString:[self.displayRam addSymbol:title]];
-        [self.brain performOperationInArgu:title];
-        
-        self.isStronglyArgu = YES;
-        [self showStringThruManageDocument];
         
     }else if([title isKindOfClass:[NSString class]]){
         if((([title floatValue] != 0.0) || [title isEqualToString:@"0"]) && ![operands containsObject:title] ){
@@ -1304,6 +1345,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [self showStringThruManageDocument];
             
         } else if ([operands containsObject:title]){
+            
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1709,16 +1751,32 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void) push
 {
-    if(self.displayRam.isGradValue){
-        if([[self.displayRam getResult] isKindOfClass:[NSArray class]]){
-            NSMutableArray *copyGradArray = [[self.displayRam getResult] mutableCopy];
+    id result = [self.displayRam getResult];
+    
+    if([result isKindOfClass:[NSDictionary class]]){
+        NSString *key = [[result allKeys]firstObject];
+        id prog = [result objectForKey:key];
+        if([prog isKindOfClass:[NSNumber class]]){
+            
+        } else if([prog isKindOfClass:[NSArray class]]){
+            if([prog containsObject:@"°"]){
+                NSMutableArray *copyGradArray = [prog mutableCopy];
+                [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
+                result = [[NSDictionary alloc] initWithObjectsAndKeys:[copyGradArray copy], key, nil];
+            }
+        }
+        [self.brain pushOperand:result];
+
+    } else if(self.displayRam.isGradValue){
+        if([result isKindOfClass:[NSArray class]]){
+            NSMutableArray *copyGradArray = [result mutableCopy];
             [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
             [self.brain pushOperand:[copyGradArray copy]];
         } else {
             
         }
     } else {
-        [self.brain pushOperand:[self.displayRam getResult]];
+        [self.brain pushOperand:result];
     }
     
 }

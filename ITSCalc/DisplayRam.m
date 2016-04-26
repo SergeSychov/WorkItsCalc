@@ -38,6 +38,7 @@
     }
     //self.displayLenght = 10;
     self.isGradMinutesSecons = 0;
+    self.resDictionary = nil;
     
 }
 
@@ -367,8 +368,8 @@
 
         
     } else if ([symbol isKindOfClass:[NSDictionary class]]){
-       // NSLog(@"That's constant or function. Lets Check it");
         str = [[symbol allKeys]firstObject];
+        self.resDictionary = symbol;
     }else {
         if(self.isGradMinutesSecons ==0){
         str = [self.formatter stringFromNumber:self.resultNumber];
@@ -386,6 +387,7 @@
     self.resultString = @"0";
     self.isFloat = NO;
     self.isGradMinutesSecons = 0;
+    self.resDictionary = nil;
     self.gradArray  = [NSArray array];
 }
 
@@ -579,8 +581,9 @@
 -(id) getResult
 {
     id result;
-    if(self.isGradMinutesSecons == 0){
-       // NSLog(@"number %@",self.resultNumber);
+    if(self.resDictionary){
+        result = self.resDictionary;
+    } else if(self.isGradMinutesSecons == 0){
         result = self.resultNumber;
     } else {
         if(![[self.gradArray lastObject] isKindOfClass:[NSString class]]){
