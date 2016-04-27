@@ -88,12 +88,13 @@
     }];
 }
 - (IBAction)okButtonTapped:(UIButton *)sender {
-    if([self.program isKindOfClass:[NSNumber class]]){
-         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
-    } else {
-         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
-    }
+
     [self dismissViewControllerAnimated:YES completion:^{
+        if([self.program isKindOfClass:[NSNumber class]]){
+            [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
+        } else {
+            [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
+        }
     }];
 }
 
