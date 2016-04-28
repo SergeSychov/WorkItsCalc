@@ -7,6 +7,7 @@
 //
 
 #import "SecondViewController.h"
+#import "ITSCalcViewController.h"
 
 @protocol CreateNewButtonController <NSObject>
 
@@ -17,6 +18,7 @@
 
 
 @interface CreateNewButtonViewController : SecondViewController
+@property (nonatomic,weak) ITSCalcViewController *mainController;
 @property (nonatomic) id program;
 @property (nonatomic) NSString* programDescription;
 @property (weak,nonatomic) id delegate; //buttonsStore class with two function:

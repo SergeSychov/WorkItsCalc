@@ -83,17 +83,23 @@
 
 #pragma mark ACTIONS
 - (IBAction)cancellButtonTapped:(UIButton *)sender {
+    [self.view endEditing:YES];
     [self dismissViewControllerAnimated:YES completion:^{
         nil;
     }];
 }
 - (IBAction)okButtonTapped:(UIButton *)sender {
-    if([self.program isKindOfClass:[NSNumber class]]){
-         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
-    } else {
-         [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
-    }
+    CGPoint offsetPoint = CGPointMake(0, self.mainController.buttonsCollection.contentSize.height - self.mainController.buttonsCollection.bounds.size.height+50.);
+    [self.mainController.buttonsCollection setContentOffset:offsetPoint];
+    [self.view endEditing:YES];
+    
     [self dismissViewControllerAnimated:YES completion:^{
+        if([self.program isKindOfClass:[NSNumber class]]){
+            [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
+        } else {
+            [self.delegate createNewButtonWith:self.buttonView.title andProgramm:self.program];
+        }
+
     }];
 }
 

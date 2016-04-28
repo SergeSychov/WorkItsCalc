@@ -917,11 +917,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     CreateNewButtonViewController *createNewButtonViewController = [storyBoard instantiateViewControllerWithIdentifier:@"CreateNewButtonViewController"];
+    createNewButtonViewController.mainController = self;
     createNewButtonViewController.program = programm;
     createNewButtonViewController.programDescription = programmDescription;
     createNewButtonViewController.delegate = self.buttonsStore;
     [self presentViewController:createNewButtonViewController animated:YES completion:^{
-        nil;
+        [self discardChanging];
     }];
 }
 
@@ -2857,13 +2858,59 @@ static BOOL moveIsAvailable;
         }
         [self.buttonsCollection reloadData];
     } else if(operation == INSERT_BUTTON){
+
+        NSIndexPath *newIndex = [NSIndexPath indexPathForItem:[self.buttonsStore.workButtonsNames count]-1 inSection:0];
         [self.buttonsCollection performBatchUpdates:^{
-            NSIndexPath *newIndex = [NSIndexPath indexPathForItem:[self.buttonsStore.workButtonsNames count]-1 inSection:0];
             NSArray *indexPatchs = [[NSArray alloc]initWithObjects:newIndex, nil];
             [self.buttonsCollection insertItemsAtIndexPaths:indexPatchs];
+
         } completion:^(BOOL finished) {
-            nil;
+            
+            //animation to show user new button
+            //and than set offset buttonscollection to zero
+            //-----------------------------------------------------------------------------------
+            NewButtonsCollectionViewCell *newCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:newIndex];
+            CGRect subViewFrame;
+            subViewFrame = ((NewButtonsCollectionViewCell*)newCell).cellSubView.frame;
+            subViewFrame.origin = [newCell convertPoint:subViewFrame.origin toView:self.buttonsCollection];
+            
+            buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
+            buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)newCell).cellSubView.title;
+            buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)newCell).cellSubView.buttonColor;
+            buttonsAsSubView.design = self.design;
+            CGRect halfZeroRect = CGRectInset(subViewFrame, subViewFrame.size.width/6, subViewFrame.size.height/6);
+            [self.buttonsCollection addSubview:buttonsAsSubView];
+            newCell.alpha = 0.0;
+
+            
+            [UIView animateWithDuration:0.4
+                                  delay:0
+                 usingSpringWithDamping:.8
+                  initialSpringVelocity:0.1
+                                options:UIViewAnimationOptionAllowAnimatedContent
+                             animations:^{
+                                 [buttonsAsSubView setFrame:halfZeroRect];
+                             } completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.8
+                                                       delay:0
+                                      usingSpringWithDamping:.3
+                                       initialSpringVelocity:1
+                                                     options:UIViewAnimationOptionAllowAnimatedContent
+                                                  animations:^{
+                                                      [buttonsAsSubView setFrame:subViewFrame];                                             } completion:^(BOOL finished) {
+                                                          newCell.alpha = 1.;
+                                                          buttonsAsSubView.alpha = 0.;
+                                                          [buttonsAsSubView removeFromSuperview];
+                                                          buttonsAsSubView = nil;
+                                                          [self.buttonsCollection scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+                                                      }];
+
+                                 
+                             }];
         }];
+        //-------------------------------------------------------------------------------------------------
+        
+      
         if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
             self.isAllowedToDelete = NO;
         } else {
