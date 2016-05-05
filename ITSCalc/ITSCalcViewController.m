@@ -854,7 +854,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 #pragma mark ACTIONS
 - (IBAction)plusButtonTapped:(UIButton *)sender {
-    NSArray *programm;
+    id programm;
+    NSArray* progCopy;
     NSString *programmDescription = @"";
     if(self.selectedRow){ //if there is not first row
             NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
@@ -862,24 +863,25 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
                 History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
                 NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
-
-                //remover result
+                //remove result
                 if([programFromHistory lastObject]) [programFromHistory removeLastObject];
 
-                
                 if([programFromHistory lastObject]){
-                    programm = [self arrayForNewButtonFromArgu:[programFromHistory lastObject]]; //set attributes as program
 
+                    programm = [self arrayForNewButtonFromArgu:[programFromHistory lastObject]];
+                    progCopy = [programm copy];
+                    
                     //check if constant add value as description
                     if([[programm firstObject] isKindOfClass:[NSNumber class]]){
-                        programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+                        programm = [programm firstObject];
+                        programmDescription = [(NSNumber*)programm stringValue];
                     } else {
-                        programmDescription = [ACalcBrain descriptionOfProgram:[[programFromHistory lastObject] mutableCopy] withAttributes:self.attributes].string;
+                        NSArray* copArr = [ACalcBrain deepArrayCopy:[programFromHistory lastObject] ];
+                        programmDescription = [ACalcBrain descriptionOfProgram:[copArr mutableCopy] withAttributes:self.attributes].string;
                     }
                 }
-                
-            
             } else {//if its first row
+                
                 programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
                 //check if constant add value as description
                 if([[programm firstObject] isKindOfClass:[NSNumber class]]){
@@ -899,13 +901,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         programmDescription = [(NSNumber*)[programm firstObject] stringValue];
                     }
                 } else {
-                      programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+                    NSArray* copArr = [ACalcBrain deepArrayCopy:[self.brain argu]];
+                    programmDescription = [ACalcBrain descriptionOfProgram:[copArr mutableCopy] withAttributes:self.attributes].string;
                 }
-
-              
         }
         
-    } else { //if not selected ctach programm from first row
+    } else {
+        
+        //if not selected ctach programm from first row
         programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
         //check if constant add value as description
         if([[programm firstObject] isKindOfClass:[NSNumber class]]){
@@ -913,8 +916,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         } else {
             programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
         }
+        
   
     }
+    NSLog(@"Programm %@", programm);
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     CreateNewButtonViewController *createNewButtonViewController = [storyBoard instantiateViewControllerWithIdentifier:@"CreateNewButtonViewController"];
     createNewButtonViewController.mainController = self;
@@ -1581,7 +1586,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             //add
             
             if(self.userIsInTheMidleOfEnteringNumber){
-                [self push];
+                //[self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
             } else {
                 [self.displayRam clearRam];
@@ -1593,8 +1598,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 }
             }
             [self.display showString:[self.displayRam addSymbol:[title lowercaseString]]];
-            [self.brain performOperationInArgu:[title lowercaseString]];
-
+            //[self.brain performOperationInArgu:[title lowercaseString]];
+            
+            self.isResultFromMemory = YES;
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1768,7 +1774,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
         [self.brain pushOperand:result];
 
-    } else if(self.displayRam.isGradValue){
+    } else if([result isKindOfClass:[NSString class]]){
+        [self.brain pushOperand:result];
+    }else if(self.displayRam.isGradValue){
         if([result isKindOfClass:[NSArray class]]){
             NSMutableArray *copyGradArray = [result mutableCopy];
             [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];

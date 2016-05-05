@@ -168,7 +168,9 @@
     [copyArgu removeAllObjects];
 
     if([operand isKindOfClass:[NSString class]]){
-        if([operand isEqualToString:@"0."]){
+        if([operand isEqualToString:@"x"]||[operand isEqualToString:@"y"]){
+            [copyArgu addObject:operand];
+        } else if([operand isEqualToString:@"0."]){
             [copyArgu addObject:[NSNumber numberWithDouble:0.00]];
         } else if ([operand doubleValue] != 0.0){
 

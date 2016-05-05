@@ -18,9 +18,15 @@
 //for user default
 @property (nonatomic, strong) NSArray* firstMemoryStack;
 @property (nonatomic, strong) NSArray* secondMemoryStack;
+//if return is array from grad minutes and seconds values
 @property (nonatomic, strong) NSArray* gradArray;
+//if return is usual number
 @property (nonatomic,strong) NSNumber* resultNumber;
+//if return is dictionary from users title and programm
 @property (nonatomic,strong) NSDictionary* resDictionary;
+//if return is string variables X or Y lowercase
+@property (nonatomic,strong) NSString* variableString;
+
 
 @property (nonatomic) int isGradMinutesSecons;//if isn't - 0, if grad - 1, if min - 2, if sec - 3
 //

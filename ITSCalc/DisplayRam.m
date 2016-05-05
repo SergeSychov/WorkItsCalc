@@ -39,6 +39,7 @@
     //self.displayLenght = 10;
     self.isGradMinutesSecons = 0;
     self.resDictionary = nil;
+    self.variableString = nil;
     
 }
 
@@ -358,6 +359,7 @@
             }
         } else if([symbol isEqualToString:@"x"] || [symbol isEqualToString:@"y"]){
             str = symbol;
+            self.variableString = symbol;
         } else {
             if(self.isGradMinutesSecons ==0){
                 str = [self.formatter stringFromNumber:self.resultNumber];
@@ -388,6 +390,7 @@
     self.isFloat = NO;
     self.isGradMinutesSecons = 0;
     self.resDictionary = nil;
+    self.variableString = nil;
     self.gradArray  = [NSArray array];
 }
 
@@ -583,7 +586,9 @@
     id result;
     if(self.resDictionary){
         result = self.resDictionary;
-    } else if(self.isGradMinutesSecons == 0){
+    }else if(self.variableString){
+        result = self.variableString;
+    }else if(self.isGradMinutesSecons == 0){
         result = self.resultNumber;
     } else {
         if(![[self.gradArray lastObject] isKindOfClass:[NSString class]]){

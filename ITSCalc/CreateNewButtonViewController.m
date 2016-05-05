@@ -56,7 +56,7 @@
            
         } else if ([_program isKindOfClass:[NSArray class]]){
             //if it is grad
-            NSLog(@"Create new button programm %@", _program);
+            
             if([_program containsObject:@"°"]){
                 //if there is grad array as programm
                 self.labelActionName.text = @"создание новой кнопки для константы:";
@@ -64,8 +64,33 @@
 
 
             } else {
+                id firstObjFromProg = [_program firstObject];
+                NSString *newButtonProName = @"f(";
+                if([firstObjFromProg isKindOfClass:[NSArray class]]){
+                    if([firstObjFromProg containsObject:@"$"]){
+                        newButtonProName = [newButtonProName stringByAppendingString:@"$"];
+                    }
+                    if([firstObjFromProg containsObject:@"x"]){
+                        if([newButtonProName length]>2.){
+                            newButtonProName = [newButtonProName stringByAppendingString:@",x"];
+                        } else {
+                            newButtonProName = [newButtonProName stringByAppendingString:@"x"];
+                        }
+                    }
+                    if([firstObjFromProg containsObject:@"y"]){
+                        if([newButtonProName length]>2.){
+                            newButtonProName = [newButtonProName stringByAppendingString:@",y"];
+                        } else {
+                            newButtonProName = [newButtonProName stringByAppendingString:@"y"];
+                        }
+                    }
+                    
+                }
+                newButtonProName = [newButtonProName stringByAppendingString:@")"];
+                NSLog(@"Create new button programm %@", _program);
+                //NSLog(@"Create new button _programDescription %@", _programDescription);
                 self.labelActionName.text = @"создание новой кнопки для выражения:";
-                self.buttonView.title = @"New";
+                self.buttonView.title =[self.delegate getPossibleButtonNameWithInitial:newButtonProName];
             }
         }
     }
