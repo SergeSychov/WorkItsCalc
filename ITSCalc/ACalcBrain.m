@@ -527,7 +527,28 @@
     
 //replace arrays with currencies in program with new values of currencies exhange
 //for each element chek if array
-// if - currencies - replace, else - recrucive call
+// if - yes - replace, else - recrucive call
++(NSArray*) programm:(NSArray *)programm replaceString:(NSString*)symb withObj:(id)repObj{
+    NSArray *retProgramm = nil;
+    NSMutableArray *mutableProgramm = [programm mutableCopy];
+    if(repObj) {
+        @autoreleasepool {
+
+            for(NSInteger i = 0; i < mutableProgramm.count; i++){
+                id obj = [mutableProgramm objectAtIndex:i];
+                
+                if([obj isKindOfClass:[NSString class]] && [obj isEqualToString:symb]){
+                    [mutableProgramm replaceObjectAtIndex:i withObject:repObj];
+                } else if([obj isKindOfClass:[NSArray class]]){
+                    [mutableProgramm replaceObjectAtIndex:i withObject:[ACalcBrain programm:obj replaceString:symb withObj:repObj]];
+                }
+            }
+            retProgramm = [mutableProgramm copy];
+        }
+    }
+    return retProgramm;
+}
+
 +(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies{
 
     NSArray *retProgramm = nil;
@@ -788,7 +809,7 @@
 
    // NSLog(@"runProgram stack %@", stack);
     stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
-    // NSLog(@"runProgram second stack %@", stack);
+    //NSLog(@"runProgram second stack %@", stack);
 
     return [self popOperandOfStack:stack accordingPriority:priority];
 }
@@ -828,12 +849,17 @@
 +(double) popOperandOfStack: (NSMutableArray*) stack withPreviousValue: (NSNumber*) value accordingPriority: (NSInteger) priority
 {
     double result = 0.0;
-    //NSLog(@"popOperandOfStack Stack:%@",  stack);
+   // NSLog(@"popOperandOfStack Stack:%@",  stack);
+    
+    if(![stack isKindOfClass:[NSMutableArray class]]){
+        stack = [stack mutableCopy];
+    }
 
     id topOfStack = [stack lastObject];
     //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
 
     if(topOfStack){
+        
         [stack removeLastObject];
         
     } else if (value){
@@ -845,7 +871,7 @@
         //if it is constant or function
         //NSLog(@"there is constant or function in popOperandOfStack");
         NSString *key = [[topOfStack allKeys]firstObject];
-        //NSLog(@"keyTitle: %@",key);
+        NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
             result = [self popOperandOfStack:stack withPreviousValue:valueProg accordingPriority:priority];
@@ -853,7 +879,49 @@
             if([valueProg containsObject:@"°"]){
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:[valueProg mutableCopy]]] accordingPriority:priority];
             } else {
-                NSLog(@"valueProg %@", valueProg);
+                id lastObj = [valueProg lastObject];
+                if(lastObj && [lastObj isKindOfClass:[NSArray class]]){
+                    double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                    NSLog(@"arg for func %@",[NSNumber numberWithDouble:arg]);
+                    NSArray* replacedArray;
+                    if([key containsString:@"x"]){
+                        //NSLog(@"There is function with X came");
+                        replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
+                    }
+                    //NSLog(@"lastObj %@",lastObj);
+                    //NSLog(@"replacedArray %@",replacedArray);
+                    //double newArg = [self popOperandOfStack:[replacedArray mutableCopy] withPreviousValue:nil accordingPriority:3];
+                    //NSLog(@"newArg %@",[NSNumber numberWithDouble:newArg]);
+
+                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]] accordingPriority:priority];
+                    
+                    /*
+                    if([firstArray containsObject:@"x"]){
+                        NSLog(@"firstArray containsObject:x");
+                        double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                        NSLog(@"arg for func %@",[NSNumber numberWithDouble:arg]);
+                        id lastArray = [valueProg lastObject];
+                        NSLog(@"prog last%@",lastArray);
+                        
+                        if(lastArray && [lastArray isKindOfClass:[NSArray class]]){
+                            
+                        //}&& [lastArray containsObject:@"x"]){
+                            NSUInteger indexX = [lastArray indexOfObject:@"x"];
+                            [lastArray replaceObjectAtIndex:indexX withObject:[NSNumber numberWithDouble:arg]];
+                        }
+                        NSLog(@"prog after last%@",lastArray);
+
+                        
+                    }
+                    if([firstArray containsObject:@"y"]){
+                        NSLog(@"firstArray containsObject:y");
+                    }
+                    if([firstArray containsObject:@"$"]){
+                        NSLog(@"firstArray containsObject:$");
+                    }
+                    */
+                    
+                }
             }
         }
         
@@ -1250,6 +1318,8 @@
     
     //number formatter
     //NSLog(@"stack: %@", stack);
+    //NSLog(@"argStr: %@", [argStr string]);
+
     NSNumberFormatter *format = [[NSNumberFormatter alloc] init];
     
     [format setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -1280,14 +1350,67 @@
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function created by user
         NSString *key = [[topOfStack allKeys]firstObject];
-        //NSLog(@"keyTitle: %@",key);
+        NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
+        NSLog(@"valueProg: %@",valueProg);
+
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
+            NSLog(@"but valueProg is recognized as number");
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
         } else {
+            //make mutableAttributed name of function or constant
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
-            resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+            //1. check if key hase atributes another case it's konstant with array
+            NSRange bracketOpenRange = [key rangeOfString:@"(" options:NSBackwardsSearch];
+            //it's important search from and case user insert brackets in name
+            NSRange bracketCloseRange = [key rangeOfString:@")" options:NSBackwardsSearch];
+            
+            if((bracketOpenRange.location != NSNotFound)&&(bracketCloseRange.location != NSNotFound)){ //ok maybe there is variables
+                NSRange rangeOfPossibleVariables = NSMakeRange(bracketOpenRange.location+1, bracketCloseRange.location-bracketOpenRange.location -1);
+                //check is there x,y, $ variables
+                //possible big mistake if user for constasnt insert "(x)" at the end
+                NSRange xRangeInStrBetwinBrackets = [key rangeOfString:@"x" options:NSLiteralSearch range:rangeOfPossibleVariables];
+                NSRange yRangeInStrBetwinBrackets = [key rangeOfString:@"y" options:NSLiteralSearch range:rangeOfPossibleVariables];
+                NSRange currensyRangeInStrBetwinBrackets = [key rangeOfString:@"$" options:NSLiteralSearch range:rangeOfPossibleVariables];
+                //if there is no variables betwin final brackets
+                if((xRangeInStrBetwinBrackets.location == NSNotFound) && (yRangeInStrBetwinBrackets.location == NSNotFound) && (currensyRangeInStrBetwinBrackets.location == NSNotFound)){
+                    //there is no variables
+                    
+                    resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+                    
+                } else {
+                    //if there is x beetwin last brackets
+                    if(xRangeInStrBetwinBrackets.location != NSNotFound){
+                        //find argu of function
+                        NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                        NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                        //replace 'x' with argument
+                        [attArg replaceCharactersInRange:xRangeInStrBetwinBrackets withAttributedString:[self popStringOfStack:arguArray
+                                                                                                            withNextArguString:empty
+                                                                                                                withAttributes:attributes]];
+                        
+                        resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+                        
+                        
+                    }
+                    
+                    if(yRangeInStrBetwinBrackets.location != NSNotFound){
+                        
+                    }
+                    
+                    if(currensyRangeInStrBetwinBrackets.location != NSNotFound){
+                        
+                    }
+                }
+
+                
+            } else { //this is just constant as array
+                resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+            }
+
+
+
         }
     } else
     if([topOfStack isKindOfClass:[NSArray class]]){

@@ -932,6 +932,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 -(NSArray*)arrayForNewButtonFromArgu:(NSArray*)argu{
+    
+    NSLog(@"Argu %@", argu);
     NSMutableArray* outputButtonProgram = [[NSMutableArray alloc] init];
     NSMutableArray* signArray = [NSMutableArray arrayWithObjects:@"", @"",@"",@"", nil];
 
@@ -970,9 +972,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(currencies){
             [outputButtonProgram addObject:currencies];
         }
-        [outputButtonProgram addObject:argu];
+        if([argu firstObject] && [[argu firstObject] isKindOfClass:[NSArray class]]){
+            [outputButtonProgram addObject:[argu firstObject]];
+        } else {
+            [outputButtonProgram addObject:argu];
+        }
     }
-    
+    NSLog(@"OutputProg %@", outputButtonProgram);
     return [outputButtonProgram copy];
     
 }
@@ -1217,9 +1223,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         //if there is constant or function
         //add
         NSString *keyTitle = [[title allKeys]firstObject];
-        //NSLog(@"keyTitle: %@",keyTitle);
         id valueProg = [title objectForKey:keyTitle];
-        //NSLog(@"valueProg %@", valueProg);
+
         if([valueProg isKindOfClass:[NSNumber class]]){
             if(self.userIsInTheMidleOfEnteringNumber){
             //[self push];
@@ -1259,7 +1264,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             } else {
-                NSLog(@"There no graduses");
+               // NSLog(@"keyTitle: %@",keyTitle);
+               // NSLog(@"valueProg %@", valueProg);
+                if(self.userIsInTheMidleOfEnteringNumber){
+                    [self push];
+                    self.userIsInTheMidleOfEnteringNumber = NO;
+                } else if (self.isResultFromMemory){
+                    [self push];
+                    self.isResultFromMemory = NO;
+                }
+                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                self.isStronglyArgu = YES;
+                [self showStringThruManageDocument];
             }
         }
         

@@ -56,7 +56,7 @@
            
         } else if ([_program isKindOfClass:[NSArray class]]){
             //if it is grad
-            
+            NSLog(@"_programm %@", _program);
             if([_program containsObject:@"°"]){
                 //if there is grad array as programm
                 self.labelActionName.text = @"создание новой кнопки для константы:";
@@ -65,7 +65,7 @@
 
             } else {
                 id firstObjFromProg = [_program firstObject];
-                NSString *newButtonProName = @"f(";
+                NSString *newButtonProName = @"prox()fr(";
                 if([firstObjFromProg isKindOfClass:[NSArray class]]){
                     if([firstObjFromProg containsObject:@"$"]){
                         newButtonProName = [newButtonProName stringByAppendingString:@"$"];
