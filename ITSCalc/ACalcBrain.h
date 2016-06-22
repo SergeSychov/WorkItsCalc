@@ -7,6 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+typedef enum : NSInteger {
+    NoArgument = 0,
+    XOnlyArgu,
+    YOnlyArgu,
+    CurrOnlyArgu,
+    X_and_Y_Argu,
+    X_and_Curr_Argu,
+    Y_and_Curr_Argu,
+    AllArgues
+} FuncArguments;
 
 @interface ACalcBrain : NSObject
 -(void) pushOperand:(id) operand; //think it's neded to be argu stack
@@ -19,7 +29,7 @@
 
 -(void) getResultAndPutAsArguByPriotiy:(int)priority; //may be its need to be hiden???
 -(double) count;
--(double) perfomOperation:(NSString *) operation;
+-(double) perfomOperation:(id) operation;
 -(void) insertBracket: (BOOL) isRigthOpen;
 -(void) clearOperation;
 -(void) clearArgu;
@@ -55,6 +65,8 @@
 
 //replace arrays with currencies in program with new values of currencies exhange
 +(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
+
++(FuncArguments)checkWichArgumentsHasFunc:(NSDictionary*)func;//check wich arguments has a func
 
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;

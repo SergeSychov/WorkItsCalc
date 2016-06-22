@@ -65,32 +65,31 @@
 
             } else {
                 id firstObjFromProg = [_program firstObject];
-                NSString *newButtonProName = @"prox()fr(";
+                NSString *newButtonProName = [self.delegate getPossibleButtonNameWithInitial:@"f"];
+                
                 if([firstObjFromProg isKindOfClass:[NSArray class]]){
-                    if([firstObjFromProg containsObject:@"$"]){
-                        newButtonProName = [newButtonProName stringByAppendingString:@"$"];
-                    }
+                    
+                    newButtonProName = [newButtonProName stringByAppendingString:@"("];
+                    
                     if([firstObjFromProg containsObject:@"x"]){
-                        if([newButtonProName length]>2.){
-                            newButtonProName = [newButtonProName stringByAppendingString:@",x"];
-                        } else {
-                            newButtonProName = [newButtonProName stringByAppendingString:@"x"];
-                        }
-                    }
-                    if([firstObjFromProg containsObject:@"y"]){
-                        if([newButtonProName length]>2.){
-                            newButtonProName = [newButtonProName stringByAppendingString:@",y"];
-                        } else {
-                            newButtonProName = [newButtonProName stringByAppendingString:@"y"];
-                        }
+                        newButtonProName = [newButtonProName stringByAppendingString:@"x,"];
                     }
                     
+                    if([firstObjFromProg containsObject:@"y"]){
+                        newButtonProName = [newButtonProName stringByAppendingString:@"y,"];
+                    }
+
+                    if([firstObjFromProg containsObject:@"$"]){
+                        newButtonProName = [newButtonProName stringByAppendingString:@"$"];
+                    } else {
+                        newButtonProName = [newButtonProName substringToIndex:[newButtonProName length]-1];
+                    }
                 }
                 newButtonProName = [newButtonProName stringByAppendingString:@")"];
                 NSLog(@"Create new button programm %@", _program);
                 //NSLog(@"Create new button _programDescription %@", _programDescription);
                 self.labelActionName.text = @"создание новой кнопки для выражения:";
-                self.buttonView.title =[self.delegate getPossibleButtonNameWithInitial:newButtonProName];
+                self.buttonView.title =newButtonProName;
             }
         }
     }

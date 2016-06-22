@@ -1029,6 +1029,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
+
         [self showStringThrouhgmanagerAtEqualPress];
         
         [self discardChanging];
@@ -1081,6 +1082,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
+
         [self showStringThrouhgmanagerAtEqualPress];
         
         
@@ -1201,6 +1203,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 //ok for that
                 self.userIsInTheMidleOfEnteringNumber = NO;
+
             } /*else {
                 //ok for that
                 [self.brain clearArgu];
@@ -1229,6 +1232,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(self.userIsInTheMidleOfEnteringNumber){
             //[self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
+
             } else {
                 [self.displayRam clearRam];
                 if(!self.isProgramInProcess){
@@ -1242,6 +1246,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             //[self.brain performOperationInArgu:title];
             self.isResultFromMemory = YES;
             self.isStronglyArgu = YES;
+
             [self showStringThruManageDocument];
         } else if([valueProg isKindOfClass:[NSArray class]]){
             if([valueProg containsObject:@"°"]){
@@ -1249,6 +1254,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 if(self.userIsInTheMidleOfEnteringNumber){
                     //[self push];
                     self.userIsInTheMidleOfEnteringNumber = NO;
+
                 } else {
                     [self.displayRam clearRam];
                     if(!self.isProgramInProcess){
@@ -1264,17 +1270,58 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             } else {
+                //this is a function find arguments
+                FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:title];
+                if(funcArg == NoArgument){
+                    //do nothing
+                } else if((funcArg==XOnlyArgu)||(funcArg==X_and_Y_Argu)||(funcArg==X_and_Curr_Argu)||(funcArg==AllArgues)){
+                    if(self.userIsInTheMidleOfEnteringNumber){
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                    } else if (self.isResultFromMemory){
+                        [self push];
+                        self.isResultFromMemory = NO;
+                    }
+                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                    self.isStronglyArgu = YES;
+                }
+                    //2. if there only Y in function
+                else if ((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)){
+                    if(self.userIsInTheMidleOfEnteringNumber){
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                    } else if (self.isResultFromMemory){
+                        [self push];
+                        self.isResultFromMemory = NO;
+                    } else {
+                        //need show brain not get argument for this function
+                        [self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
+                    }
+                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                    self.isStronglyArgu = YES;
+                    //need next value
+                    self.isProgramInProcess = YES;
+
+                        
+                }
                // NSLog(@"keyTitle: %@",keyTitle);
                // NSLog(@"valueProg %@", valueProg);
+                
+                /*
                 if(self.userIsInTheMidleOfEnteringNumber){
                     [self push];
                     self.userIsInTheMidleOfEnteringNumber = NO;
+                    //self.isStronglyArgu = YES; //thwice - see bottom
                 } else if (self.isResultFromMemory){
                     [self push];
                     self.isResultFromMemory = NO;
                 }
                 [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
                 self.isStronglyArgu = YES;
+                */
+                
+                //self.isProgramInProcess = YES;
                 [self showStringThruManageDocument];
             }
         }
@@ -1426,7 +1473,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
-                self.isStronglyArgu = YES;
+                self.isStronglyArgu = YES; //thwice - see bottom
             } else if (self.isResultFromMemory){
                 [self push];
                 self.isResultFromMemory = NO;
@@ -1792,7 +1839,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
     } else if([result isKindOfClass:[NSString class]]){
         [self.brain pushOperand:result];
-    }else if(self.displayRam.isGradValue){
+    } else if(self.displayRam.isGradValue){
         if([result isKindOfClass:[NSArray class]]){
             NSMutableArray *copyGradArray = [result mutableCopy];
             [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
@@ -4978,6 +5025,7 @@ static BOOL moveIsAvailable;
         self.isDecCounting = YES;//to key value
         //Important WOKS With days trial
         self.isTrialPeriod = YES;
+
         
         //
         //
@@ -5450,6 +5498,9 @@ static BOOL moveIsAvailable;
         self.isStronglyArgu = NO;//to key value
         self.isResultFromMemory = NO;//to key value
         self.isDecCounting = YES;//to key value
+        //Important WOKS With days trial
+        self.isTrialPeriod = YES;
+        //work with y argument
     }
     
     //strange
@@ -6273,6 +6324,7 @@ sourceController:(UIViewController *)source
             } else {
                 return  NO;
             }
+
         
             if(top && [top isKindOfClass:[NSNumber class]]){
                 self.isStronglyArgu = [top boolValue];
@@ -6473,7 +6525,6 @@ sourceController:(UIViewController *)source
 
 -(void) IPadTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    
     
     //!!!
     //If presented second controller

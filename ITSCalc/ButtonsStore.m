@@ -452,6 +452,7 @@
     return newButton?YES:NO;
 }
 -(NSString*)getPossibleButtonNameWithInitial:(NSString*)initStr {
+    
     NSString *retStr = initStr;
 
     while ([self isEntity:@"Buttons" HasName:retStr]) {
@@ -463,17 +464,30 @@
 -(BOOL) isEntity:(NSString*)entityName HasName:(NSString*)str
 {
     NSFetchRequest *request;
-    
-    request = [NSFetchRequest fetchRequestWithEntityName:entityName];
-    request.predicate = [NSPredicate predicateWithFormat:@"nameButton = %@", str];
-    
-    NSError *error;
-    NSArray *matches = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
-    if([matches count]>0) {
-        return YES;
-    } else {
-        return NO;
+    //all posible variation of end function
+    NSArray *possibleStringArray = [NSArray arrayWithObjects:@"(x)",@"(y)",@"($)",
+                                                            @"(x,y)",@"(x,$)",
+                                                            @"(y,$)",
+                                                            @"(x,y,$)",nil];
+
+    BOOL isThereSameName = NO;
+    for(NSString* possStr in possibleStringArray){
+        NSString *checkStr = [str stringByAppendingString:possStr];
+        request = [NSFetchRequest fetchRequestWithEntityName:entityName];
+        request.predicate = [NSPredicate predicateWithFormat:@"nameButton = %@", checkStr];
+        
+        NSLog(@"Check str: %@", checkStr);
+        
+        NSError *error;
+        NSArray *matches = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
+        if([matches count]>0) {
+            isThereSameName = YES;
+            break;
+        }
     }
+    
+    return isThereSameName;
+    
 }
 
 #pragma mark MOVE BUTTONS

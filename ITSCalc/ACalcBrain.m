@@ -151,21 +151,34 @@
     return self.numberOfOpenBrackets;
 }
 
+#pragma mark STATIC PROPERTIES
+//static BOOL noStonglyArguForY;
+
 -(void) pushOperand:(id) operand
 {
-    /*
-    if([operand isKindOfClass:[NSNumber class]]){
-        NSLog(@"Push number class");
-    } else if([operand isKindOfClass:[NSArray class]]){
-        NSLog(@"Push array class");
-    }else if([operand isKindOfClass:[NSString class]]){
-        NSLog(@"Push string class");
-    }
-    */
-    //available to piush operand only in argu stack
+    if([operand isKindOfClass:[NSNumber class]] && ([operand integerValue]==NSNotFound)){
+        //it's was pressed Y but no strongly argu for that
+        //noStonglyArguForY = YES;
+        
+        NSLog(@"noStonglyArguForY self.argu = %@", self.argu);
+
+        NSArray* newArguWithNotStronglyForY = [NSArray arrayWithObjects:self.arguStack, operand, nil];
+        self.arguStack = [newArguWithNotStronglyForY copy];
+        NSLog(@"after noStonglyArguForY self.argu = %@", self.argu);
+    } else {
+        
+    //available to push operand only in argu stack
     //1. if insert operant to argu stack - stack need be cleared
+    //NSLog(@"Push operand arguStack before %@",self.arguStack);
+    
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
-    [copyArgu removeAllObjects];
+    if(![self waitingFor_Y_Argu]){ //if argu isn't function that waiting for next argu can remove all arrg
+        NSLog(@"Argu NOT waiting y");
+        [copyArgu removeAllObjects];
+
+    } else {
+        NSLog(@"Argu IS waiting y");
+    }
 
     if([operand isKindOfClass:[NSString class]]){
         if([operand isEqualToString:@"x"]||[operand isEqualToString:@"y"]){
@@ -180,6 +193,9 @@
         }
     } else if([operand isKindOfClass:[NSNumber class]]){
         [copyArgu addObject:operand];
+        if([operand integerValue]==NSNotFound){
+            
+        }
     } else if([operand isKindOfClass:[NSArray class]]){
         [copyArgu addObject:operand];
     } else if([operand isKindOfClass:[NSDictionary class]]){
@@ -187,19 +203,116 @@
     }
 
     self.arguStack = [copyArgu copy];
-    //NSLog(@"arguStack %@",self.arguStack);
+    //NSLog(@"Push operand arguStack afterv%@",self.arguStack);
+    //NSLog(@"Push operand programStack afterv%@",self.programStacks);
+    }
+    
 }
 
+-(BOOL)waitingFor_Y_Argu {
+    BOOL isWaitingFor_Y_Argu = NO;
+    //check
+    id checkObj = nil; //obj for check if need Y argu
+    //if argu stack not empty
+    if([self.argu lastObject]){
+        checkObj = [self.argu lastObject];
+    //otherwise check last obj from program
+    } else if([self.program lastObject]){
+        checkObj = [self.program lastObject];
+    }
+    //if last obj is String and its operation with two argument - return YES
+    NSArray * operandwithTwoArguments = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
+    if([checkObj isKindOfClass:[NSString class]] && [operandwithTwoArguments containsObject:checkObj]){
+        isWaitingFor_Y_Argu = YES;
+    }else if([checkObj isKindOfClass:[NSDictionary class]]){
+        //check for y
+        FuncArguments funcArgu = [ACalcBrain checkWichArgumentsHasFunc:checkObj];
+        if((funcArgu==YOnlyArgu)||(funcArgu==X_and_Y_Argu)||(funcArgu==Y_and_Curr_Argu)){
+            isWaitingFor_Y_Argu = YES;
+        }
+        
+    }
+            //if last obj dictionary and has Y argument - return YES
+    
+    return isWaitingFor_Y_Argu;
+}
+/*
+typedef enum : NSInteger {
+    NoArgument = 0,
+    Only_X_Argu,
+    Only_Y_Argu,
+    Only_Curr_Argu,
+    X_and_Y_Argu,
+    X_and_Curr_Argu,
+    Y_and_Curr_Argu,
+    allArgues
+} FuncArguments;
+*/
++(FuncArguments)checkWichArgumentsHasFunc:(NSDictionary*)func{
+    NSString *keyTitle = [[func allKeys]firstObject];
+    
+    FuncArguments returnValue;
+    //this is a function
+    // check if there x or and y vriables and currency converter
+    // check if key hase atributes another case it's konstant with array
+    NSRange bracketOpenRange = [keyTitle rangeOfString:@"(" options:NSBackwardsSearch];
+    //it's important search from and case user insert brackets in name
+    NSRange bracketCloseRange = [keyTitle rangeOfString:@")" options:NSBackwardsSearch];
+    
+    if((bracketOpenRange.location != NSNotFound)&&(bracketCloseRange.location != NSNotFound)){ //ok maybe there is variables or currencies
+        //make a work with they
+        NSRange rangeOfPossibleVariables = NSMakeRange(bracketOpenRange.location+1, bracketCloseRange.location-bracketOpenRange.location -1);
+        //check is there x,y, $ variables
+        //possible big mistake if user for constasnt insert "(x)" at the end
+        NSRange xRangeInStrBetwinBrackets = [keyTitle rangeOfString:@"x" options:NSLiteralSearch range:rangeOfPossibleVariables];
+        NSRange yRangeInStrBetwinBrackets = [keyTitle rangeOfString:@"y" options:NSLiteralSearch range:rangeOfPossibleVariables];
+        NSRange currensyRangeInStrBetwinBrackets = [keyTitle rangeOfString:@"$" options:NSLiteralSearch range:rangeOfPossibleVariables];
+        //for more readable work make Bool properties
+        BOOL xHereInFunc = (xRangeInStrBetwinBrackets.location != NSNotFound);
+        BOOL yHereInFunc = (yRangeInStrBetwinBrackets.location != NSNotFound);
+        BOOL currHereInFunc = (currensyRangeInStrBetwinBrackets.location != NSNotFound);
+        
+        //return
+        if(xHereInFunc && yHereInFunc && currHereInFunc){
+            returnValue = AllArgues;
+        } else if(xHereInFunc && yHereInFunc && !currHereInFunc){
+            returnValue = X_and_Y_Argu;
+        } else if(xHereInFunc && !yHereInFunc && currHereInFunc){
+            returnValue = X_and_Curr_Argu;
+        } else if(!xHereInFunc && yHereInFunc && currHereInFunc){
+            returnValue = Y_and_Curr_Argu;
+        } else if(xHereInFunc && !yHereInFunc && !currHereInFunc){
+            returnValue = XOnlyArgu;
+        } else if(!xHereInFunc && yHereInFunc && !currHereInFunc){
+            returnValue = YOnlyArgu;
+        } else if(!xHereInFunc && !yHereInFunc && currHereInFunc){
+            returnValue = CurrOnlyArgu;
+        } else if(!xHereInFunc && !yHereInFunc && !currHereInFunc){
+            returnValue = NoArgument;
+        }
+        
+    } else {
+        //this is not func with argu
+        returnValue = NoArgument;
+    }
+    return returnValue;
+}
+/*
+-(void)setProgramStacks:(NSArray *)programStacks{
+    NSLog(@"setProgramStacks");
+    self.programStacks = programStacks;
+}
+*/
 -(double) performOperationInArgu:(id)operation
 {
     NSInteger operationPriority;
     //NSLog(@"Operation %@",operation);
     //NSLog(@"self.arguStack before %@",self.arguStack);
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
-   // NSString *stringOperation = (NSString*)operation;
+
     [copyArgu addObject:operation];
     self.arguStack = [copyArgu copy];
-    //NSLog(@"brain argustack a: %@", self.arguStack);
+    //NSLog(@"brain argustack after: %@", self.arguStack);
     if([operation isKindOfClass:[NSString class]]){
         operationPriority = [ACalcBrain getPriorityOf:operation];
     } else {
@@ -219,28 +332,36 @@
         }
     }
     */
-    //NSLog(@"performOperationInArgu self.argu %@", self.argu);
+    //NSLog(@"performOperationInArgu  AFTER self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority];
         
 }
 
 
--(double)perfomOperation: (NSString *)operation
+-(double)perfomOperation: (id)operation
 {
+    //NSLog(@"perfomOperation before self.program %@", self.program);
+    //NSLog(@"perfomOperation before self.argu %@", self.argu);
+
     int operationPriority = [ACalcBrain getPriorityOf:operation];
+    
     if(!self.isStronglyArgu){
+        NSLog(@"perfomOperation NO strongly argu");
         [self checkToExceptDoubleOperation]; //remove from stack last operation like @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"÷", @"×",@"-", @"+"
     } else {
+        NSLog(@"perfomOperation IS strongly argu");
         [self applyArgu];
     }
+    //NSLog(@"2 perfomOperation before self.program %@", self.program);
     //set result stack as new argument
     [self getResultAndPutAsArguByPriotiy:operationPriority];
+
     
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
     [programCopy.lastObject addObject:operation];
     self.programStacks = [programCopy copy];
-    
+    //NSLog(@"3 perfomOperation before self.program %@", self.program);
     return [ACalcBrain runProgram:self.program usingVariableValue:self.variableValue withPriority:operationPriority];
 }
 
@@ -306,6 +427,7 @@
         if(topOfArguStack){
            
             if([topOfArguStack isKindOfClass:[NSArray class]]){
+                NSLog(@"Del isStronglyArgu last Array: %@", topOfArguStack);
                 if([(NSArray*)topOfArguStack count]==4 && [topOfArguStack[0] isKindOfClass:[NSString class]]&&[topOfArguStack[0] isEqualToString:@"$"]){
                     id last = [copyArgu lastObject];
                     [copyArgu removeLastObject];
@@ -354,8 +476,17 @@
                 [copyArgu removeLastObject];
                 self.arguStack = [copyArgu copy];
                 if([last isKindOfClass:[NSNumber class]]){
-                    self.isStronglyArgu = NO;
+                    NSLog(@"Del isStronglyArgu last Number: %@", topOfArguStack);
+                    if([last integerValue] == NSNotFound){//if there was not pushed by user arhument - delete next argu in stack
+                        last = [copyArgu lastObject];
+                        if(last){
+                            return [self deleteLastElement];
+                        } else {
+                            self.isStronglyArgu = NO;
+                        }
+                    }
                 } else {
+                    NSLog(@"Del isStronglyArgu last Some: %@", topOfArguStack);
                
                     self.isStronglyArgu = YES;
                 }
@@ -369,8 +500,26 @@
         if([copyArgu count] > 0) [copyArgu removeAllObjects];
         
         id topOfProgStack = [copyPogram.lastObject lastObject];
+        
+        NSLog(@"Del NOt Strong last Some: %@", topOfProgStack);
+
+        
         if(topOfProgStack){
+            
             [copyPogram.lastObject removeLastObject];
+            
+            id nextTopOfProgStack = [copyPogram.lastObject lastObject];
+            
+            NSLog(@"Del NOt StnextTopOfProgStack: %@", nextTopOfProgStack);
+            
+            if(nextTopOfProgStack && [nextTopOfProgStack isKindOfClass:[NSNumber class]] && ([nextTopOfProgStack integerValue]==NSNotFound)){//if there is not pushed by user argu - delete next element
+                [copyPogram.lastObject removeLastObject];
+                
+                topOfProgStack = [copyPogram.lastObject lastObject];
+                if(topOfProgStack){
+                    [copyPogram.lastObject removeLastObject];
+                }
+            }
             
             //chek next object and if its not operation set it as argu
             topOfProgStack = [copyPogram.lastObject lastObject];
@@ -685,11 +834,17 @@
 {
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
+    NSLog(@"applyArgu programStack %@", self.programStacks);
+    NSLog(@"applyArgu arguStack %@", self.arguStack);
     for(int i = 0; i < [copyArgu count]; i++){
         [programCopy.lastObject addObject:copyArgu[i]];
     }
     self.programStacks = [programCopy copy];
     self.arguStack = [copyArgu copy];
+    
+    NSLog(@"After applyArgu programStack %@", self.programStacks);
+    NSLog(@"After applyArgu arguStack %@", self.arguStack);
+    
 }
 
 
@@ -765,10 +920,14 @@
 
 -(double) count
 {
+    
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
+    //NSLog(@"count programStack %@", self.programStacks);
+    //NSLog(@"count program %@", self.program);
     [self applyArgu];
     //set result stack as new argument
     [self getResultAndPutAsArguByPriotiy:0];
+    //NSLog(@"count program after applyArgu and getResult %@", self.program);
     double result = [self countWithStack:self.program];
     if([self.programStacks count] > 1){
         [programCopy removeLastObject];
@@ -776,6 +935,8 @@
         [programCopy.lastObject removeAllObjects];
     }
     self.programStacks = [programCopy copy];
+    //NSLog(@"count programCopy after %@", programCopy);
+    
     return result;
 }
 
@@ -807,7 +968,7 @@
         stack = [[ACalcBrain deepArrayCopy:program] mutableCopy];
     }
 
-   // NSLog(@"runProgram stack %@", stack);
+    //NSLog(@"runProgram stack %@", stack);
     stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
     //NSLog(@"runProgram second stack %@", stack);
 
@@ -849,7 +1010,7 @@
 +(double) popOperandOfStack: (NSMutableArray*) stack withPreviousValue: (NSNumber*) value accordingPriority: (NSInteger) priority
 {
     double result = 0.0;
-   // NSLog(@"popOperandOfStack Stack:%@",  stack);
+    //NSLog(@"popOperandOfStack Stack:%@",  stack);
     
     if(![stack isKindOfClass:[NSMutableArray class]]){
         stack = [stack mutableCopy];
@@ -871,7 +1032,7 @@
         //if it is constant or function
         //NSLog(@"there is constant or function in popOperandOfStack");
         NSString *key = [[topOfStack allKeys]firstObject];
-        NSLog(@"keyTitle: %@",key);
+        //NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
             result = [self popOperandOfStack:stack withPreviousValue:valueProg accordingPriority:priority];
@@ -881,46 +1042,60 @@
             } else {
                 id lastObj = [valueProg lastObject];
                 if(lastObj && [lastObj isKindOfClass:[NSArray class]]){
-                    double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
-                    NSLog(@"arg for func %@",[NSNumber numberWithDouble:arg]);
-                    NSArray* replacedArray;
-                    if([key containsString:@"x"]){
-                        //NSLog(@"There is function with X came");
-                        replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
-                    }
-                    //NSLog(@"lastObj %@",lastObj);
-                    //NSLog(@"replacedArray %@",replacedArray);
-                    //double newArg = [self popOperandOfStack:[replacedArray mutableCopy] withPreviousValue:nil accordingPriority:3];
-                    //NSLog(@"newArg %@",[NSNumber numberWithDouble:newArg]);
-
-                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]] accordingPriority:priority];
                     
-                    /*
-                    if([firstArray containsObject:@"x"]){
-                        NSLog(@"firstArray containsObject:x");
-                        double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
-                        NSLog(@"arg for func %@",[NSNumber numberWithDouble:arg]);
-                        id lastArray = [valueProg lastObject];
-                        NSLog(@"prog last%@",lastArray);
+                    //may be it's a function
+                    FuncArguments funcArguments = [ACalcBrain checkWichArgumentsHasFunc:topOfStack];
+                    
+                    //if no arguments may be it's no function
+                    if(funcArguments == NoArgument){//this is just constant as array
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:topOfStack]] accordingPriority:priority];
+                    } else {
+                        //double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                        NSNumber *funcResult;
+                        NSArray* replacedArray = lastObj;
+                        //NSLog(@"pop argument %@",[NSNumber numberWithDouble:arg]);
                         
-                        if(lastArray && [lastArray isKindOfClass:[NSArray class]]){
+                        if (funcArguments == XOnlyArgu){
+                            double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                            replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
+                            funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                             
-                        //}&& [lastArray containsObject:@"x"]){
-                            NSUInteger indexX = [lastArray indexOfObject:@"x"];
-                            [lastArray replaceObjectAtIndex:indexX withObject:[NSNumber numberWithDouble:arg]];
-                        }
-                        NSLog(@"prog after last%@",lastArray);
+                        } else if (funcArguments == YOnlyArgu){
+                            if(!value){
+                                //if no value just put previous argu as result
+                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3]];
+                                
+                                //NSLog(@"there is no value for y!");
+                            } else {
+                                replacedArray = [ACalcBrain programm:lastObj replaceString:@"y" withObj:value];
+                                //check if it was strongly argu
+                                id topOfStack = [stack lastObject];
+                                NSLog(@"top of stack before Y: %@", topOfStack);
+                                BOOL noStronglyArguBeforeY = NO;
+                                
+                                if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && ([topOfStack integerValue]==NSNotFound)){
+                                        noStronglyArguBeforeY = YES;
+                                }
+                                
+                                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                                if(noStronglyArguBeforeY || arg == 0.0){
+                                    NSLog(@"NoStonglyArguForY in pop");
+                                    funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
+                                } else {
+                                    //if there is strongly argu before Y - multiply function on this arg
+                                    NSLog(@"StonglyArguForY");
 
+                                    funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:[replacedArray mutableCopy]])];
+                                }
+                                //NSLog(@"there is Value for y!");
+                            }
+                            
+                        }
                         
+                        result = [self popOperandOfStack:stack
+                                       withPreviousValue:funcResult
+                                       accordingPriority:priority];
                     }
-                    if([firstArray containsObject:@"y"]){
-                        NSLog(@"firstArray containsObject:y");
-                    }
-                    if([firstArray containsObject:@"$"]){
-                        NSLog(@"firstArray containsObject:$");
-                    }
-                    */
-                    
                 }
             }
         }
@@ -929,6 +1104,11 @@
 
     }else if([topOfStack isKindOfClass:[NSArray class]]){
         
+        //if its not strongly argu for Y
+        if([topOfStack lastObject] && [[topOfStack lastObject] isKindOfClass:[NSNumber class]] && ([[topOfStack lastObject] integerValue]==NSNotFound)){
+            [topOfStack removeLastObject];
+            result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:[self popOperandOfStack:topOfStack]] accordingPriority:priority];
+        } else
         
         if([(NSArray*)topOfStack count]==4 && [topOfStack[0] isKindOfClass:[NSString class]]&&[topOfStack[0] isEqualToString:@"$"]){
             //if there is exhange currency rate
@@ -948,6 +1128,14 @@
         }
 
     } else if([topOfStack isKindOfClass:[NSNumber class]]){
+        /*
+        if([topOfStack integerValue] == NSNotFound){//if there is not pushed by user argument
+            topOfStack = [stack lastObject];
+            if(topOfStack){
+                [stack removeLastObject];
+            }
+        }
+        */
         result = [self popOperandOfStack:stack withPreviousValue:topOfStack accordingPriority:priority];
     } else if([topOfStack isKindOfClass:[NSString class]]){
         
@@ -1347,15 +1535,17 @@
     NSArray *operations = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²",@"÷", @"×",@"-",@"+", nil];
     NSArray *nextOperations = [NSArray arrayWithObjects: @"÷", @"×",@"-",@"+", nil];
    // NSLog(@"top of stack in pop %@", topOfStack);
+    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes]; //helped string to solve several problem in next
+    
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function created by user
         NSString *key = [[topOfStack allKeys]firstObject];
-        NSLog(@"keyTitle: %@",key);
+        //NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
-        NSLog(@"valueProg: %@",valueProg);
+        //NSLog(@"valueProg: %@",valueProg);
 
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
-            NSLog(@"but valueProg is recognized as number");
+            //NSLog(@"but valueProg is recognized as number");
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
         } else {
@@ -1384,7 +1574,7 @@
                     if(xRangeInStrBetwinBrackets.location != NSNotFound){
                         //find argu of function
                         NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                        NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                        //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                         //replace 'x' with argument
                         [attArg replaceCharactersInRange:xRangeInStrBetwinBrackets withAttributedString:[self popStringOfStack:arguArray
                                                                                                             withNextArguString:empty
@@ -1397,6 +1587,32 @@
                     
                     if(yRangeInStrBetwinBrackets.location != NSNotFound){
                         
+                        //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                        
+                        NSMutableArray *multiplyArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
+                        NSAttributedString *multiplyString;
+                        id multiplyArraylastObj = [multiplyArray lastObject];
+                        if(multiplyArraylastObj && [multiplyArraylastObj isKindOfClass:[NSNumber class]] &&([multiplyArraylastObj integerValue]==NSNotFound)){
+                            multiplyString = empty;
+                        }else {
+                            multiplyString = [self popStringOfStack:multiplyArray withNextArguString:empty withAttributes:attributes];
+                        }
+                        
+                        //NSLog(@"String arguArray %@", [multiplyString string]);
+                        NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
+                       // NSLog(@"String argStr %@", [mutAttArg string]);
+                        //NSLog(@"PopStr argStr %@", [mutAttArg string]);
+                        if([mutAttArg.string isEqualToString:@""]){
+                            NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
+                            [mutAttArg insertAttributedString:quesMark atIndex:0];
+                        }
+                        
+                        //NSLog(@"PopStr attArg %@", [attArg string]);
+                        [attArg replaceCharactersInRange:yRangeInStrBetwinBrackets withAttributedString:[mutAttArg copy]];
+                        [attArg insertAttributedString:multiplyString atIndex:0];
+                        resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+                        
+
                     }
                     
                     if(currensyRangeInStrBetwinBrackets.location != NSNotFound){
@@ -1442,7 +1658,7 @@
                 [arguArray removeLastObject];
             }
 
-            NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+            //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
             [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                withNextArguString:empty
                                                    withAttributes:attributes] atIndex:[attArg length]];
@@ -1474,7 +1690,7 @@
                     }
                 } else {
                     NSMutableArray *mutTopOfStack = [topOfStack mutableCopy];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:mutTopOfStack
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
@@ -1483,7 +1699,7 @@
             } else {
             
                 NSMutableArray *mutTopOfStack = [topOfStack mutableCopy];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [attArg insertAttributedString:[self popStringOfStack:mutTopOfStack
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
@@ -1564,7 +1780,7 @@
                 NSAttributedString* attrTop = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
                 [resultStr insertAttributedString:attrTop atIndex:0];
                 [resultStr insertAttributedString:spase atIndex:0];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -1576,7 +1792,7 @@
                 NSAttributedString* attrTop = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
                 [resultStr insertAttributedString:attrTop atIndex:0];
                 [resultStr insertAttributedString:spase atIndex:0];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -1597,14 +1813,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1621,7 +1837,7 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1635,7 +1851,7 @@
                         double argDouble = trunc([lastObj doubleValue]);
                         [arguArray addObject:[NSNumber numberWithDouble:argDouble]];
                     }
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1655,7 +1871,7 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1669,7 +1885,7 @@
                         double argDouble = trunc([lastObj doubleValue]);
                         [arguArray addObject:[NSNumber numberWithDouble:argDouble]];
                     }
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1688,14 +1904,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1717,14 +1933,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1743,14 +1959,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1769,14 +1985,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1804,14 +2020,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1838,14 +2054,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1872,14 +2088,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1900,14 +2116,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1926,13 +2142,13 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1952,13 +2168,13 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1978,13 +2194,13 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -2005,13 +2221,13 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -2046,20 +2262,20 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                 }
                 
-                 NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                 //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                  [resultStr insertAttributedString:[self popStringOfStack:stack
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -2074,14 +2290,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2098,7 +2314,7 @@
                 } else {
                     [resultStr insertAttributedString:argStr atIndex:0];
                 }
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -2118,7 +2334,7 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2126,7 +2342,7 @@
                     [resultStr insertAttributedString:bracet atIndex:0];
 
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2152,7 +2368,7 @@
                     
                     [resultStr insertAttributedString:mutArg atIndex:0];
                 }
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -2175,14 +2391,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [arg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [arg insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [arg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                   // NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [arg insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2196,7 +2412,7 @@
                 
                 [resultStr insertAttributedString:arg atIndex:0];
 
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -2211,14 +2427,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2240,7 +2456,7 @@
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"log" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 [resultStr insertAttributedString:attArg atIndex:0];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -2265,21 +2481,21 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                 }
                 value = [value initWithString:@"√(" attributes:attributes];
                 [resultStr insertAttributedString:value atIndex:0];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
@@ -2291,14 +2507,14 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if(([testArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]]){
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 } else {
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                   // NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -2322,7 +2538,7 @@
                     [arguArray removeLastObject];
                 }
                 NSAttributedString *attTopOfStack = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
-                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
@@ -2348,14 +2564,14 @@
                 if([testArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                 } else {
-                    NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
