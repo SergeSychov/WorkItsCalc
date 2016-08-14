@@ -160,11 +160,14 @@
         //it's was pressed Y but no strongly argu for that
         //noStonglyArguForY = YES;
         
-        NSLog(@"noStonglyArguForY self.argu = %@", self.argu);
+        //NSLog(@"noStonglyArguForY self.argu = %@", self.argu);
+        
+        NSMutableArray *newMuttNotStronglyArrayForY = [NSMutableArray arrayWithArray:self.arguStack];
+        [newMuttNotStronglyArrayForY addObject:operand];
 
-        NSArray* newArguWithNotStronglyForY = [NSArray arrayWithObjects:self.arguStack, operand, nil];
-        self.arguStack = [newArguWithNotStronglyForY copy];
-        NSLog(@"after noStonglyArguForY self.argu = %@", self.argu);
+        //NSArray* newArguWithNotStronglyForY = [NSArray arrayWithObjects:self.arguStack, operand, nil];
+        self.arguStack = [newMuttNotStronglyArrayForY copy];
+       // NSLog(@"after noStonglyArguForY self.argu = %@", self.argu);
     } else {
         
     //available to push operand only in argu stack
@@ -172,13 +175,13 @@
     //NSLog(@"Push operand arguStack before %@",self.arguStack);
     
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
-    if(![self waitingFor_Y_Argu]){ //if argu isn't function that waiting for next argu can remove all arrg
-        NSLog(@"Argu NOT waiting y");
+    //if(![self waitingFor_Y_Argu]){ //if argu isn't function that waiting for next argu can remove all arrg
+        //NSLog(@"Argu NOT waiting y");
         [copyArgu removeAllObjects];
 
-    } else {
-        NSLog(@"Argu IS waiting y");
-    }
+    //} else {
+    //    NSLog(@"Argu IS waiting y");
+    //}
 
     if([operand isKindOfClass:[NSString class]]){
         if([operand isEqualToString:@"x"]||[operand isEqualToString:@"y"]){
@@ -214,17 +217,19 @@
     //check
     id checkObj = nil; //obj for check if need Y argu
     //if argu stack not empty
-    if([self.argu lastObject]){
+   // if([self.argu lastObject]){
         checkObj = [self.argu lastObject];
     //otherwise check last obj from program
-    } else if([self.program lastObject]){
+    //} else if([self.program lastObject]){
+    if([self.program lastObject]){
         checkObj = [self.program lastObject];
     }
+    //NSLog(@"checkObj %@", checkObj);
     //if last obj is String and its operation with two argument - return YES
     NSArray * operandwithTwoArguments = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
-    if([checkObj isKindOfClass:[NSString class]] && [operandwithTwoArguments containsObject:checkObj]){
+    if(checkObj && [checkObj isKindOfClass:[NSString class]] && [operandwithTwoArguments containsObject:checkObj]){
         isWaitingFor_Y_Argu = YES;
-    }else if([checkObj isKindOfClass:[NSDictionary class]]){
+    }else if(checkObj && [checkObj isKindOfClass:[NSDictionary class]]){
         //check for y
         FuncArguments funcArgu = [ACalcBrain checkWichArgumentsHasFunc:checkObj];
         if((funcArgu==YOnlyArgu)||(funcArgu==X_and_Y_Argu)||(funcArgu==Y_and_Curr_Argu)){
@@ -314,7 +319,7 @@ typedef enum : NSInteger {
     self.arguStack = [copyArgu copy];
     //NSLog(@"brain argustack after: %@", self.arguStack);
     if([operation isKindOfClass:[NSString class]]){
-        operationPriority = [ACalcBrain getPriorityOf:operation];
+        operationPriority = [ACalcBrain getPriorityOf:operation]-1;
     } else {
         operationPriority = 3;
     }
@@ -347,20 +352,30 @@ typedef enum : NSInteger {
     int operationPriority = [ACalcBrain getPriorityOf:operation];
     
     if(!self.isStronglyArgu){
-        NSLog(@"perfomOperation NO strongly argu");
+        //NSLog(@"perfomOperation NO strongly argu");
         [self checkToExceptDoubleOperation]; //remove from stack last operation like @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"÷", @"×",@"-", @"+"
     } else {
-        NSLog(@"perfomOperation IS strongly argu");
-        [self applyArgu];
+        //NSLog(@"perfomOperation IS strongly argu");
+        /*
+        if([self waitingFor_Y_Argu]){
+            NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
+            
+            [copyArgu addObject:operation];
+            self.arguStack = [copyArgu copy];
+        }
+        */
+            [self applyArgu];
+        
     }
     //NSLog(@"2 perfomOperation before self.program %@", self.program);
     //set result stack as new argument
     [self getResultAndPutAsArguByPriotiy:operationPriority];
 
-    
-    NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
-    [programCopy.lastObject addObject:operation];
-    self.programStacks = [programCopy copy];
+    //if(![self waitingFor_Y_Argu]){
+        NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
+        [programCopy.lastObject addObject:operation];
+        self.programStacks = [programCopy copy];
+   // }
     //NSLog(@"3 perfomOperation before self.program %@", self.program);
     return [ACalcBrain runProgram:self.program usingVariableValue:self.variableValue withPriority:operationPriority];
 }
@@ -385,7 +400,7 @@ typedef enum : NSInteger {
     NSMutableArray *currentStack = [ACalcBrain deepArrayCopy:self.program];
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     id topOfStack = [currentStack lastObject];
-    if(topOfStack && [topOfStack isKindOfClass:[NSString class]] && ([ACalcBrain getPriorityOf:topOfStack] == 0)){
+    if(topOfStack && [topOfStack isKindOfClass:[NSString class]] && ([ACalcBrain getPriorityOf:topOfStack] == 1)){ //may be zero
         [currentStack removeLastObject];
         [copyArgu addObject:currentStack];
     } else {
@@ -418,16 +433,21 @@ typedef enum : NSInteger {
 {
     NSArray *operations = [NSArray arrayWithObjects:@"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", @"÷", @"×",@"-",@"+", nil];
     
+    
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     NSMutableArray *copyPogram = [ACalcBrain deepArrayCopy:self.programStacks];
+    NSLog(@"deleteLastElement before self.arguStack %@", self.arguStack);
+    NSLog(@"deleteLastElement before self.programStacks %@", self.programStacks);
+    
     
     if(self.isStronglyArgu && ([copyArgu count] >0)){
+        //NSLog(@"Works with argu");
         
         id topOfArguStack = [copyArgu lastObject];
         if(topOfArguStack){
            
             if([topOfArguStack isKindOfClass:[NSArray class]]){
-                NSLog(@"Del isStronglyArgu last Array: %@", topOfArguStack);
+                //NSLog(@"Del isStronglyArgu last Array: %@", topOfArguStack);
                 if([(NSArray*)topOfArguStack count]==4 && [topOfArguStack[0] isKindOfClass:[NSString class]]&&[topOfArguStack[0] isEqualToString:@"$"]){
                     id last = [copyArgu lastObject];
                     [copyArgu removeLastObject];
@@ -441,7 +461,7 @@ typedef enum : NSInteger {
                 } else {
                     [copyArgu removeLastObject];
                 
-                    //divide array in argu on prog and argu
+                    //decide array in argu on prog and argu
                     id topOfinnerArray = [topOfArguStack lastObject];
                     NSMutableArray * newArguStack = [[NSMutableArray alloc] init];
                     while(topOfinnerArray){
@@ -476,20 +496,45 @@ typedef enum : NSInteger {
                 [copyArgu removeLastObject];
                 self.arguStack = [copyArgu copy];
                 if([last isKindOfClass:[NSNumber class]]){
-                    NSLog(@"Del isStronglyArgu last Number: %@", topOfArguStack);
-                    if([last integerValue] == NSNotFound){//if there was not pushed by user arhument - delete next argu in stack
+                        //self.isStronglyArgu = NO;//was
+                    self.isStronglyArgu = YES;
+                    
+                } else if(last && [last isKindOfClass:[NSString class]] && [last isEqualToString:@"%"]){
+                    if([copyArgu lastObject]){
+                        [copyArgu removeLastObject];
+
+                    } else if([copyPogram lastObject] && [[copyPogram lastObject] isKindOfClass:[NSArray class]]){
+                        id lastInLastProg = [[copyPogram lastObject] lastObject];
+                        if(lastInLastProg){
+                            [[copyPogram lastObject] removeLastObject];
+                        }
+                        
+                        self.programStacks = [copyPogram copy];
+                    }
+                    self.arguStack = [copyArgu copy];
+                    self.isStronglyArgu = YES;
+                } else {// ([last isKindOfClass:[NSDictionary class]]){//if it's a function - may be it was not strongly argu
+                    //lets check
+                    id nextTopOfArguStack = [copyArgu lastObject];
+                    if(nextTopOfArguStack && [nextTopOfArguStack isKindOfClass:[NSNumber class]] && ([nextTopOfArguStack integerValue]==NSNotFound)){//if there is not pushed by user argu - delete next element
+                        [copyArgu removeLastObject];
+                        
                         last = [copyArgu lastObject];
                         if(last){
-                            return [self deleteLastElement];
-                        } else {
-                            self.isStronglyArgu = NO;
+                            [copyArgu removeLastObject];
                         }
                     }
-                } else {
-                    NSLog(@"Del isStronglyArgu last Some: %@", topOfArguStack);
-               
+                    
+                    self.arguStack = [copyArgu copy];
+                    self.programStacks = [copyPogram copy];
                     self.isStronglyArgu = YES;
                 }
+                /*
+                else {
+                    NSLog(@"Del isStronglyArgu last Some: %@", topOfArguStack);
+                    self.isStronglyArgu = YES;
+                }
+                 */
                // }
 
             }
@@ -501,7 +546,7 @@ typedef enum : NSInteger {
         
         id topOfProgStack = [copyPogram.lastObject lastObject];
         
-        NSLog(@"Del NOt Strong last Some: %@", topOfProgStack);
+        //NSLog(@"Works with prog");
 
         
         if(topOfProgStack){
@@ -510,7 +555,7 @@ typedef enum : NSInteger {
             
             id nextTopOfProgStack = [copyPogram.lastObject lastObject];
             
-            NSLog(@"Del NOt StnextTopOfProgStack: %@", nextTopOfProgStack);
+            //NSLog(@"Del NOt StnextTopOfProgStack: %@", nextTopOfProgStack);
             
             if(nextTopOfProgStack && [nextTopOfProgStack isKindOfClass:[NSNumber class]] && ([nextTopOfProgStack integerValue]==NSNotFound)){//if there is not pushed by user argu - delete next element
                 [copyPogram.lastObject removeLastObject];
@@ -520,6 +565,7 @@ typedef enum : NSInteger {
                     [copyPogram.lastObject removeLastObject];
                 }
             }
+            
             
             //chek next object and if its not operation set it as argu
             topOfProgStack = [copyPogram.lastObject lastObject];
@@ -555,11 +601,28 @@ typedef enum : NSInteger {
 
     }
 
+    NSLog(@"deleteLastElement after self.arguStack: %@", self.arguStack);
+    NSLog(@"deleteLastElement after self.programStacks: %@", self.programStacks);
     
     return  self.isStronglyArgu;
 }
 
 #pragma mark _HELPED FUNCTIOS___________________________________________________
+
+
++(BOOL)isNeedBracketsForArgumentFromStack:(NSArray*)stack
+{
+    BOOL returnMark = NO;
+    NSArray* needBracketsOperation = [NSArray arrayWithObjects:@"yˣ",@"√x²+y²", nil];
+    
+    id lastObjFromStack = [stack lastObject];
+    
+    if(lastObjFromStack && [lastObjFromStack isKindOfClass:[NSString class]] && [needBracketsOperation containsObject:lastObjFromStack]){
+        returnMark = YES;
+    }
+    
+    return returnMark;
+}
 
 +(double) factorial: (double)n
 {
@@ -573,16 +636,16 @@ typedef enum : NSInteger {
 
 +(int) getPriorityOf:(NSString*) operand;
 {
-    int priority = 3;
+    int priority = 4;
     NSArray *zeroPriorityOperands = [NSArray arrayWithObjects:@"+",@"-", nil];
     NSArray *onePriorityOperands = [NSArray arrayWithObjects:@"÷", @"×", nil];
     NSArray *twoPriorityOperands = [NSArray arrayWithObjects:@"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²", nil];
     if([zeroPriorityOperands containsObject:operand]){
-        priority =0;
+        priority =1;
     } else if([onePriorityOperands containsObject:operand]){
-        priority = 1;
-    } else if([twoPriorityOperands containsObject:operand]){
         priority = 2;
+    } else if([twoPriorityOperands containsObject:operand]){
+        priority = 3;
     }
     return priority;
 }
@@ -757,6 +820,8 @@ typedef enum : NSInteger {
 
 +(NSMutableArray*) getNextArguInStack:(NSMutableArray*) stack accordingOperation:(NSArray*) operations
 {
+    //NSLog(@"getNextArguInStack stack: %@",stack);
+    
     NSMutableArray *arguArray = [[NSMutableArray alloc] init];
     NSMutableArray *backwardArguArray = [[NSMutableArray alloc] init];
     id nexTopOfStack = [stack lastObject];
@@ -769,15 +834,46 @@ typedef enum : NSInteger {
             nexTopOfStack = [stack lastObject];
         }
     }
-    
+    //NSLog(@"getNextArguInStack backwardArguArray: %@",backwardArguArray);
+
     id objFromBackwardArguArray = [backwardArguArray lastObject];
     while (objFromBackwardArguArray) {
         [arguArray addObject:objFromBackwardArguArray];
         [backwardArguArray removeLastObject];
         objFromBackwardArguArray = [backwardArguArray lastObject];
     }
+    //NSLog(@"getNextArguInStack arguArray: %@",arguArray);
+
 
     return arguArray;
+}
+//change baseline and font size for mutable string
++(NSAttributedString*)changeForString:(NSAttributedString*)inputAttrStr fontSizeWith:(CGFloat)devider andBaseLine:(CGFloat)multiplier
+//if need bottom baseline -  multiplier is minus value
+{
+    NSAttributedString *retStr;
+    @autoreleasepool {
+        NSMutableAttributedString* mutInStr = [inputAttrStr mutableCopy];
+        [mutInStr beginEditing];
+        //NSRange wholeRange = NSMakeRange(0, [mutAttArg length]);
+        for(NSInteger i = 0;i < [mutInStr length]; i++){
+            NSDictionary *wasAttributes = [mutInStr attributesAtIndex:i effectiveRange:NULL];
+            UIFont *wasAttrFont = [wasAttributes valueForKey:NSFontAttributeName];
+            UIFont *newAttrFont = [UIFont fontWithName:wasAttrFont.fontName size:(wasAttrFont.pointSize / devider)];
+            
+            CGFloat wasBaseLine = [[wasAttributes valueForKey:NSBaselineOffsetAttributeName] floatValue];
+            NSNumber *newBaseLineOffsetTop =[NSNumber numberWithFloat: wasBaseLine + wasAttrFont.pointSize * multiplier];
+            NSRange eachSymbolRange = NSMakeRange(i,1);
+            [mutInStr addAttribute:NSFontAttributeName value:newAttrFont range:eachSymbolRange];
+            [mutInStr addAttribute:NSBaselineOffsetAttributeName value:newBaseLineOffsetTop range:eachSymbolRange];
+            
+            
+        }
+        [mutInStr endEditing];
+        retStr = [mutInStr copy];
+    }
+    
+    return retStr;
 }
 #pragma mark _END_HELPED_FUNCTIONS_____________________________________________________
 
@@ -787,8 +883,10 @@ typedef enum : NSInteger {
     if(isRigthOpen){
         NSMutableArray *nextStack = [[NSMutableArray alloc] init];
         NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
+        //NSLog(@"InsertBracet programStacks: %@",self.programStacks);
         [programCopy addObject:nextStack];
         self.programStacks = [programCopy copy];
+        NSLog(@"InsertBracet programStacks: %@",self.programStacks);
         [self clearArgu];
         self.numberOfOpenBrackets +=1;
     } else {
@@ -820,7 +918,7 @@ typedef enum : NSInteger {
 -(void) checkToExceptDoubleOperation
 {
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
-    NSArray * checkingArray = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"÷", @"×",@"-", @"+", nil];
+    NSArray * checkingArray = [NSArray arrayWithObjects:   /*@"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",*/@"÷", @"×",@"-", @"+", nil];
     id lastObjInStack = [programCopy.lastObject lastObject];
     if(lastObjInStack){
         if([lastObjInStack isKindOfClass:[NSString class]] && [checkingArray containsObject:lastObjInStack]){
@@ -834,16 +932,49 @@ typedef enum : NSInteger {
 {
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
-    NSLog(@"applyArgu programStack %@", self.programStacks);
-    NSLog(@"applyArgu arguStack %@", self.arguStack);
+    //NSLog(@"applyArgu programStack %@", self.programStacks);
+    //NSLog(@"applyArgu arguStack %@", self.arguStack);
+    
+    //check if function is waiting for Y
+    
+    if([self waitingFor_Y_Argu]){//find argu before function and put its copy back after function
+        /*
+        NSMutableArray *nextCopyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
+        id lastOfArgu = [nextCopyArgu lastObject];
+        if(lastOfArgu){
+            [nextCopyArgu removeLastObject];
+            
+            lastOfArgu = [nextCopyArgu lastObject];
+            
+            //if there is not strongly argu -
+            if(lastOfArgu && [lastOfArgu isKindOfClass:[NSNumber class]] && ([lastOfArgu integerValue] == NSNotFound)){
+                //remove mark of "not strolgly"
+                //NSLog(@"remove mark of not strolgly");
+                [nextCopyArgu removeLastObject];
+                //and then get next
+                lastOfArgu = [nextCopyArgu lastObject];
+            } else {
+                //NSLog(@"nothing was removed");
+            }
+        }
+        
+        if(lastOfArgu){
+            [copyArgu addObject:[lastOfArgu copy]];
+        } else {
+            [copyArgu addObject:@0];
+        }
+        */
+        
+    }
+    
     for(int i = 0; i < [copyArgu count]; i++){
         [programCopy.lastObject addObject:copyArgu[i]];
     }
     self.programStacks = [programCopy copy];
     self.arguStack = [copyArgu copy];
     
-    NSLog(@"After applyArgu programStack %@", self.programStacks);
-    NSLog(@"After applyArgu arguStack %@", self.arguStack);
+    //NSLog(@"After applyArgu programStack %@", self.programStacks);
+    //NSLog(@"After applyArgu arguStack %@", self.arguStack);
     
 }
 
@@ -1011,13 +1142,14 @@ typedef enum : NSInteger {
 {
     double result = 0.0;
     //NSLog(@"popOperandOfStack Stack:%@",  stack);
+    //NSLog(@"popOperandOfStack Value:%@", value);
     
     if(![stack isKindOfClass:[NSMutableArray class]]){
         stack = [stack mutableCopy];
     }
 
     id topOfStack = [stack lastObject];
-    //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
+    ///NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
 
     if(topOfStack){
         
@@ -1056,7 +1188,8 @@ typedef enum : NSInteger {
                         //NSLog(@"pop argument %@",[NSNumber numberWithDouble:arg]);
                         
                         if (funcArguments == XOnlyArgu){
-                            double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                            double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
+                            //NSLog(@"Argu to X %@", [NSNumber numberWithDouble:arg]);
                             replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
                             funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                             
@@ -1065,25 +1198,32 @@ typedef enum : NSInteger {
                                 //if no value just put previous argu as result
                                 funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3]];
                                 
-                                //NSLog(@"there is no value for y!");
+                                
+                                NSLog(@"there is no value for y!");
                             } else {
                                 replacedArray = [ACalcBrain programm:lastObj replaceString:@"y" withObj:value];
                                 //check if it was strongly argu
                                 id topOfStack = [stack lastObject];
-                                NSLog(@"top of stack before Y: %@", topOfStack);
+                                //NSLog(@"top of stack before Y: %@", topOfStack);
                                 BOOL noStronglyArguBeforeY = NO;
                                 
-                                if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && ([topOfStack integerValue]==NSNotFound)){
+                                if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && (
+                                   ([topOfStack integerValue]==NSNotFound) ||
+                                   ([topOfStack integerValue]==0)
+                                   )){
                                         noStronglyArguBeforeY = YES;
+                                    //[stack removeLastObject];
+                                    NSLog(@"was no argu");
+
                                 }
                                 
-                                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                                 if(noStronglyArguBeforeY || arg == 0.0){
-                                    NSLog(@"NoStonglyArguForY in pop");
+                                    //NSLog(@"NoStonglyArguForY in pop");
                                     funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                                 } else {
                                     //if there is strongly argu before Y - multiply function on this arg
-                                    NSLog(@"StonglyArguForY");
+                                    //NSLog(@"StonglyArguForY");
 
                                     funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:[replacedArray mutableCopy]])];
                                 }
@@ -1128,23 +1268,56 @@ typedef enum : NSInteger {
         }
 
     } else if([topOfStack isKindOfClass:[NSNumber class]]){
-        /*
+        
         if([topOfStack integerValue] == NSNotFound){//if there is not pushed by user argument
+            
             topOfStack = [stack lastObject];
-            if(topOfStack){
-                [stack removeLastObject];
+            //[stack removeLastObject];
+            //NSLog(@"topOfStack %@",topOfStack);
+            if(!topOfStack){
+                result = 0;
+                //NSLog(@"result - 0");
+            } else {
+                result = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:priority];
+               // NSLog(@"Result - next");
             }
+            
+
+        } else {
+            result = [self popOperandOfStack:stack withPreviousValue:topOfStack accordingPriority:priority];
         }
-        */
-        result = [self popOperandOfStack:stack withPreviousValue:topOfStack accordingPriority:priority];
     } else if([topOfStack isKindOfClass:[NSString class]]){
         
         NSString * operation = topOfStack;
         int operationPriority = [ACalcBrain getPriorityOf:operation];
-        if(priority > operationPriority){
-            if(value) result = [value doubleValue];
+       // NSLog(@"was_priority:%@, operation:%@, Priority: %@,  ",[NSNumber numberWithInteger:priority], operation,[NSNumber numberWithInteger:operationPriority]);
+        //NSLog(@"Value: %@", value);
+        if((priority <= 2) && (priority > operationPriority)){//for +,-,/,*
+            if(value){
+                result = [value doubleValue];
+                //NSLog(@"Get result");
+                [stack addObject:topOfStack];
+                
+            } else {
+
+                result = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:(priority-1)];
+            }
+        } else if((priority > 2) && (priority >= operationPriority)){//for anothers operation and functions
+            if(value){
+                result = [value doubleValue];
+                //NSLog(@"Get result");
+                [stack addObject:topOfStack];
+                
+            } else {
+                 [stack addObject:topOfStack];
+                result = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:(priority-1)];
+            }
+            
             //think if topOfstack dosn't use put it back to stack for next operation
-            [stack addObject:topOfStack];
+            //[stack addObject:topOfStack];
+            //NSLog(@"AFTER %@",stack);
+            //result = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:(priority-1)];
+            
         } else {
             /*if([operation isEqualToString:@"X"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
@@ -1156,7 +1329,7 @@ typedef enum : NSInteger {
                 }
                 
             } else */if([operation isEqualToString:@"e"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 if(arg == 0.0) {
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:M_E] accordingPriority:priority];
                 } else {
@@ -1164,7 +1337,7 @@ typedef enum : NSInteger {
                 }
                 
             } else if([operation isEqualToString:@"π"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 if(arg == 0.0) {
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:M_PI] accordingPriority:priority];
                 } else {
@@ -1172,77 +1345,84 @@ typedef enum : NSInteger {
                 }
                 
             } else if ([operation isEqualToString:@"∓"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * -1.0)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"¹/x"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1/arg] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"x!"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 //make something toi exept not integer number
                 arg = trunc(arg);
                 double fac = [self factorial:arg];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:fac] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"x²"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
+                NSLog(@"x² argu:%@",[NSNumber numberWithDouble:arg]);
+                
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,2)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"x³"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,3)] accordingPriority:priority];
                 
             }  else if ([operation isEqualToString:@"2ˣ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(2,arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"eˣ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(M_E,arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"10ˣ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(10.,arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"√x"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sqrt(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"³√x"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cbrt(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"lg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:log10(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"log₂"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:log2(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"ln"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:log(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"xʸ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
+                    //NSLog(@"there is VALUE for xy!");
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,[value doubleValue])] accordingPriority:priority];
                 } else {
+                   // NSLog(@"there is no value for xy!");
+
                     result = arg;
                 }
                 
             } else if ([operation isEqualToString:@"yˣ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],arg)] accordingPriority:priority];
                 } else {
                     result = arg;
                 }
             } else if ([operation isEqualToString:@"ʸ√x"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,1 / [value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1250,14 +1430,14 @@ typedef enum : NSInteger {
                 }
                 
             } else if ([operation isEqualToString:@"ˣ√y"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],1 / arg)] accordingPriority:priority];
                 } else {
                     result = arg;
                 }
             } else if ([operation isEqualToString:@"logʸ"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:log(arg) / log([value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1265,7 +1445,7 @@ typedef enum : NSInteger {
                 }
                 
             } else if ([operation isEqualToString:@"√x²+y²"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:hypot(arg,[value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1317,35 +1497,35 @@ typedef enum : NSInteger {
                  result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:arg] accordingPriority:priority];
 
             } else if ([operation isEqualToString:@"R"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1/arg] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"rcos"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cos(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"rsin"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sin(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"rtg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:tan(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"rctg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tan(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dsin"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sin(arg * M_PI / 180)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dcos"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cos(arg * M_PI / 180)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dtg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 //double integerPart, factorialPart;
                 //factorialPart = modf(arg, &integerPart);
                 //if(factorialPart == 0){
@@ -1356,59 +1536,59 @@ typedef enum : NSInteger {
                // }
                 
             } else if ([operation isEqualToString:@"dctg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tan(arg * M_PI / 180)] accordingPriority:priority];
 
             } else if ([operation isEqualToString:@"racos"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:acos(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"rasin"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:asin(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"ratg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:atan(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"ractg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:atan(1/arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dasin"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:asin(arg) * 180 / M_PI] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dacos"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:acos(arg) * 180 / M_PI] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"datg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:atan(arg) * 180 / M_PI] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"dactg"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble: atan(1/arg)  * 180 / M_PI] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"sinh"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sinh(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"cosh"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cosh(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"tgh"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:tanh(arg)] accordingPriority:priority];
                 
             } else if ([operation isEqualToString:@"ctgh"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tanh(arg)] accordingPriority:priority];
                 
             } else if([operation isEqualToString:@"×"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:1];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * [value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1416,7 +1596,7 @@ typedef enum : NSInteger {
                 }
 
             } else if([operation isEqualToString:@"÷"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:1];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:2];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg / [value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1424,7 +1604,8 @@ typedef enum : NSInteger {
                 }
                 
             } else if([operation isEqualToString:@"+"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:0];
+                
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:1];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg +[value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1433,7 +1614,7 @@ typedef enum : NSInteger {
                 
             }
             else if([operation isEqualToString:@"-"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:0];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:1];
                 if(value){
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg - [value doubleValue])] accordingPriority:priority];
                 } else {
@@ -1444,19 +1625,19 @@ typedef enum : NSInteger {
                 id nextTop = [stack lastObject];
                 double arg;
                 if(nextTop && [nextTop isKindOfClass:[NSArray class]]){
-                    arg = [self popOperandOfStack:nextTop withPreviousValue:nil accordingPriority:0];
+                    arg = [self popOperandOfStack:nextTop withPreviousValue:nil accordingPriority:1];
                     [stack removeLastObject];
 
                 } else {
                     arg = 1.0;
                 }
-                double secondArg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double secondArg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 
                 result = [self popOperandOfStack:stack
                                withPreviousValue:[NSNumber numberWithDouble:(arg*secondArg/100.)]
                                accordingPriority:priority];
             } else if ([operation isEqualToString:@".00"]){
-                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
+                double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                 arg = round(arg *100) /100;
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:arg] accordingPriority:priority];
                 
@@ -1478,7 +1659,7 @@ typedef enum : NSInteger {
 {
     NSMutableAttributedString * atrStr = [[NSMutableAttributedString alloc] initWithString:@"" attributes:atributes];
     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:atributes];
-
+   // NSLog(@"Program in description: %@",program);
     id topOfStacs = [program lastObject];
     
     if(topOfStacs && (![topOfStacs isKindOfClass:[NSArray class]])){
@@ -1491,7 +1672,8 @@ typedef enum : NSInteger {
         while (topOfStacs) {
             NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:atributes];
             [atrStr insertAttributedString:bracet atIndex:0];
-            [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:0];
+            atrStr = [[self popStringOfStack:topOfStacs withNextArguString:atrStr withAttributes:atributes] mutableCopy];
+            //[atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:0];
             [program removeLastObject];
             topOfStacs = [program lastObject];
         }
@@ -1519,10 +1701,13 @@ typedef enum : NSInteger {
     CGFloat insertBaseLine = [[attributes valueForKey:NSBaselineOffsetAttributeName] floatValue];
     
     //makes attributes for top line text and ...
+    CGFloat fontDevider = 1.3;
+    CGFloat baselineMultipier = 0.3;
     UIFont *wasFont = [attributes valueForKey:NSFontAttributeName];
-    UIFont *newfont = [UIFont fontWithName:wasFont.fontName size:(wasFont.pointSize / 1.5)];
-    NSNumber *baseLineOffsetTop =[NSNumber numberWithFloat: insertBaseLine + wasFont.pointSize * 0.4];
-    NSNumber *baseLineOffsetButtom =[NSNumber numberWithFloat:  insertBaseLine - (wasFont.pointSize * 0.4)];
+    UIFont *newfont = [UIFont fontWithName:wasFont.fontName size:(wasFont.pointSize / fontDevider)];
+    
+    NSNumber *baseLineOffsetTop =[NSNumber numberWithFloat: insertBaseLine + wasFont.pointSize * baselineMultipier];
+    NSNumber *baseLineOffsetButtom =[NSNumber numberWithFloat:  insertBaseLine - (wasFont.pointSize * baselineMultipier)];
     
     id topOfStack = [stack lastObject];
     if(topOfStack){
@@ -1535,7 +1720,13 @@ typedef enum : NSInteger {
     NSArray *operations = [NSArray arrayWithObjects:   @"xʸ",@"yˣ",@"ʸ√x",@"ˣ√y",@"logʸ",@"√x²+y²",@"÷", @"×",@"-",@"+", nil];
     NSArray *nextOperations = [NSArray arrayWithObjects: @"÷", @"×",@"-",@"+", nil];
    // NSLog(@"top of stack in pop %@", topOfStack);
+    
+    //works string with need attributes
     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes]; //helped string to solve several problem in next
+    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
+    NSAttributedString *closeBracket = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
+    NSAttributedString *openBracket = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
+    
     
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function created by user
@@ -1576,6 +1767,14 @@ typedef enum : NSInteger {
                         NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                         //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                         //replace 'x' with argument
+                        id lastObjInArgu = [arguArray lastObject];
+                        if(lastObjInArgu && [lastObjInArgu isKindOfClass:[NSNumber class]] &&([lastObjInArgu integerValue]==NSNotFound)){
+                            [arguArray removeLastObject];
+                            if([arguArray count]==0){
+                                arguArray = [NSMutableArray arrayWithObjects:[NSNumber numberWithDouble:0.0], nil];
+                            }
+                            
+                        }
                         [attArg replaceCharactersInRange:xRangeInStrBetwinBrackets withAttributedString:[self popStringOfStack:arguArray
                                                                                                             withNextArguString:empty
                                                                                                                 withAttributes:attributes]];
@@ -1592,9 +1791,15 @@ typedef enum : NSInteger {
                         NSMutableArray *multiplyArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
                         NSAttributedString *multiplyString;
                         id multiplyArraylastObj = [multiplyArray lastObject];
-                        if(multiplyArraylastObj && [multiplyArraylastObj isKindOfClass:[NSNumber class]] &&([multiplyArraylastObj integerValue]==NSNotFound)){
+                        //if there is not strongly argu or 0 multiplayer - replace with empty string
+                        if(multiplyArraylastObj &&
+                           [multiplyArraylastObj isKindOfClass:[NSNumber class]] &&
+                            (
+                                ([multiplyArraylastObj integerValue]==NSNotFound)||
+                                ([multiplyArraylastObj integerValue]==0)
+                             )){
                             multiplyString = empty;
-                        }else {
+                        }else  {
                             multiplyString = [self popStringOfStack:multiplyArray withNextArguString:empty withAttributes:attributes];
                         }
                         
@@ -1603,7 +1808,6 @@ typedef enum : NSInteger {
                        // NSLog(@"String argStr %@", [mutAttArg string]);
                         //NSLog(@"PopStr argStr %@", [mutAttArg string]);
                         if([mutAttArg.string isEqualToString:@""]){
-                            NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
                             [mutAttArg insertAttributedString:quesMark atIndex:0];
                         }
                         
@@ -1647,10 +1851,8 @@ typedef enum : NSInteger {
             [toCurAttrStr endEditing];
             
             
-            NSString *initStr =@"(";
-
             NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-            NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:initStr attributes:attributes];
+            NSMutableAttributedString *attArg = [openBracket mutableCopy];
 
             
             id nextTopOfStack = [arguArray lastObject];
@@ -1664,8 +1866,7 @@ typedef enum : NSInteger {
                                                    withAttributes:attributes] atIndex:[attArg length]];
             
             [attArg insertAttributedString:fromCurAttrStr atIndex:[attArg length]];
-            NSAttributedString *braket = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-            [attArg insertAttributedString:braket atIndex:[attArg length]];
+            [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
             [attArg insertAttributedString:toCurAttrStr atIndex:[attArg length]];
             resultStr = [[self popStringOfStack:stack
                              withNextArguString:attArg
@@ -1690,7 +1891,6 @@ typedef enum : NSInteger {
                     }
                 } else {
                     NSMutableArray *mutTopOfStack = [topOfStack mutableCopy];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:mutTopOfStack
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
@@ -1699,21 +1899,50 @@ typedef enum : NSInteger {
             } else {
             
                 NSMutableArray *mutTopOfStack = [topOfStack mutableCopy];
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [attArg insertAttributedString:[self popStringOfStack:mutTopOfStack
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
             
             }
-            NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-            [attArg insertAttributedString:bracet atIndex:0];
-            bracet = [bracet initWithString:@")" attributes:attributes];
-            [attArg insertAttributedString:bracet atIndex:[attArg length]];
+            [attArg insertAttributedString:openBracket atIndex:0];
+            [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+
             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
         }
         
     } else if ([topOfStack isKindOfClass:[NSNumber class]]){
+
+        if([topOfStack integerValue]==NSNotFound){
+            if([stack count] == 0){
+                NSAttributedString *zeroNumber = [[NSAttributedString alloc] initWithString:@"0" attributes:attributes];
+                resultStr = [[self popStringOfStack:stack withNextArguString:zeroNumber withAttributes:attributes] mutableCopy];
+            } else {
+                resultStr = [[self popStringOfStack:stack withNextArguString:empty withAttributes:attributes]mutableCopy];
+            }
+            
+        } else {
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+
+            
+            /*
+            NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+             //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+             //replace 'x' with argument
+             id lastObjInArgu = [arguArray lastObject];
+             if(lastObjInArgu && [lastObjInArgu isKindOfClass:[NSNumber class]] &&([lastObjInArgu integerValue]==NSNotFound)){
+            [arguArray removeLastObject];
+            if([arguArray count]==0){
+                arguArray = [NSMutableArray arrayWithObjects:[NSNumber numberWithDouble:0.0], nil];
+            }
+            
+             }
+             [attArg replaceCharactersInRange:xRangeInStrBetwinBrackets withAttributedString:[self popStringOfStack:arguArray
+                                                                                            withNextArguString:empty
+                                                                                                withAttributes:attributes]];
+        
+             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+            */
+
             if (fabs([topOfStack doubleValue])>9e9 || fabs([topOfStack doubleValue])<9e-9) {
                 [format setNumberStyle:NSNumberFormatterScientificStyle];
                 [format setMaximumFractionDigits:7];
@@ -1729,16 +1958,15 @@ typedef enum : NSInteger {
             NSAttributedString *number = [[NSAttributedString alloc] initWithString:[format stringFromNumber:topOfStack] attributes:attributes];
             //NSString *arg = @"";
             if([topOfStack doubleValue] < 0){
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                [attArg insertAttributedString:closeBracket atIndex:0];
                 [attArg insertAttributedString:number atIndex:0];
-                bracet = [bracet initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                [attArg insertAttributedString:openBracket atIndex:0];
                 
             } else {
                 [attArg insertAttributedString:number atIndex:0];
             }
             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
+        }
 
     } else if ([topOfStack isKindOfClass:[NSString class]]) {
             NSArray * trigonometrics = [NSArray arrayWithObjects:
@@ -1806,7 +2034,8 @@ typedef enum : NSInteger {
                 //delete percent argu
                 id nextTopOfStack = [arguArray lastObject];
                 if(nextTopOfStack) [arguArray removeLastObject];
-
+                
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -1819,12 +2048,11 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+               // }
                 resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
                 
             } else if([topOfStack isEqualToString:@"∓"]){
@@ -1835,14 +2063,12 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [attArg insertAttributedString:closeBracket atIndex:0];
+
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
                     
                 } else {
                     id lastObj = [arguArray lastObject];
@@ -1851,7 +2077,7 @@ typedef enum : NSInteger {
                         double argDouble = trunc([lastObj doubleValue]);
                         [arguArray addObject:[NSNumber numberWithDouble:argDouble]];
                     }
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1869,14 +2095,11 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [attArg insertAttributedString:closeBracket atIndex:0];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
 
                 } else {
                     id lastObj = [arguArray lastObject];
@@ -1885,7 +2108,6 @@ typedef enum : NSInteger {
                         double argDouble = trunc([lastObj doubleValue]);
                         [arguArray addObject:[NSNumber numberWithDouble:argDouble]];
                     }
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
@@ -1898,6 +2120,7 @@ typedef enum : NSInteger {
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 //NSString *arg = @"";
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -1910,12 +2133,12 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
+                } else { */
                     //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 
                 NSAttributedString * value = [[NSAttributedString alloc] initWithString:@"1/" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
@@ -1925,52 +2148,72 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"x²"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"²" attributes:attributes];
+                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"2" attributes:attributes];
+                //change font size and baseline for arg string
+                attArg = [[ACalcBrain changeForString:[attArg copy]
+                                            fontSizeWith:fontDevider
+                                             andBaseLine:baselineMultipier] mutableCopy];
+                
                 
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [attArg insertAttributedString:closeBracket atIndex:0];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 }
+                
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+                
+                
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
                 
             } else if([topOfStack isEqualToString:@"x³"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"³" attributes:attributes];
+               // NSLog(@"yˣ stack:%@", stack);
+               // NSLog(@"yˣ arguArray:%@", arguArray);
+                //NSLog(@"yˣ argstr:%@", [argStr string]);
 
+                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"3" attributes:attributes];
+                //change font size and baseline for arg string
+                attArg = [[ACalcBrain changeForString:[attArg copy]
+                                         fontSizeWith:fontDevider
+                                          andBaseLine:baselineMultipier] mutableCopy];
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [attArg insertAttributedString:closeBracket atIndex:0];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 }
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -1979,6 +2222,7 @@ typedef enum : NSInteger {
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -1991,12 +2235,11 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 
                 [attArg beginEditing];
                 NSRange wholeRange = NSMakeRange(0, [attArg length]);
@@ -2006,6 +2249,13 @@ typedef enum : NSInteger {
 
                 NSAttributedString *two = [[NSAttributedString alloc]initWithString:@"2" attributes:attributes];
                 [attArg insertAttributedString:two atIndex:0];
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2013,7 +2263,7 @@ typedef enum : NSInteger {
             } else if([topOfStack isEqualToString:@"eˣ"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
-                
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -2026,12 +2276,11 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 [attArg beginEditing];
                 NSRange wholeRange = NSMakeRange(0, [attArg length]);
                 [attArg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
@@ -2040,6 +2289,13 @@ typedef enum : NSInteger {
                 
                 NSAttributedString *e = [[NSAttributedString alloc]initWithString:@"e" attributes:attributes];
                 [attArg insertAttributedString:e atIndex:0];
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2047,7 +2303,8 @@ typedef enum : NSInteger {
             }  else if([topOfStack isEqualToString:@"10ˣ"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
-
+                
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -2060,12 +2317,11 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 [attArg beginEditing];
                 NSRange wholeRange = NSMakeRange(0, [attArg length]);
                 [attArg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
@@ -2074,6 +2330,12 @@ typedef enum : NSInteger {
                 
                 NSAttributedString *ten = [[NSAttributedString alloc]initWithString:@"10" attributes:attributes];
                 [attArg insertAttributedString:ten atIndex:0];
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2082,6 +2344,7 @@ typedef enum : NSInteger {
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -2094,14 +2357,14 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 NSAttributedString *sqrt = [[NSAttributedString alloc]initWithString:@"√" attributes:attributes];
                 [attArg insertAttributedString:sqrt atIndex:0];
+                
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2110,6 +2373,7 @@ typedef enum : NSInteger {
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
+                /*
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -2122,12 +2386,11 @@ typedef enum : NSInteger {
                                                            withAttributes:attributes] atIndex:0];
                     bracet = [bracet initWithString:@"(" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
-                } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                } else {*/
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                }
+                //}
                 NSAttributedString *cqrt = [[NSAttributedString alloc]initWithString:@"³√" attributes:attributes];
                 [attArg insertAttributedString:cqrt atIndex:0];
                 resultStr = [[self popStringOfStack:stack
@@ -2136,25 +2399,26 @@ typedef enum : NSInteger {
 
             } else if([topOfStack isEqualToString:@"lg"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
-
-                //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
-                    
+                NSAttributedString *arguArrayString =[self popStringOfStack:arguArray
+                                                         withNextArguString:empty
+                                                             withAttributes:attributes];
+                
+                NSRange bracketOpenRange = [[arguArrayString string] rangeOfString:@"(" options:0];
+                //it's important search from and case user insert brackets in name
+                NSRange bracketCloseRange = [[arguArrayString string] rangeOfString:@")" options:NSBackwardsSearch];
+                
+                NSMutableAttributedString *attArg = [empty mutableCopy];
+                
+                if(bracketOpenRange.location == 0 && bracketCloseRange.location == ([arguArrayString length]-1)){//if there is array - not put brackets
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
+                    
+                    [attArg insertAttributedString:closeBracket atIndex:0];
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
+
                 }
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"lg" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 resultStr = [[self popStringOfStack:stack
@@ -2163,50 +2427,55 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"log₂"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
-                //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
-                    
+                NSAttributedString *arguArrayString =[self popStringOfStack:arguArray
+                                                         withNextArguString:empty
+                                                             withAttributes:attributes];
+                
+                NSRange bracketOpenRange = [[arguArrayString string] rangeOfString:@"(" options:0];
+                //it's important search from and case user insert brackets in name
+                NSRange bracketCloseRange = [[arguArrayString string] rangeOfString:@")" options:NSBackwardsSearch];
+                
+                NSMutableAttributedString *attArg = [empty mutableCopy];
+                
+                if(bracketOpenRange.location == 0 && bracketCloseRange.location == ([arguArrayString length]-1)){//if there is array - not put brackets
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
+                    
+                    [attArg insertAttributedString:closeBracket atIndex:0];
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    
                 }
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"log₂" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
                 
+                
             } else if([topOfStack isEqualToString:@"ln"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
-                //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
-                    
+                NSAttributedString *arguArrayString =[self popStringOfStack:arguArray
+                                                         withNextArguString:empty
+                                                             withAttributes:attributes];
+                
+                NSRange bracketOpenRange = [[arguArrayString string] rangeOfString:@"(" options:0];
+                //it's important search from and case user insert brackets in name
+                NSRange bracketCloseRange = [[arguArrayString string] rangeOfString:@")" options:NSBackwardsSearch];
+                
+                NSMutableAttributedString *attArg = [empty mutableCopy];
+                
+                if(bracketOpenRange.location == 0 && bracketCloseRange.location == ([arguArrayString length]-1)){//if there is array - not put brackets
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [attArg insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
+                    
+                    [attArg insertAttributedString:closeBracket atIndex:0];
+                    [attArg insertAttributedString:arguArrayString atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    
                 }
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"ln" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 resultStr = [[self popStringOfStack:stack
@@ -2216,7 +2485,7 @@ typedef enum : NSInteger {
      
             } else if([hiperbolic containsObject: topOfStack]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
+                NSMutableAttributedString *attArg = [closeBracket mutableCopy];
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
@@ -2232,8 +2501,8 @@ typedef enum : NSInteger {
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 }
-                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-                [attArg insertAttributedString:bracet atIndex:0];
+                //NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
+                [attArg insertAttributedString:openBracket atIndex:0];
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:topOfStack attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 resultStr = [[self popStringOfStack:stack
@@ -2242,89 +2511,146 @@ typedef enum : NSInteger {
                 
                 
             } else if([topOfStack isEqualToString:@"xʸ"]){
-                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
+                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                //NSLog(@"xʸ arguArray %@",arguArray);
+
                 NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
-                if([mutAttArg.string isEqualToString:@""]){
-                    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
+                //NSLog(@"xʸ argStr %@", [argStr string]);
+                
+                if([mutAttArg.string isEqualToString:@""]){//if there is empty argument array
+                    //add question mark
                     [mutAttArg insertAttributedString:quesMark atIndex:0];
                 }
+                //NSLog(@"xʸ mutAttArg %@", [mutAttArg string]);
                 
-                [mutAttArg beginEditing];
-                NSRange wholeRange = NSMakeRange(0, [mutAttArg length]);
-                [mutAttArg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                [mutAttArg addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetTop range:wholeRange];
-                [mutAttArg endEditing];
                 
-                [resultStr insertAttributedString:mutAttArg atIndex:0];
+                //change font size and baseline for arg string
+                mutAttArg = [[ACalcBrain changeForString:[mutAttArg copy]
+                                           fontSizeWith:fontDevider
+                                             andBaseLine:baselineMultipier] mutableCopy];
+                
+                NSMutableAttributedString *attArg = [empty mutableCopy];
+                //[resultStr insertAttributedString:mutAttArg atIndex:0];
+                [attArg insertAttributedString:mutAttArg atIndex:0];
+                 //NSLog(@"xʸ attArg %@", [attArg string]);
+                
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
+                
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
+
+                    [attArg insertAttributedString:closeBracket atIndex:0];
+                    [attArg insertAttributedString:[self popStringOfStack:arguArray
+                                                          withNextArguString:empty
+                                                              withAttributes:attributes] atIndex:0];
+
+                    [attArg insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
+
+                    [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                 }
                 
-                 //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                 [resultStr insertAttributedString:[self popStringOfStack:stack
-                                                       withNextArguString:empty
-                                                           withAttributes:attributes] atIndex:0];
+                
+
+                 ////[resultStr insertAttributedString:[self popStringOfStack:stack
+                  //                                     withNextArguString:empty
+                  //                                         withAttributes:attributes] atIndex:0];
+                //NSLog(@"xʸ result atr string:%@", [attArg string]);
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+
+                resultStr = [[self popStringOfStack:stack
+                                 withNextArguString:attArg
+                                     withAttributes:attributes] mutableCopy];
                 
             } else if([topOfStack isEqualToString:@"yˣ"]){
-                //necessary get next argu from stack
+                
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
+                //NSLog(@"yˣ stack:%@", stack);
+                //NSLog(@"yˣ arguArray:%@", arguArray);
+                //NSLog(@"yˣ argstr:%@", [argStr string]);
                 
-                //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
+
+                NSMutableAttributedString* mutAtrStr = [argStr mutableCopy];
+                if([mutAtrStr.string isEqualToString:@""]){//if there is empty argument array
+                    [mutAtrStr insertAttributedString:quesMark atIndex:0];//add question mark
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
+
+                    NSString *firstSymbAtt = [[mutAtrStr string] substringToIndex:1];
+                    NSString *lasSymbAtt = [[mutAtrStr string] substringFromIndex:[mutAtrStr length]-1];
+                    
+                    if([firstSymbAtt isEqualToString:@"("]&&(![lasSymbAtt isEqualToString:@")"])){
+                        //if there is an array add ques mark for argument and close bracket after
+                        [mutAtrStr insertAttributedString:quesMark atIndex:[mutAtrStr length]];
+                        [mutAtrStr insertAttributedString:closeBracket atIndex:[mutAtrStr length]];
+                   
+                    }
                 }
-                [resultStr beginEditing];
-                NSRange wholeRange = NSMakeRange(0, [resultStr length]);
-                [resultStr addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                [resultStr addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetTop range:wholeRange];
-                [resultStr endEditing];
                 
-                if([argStr.string isEqualToString:@""]){
-                    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
-                    [resultStr insertAttributedString:quesMark atIndex:0];
-                } else {
-                    [resultStr insertAttributedString:argStr atIndex:0];
+                //get top pow
+                id topArgu = [arguArray lastObject];
+                NSArray *topArguArray;
+                NSAttributedString *topArguString;
+                if(topArgu){
+                    topArguArray = [NSArray arrayWithObject:topArgu];
+                    topArguString = [ACalcBrain popStringOfStack:[topArguArray mutableCopy] withNextArguString:empty withAttributes:attributes];
+                    //set font for argu
+                    topArguString = [ACalcBrain changeForString:topArguString
+                                                    fontSizeWith:fontDevider
+                                                     andBaseLine:baselineMultipier];
+
+                    //insert at the end
+                    [mutAtrStr insertAttributedString:topArguString atIndex:[mutAtrStr length]];
+                    
+                    
+                    //delte operation and get next argu
+                    [arguArray removeLastObject]; //remove lastArgu
+                    if([arguArray lastObject]) [arguArray removeLastObject];//if there is remove operation
+                    //get next argu
+                    topArgu = [arguArray lastObject];
                 }
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                
+                
+                while (topArgu) {
+                    //preapere next argu
+                    topArguArray = [NSArray arrayWithObject:topArgu];
+                    topArguString = [ACalcBrain popStringOfStack:[topArguArray mutableCopy] withNextArguString:empty withAttributes:attributes];
+                    
+                    //set font for argu
+                    topArguString = [ACalcBrain changeForString:topArguString
+                                                   fontSizeWith:fontDevider
+                                                    andBaseLine:baselineMultipier];
+                    
+                    //insert brackets and nextArgu
+                    [mutAtrStr insertAttributedString:openBracket atIndex:0];
+                    [mutAtrStr insertAttributedString:closeBracket atIndex:[mutAtrStr length]];
+                    [mutAtrStr insertAttributedString:topArguString atIndex:[mutAtrStr length]];
+                    
+                    //delte operation and get next argu
+                    [arguArray removeLastObject]; //remove lastArgu
+                    if([arguArray lastObject]) [arguArray removeLastObject];//if there is remove operation
+                    //get next argu
+                    topArgu = [arguArray lastObject];
+                }
+                
                 [resultStr insertAttributedString:[self popStringOfStack:stack
-                                                      withNextArguString:empty
+                                                      withNextArguString:[mutAtrStr copy]
                                                           withAttributes:attributes] atIndex:0];
+                
                 
             } else if([topOfStack isEqualToString:@"ʸ√x"]){
                 //necessary get next argu from stack
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
                 NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
                 if([mutAttArg.string isEqualToString:@""]){
-                    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
+
                     [mutAttArg insertAttributedString:quesMark atIndex:0];
                 }
                 
@@ -2332,17 +2658,15 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [resultStr insertAttributedString:closeBracket atIndex:0];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
+
+                    [resultStr insertAttributedString:closeBracket atIndex:0];
 
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2376,7 +2700,6 @@ typedef enum : NSInteger {
             } else if([topOfStack isEqualToString:@"ˣ√y"]){
                 NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
                 if([mutAttArg.string isEqualToString:@""]){
-                    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
                     [mutAttArg insertAttributedString:quesMark atIndex:0];
                 }
                 [resultStr insertAttributedString:mutAttArg atIndex:0];
@@ -2385,20 +2708,17 @@ typedef enum : NSInteger {
                 [resultStr insertAttributedString:value atIndex:0];
                 
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
-                NSMutableAttributedString *arg = [[NSMutableAttributedString alloc] initWithString:@""];
+                NSMutableAttributedString *arg = [empty mutableCopy];
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [arg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [arg insertAttributedString:closeBracket atIndex:0];
+
                     [arg insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [arg insertAttributedString:bracet atIndex:0];
+                    [arg insertAttributedString:openBracket atIndex:0];
                 } else {
-                   // NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [arg insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2425,16 +2745,12 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [resultStr insertAttributedString:closeBracket atIndex:0];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
+                    [resultStr insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
@@ -2467,7 +2783,6 @@ typedef enum : NSInteger {
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"²)" attributes:attributes];
                 [resultStr insertAttributedString:value atIndex:0];
                 if([argStr.string isEqualToString:@""]){
-                    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
                     [resultStr insertAttributedString:quesMark atIndex:0];
 
                 } else {
@@ -2479,47 +2794,40 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+
+                    [resultStr insertAttributedString:closeBracket atIndex:0];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [resultStr insertAttributedString:bracet atIndex:0];
+                    [resultStr insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [resultStr insertAttributedString:[self popStringOfStack:arguArray
                                                           withNextArguString:empty
                                                               withAttributes:attributes] atIndex:0];
                 }
                 value = [value initWithString:@"√(" attributes:attributes];
                 [resultStr insertAttributedString:value atIndex:0];
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
                 
             } else if([trigonometrics containsObject:topOfStack]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+                NSMutableAttributedString *attArg = [empty mutableCopy];
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if(([testArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]]){
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 } else {
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                   // NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+
+                    [attArg insertAttributedString:closeBracket atIndex:0];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
                 }
 
                 NSString* str = [topOfStack stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
@@ -2562,16 +2870,12 @@ typedef enum : NSInteger {
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                    [attArg insertAttributedString:closeBracket atIndex:0];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
-                    bracet = [bracet initWithString:@"(" attributes:attributes];
-                    [attArg insertAttributedString:bracet atIndex:0];
+                    [attArg insertAttributedString:openBracket atIndex:0];
                 } else {
-                    //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];

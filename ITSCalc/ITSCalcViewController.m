@@ -919,7 +919,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
   
     }
-    NSLog(@"Programm %@", programm);
+    //NSLog(@"Programm %@", programm);
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     CreateNewButtonViewController *createNewButtonViewController = [storyBoard instantiateViewControllerWithIdentifier:@"CreateNewButtonViewController"];
     createNewButtonViewController.mainController = self;
@@ -933,7 +933,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(NSArray*)arrayForNewButtonFromArgu:(NSArray*)argu{
     
-    NSLog(@"Argu %@", argu);
+    //NSLog(@"Argu %@", argu);
     NSMutableArray* outputButtonProgram = [[NSMutableArray alloc] init];
     NSMutableArray* signArray = [NSMutableArray arrayWithObjects:@"", @"",@"",@"", nil];
 
@@ -978,7 +978,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [outputButtonProgram addObject:argu];
         }
     }
-    NSLog(@"OutputProg %@", outputButtonProgram);
+    //NSLog(@"OutputProg %@", outputButtonProgram);
     return [outputButtonProgram copy];
     
 }
@@ -1014,13 +1014,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
         }
         
-        NSLog(@"Argu %@", argArrayCopy);
+        //NSLog(@"Argu %@", argArrayCopy);
 
         
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [programFromHistory lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        NSLog(@"program %@", programCopy);
+        //NSLog(@"program %@", programCopy);
 
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
@@ -1029,6 +1029,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
+        
+        //CHEK this out
+        //------test----------------------
+        //self.isResultFromMemory = YES;
+        //----------------------------------
 
         [self showStringThrouhgmanagerAtEqualPress];
         
@@ -1179,6 +1184,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     return retStr;
 }
 */
+#pragma mark EEE
+static const NSArray *movedCel;
 
 -(void)tappedButtonWithTitle:(id)title
 {
@@ -1278,9 +1285,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     if(self.userIsInTheMidleOfEnteringNumber){
                         [self push];
                         self.userIsInTheMidleOfEnteringNumber = NO;
+                        //NSLog(@"X push as inTheMiddleOfenteeing");
                     } else if (self.isResultFromMemory){
                         [self push];
                         self.isResultFromMemory = NO;
+                        //NSLog(@"X push as from memory");
+                    } else {
+                        //id result = [self.displayRam getResult];
+                        //NSLog(@"Next pushResult %@", result);
+                        //[self push];
+                        //need show brain not get argument for this function
+                        [self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
+                        //NSLog(@"X push as notStrongly");
                     }
                     [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
                     self.isStronglyArgu = YES;
@@ -1290,12 +1306,19 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     if(self.userIsInTheMidleOfEnteringNumber){
                         [self push];
                         self.userIsInTheMidleOfEnteringNumber = NO;
+                        //NSLog(@"Y push as inTheMiddleOfenteeing");
                     } else if (self.isResultFromMemory){
                         [self push];
                         self.isResultFromMemory = NO;
+                       // NSLog(@"Y push as from memory");
                     } else {
+                        //id result = [self.displayRam getResult];
+                        //NSLog(@"Next pushResult %@", result);
+                        //[self push];
+
                         //need show brain not get argument for this function
                         [self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
+                        //NSLog(@"Y push as notStrongly");
                     }
                     [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
                     self.isStronglyArgu = YES;
@@ -1421,11 +1444,86 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             } else if (self.isResultFromMemory){
                 [self push];
                 self.isResultFromMemory = NO;
-            }
+            } /*else {
+                //id result = [self.displayRam getResult];
+                //NSLog(@"Next pushResult %@", result);
+                //[self push];
+
+                //need show brain not get argument for this function
+                [self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
+            }*/
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
+        } else if([operandwithTwoArguments containsObject:title]){
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+                //NSLog(@"Y push as inTheMiddleOfenteeing");
+            } else if (self.isResultFromMemory){
+                [self push];
+                self.isResultFromMemory = NO;
+                // NSLog(@"Y push as from memory");
+            }
+            
+            else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
+                     [[self.displayRam getResult] isEqual: @0]){
+                //ADED
+                //id result = [self.displayRam getResult];
+                //NSLog(@"Next pushResult %@", result);
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+            } else {
+                self.isStronglyArgu = YES;
+            }
+            // else {
+                //ADED
+                //id result = [self.displayRam getResult];
+                //NSLog(@"Next pushResult %@", result);
+                //[self push];
+                //self.isStronglyArgu = YES;
+                //self.userIsInTheMidleOfEnteringNumber = NO;
+
+                //need show brain not get argument for this function
+                //[self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
+                //NSLog(@"Y push as notStrongly");
+            //}
+            
+            //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            //[self.brain perfomOperation:title];
+            /*
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            
+            self.isStronglyArgu = YES;
+            //need next value
+            self.isProgramInProcess = YES;
+            
+            [self showStringThruManageDocument];
+            
+            
+            //[self.brain insertBracket:YES];
+            [self.displayRam clearRam];
+            [self.display showString:[self.displayRam addSymbol:@0]];
+            //[self showStringThruManageDocument];
+            self.userIsInTheMidleOfEnteringNumber = YES;
+            self.isStronglyArgu = NO;
+            */
+            [self.brain perfomOperation:title];
+            
+            [self.displayRam clearRam];
+            [self.display showString:[self.displayRam addSymbol:@0]];
+            //[self showStringThruManageDocument];
+            self.userIsInTheMidleOfEnteringNumber = YES;
+            
+            //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            self.isStronglyArgu = NO;
+            self.isProgramInProcess = YES;
+            [self showStringThruManageDocument];
+            
+        
         } else if ([title isEqualToString:[[self point] stringByAppendingString:@"00"]]){
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
@@ -1468,7 +1566,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
-        } else if ([operation containsObject:title]||[operandwithTwoArguments containsObject:title]){
+        } else if ([operation containsObject:title]/*||[operandwithTwoArguments containsObject:title]*/){
             
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
@@ -1478,6 +1576,17 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
+            
+            else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
+                     [[self.displayRam getResult] isEqual: @0]){
+                //ADED
+                //id result = [self.displayRam getResult];
+                //NSLog(@"Next pushResult %@", result);
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+            }
+            
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
             self.isStronglyArgu = NO;
             self.isProgramInProcess = YES;
@@ -1735,8 +1844,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
    // NSDate *currDate = [NSDate date];
     NSArray *deepProgram = [self.brain.deepProgram copy];
+    //NSLog(@"showStringThruManageDocument deepProgram %@", deepProgram);
     
     NSArray *deepArgu = [self.brain.deepArgu copy];
+    //NSLog(@"showStringThruManageDocument deepArgu %@", deepArgu);
     
     
     NSArray *emptyArray = [[NSArray alloc] init];//to add empty array as no strongly argument and as result
@@ -1745,9 +1856,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [muttableOutputArray addObject:deepProgram];
     if(self.brain.isStronglyArgu){
         [muttableOutputArray addObject:deepArgu];
+        //NSLog(@"showStringThruManageDocument strongly argu");
     } else {
         //if no strongly argu add empty array
         [muttableOutputArray addObject:emptyArray];
+        //NSLog(@"showStringThruManageDocument NO strongly argu");
     }
     //and the same for result
     [muttableOutputArray addObject:emptyArray];
@@ -1822,6 +1935,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(void) push
 {
     id result = [self.displayRam getResult];
+    //NSLog(@"push result: %@",result);
     
     if([result isKindOfClass:[NSDictionary class]]){
         NSString *key = [[result allKeys]firstObject];
