@@ -2572,12 +2572,6 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"yˣ"]){
                 
-                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
-                //NSLog(@"yˣ stack:%@", stack);
-                //NSLog(@"yˣ arguArray:%@", arguArray);
-                //NSLog(@"yˣ argstr:%@", [argStr string]);
-                
-
                 NSMutableAttributedString* mutAtrStr = [argStr mutableCopy];
                 if([mutAtrStr.string isEqualToString:@""]){//if there is empty argument array
                     [mutAtrStr insertAttributedString:quesMark atIndex:0];//add question mark
@@ -2595,7 +2589,7 @@ typedef enum : NSInteger {
                 }
                 
                 //get top pow
-                id topArgu = [arguArray lastObject];
+                id topArgu = [stack lastObject];
                 NSArray *topArguArray;
                 NSAttributedString *topArguString;
                 if(topArgu){
@@ -2609,35 +2603,14 @@ typedef enum : NSInteger {
                     //insert at the end
                     [mutAtrStr insertAttributedString:topArguString atIndex:[mutAtrStr length]];
                     
-                    
-                    //delte operation and get next argu
-                    [arguArray removeLastObject]; //remove lastArgu
-                    if([arguArray lastObject]) [arguArray removeLastObject];//if there is remove operation
-                    //get next argu
-                    topArgu = [arguArray lastObject];
+                    //delte next argu
+                    [stack removeLastObject]; //remove lastArgu
                 }
                 
-                
-                while (topArgu) {
-                    //preapere next argu
-                    topArguArray = [NSArray arrayWithObject:topArgu];
-                    topArguString = [ACalcBrain popStringOfStack:[topArguArray mutableCopy] withNextArguString:empty withAttributes:attributes];
-                    
-                    //set font for argu
-                    topArguString = [ACalcBrain changeForString:topArguString
-                                                   fontSizeWith:fontDevider
-                                                    andBaseLine:baselineMultipier];
-                    
-                    //insert brackets and nextArgu
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
                     [mutAtrStr insertAttributedString:openBracket atIndex:0];
                     [mutAtrStr insertAttributedString:closeBracket atIndex:[mutAtrStr length]];
-                    [mutAtrStr insertAttributedString:topArguString atIndex:[mutAtrStr length]];
-                    
-                    //delte operation and get next argu
-                    [arguArray removeLastObject]; //remove lastArgu
-                    if([arguArray lastObject]) [arguArray removeLastObject];//if there is remove operation
-                    //get next argu
-                    topArgu = [arguArray lastObject];
                 }
                 
                 [resultStr insertAttributedString:[self popStringOfStack:stack
