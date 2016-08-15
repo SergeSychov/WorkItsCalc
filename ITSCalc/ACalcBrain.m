@@ -609,11 +609,34 @@ typedef enum : NSInteger {
 
 #pragma mark _HELPED FUNCTIOS___________________________________________________
 
++(NSAttributedString*) addQuestionMarkInString:(NSAttributedString*)inString WithAttributes:(NSDictionary*)attributes
+{
+    NSAttributedString *quesMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
+    NSAttributedString *closeBracket = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
+
+    NSMutableAttributedString* outString = [inString mutableCopy];
+    
+    if([outString.string isEqualToString:@""]){//if there is empty argument array
+        [outString insertAttributedString:quesMark atIndex:0];//add question mark
+    } else {
+        
+        NSString *firstSymbAtt = [[outString string] substringToIndex:1];
+        NSString *lasSymbAtt = [[outString string] substringFromIndex:[outString length]-1];
+        
+        if([firstSymbAtt isEqualToString:@"("]&&(![lasSymbAtt isEqualToString:@")"])){
+            //if there is an array add ques mark for argument and close bracket after
+            [outString insertAttributedString:quesMark atIndex:[outString length]];
+            [outString insertAttributedString:closeBracket atIndex:[outString length]];
+        }
+    }
+    
+    return [outString copy];
+}
 
 +(BOOL)isNeedBracketsForArgumentFromStack:(NSArray*)stack
 {
     BOOL returnMark = NO;
-    NSArray* needBracketsOperation = [NSArray arrayWithObjects:@"yˣ",@"√x²+y²", nil];
+    NSArray* needBracketsOperation = [NSArray arrayWithObjects:@"yˣ",@"ˣ√y",@"√x²+y²",@"logʸ", nil];
     
     id lastObjFromStack = [stack lastObject];
     
@@ -2365,6 +2388,12 @@ typedef enum : NSInteger {
                 NSAttributedString *sqrt = [[NSAttributedString alloc]initWithString:@"√" attributes:attributes];
                 [attArg insertAttributedString:sqrt atIndex:0];
                 
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+                
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2391,8 +2420,23 @@ typedef enum : NSInteger {
                                                        withNextArguString:empty
                                                            withAttributes:attributes] atIndex:0];
                 //}
-                NSAttributedString *cqrt = [[NSAttributedString alloc]initWithString:@"³√" attributes:attributes];
-                [attArg insertAttributedString:cqrt atIndex:0];
+                NSMutableAttributedString *cqrtMut = [[NSMutableAttributedString alloc]initWithString:@"3" attributes:attributes];
+                //change font size and baseline for arg string
+                cqrtMut = [[ACalcBrain changeForString:[cqrtMut copy]
+                                            fontSizeWith:fontDevider
+                                             andBaseLine:baselineMultipier] mutableCopy];
+                //add root mark
+                NSAttributedString *rootMark = [[NSAttributedString alloc] initWithString:@"√" attributes:attributes];
+                [cqrtMut insertAttributedString:rootMark atIndex:[cqrtMut length]];
+                
+                [attArg insertAttributedString:[cqrtMut copy] atIndex:0];
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+                
                 resultStr = [[self popStringOfStack:stack
                                  withNextArguString:attArg
                                      withAttributes:attributes] mutableCopy];
@@ -2513,26 +2557,17 @@ typedef enum : NSInteger {
             } else if([topOfStack isEqualToString:@"xʸ"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 //NSLog(@"xʸ arguArray %@",arguArray);
-
-                NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
-                //NSLog(@"xʸ argStr %@", [argStr string]);
                 
-                if([mutAttArg.string isEqualToString:@""]){//if there is empty argument array
-                    //add question mark
-                    [mutAttArg insertAttributedString:quesMark atIndex:0];
-                }
-                //NSLog(@"xʸ mutAttArg %@", [mutAttArg string]);
-                
-                
+                //if there is no comples argu - add question mark
+                NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
+                                                                             WithAttributes:attributes] mutableCopy];
                 //change font size and baseline for arg string
                 mutAttArg = [[ACalcBrain changeForString:[mutAttArg copy]
                                            fontSizeWith:fontDevider
                                              andBaseLine:baselineMultipier] mutableCopy];
                 
                 NSMutableAttributedString *attArg = [empty mutableCopy];
-                //[resultStr insertAttributedString:mutAttArg atIndex:0];
                 [attArg insertAttributedString:mutAttArg atIndex:0];
-                 //NSLog(@"xʸ attArg %@", [attArg string]);
                 
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
@@ -2553,13 +2588,6 @@ typedef enum : NSInteger {
                                                               withAttributes:attributes] atIndex:0];
                 }
                 
-                
-
-                 ////[resultStr insertAttributedString:[self popStringOfStack:stack
-                  //                                     withNextArguString:empty
-                  //                                         withAttributes:attributes] atIndex:0];
-                //NSLog(@"xʸ result atr string:%@", [attArg string]);
-                
                 //if next top of stack is waiting as argu - insert brackets
                 if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
                     [attArg insertAttributedString:openBracket atIndex:0];
@@ -2572,21 +2600,9 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"yˣ"]){
                 
-                NSMutableAttributedString* mutAtrStr = [argStr mutableCopy];
-                if([mutAtrStr.string isEqualToString:@""]){//if there is empty argument array
-                    [mutAtrStr insertAttributedString:quesMark atIndex:0];//add question mark
-                } else {
-
-                    NSString *firstSymbAtt = [[mutAtrStr string] substringToIndex:1];
-                    NSString *lasSymbAtt = [[mutAtrStr string] substringFromIndex:[mutAtrStr length]-1];
-                    
-                    if([firstSymbAtt isEqualToString:@"("]&&(![lasSymbAtt isEqualToString:@")"])){
-                        //if there is an array add ques mark for argument and close bracket after
-                        [mutAtrStr insertAttributedString:quesMark atIndex:[mutAtrStr length]];
-                        [mutAtrStr insertAttributedString:closeBracket atIndex:[mutAtrStr length]];
-                   
-                    }
-                }
+                //if there is no comples argu - add question mark to argu string
+                NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
+                                                                             WithAttributes:attributes] mutableCopy];
                 
                 //get top pow
                 id topArgu = [stack lastObject];
@@ -2601,7 +2617,7 @@ typedef enum : NSInteger {
                                                      andBaseLine:baselineMultipier];
 
                     //insert at the end
-                    [mutAtrStr insertAttributedString:topArguString atIndex:[mutAtrStr length]];
+                    [mutAttArg insertAttributedString:topArguString atIndex:[mutAttArg length]];
                     
                     //delte next argu
                     [stack removeLastObject]; //remove lastArgu
@@ -2609,105 +2625,104 @@ typedef enum : NSInteger {
                 
                 //if next top of stack is waiting as argu - insert brackets
                 if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
-                    [mutAtrStr insertAttributedString:openBracket atIndex:0];
-                    [mutAtrStr insertAttributedString:closeBracket atIndex:[mutAtrStr length]];
+                    [mutAttArg insertAttributedString:openBracket atIndex:0];
+                    [mutAttArg insertAttributedString:closeBracket atIndex:[mutAttArg length]];
                 }
                 
                 [resultStr insertAttributedString:[self popStringOfStack:stack
-                                                      withNextArguString:[mutAtrStr copy]
+                                                      withNextArguString:[mutAttArg copy]
                                                           withAttributes:attributes] atIndex:0];
                 
                 
             } else if([topOfStack isEqualToString:@"ʸ√x"]){
-                //necessary get next argu from stack
-                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
-                NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
-                if([mutAttArg.string isEqualToString:@""]){
+               
+                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                
+                //if there is no comples argu - add question mark
+                NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
+                                                                             WithAttributes:attributes] mutableCopy];
+                //change font size and baseline for arg string
+                mutAttArg = [[ACalcBrain changeForString:[mutAttArg copy]
+                                            fontSizeWith:fontDevider
+                                             andBaseLine:baselineMultipier] mutableCopy];
+                
+                //add root mark
+                NSAttributedString *rootMark = [[NSAttributedString alloc] initWithString:@"√" attributes:attributes];
+                [mutAttArg insertAttributedString:rootMark atIndex:[mutAttArg length]];
 
-                    [mutAttArg insertAttributedString:quesMark atIndex:0];
-                }
                 
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    [resultStr insertAttributedString:closeBracket atIndex:0];
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
-
-                    [resultStr insertAttributedString:closeBracket atIndex:0];
-
-                } else {
-
-                    [resultStr insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
-                }
-                NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"√" attributes:attributes];
-                [resultStr insertAttributedString:value atIndex:0];
                 
-                if([argStr.string isEqualToString:@""]){
-                    NSMutableAttributedString * quesMark = [[NSMutableAttributedString alloc] initWithString:@"?" attributes:attributes];
-                    [quesMark beginEditing];
-                    NSRange wholeRange = NSMakeRange(0, [quesMark length]);
-                    [quesMark addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                    [quesMark addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetTop range:wholeRange];
-                    [quesMark endEditing];
-                    [resultStr insertAttributedString:quesMark atIndex:0];
-                } else {
-                    NSMutableAttributedString *mutArg = [argStr mutableCopy];
-                    [mutArg beginEditing];
-                    NSRange wholeRange = NSMakeRange(0, [mutArg length]);
-                    [mutArg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                    [mutArg addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetTop range:wholeRange];
-                    [mutArg endEditing];
+                if([testArray count] > 1){
                     
-                    [resultStr insertAttributedString:mutArg atIndex:0];
+                    [mutAttArg insertAttributedString:closeBracket atIndex:0];
+                    [mutAttArg insertAttributedString:[self popStringOfStack:arguArray
+                                                       withNextArguString:empty
+                                                           withAttributes:attributes] atIndex:[mutAttArg length]];
+                    
+                    [mutAttArg insertAttributedString:openBracket atIndex:0];
+                } else {
+                    
+                    [mutAttArg insertAttributedString:[self popStringOfStack:arguArray
+                                                       withNextArguString:empty
+                                                           withAttributes:attributes] atIndex:[mutAttArg length]];
+                    
                 }
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
-                [resultStr insertAttributedString:[self popStringOfStack:stack
-                                                      withNextArguString:empty
-                                                          withAttributes:attributes] atIndex:0];
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [mutAttArg insertAttributedString:openBracket atIndex:0];
+                    [mutAttArg insertAttributedString:closeBracket atIndex:[mutAttArg length]];
+                }
+                
+                resultStr = [[self popStringOfStack:stack
+                                 withNextArguString:mutAttArg
+                                     withAttributes:attributes] mutableCopy];
+
                 
             } else if([topOfStack isEqualToString:@"ˣ√y"]){
-                NSMutableAttributedString *mutAttArg = [argStr mutableCopy];
-                if([mutAttArg.string isEqualToString:@""]){
-                    [mutAttArg insertAttributedString:quesMark atIndex:0];
-                }
-                [resultStr insertAttributedString:mutAttArg atIndex:0];
-                
-                NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"√" attributes:attributes];
-                [resultStr insertAttributedString:value atIndex:0];
-                
-                NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
-                NSMutableAttributedString *arg = [empty mutableCopy];
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
-                    [arg insertAttributedString:closeBracket atIndex:0];
 
-                    [arg insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
-                    [arg insertAttributedString:openBracket atIndex:0];
-                } else {
-                    [arg insertAttributedString:[self popStringOfStack:arguArray
-                                                          withNextArguString:empty
-                                                              withAttributes:attributes] atIndex:0];
+                //if there is no comples argu - add question mark to argu string
+                NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
+                                                                             WithAttributes:attributes] mutableCopy];
+                
+                //get top pow
+                id topArgu = [stack lastObject];
+                NSArray *topArguArray;
+                NSAttributedString *topArguString;
+                if(topArgu){
+                    topArguArray = [NSArray arrayWithObject:topArgu];
+                    topArguString = [ACalcBrain popStringOfStack:[topArguArray mutableCopy] withNextArguString:empty withAttributes:attributes];
+                    //set font for argu
+                    topArguString = [ACalcBrain changeForString:topArguString
+                                                   fontSizeWith:fontDevider
+                                                    andBaseLine:baselineMultipier];
+                    //add root mark
+                    @autoreleasepool {
+                        NSAttributedString *rootMark = [[NSAttributedString alloc] initWithString:@"√" attributes:attributes];
+                        NSMutableAttributedString *topStringMutable = [topArguString mutableCopy];
+                        [topStringMutable insertAttributedString:rootMark atIndex:[topStringMutable length]];
+                        topArguString = [topStringMutable copy];
+                    }
+                    
+                    
+                    //insert at the end
+                    [mutAttArg insertAttributedString:topArguString atIndex:0];
+                    
+                    //delte next argu
+                    [stack removeLastObject]; //remove lastArgu
                 }
                 
-                [arg beginEditing];
-                NSRange wholeRange = NSMakeRange(0, [arg length]);
-                [arg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                [arg addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetTop range:wholeRange];
-                [arg endEditing];
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [mutAttArg insertAttributedString:openBracket atIndex:0];
+                    [mutAttArg insertAttributedString:closeBracket atIndex:[mutAttArg length]];
+                }
                 
-                [resultStr insertAttributedString:arg atIndex:0];
-
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                 [resultStr insertAttributedString:[self popStringOfStack:stack
-                                                      withNextArguString:empty
+                                                      withNextArguString:[mutAttArg copy]
                                                           withAttributes:attributes] atIndex:0];
                 
             } else if([topOfStack isEqualToString:@"logʸ"]){
@@ -2729,23 +2744,26 @@ typedef enum : NSInteger {
                                                               withAttributes:attributes] atIndex:0];
                 }
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
-                if([argStr.string isEqualToString:@""]){
-                    NSAttributedString *questMark = [[NSAttributedString alloc] initWithString:@"?" attributes:attributes];
-                    [attArg insertAttributedString:questMark atIndex:0];
-                } else {
-                    [attArg insertAttributedString:argStr atIndex:0];
-                }
-
-                [attArg beginEditing];
-                NSRange wholeRange = NSMakeRange(0, [attArg length]);
-                [attArg addAttribute:NSFontAttributeName value:newfont range:wholeRange];
-                [attArg addAttribute:NSBaselineOffsetAttributeName value:baseLineOffsetButtom range:wholeRange];
-                [attArg endEditing];
                 
+                //if there is no comples argu - add question mark
+                argStr = [[ACalcBrain addQuestionMarkInString:argStr WithAttributes:attributes] mutableCopy];
+                [attArg insertAttributedString:argStr atIndex:0];
+
+                //change font size and baseline for arg string
+                attArg = [[ACalcBrain changeForString:[attArg copy]
+                                            fontSizeWith:fontDevider
+                                             andBaseLine:(-baselineMultipier)] mutableCopy];
+
                 NSAttributedString *value = [[NSAttributedString alloc] initWithString:@"log" attributes:attributes];
                 [attArg insertAttributedString:value atIndex:0];
                 [resultStr insertAttributedString:attArg atIndex:0];
-                //NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                
+                //if next top of stack is waiting as argu - insert brackets
+                if([ACalcBrain isNeedBracketsForArgumentFromStack:[stack copy]]){
+                    [attArg insertAttributedString:openBracket atIndex:0];
+                    [attArg insertAttributedString:closeBracket atIndex:[attArg length]];
+                }
+                
                 [resultStr insertAttributedString:[self popStringOfStack:stack
                                                       withNextArguString:empty
                                                           withAttributes:attributes] atIndex:0];
