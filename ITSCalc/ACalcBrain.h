@@ -42,7 +42,7 @@ typedef enum : NSInteger {
 
 //program is alweys guaranty to be a Property list
 @property (readonly) id program;
-@property (readonly) id argu;
+@property (readonly) NSArray* argu;
 @property (readonly) id wholeProgram;
 @property (nonatomic) BOOL isStronglyArgu; //the argument is strongly setted by use
 @property(readonly) id deepProgram;
