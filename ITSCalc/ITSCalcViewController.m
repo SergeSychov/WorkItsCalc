@@ -853,12 +853,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 #pragma mark ACTIONS
+
+#pragma mark NEW BUTTON CREATING
 - (IBAction)plusButtonTapped:(UIButton *)sender {
     id programm;
     NSArray* progCopy;
-    NSString *programmDescription = @"";
+    NSAttributedString *programmDescription = [[NSAttributedString alloc] initWithString:@"" attributes:self.attributes];
     if(self.selectedRow){ //if there is not first row
             NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
+        //if not first row
             if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
                 NSIndexPath *indexPath = [self.historyTable indexPathForCell:self.selectedRow];
                 History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
@@ -874,35 +877,37 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     //check if constant add value as description
                     if([[programm firstObject] isKindOfClass:[NSNumber class]]){
                         programm = [programm firstObject];
-                        programmDescription = [(NSNumber*)programm stringValue];
+                        programmDescription =[[NSAttributedString alloc] initWithString:[(NSNumber*)programm stringValue] attributes:self.attributes ];
                     } else {
                         NSArray* copArr = [ACalcBrain deepArrayCopy:[programFromHistory lastObject] ];
-                        programmDescription = [ACalcBrain descriptionOfProgram:[copArr mutableCopy] withAttributes:self.attributes].string;
+                        programmDescription = [ACalcBrain descriptionOfProgram:[copArr mutableCopy] withAttributes:self.attributes];
                     }
                 }
             } else {//if its first row
-                
+
                 programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
                 //check if constant add value as description
                 if([[programm firstObject] isKindOfClass:[NSNumber class]]){
 
                     if([[self.displayRam getResult]isKindOfClass:[NSNumber class]]){
                         programm = [self.displayRam getResult];
-                        programmDescription =[[self.displayRam getResult] stringValue];
+                        programmDescription =[[NSAttributedString alloc] initWithString:[[self.displayRam getResult] stringValue] attributes:self.attributes ];
                     } else if([[self.displayRam getResult] isKindOfClass:[NSArray class]]){
                         programm = [[NSArray alloc] initWithArray:[self.displayRam getResult]];
                         
                         
                         NSMutableArray *copyGradArray = [[self.displayRam getResult] mutableCopy];
                         [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
-                        programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.attributes].string;
+                        programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.attributes];
                         //programmDescription =[[self.displayRam getResult] stringValue];
                     } else {//if for eaxample it is grad value
-                        programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+                        programmDescription = [[NSAttributedString alloc] initWithString:[(NSNumber*)[programm firstObject] stringValue] attributes:self.attributes ];
                     }
                 } else {
-                    NSArray* copArr = [ACalcBrain deepArrayCopy:[self.brain argu]];
-                    programmDescription = [ACalcBrain descriptionOfProgram:[copArr mutableCopy] withAttributes:self.attributes].string;
+                    //NSArray* copArr = [ACalcBrain deepArrayCopy:[self.brain argu]];
+                    //NSLog(@"copArr %@", copArr);
+                    //NSLog(@"copProg %@", programm);
+                    programmDescription = [self getAttributedStringFromArray:self.lastRowDataArray];
                 }
         }
         
@@ -912,18 +917,20 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
         //check if constant add value as description
         if([[programm firstObject] isKindOfClass:[NSNumber class]]){
-            programmDescription = [(NSNumber*)[programm firstObject] stringValue];
+            programmDescription = [[NSAttributedString alloc] initWithString:[(NSNumber*)[programm firstObject] stringValue] attributes:self.attributes ];
         } else {
-            programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+            programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes];
         }
         
   
     }
     //NSLog(@"Programm %@", programm);
+    //CHANGE ATTRIBUTES FOR DESCRIPTION!!!
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     CreateNewButtonViewController *createNewButtonViewController = [storyBoard instantiateViewControllerWithIdentifier:@"CreateNewButtonViewController"];
     createNewButtonViewController.mainController = self;
     createNewButtonViewController.program = programm;
+    //NSLog(@"Button program %@", programm);
     createNewButtonViewController.programDescription = programmDescription;
     createNewButtonViewController.delegate = self.buttonsStore;
     [self presentViewController:createNewButtonViewController animated:YES completion:^{
@@ -935,7 +942,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     //NSLog(@"Argu %@", argu);
     NSMutableArray* outputButtonProgram = [[NSMutableArray alloc] init];
-    NSMutableArray* signArray = [NSMutableArray arrayWithObjects:@"", @"",@"",@"", nil];
+    NSMutableArray* signArray = [NSMutableArray arrayWithObjects:@"",@"",@"",@"", nil];
 
     //check argu array
     //if argu contains $, X of Y
@@ -969,9 +976,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [outputButtonProgram addObject:constantFromProgramm];
     }else {
         [outputButtonProgram addObject:signArray];
+        /*
+         DELETE case next step is added currensy as argu
         if(currencies){
             [outputButtonProgram addObject:currencies];
         }
+        */
         if([argu firstObject] && [[argu firstObject] isKindOfClass:[NSArray class]]){
             [outputButtonProgram addObject:[argu firstObject]];
         } else {
@@ -1004,7 +1014,20 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
         NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
-       
+        
+        //if there is currensies - get the pairs array wit value else get nil
+        NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
+        
+        if(possibleCurrensiesArray){
+            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+            NSArray *newPossibleCurrensiesArray = [self.currensies askResultForCurrensiesArray:possibleCurrensiesArray];
+            
+            if(newPossibleCurrensiesArray){
+                programFromHistory =  [[ACalcBrain programm:[programFromHistory copy]
+                                  withReplaceWithCurrencies:newPossibleCurrensiesArray] mutableCopy];
+            }
+        }
+        
 
         id top = [programFromHistory lastObject];
         //remove result from pprogramm array!
@@ -1026,9 +1049,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         self.brain = newBrain;
         [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+        
+        
+        
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
+        
         
         //CHEK this out
         //------test----------------------
@@ -1040,13 +1067,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self discardChanging];
         
         
-        if([ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]){
-            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-            [self.currensies askResultForCurrensiesArray:[ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]];
-        }
+
     }
 }
 
+//delegate method asked ITSCal after request before
 -(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
     //NSLog(@"Curr array after request: %@", currencies);
     NSArray *deepProgram = [self.brain.deepProgram copy];
@@ -1077,7 +1102,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [muttableOutputArray lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        //NSLog(@"after programCopy %@:",programCopy );
+        //NSLog(@"after argArrayCopy %@:",argArrayCopy );
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
         self.brain = newBrain;
@@ -1088,7 +1113,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
 
-        [self showStringThrouhgmanagerAtEqualPress];
+        //[self showStringThrouhgmanagerAtEqualPress];
         
         
     }
@@ -1234,6 +1259,8 @@ static const NSArray *movedCel;
         //add
         NSString *keyTitle = [[title allKeys]firstObject];
         id valueProg = [title objectForKey:keyTitle];
+        //NSLog(@"Title keys func with curr:%@", keyTitle);
+        //NSLog(@"Title value func with curr:%@", valueProg);
 
         if([valueProg isKindOfClass:[NSNumber class]]){
             if(self.userIsInTheMidleOfEnteringNumber){
@@ -1281,7 +1308,74 @@ static const NSArray *movedCel;
                 FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:title];
                 if(funcArg == NoArgument){
                     //do nothing
-                } else if((funcArg==XOnlyArgu)||(funcArg==X_and_Curr_Argu)){
+                }else if(funcArg == CurrOnlyArgu){
+                    //NSLog(@"Title keys func with curr:%@", [title allKeys]);
+                    //NSLog(@"Title value func with curr:%@", [title valueForKey:keyTitle]);
+                    
+                    //check if really currensies - replace it
+                    //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                    NSArray* copyProgrammFroCurrensiesCheck = valueProg;
+                    
+                    //if there is currensies - get the pairs array wit value else get nil
+                    NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
+                    
+                    if(possibleCurrensiesArray){
+                        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                        NSArray *newPossibleCurrensiesArray = [self.currensies askResultForCurrensiesArray:possibleCurrensiesArray];
+                        
+                        if(newPossibleCurrensiesArray){
+                            valueProg =  [ACalcBrain programm:valueProg
+                                              withReplaceWithCurrencies:newPossibleCurrensiesArray];
+                            
+                            NSDictionary * newTitle = [[NSDictionary alloc] initWithObjectsAndKeys: valueProg,keyTitle, nil];
+                            title = newTitle;
+                        }
+                    }
+                    //[title setObject:valueProg forKey:keyTitle];
+                    //NSLog(@"value prog after:%@", valueProg);
+                    
+                    //NSLog(@"Title value func with curr after:%@", [title valueForKey:keyTitle]);
+                    
+                    //the same as bottom lets check later
+                    if(self.userIsInTheMidleOfEnteringNumber){
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                        self.isStronglyArgu = YES;
+                    } else if (self.isResultFromMemory){
+                        [self push];
+                        self.isResultFromMemory = NO;
+                    } else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
+                               [[self.displayRam getResult] isEqual: @0]){
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                        self.isStronglyArgu = YES;
+                    } else {
+                        [self.displayRam setResult:@0];
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
+                        self.isStronglyArgu = YES;
+                    }
+                    
+                    [self.brain perfomOperation:title];
+                    
+                    [self.displayRam clearRam];
+                    [self.display showString:[self.displayRam addSymbol:@0]];
+                    
+                    self.userIsInTheMidleOfEnteringNumber = YES;
+                    
+                    self.isStronglyArgu = NO;
+                    self.isProgramInProcess = YES;
+                    [self showStringThruManageDocument];
+                    
+                    
+                    //test check for currensies in fuction title - works
+                    /*
+                    NSArray *currTest = [ACalcBrain chekForCurrensiesProgramm:title];
+                    if(currTest){
+                        NSLog(@"I've catch it, look: %@", currTest);
+                    }
+                    */
+                }else if((funcArg==XOnlyArgu)||(funcArg==X_and_Curr_Argu)){
                     if(self.userIsInTheMidleOfEnteringNumber){
                         [self push];
                         self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1320,6 +1414,9 @@ static const NSArray *movedCel;
                         self.userIsInTheMidleOfEnteringNumber = NO;
                         self.isStronglyArgu = YES;
                     } else {
+                        [self.displayRam setResult:@0];
+                        [self push];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
                         self.isStronglyArgu = YES;
                     }
 

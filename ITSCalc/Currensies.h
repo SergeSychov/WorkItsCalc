@@ -24,7 +24,9 @@
 
 -(void) askResultForm:(NSString*)fromCur To:(NSString*)toCur;
 -(void) renewUsersCurrensies:(NSArray*)currArray;
--(void) askResultForCurrensiesArray:(NSArray*)curArray;
+
+//return result as array $, from, to and value
+-(NSArray*) askResultForCurrensiesArray:(NSArray*)curArray;
 -(void) renewPairsDictionary;
 -(void) makeNewCurrensiesList;
 

@@ -61,10 +61,11 @@ typedef enum : NSInteger {
 +(NSSet*) chekForVariablesInProgramm:(NSArray*)programm;
 
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
-+(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
++(NSArray*) chekForCurrensiesProgramm:(id)programm;
 
 //replace arrays with currencies in program with new values of currencies exhange
-+(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
+//if get array prog - return array, if dictionary (func) return dictionary
++(id) programm:(id)programm withReplaceWithCurrencies:(NSArray*)currensies;
 
 +(FuncArguments)checkWichArgumentsHasFunc:(NSDictionary*)func;//check wich arguments has a func
 

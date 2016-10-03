@@ -69,9 +69,9 @@
     [self requestForPairdictionary:requestStr];
 }
 
--(void) askResultForCurrensiesArray:(NSArray*)currensies{
+-(NSArray*) askResultForCurrensiesArray:(NSArray*)currensies{
     NSString *requestString = @"";
-    
+    NSArray* retCurrensies = nil;
     if([[currensies firstObject] isKindOfClass:[NSArray class]] && [[[currensies firstObject] firstObject] isKindOfClass:[NSString class]] && [[[currensies firstObject] firstObject] isEqualToString:@"$"]){
         //NSLog(@"Currensies %@", currensies);
         NSMutableArray *mutCurrensies = [currensies mutableCopy];
@@ -90,6 +90,8 @@
                 NSInteger indexOfExistPair = [currensies indexOfObject:currPairArr];//get index from nonmutable array
                 //and replace in mut array
                 [mutCurrensies replaceObjectAtIndex:indexOfExistPair withObject:mutPairArray];//and replace it in completed array
+            } else {
+                mutCurrensies = nil;
             }
 
 
@@ -106,11 +108,13 @@
         
         //NSLog(@"Asking arrays %@", requestString);
        // NSLog(@"Mutcurrensies %@", mutCurrensies);
-         [self.delegate getCurrensiesArray:[mutCurrensies copy]];
+        // [self.delegate getCurrensiesArray:[mutCurrensies copy]];
+        if(mutCurrensies) retCurrensies = [mutCurrensies copy];
         [self requestForPairdictionary:requestString];
         self.wasAkingArray = currensies;
     }
 
+    return retCurrensies;
 }
 
 -(void) renewPairsDictionary

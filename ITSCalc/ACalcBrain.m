@@ -723,52 +723,43 @@ typedef enum : NSInteger {
 }
 
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
-+(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm {
++(NSArray*) chekForCurrensiesProgramm:(id)programm {
 
     NSArray* currenciesArray = nil;
+    NSArray* arrayProgramm = nil;
+    if([programm isKindOfClass:[NSDictionary class]]){
+        //if there is function or maybe constant
+        NSString *keyTitle = [[programm allKeys]firstObject];
+        id valueProg = [programm objectForKey:keyTitle];
+        if([valueProg isKindOfClass:[NSArray class]]){
+            arrayProgramm = valueProg;
+
+        }
+    } else  if ([programm isKindOfClass:[NSArray class]]){
+                arrayProgramm = programm;
+    }
     NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
-    for(id obj in programm){
-        if([obj isKindOfClass:[NSArray class]]){
+
+    if(arrayProgramm){
+        for(id obj in arrayProgramm){
+            if([obj isKindOfClass:[NSArray class]]){
             
-            if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
+                if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
                 
-                [mutableCurrenciesArray addObject:obj];
-            } else {
-                if([ACalcBrain chekForCurrensiesProgramm:obj]){
-                    [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
+                    [mutableCurrenciesArray addObject:obj];
+                } else {
+                    if([ACalcBrain chekForCurrensiesProgramm:obj]){
+                        [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
+                    }
                 }
+            } else if([obj isKindOfClass:[NSDictionary class]]&&
+               [ACalcBrain chekForCurrensiesProgramm:obj]){
+                [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
             }
         }
     }
     //if there is currencies
     if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
-    
-    /*
-    @autoreleasepool {
-        NSMutableArray *mutableProgramm = [programm mutableCopy];
-
-        NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
-        id top = [mutableProgramm lastObject];
-        while(top) {
-            [mutableProgramm removeLastObject];
-        
-
-            if([top isKindOfClass:[NSArray class]]){
-           
-                if([[top firstObject] isKindOfClass:[NSString class]] && [[top firstObject] isEqualToString:@"$"]){
-                    
-                    [mutableCurrenciesArray addObject:top];
-                } else {
-                    [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:top]];
-                }
-            }
-            [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:[mutableProgramm copy]]];
-       
-            top = [mutableProgramm lastObject];
-            if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
-        }
-    }
-    */
 
     return currenciesArray;
 }
@@ -797,10 +788,28 @@ typedef enum : NSInteger {
     return retProgramm;
 }
 
-+(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies{
++(id) programm:(id)programm withReplaceWithCurrencies:(NSArray*)currensies{
 
-    NSArray *retProgramm = nil;
-    NSMutableArray *mutableProgramm = [programm mutableCopy];
+    id retProgramm = nil;
+    NSMutableArray *mutableProgramm = nil;
+    
+    //first check for function (if its dictionary)
+    BOOL isFunction = NO;
+    if([programm isKindOfClass:[NSDictionary class]]){
+        //if there is function or maybe constant
+        //NSLog(@"Was dictionary");
+
+        NSString *keyTitle = [[programm allKeys]firstObject];
+        id valueProg = [programm objectForKey:keyTitle];
+        if([valueProg isKindOfClass:[NSArray class]]){
+            mutableProgramm = [valueProg mutableCopy];
+            
+            isFunction = YES;
+        }
+    } else  if ([programm isKindOfClass:[NSArray class]]){
+        mutableProgramm = [programm mutableCopy];
+    }
+    
     if(currensies ) {
         @autoreleasepool {
 
@@ -820,11 +829,19 @@ typedef enum : NSInteger {
                     } else {
                         [mutableProgramm replaceObjectAtIndex:i withObject:[ACalcBrain programm:obj withReplaceWithCurrencies:currensies]];
                     }
-                } else {
+                } else if ([obj isKindOfClass:[NSDictionary class]]) {
+                    obj = [ACalcBrain programm:obj withReplaceWithCurrencies:currensies];
+                    [mutableProgramm replaceObjectAtIndex:i withObject:obj];
 
                 }
             }
-            retProgramm = [mutableProgramm copy];
+            if(isFunction){
+                NSString *keyTitle = [[programm allKeys]firstObject];
+                NSDictionary *newFunc = [[NSDictionary alloc] initWithObjectsAndKeys:[mutableProgramm copy], keyTitle, nil];
+                retProgramm = newFunc;
+            } else {
+                retProgramm = [mutableProgramm copy];
+            }
         }
     
     }
@@ -1210,7 +1227,6 @@ typedef enum : NSInteger {
     //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
 
     if(topOfStack){
-        
         [stack removeLastObject];
         
     } else if (value){
@@ -1272,7 +1288,8 @@ typedef enum : NSInteger {
                             //NSLog(@"Argu to X %@", [NSNumber numberWithDouble:arg]);
                             replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
                             funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
-                            
+                         
+                        //if X argument
                         } else if (funcArguments == YOnlyArgu){
                             if(!value){
                                 //if no value just put previous argu as result
@@ -1299,22 +1316,37 @@ typedef enum : NSInteger {
                                 
                                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                                 if(noStronglyArguBeforeY || arg == 0.0){
-                                    //NSLog(@"NoStonglyArguForY in pop");
                                     funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                                 } else {
                                     //if there is strongly argu before Y - multiply function on this arg
-                                    //NSLog(@"StonglyArguForY");
 
                                     funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:[replacedArray mutableCopy]])];
                                 }
-                                //NSLog(@"there is Value for y!");
                             }
                             
+                        } else if (funcArguments == CurrOnlyArgu){
+                            BOOL noStronglyArguBeforeY = NO;
+                            
+                            if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && (
+                                                                                             ([topOfStack integerValue]==NSNotFound) ||
+                                                                                             ([topOfStack integerValue]==0)
+                                                                                             )){
+                                noStronglyArguBeforeY = YES;
+                            }
+                            
+                            double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
+                            if(noStronglyArguBeforeY || arg == 0.0){
+                                NSLog(@"Curr lastObj: %@", lastObj);
+                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:lastObj]];
+                            } else {
+                                //if there is strongly argu before Y - multiply function on this arg
+                                funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:lastObj])];
+                            }
                         }
-                        
                         result = [self popOperandOfStack:stack
                                        withPreviousValue:funcResult
                                        accordingPriority:priority];
+
                         }
                     }
                 }
@@ -1337,6 +1369,7 @@ typedef enum : NSInteger {
             double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
             if(arg == 0.0) {
                 result = [self popOperandOfStack:stack withPreviousValue:exchangeRate accordingPriority:priority];
+                NSLog(@"result from curr:%@",[NSNumber numberWithDouble:result]);
             } else {
                 double exchangeRateDouble = [exchangeRate doubleValue];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * exchangeRateDouble)] accordingPriority:priority];
@@ -1750,7 +1783,7 @@ typedef enum : NSInteger {
         [atrStr insertAttributedString:[self popStringOfStack:topOfStacs withNextArguString:empty withAttributes:atributes] atIndex:[atrStr length]];
         topOfStacs = [program lastObject];
 
-        while (topOfStacs) {
+        while (topOfStacs &&  [topOfStacs isKindOfClass:[NSArray class]]) {
             NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:atributes];
             [atrStr insertAttributedString:bracet atIndex:0];
             atrStr = [[self popStringOfStack:topOfStacs withNextArguString:atrStr withAttributes:atributes] mutableCopy];
@@ -1931,7 +1964,7 @@ typedef enum : NSInteger {
                             
                             NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                             topArguString = [ACalcBrain popStringOfStack:arguArray withNextArguString:empty withAttributes:attributes];
-                             NSLog(@"2PopStr topArguString %@", [topArguString string]);
+                             //NSLog(@"2PopStr topArguString %@", [topArguString string]);
                             if(![[topArguString string] isEqual:@"0"]){
                                 [attArg insertAttributedString:topArguString atIndex:0];
                             }
@@ -1944,6 +1977,50 @@ typedef enum : NSInteger {
                     
                     if(currensyRangeInStrBetwinBrackets.location != NSNotFound){
                         
+                        NSString *currensiesString = @"";
+                        //find all currensies exchange and make new string for it
+                        NSMutableArray* currArray = [[ACalcBrain chekForCurrensiesProgramm:topOfStack] mutableCopy];
+                        while ([currArray firstObject]) {
+                            
+                        
+                            id elementCurrArray = [currArray firstObject];
+                            [currArray removeObjectAtIndex:0];
+                            if(elementCurrArray && [elementCurrArray isKindOfClass:[NSArray class]]){
+                            //check if we talk about currensies
+                                id first = [elementCurrArray firstObject];
+                                if(first && [first isKindOfClass:[NSString class]]&&[first isEqualToString:@"$"]){
+                                    currensiesString = [currensiesString stringByAppendingString:elementCurrArray[1]];
+                                    currensiesString = [currensiesString stringByAppendingString:@"/"];
+                                    currensiesString = [currensiesString stringByAppendingString:elementCurrArray[2]];
+                                }
+                            }
+                            
+                            //if more then one pair
+                            if([currArray firstObject]){
+                                currensiesString = [currensiesString stringByAppendingString:@","];
+                            }
+                        }
+                        
+
+                        // NSLog(@"currString %@",currensiesString);
+                        NSAttributedString *curAtrStr = [[NSAttributedString alloc] initWithString:currensiesString attributes:attributes];
+                        
+                        [attArg replaceCharactersInRange:currensyRangeInStrBetwinBrackets withAttributedString:curAtrStr];
+                        
+                        //insert previous argu
+                        id topArgu = [stack lastObject];
+                        NSAttributedString *topArguString;
+                        if(topArgu){
+                            
+                            NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                            topArguString = [ACalcBrain popStringOfStack:arguArray withNextArguString:empty withAttributes:attributes];
+                            //NSLog(@"2PopStr topArguString %@", [topArguString string]);
+                            if(![[topArguString string] isEqual:@"0"]){
+                                [attArg insertAttributedString:topArguString atIndex:0];
+                            }
+                        }
+                        
+                        resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
                     }
                 }
 

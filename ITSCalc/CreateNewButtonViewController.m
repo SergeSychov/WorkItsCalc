@@ -27,7 +27,7 @@
     
     //self.buttonView.title = @"";
     if(_programDescription){
-        self.labelProgrammDescription.text = _programDescription;
+        self.labelProgrammDescription.attributedText = _programDescription;
     }
     if(_program){
         if([_program isKindOfClass:[NSNumber class]]){
@@ -60,7 +60,7 @@
             if([_program containsObject:@"°"]){
                 //if there is grad array as programm
                 self.labelActionName.text = @"создание новой кнопки для константы:";
-                self.buttonView.title = _programDescription;
+                self.buttonView.attrbutedTitle = _programDescription;
 
 
             } else {

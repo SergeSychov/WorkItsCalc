@@ -40,7 +40,7 @@
     
     NSError *error;
     NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
-    NSLog(@"buttons quantity in core data %lu", (unsigned long)buttonsFromCoreData.count);
+    //NSLog(@"buttons quantity in core data %lu", (unsigned long)buttonsFromCoreData.count);
     if(!buttonsFromCoreData || (buttonsFromCoreData.count < 65)){//if array empty or wrong quantity
         
         //1. find changable and enable buttons

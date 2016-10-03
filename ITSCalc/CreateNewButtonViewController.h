@@ -20,7 +20,7 @@
 @interface CreateNewButtonViewController : SecondViewController
 @property (nonatomic,weak) ITSCalcViewController *mainController;
 @property (nonatomic) id program;
-@property (nonatomic) NSString* programDescription;
+@property (nonatomic) NSAttributedString* programDescription;
 @property (weak,nonatomic) id delegate; //buttonsStore class with two function:
 //1. get possible name from enity buttons
 //2. create new button
