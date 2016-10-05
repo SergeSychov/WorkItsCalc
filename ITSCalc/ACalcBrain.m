@@ -1283,14 +1283,14 @@ typedef enum : NSInteger {
                         //NSLog(@"pop argument %@",[NSNumber numberWithDouble:arg]);
                             
                         //if X argument
-                        if (funcArguments == XOnlyArgu){
+                        if ((funcArguments == XOnlyArgu)||(funcArguments == X_and_Curr_Argu)){
                             double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                             //NSLog(@"Argu to X %@", [NSNumber numberWithDouble:arg]);
                             replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
                             funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                          
                         //if X argument
-                        } else if (funcArguments == YOnlyArgu){
+                        } else if ((funcArguments==YOnlyArgu)||(funcArguments==Y_and_Curr_Argu)||(funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
                             if(!value){
                                 //if no value just put previous argu as result
                                 funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3]];

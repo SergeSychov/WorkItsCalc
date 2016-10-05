@@ -1065,17 +1065,23 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self showStringThrouhgmanagerAtEqualPress];
         
         [self discardChanging];
-        
-        
-
     }
 }
 
 //delegate method asked ITSCal after request before
 -(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
-    //NSLog(@"Curr array after request: %@", currencies);
+    
     NSArray *deepProgram = [self.brain.deepProgram copy];
     NSArray *deepArgu = [self.brain.deepArgu copy];
+    
+    NSArray *brainProgram = [self.brain.program copy];
+    BOOL isExpresionRecountTotal = NO;
+
+    if([brainProgram count]==0){
+
+        isExpresionRecountTotal = YES;
+    }
+    
     NSArray *testArray = [[deepProgram lastObject] copy];
     if(([testArray count]>0) || ([deepArgu count]>0)){
         
@@ -1107,16 +1113,19 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         self.brain = newBrain;
 
+        //show recount result
+        if(isExpresionRecountTotal){
+            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+             [self showStringThrouhgmanagerAtEqualPress];
+        } else {
+            [self showStringThruManageDocument];
+        }
         
-        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
-        self.userIsInTheMidleOfEnteringNumber = NO;
-
-        //[self showStringThrouhgmanagerAtEqualPress];
-        
-        
+        self.userIsInTheMidleOfEnteringNumber = NO;        
     }
+    
 }
 
 #pragma mark Button taped Action
@@ -1230,30 +1239,55 @@ static const NSArray *movedCel;
     
     if([title isKindOfClass:[NSArray class]]){
         if([(NSArray*)title count]==4 && [(NSString*)title[0] isEqualToString:@"$"]){
+            
+            //if x or y on display make shure thet it'll be muliply operation
+            id checkXY = [self.displayRam getResult];
+            if(checkXY && [checkXY isKindOfClass:[NSString class]] && ([checkXY isEqualToString:@"x"]||[checkXY isEqualToString:@"y"]) ){
+                NSLog(@"Right way");
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+                
+                [self.brain perfomOperation:@"×"];
+                
+                self.isStronglyArgu = NO;
+                self.isProgramInProcess = YES;
+                self.isResultFromMemory = NO;
+            }
+            
             if(self.userIsInTheMidleOfEnteringNumber){
                 //ok for that
                 [self push];
                 //ok for that
                 self.userIsInTheMidleOfEnteringNumber = NO;
 
-            } /*else {
-                //ok for that
-                [self.brain clearArgu];
-            }*/
-            else if (self.isResultFromMemory){
+            }else if (self.isResultFromMemory){
                 [self push];
                 self.isResultFromMemory = NO;
+            } else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
+                       [[self.displayRam getResult] isEqual: @0]){
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+            } else {
+
+                //if not recount - just operation
+                    if(self.isProgramInProcess){
+                        [self.displayRam clearRam];
+                        [self.brain clearArgu];
+                        [self.displayRam setResult:@0];
+                        [self push];
+                    }
+                    self.userIsInTheMidleOfEnteringNumber = NO;
+                
+                self.isStronglyArgu = YES;
             }
-           // NSString *resStr = [NSString stringWithFormat:@"%.2f",[self.brain performOperationInArgu:title]]; //formated string from double
-            //resStr = [resStr stringByAppendingString:(NSString*)title[2]];
-            //[self.display showString:[self.displayRam setResult:resStr]];
+            
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
-            
-            
-            
         }
+        
     }else if ([title isKindOfClass:[NSDictionary class]]){
         //if there is constant or function
         //add
@@ -1308,74 +1342,31 @@ static const NSArray *movedCel;
                 FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:title];
                 if(funcArg == NoArgument){
                     //do nothing
-                }else if(funcArg == CurrOnlyArgu){
-                    //NSLog(@"Title keys func with curr:%@", [title allKeys]);
-                    //NSLog(@"Title value func with curr:%@", [title valueForKey:keyTitle]);
-                    
-                    //check if really currensies - replace it
-                    //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-                    NSArray* copyProgrammFroCurrensiesCheck = valueProg;
-                    
-                    //if there is currensies - get the pairs array wit value else get nil
-                    NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
-                    
-                    if(possibleCurrensiesArray){
-                        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-                        NSArray *newPossibleCurrensiesArray = [self.currensies askResultForCurrensiesArray:possibleCurrensiesArray];
-                        
-                        if(newPossibleCurrensiesArray){
-                            valueProg =  [ACalcBrain programm:valueProg
-                                              withReplaceWithCurrencies:newPossibleCurrensiesArray];
-                            
-                            NSDictionary * newTitle = [[NSDictionary alloc] initWithObjectsAndKeys: valueProg,keyTitle, nil];
-                            title = newTitle;
-                        }
-                    }
-                    //[title setObject:valueProg forKey:keyTitle];
-                    //NSLog(@"value prog after:%@", valueProg);
-                    
-                    //NSLog(@"Title value func with curr after:%@", [title valueForKey:keyTitle]);
-                    
-                    //the same as bottom lets check later
-                    if(self.userIsInTheMidleOfEnteringNumber){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        self.isStronglyArgu = YES;
-                    } else if (self.isResultFromMemory){
-                        [self push];
-                        self.isResultFromMemory = NO;
-                    } else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
-                               [[self.displayRam getResult] isEqual: @0]){
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        self.isStronglyArgu = YES;
-                    } else {
-                        [self.displayRam setResult:@0];
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                        self.isStronglyArgu = YES;
-                    }
-                    
-                    [self.brain perfomOperation:title];
-                    
-                    [self.displayRam clearRam];
-                    [self.display showString:[self.displayRam addSymbol:@0]];
-                    
-                    self.userIsInTheMidleOfEnteringNumber = YES;
-                    
-                    self.isStronglyArgu = NO;
-                    self.isProgramInProcess = YES;
-                    [self showStringThruManageDocument];
-                    
-                    
-                    //test check for currensies in fuction title - works
-                    /*
-                    NSArray *currTest = [ACalcBrain chekForCurrensiesProgramm:title];
-                    if(currTest){
-                        NSLog(@"I've catch it, look: %@", currTest);
-                    }
-                    */
                 }else if((funcArg==XOnlyArgu)||(funcArg==X_and_Curr_Argu)){
+                    
+                    //if there is currensies - replace it and make new request
+                    if (funcArg==X_and_Curr_Argu){
+                        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                        NSArray* copyProgrammFroCurrensiesCheck = valueProg;
+                        
+                        //if there is currensies - get the pairs array wit value else get nil
+                        NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
+                        
+                        if(possibleCurrensiesArray){
+                            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                            NSArray *newPossibleCurrensiesArray = [self.currensies askResultForCurrensiesArray:possibleCurrensiesArray];
+                            
+                            if(newPossibleCurrensiesArray){
+                                valueProg =  [ACalcBrain programm:valueProg
+                                        withReplaceWithCurrencies:newPossibleCurrensiesArray];
+                                
+                                NSDictionary * newTitle = [[NSDictionary alloc] initWithObjectsAndKeys: valueProg,keyTitle, nil];
+                                title = newTitle;
+                            }
+                        }
+                        
+                    }
+                    
                     if(self.userIsInTheMidleOfEnteringNumber){
                         [self push];
                         self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1396,11 +1387,55 @@ static const NSArray *movedCel;
                     self.isStronglyArgu = YES;
                     [self showStringThruManageDocument];
 
-                } else if((funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
+                } /*else if((funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
                     
-                }
+                }*/
                     //2. if there only Y in function
-                else if ((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)){
+                else if ((funcArg == YOnlyArgu)||(funcArg==CurrOnlyArgu)||(funcArg==Y_and_Curr_Argu)|| (funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
+                    
+                    //if there is currensies - replace it and make new request
+                    if ((funcArg==CurrOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)){
+                        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                        NSArray* copyProgrammFroCurrensiesCheck = valueProg;
+                        
+                        //if there is currensies - get the pairs array wit value else get nil
+                        NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
+                        
+                        if(possibleCurrensiesArray){
+                            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+                            NSArray *newPossibleCurrensiesArray = [self.currensies askResultForCurrensiesArray:possibleCurrensiesArray];
+                            
+                            if(newPossibleCurrensiesArray){
+                                valueProg =  [ACalcBrain programm:valueProg
+                                        withReplaceWithCurrencies:newPossibleCurrensiesArray];
+                                
+                                NSDictionary * newTitle = [[NSDictionary alloc] initWithObjectsAndKeys: valueProg,keyTitle, nil];
+                                title = newTitle;
+                            }
+                        }
+                        
+                    }
+                    
+                    
+                    //if x or y on display make shure thet it'll be muliply operation
+                    if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)){
+                        id checkXY = [self.displayRam getResult];
+                        if(checkXY && [checkXY isKindOfClass:[NSString class]] && ([checkXY isEqualToString:@"x"]||[checkXY isEqualToString:@"y"]) ){
+                      
+                            [self push];
+                            self.userIsInTheMidleOfEnteringNumber = NO;
+                            self.isStronglyArgu = YES;
+                        
+                            [self.brain perfomOperation:@"×"];
+                        
+                            self.isStronglyArgu = NO;
+                            self.isProgramInProcess = YES;
+                            self.isResultFromMemory = NO;
+                        }
+                    }
+                    
+                    
+                    
                     if(self.userIsInTheMidleOfEnteringNumber){
                         [self push];
                         self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1414,19 +1449,37 @@ static const NSArray *movedCel;
                         self.userIsInTheMidleOfEnteringNumber = NO;
                         self.isStronglyArgu = YES;
                     } else {
-                        [self.displayRam setResult:@0];
-                        [self push];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
+                        //for only Y and Y with Currensies
+                        if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==CurrOnlyArgu)){
+                            [self.displayRam clearRam];
+                            if(!self.isProgramInProcess){
+                                [self setStoryInforamtion];
+                                [self.brain clearOperation]; //if it's just new argument, not new counting
+                            } else {
+                                [self.brain clearArgu];
+                            }
+                            
+                            [self.displayRam setResult:@0];
+                            [self push];
+                            self.userIsInTheMidleOfEnteringNumber = NO;
+                        }
                         self.isStronglyArgu = YES;
                     }
 
-                    [self.brain perfomOperation:title];
                     
-                    [self.displayRam clearRam];
-                    [self.display showString:[self.displayRam addSymbol:@0]];
+                    
+                    //if waiting for Y - clear display and set 0
+                    if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)||(funcArg==X_and_Y_Argu)){
+                        [self.brain perfomOperation:title];
+                        [self.displayRam clearRam];
+                        [self.display showString:[self.displayRam addSymbol:@0]];
+                    } else {
+                        [self.brain perfomOperation:title];
+
+                        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                    }
 
                     self.userIsInTheMidleOfEnteringNumber = YES;
-                    
                     self.isStronglyArgu = NO;
                     self.isProgramInProcess = YES;
                     [self showStringThruManageDocument];
@@ -1505,6 +1558,22 @@ static const NSArray *movedCel;
             
             
         } else if([constants containsObject:title]){ //if user pressed e, Pi or others constant buttons
+            
+            //if x or y on display make shure thet it'll be muliply operation
+            id checkXY = [self.displayRam getResult];
+            if(checkXY && [checkXY isKindOfClass:[NSString class]] && ([checkXY isEqualToString:@"x"]||[checkXY isEqualToString:@"y"]) ){
+                    
+                [self push];
+                self.userIsInTheMidleOfEnteringNumber = NO;
+                self.isStronglyArgu = YES;
+                    
+                [self.brain perfomOperation:@"×"];
+                    
+                self.isStronglyArgu = NO;
+                self.isProgramInProcess = YES;
+                self.isResultFromMemory = NO;
+            }
+            
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1551,64 +1620,25 @@ static const NSArray *movedCel;
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
                 self.isStronglyArgu = YES;
-                //NSLog(@"Y push as inTheMiddleOfenteeing");
-            } else if (self.isResultFromMemory){
+
+            }else if (self.isResultFromMemory){
                 [self push];
                 self.isResultFromMemory = NO;
-                // NSLog(@"Y push as from memory");
-            }
-            
-            else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
+            }else if ([[self.displayRam getResult] isKindOfClass:[NSNumber class]] &&
                      [[self.displayRam getResult] isEqual: @0]){
-                //ADED
-                //id result = [self.displayRam getResult];
-                //NSLog(@"Next pushResult %@", result);
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
                 self.isStronglyArgu = YES;
             } else {
                 self.isStronglyArgu = YES;
             }
-            // else {
-                //ADED
-                //id result = [self.displayRam getResult];
-                //NSLog(@"Next pushResult %@", result);
-                //[self push];
-                //self.isStronglyArgu = YES;
-                //self.userIsInTheMidleOfEnteringNumber = NO;
 
-                //need show brain not get argument for this function
-                //[self.brain pushOperand:[NSNumber numberWithInteger:NSNotFound]];
-                //NSLog(@"Y push as notStrongly");
-            //}
-            
-            //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-            //[self.brain perfomOperation:title];
-            /*
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
-            
-            self.isStronglyArgu = YES;
-            //need next value
-            self.isProgramInProcess = YES;
-            
-            [self showStringThruManageDocument];
-            
-            
-            //[self.brain insertBracket:YES];
-            [self.displayRam clearRam];
-            [self.display showString:[self.displayRam addSymbol:@0]];
-            //[self showStringThruManageDocument];
-            self.userIsInTheMidleOfEnteringNumber = YES;
-            self.isStronglyArgu = NO;
-            */
             [self.brain perfomOperation:title];
             
             [self.displayRam clearRam];
             [self.display showString:[self.displayRam addSymbol:@0]];
-            //[self showStringThruManageDocument];
-            self.userIsInTheMidleOfEnteringNumber = YES;
             
-            //[self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            self.userIsInTheMidleOfEnteringNumber = YES;
             self.isStronglyArgu = NO;
             self.isProgramInProcess = YES;
             [self showStringThruManageDocument];
