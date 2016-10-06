@@ -163,6 +163,8 @@
 
 -(void)endDrawCurrencyConverterOn:(BOOL)isOn withVelocity:(CGPoint)velocity
 {
+    //not needed call from all main discardChanges
+    //IMPORTANT CHEK!
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.blur];
     velocity.y = 0;
     UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.currencyFromPicker, self.currencyToPicker, self.resultLabel, self.convertButton,self.backButton]];

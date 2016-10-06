@@ -856,6 +856,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 #pragma mark NEW BUTTON CREATING
 - (IBAction)plusButtonTapped:(UIButton *)sender {
+    
+    //NSLog(@"[self.brain program] %@", [self.brain program]);
+    //NSLog(@"[self.brain argu] %@", [self.brain argu]);
+    NSArray *brainProgram = [self.brain.program copy];
+    if([brainProgram count]>0){
+        NSLog(@"Programm not empty");
+        [self tappedButtonWithTitle:@"="];
+    }
+    
+    
     id programm;
     NSArray* progCopy;
     NSAttributedString *programmDescription = [[NSAttributedString alloc] initWithString:@"" attributes:self.attributes];
@@ -887,16 +897,21 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
                 programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
                 //check if constant add value as description
+                //NSLog(@"[self.brain program] %@", [self.brain program]);
+                //NSLog(@"[self.brain argu] %@", [self.brain argu]);
+                
+                
                 if([[programm firstObject] isKindOfClass:[NSNumber class]]){
-
-                    if([[self.displayRam getResult]isKindOfClass:[NSNumber class]]){
-                        programm = [self.displayRam getResult];
-                        programmDescription =[[NSAttributedString alloc] initWithString:[[self.displayRam getResult] stringValue] attributes:self.attributes ];
-                    } else if([[self.displayRam getResult] isKindOfClass:[NSArray class]]){
-                        programm = [[NSArray alloc] initWithArray:[self.displayRam getResult]];
+                    id getRes = [self.displayRam getResult];
+                    //NSLog(@"getRes %@", getRes);
+                    if([getRes isKindOfClass:[NSNumber class]]){
+                        programm = getRes;
+                        programmDescription =[[NSAttributedString alloc] initWithString:[getRes stringValue] attributes:self.attributes ];
+                    } else if([getRes isKindOfClass:[NSArray class]]){
+                        programm = [[NSArray alloc] initWithArray:getRes];
                         
                         
-                        NSMutableArray *copyGradArray = [[self.displayRam getResult] mutableCopy];
+                        NSMutableArray *copyGradArray = [getRes mutableCopy];
                         [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
                         programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.attributes];
                         //programmDescription =[[self.displayRam getResult] stringValue];
