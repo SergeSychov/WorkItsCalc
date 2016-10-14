@@ -860,8 +860,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //NSLog(@"[self.brain program] %@", [self.brain program]);
     //NSLog(@"[self.brain argu] %@", [self.brain argu]);
     NSArray *brainProgram = [self.brain.program copy];
-    if([brainProgram count]>0){
-        NSLog(@"Programm not empty");
+    NSArray *brainArgu = [self.brain.argu copy];
+    if(([brainProgram count]>0)||([brainArgu count]==0)){
+        //NSLog(@"Programm not empty");
         [self tappedButtonWithTitle:@"="];
     }
     

@@ -247,6 +247,8 @@
                 
                 str = [self.formatter stringFromNumber:self.resultNumber];
             }
+
+
             //for minutes and secons
         } else if((self.isGradMinutesSecons == 1) || (self.isGradMinutesSecons == 2)){
             NSMutableArray *copyGradArray = [self.gradArray mutableCopy];
@@ -271,6 +273,11 @@
         } else {
             str = [self stringFromGrad:self.gradArray];
         }
+        
+        //clear not needed values
+        self.variableString = nil;
+        self.resDictionary = nil;
+        
     } else if([symbol isKindOfClass:[NSString class]]){
         if([symbol isEqualToString:@"."] && (self.isGradMinutesSecons == 0)){
             if(!self.isFloat){
@@ -292,6 +299,10 @@
                     str = [self replasePointinString:self.resultString];
                 }
             }
+            //clear not needed values
+            self.variableString = nil;
+            self.resDictionary = nil;
+
         } else if ([symbol isEqualToString:@"-"] && ([self.resultNumber doubleValue] == 0)){
             NSRange minusRange = [self.resultString rangeOfString:@"-"];
             if(minusRange.location == NSNotFound){
@@ -300,6 +311,11 @@
                 self.resultString = [self.resultString substringFromIndex:minusRange.location +1];
             }
             str = [self replasePointinString:self.resultString];
+            
+            //clear not needed values
+            self.variableString = nil;
+            self.resDictionary = nil;
+
         } else if ([symbol isEqualToString:@"° ′″"]){
             if(self.isGradMinutesSecons ==0){
                 double grad = floor([self.resultNumber doubleValue]);
@@ -346,6 +362,10 @@
                 
             }
             str = [self stringFromGrad:self.gradArray];
+            //clear not needed values
+            self.variableString = nil;
+            self.resDictionary = nil;
+
             
         }  else if([symbol isEqualToString:@"∓°"]){
             NSMutableArray * copyGradArray = [self.gradArray mutableCopy];
@@ -357,27 +377,38 @@
                 self.gradArray = [copyGradArray copy];
                 str = [self stringFromGrad:self.gradArray];
             }
+            //clear not needed values
+            self.variableString = nil;
+            self.resDictionary = nil;
+
         } else if([symbol isEqualToString:@"x"] || [symbol isEqualToString:@"y"]){
             str = symbol;
             self.variableString = symbol;
+            self.resDictionary = nil;
         } else {
             if(self.isGradMinutesSecons ==0){
                 str = [self.formatter stringFromNumber:self.resultNumber];
             } else {
                 str = [self stringFromGrad:self.gradArray];
             }
+            self.variableString = nil;
+            self.resDictionary = nil;
         }
 
         
     } else if ([symbol isKindOfClass:[NSDictionary class]]){
         str = [[symbol allKeys]firstObject];
         self.resDictionary = symbol;
+        self.variableString = nil;
     }else {
         if(self.isGradMinutesSecons ==0){
         str = [self.formatter stringFromNumber:self.resultNumber];
         } else {
             str = [self stringFromGrad:self.gradArray];
         }
+        //clear not needed values
+        self.variableString = nil;
+        self.resDictionary = nil;
         
     }
     return str;
@@ -538,6 +569,10 @@
                 str = [self.formatter stringFromNumber:(NSNumber*)result];
            // }
         }
+        
+        //clear not needed values
+        self.variableString = nil;
+        //self.resDictionary = nil;
     } else if ([result isKindOfClass:[NSString class]]){
         if([result isEqualToString:@"D"] || [result isEqualToString:@"R"]){
             NSMutableArray *resultGradArray = [[NSMutableArray alloc] init];
@@ -574,6 +609,9 @@
             str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
             
         }
+        //clear not needed values
+        self.variableString = nil;
+        //self.resDictionary = nil;
     }
     //if([str length] > self.displayLenght){
     //    str = [str substringToIndex:self.displayLenght];
