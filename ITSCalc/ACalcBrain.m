@@ -13,7 +13,7 @@
 @property (nonatomic, strong) NSArray *programStacks;
 @property (nonatomic, strong) NSArray *arguStack;
 @property (nonatomic, strong) NSDictionary *variableValue;
-@property (nonatomic) int numberOfOpenBrackets;
+@property (nonatomic) NSInteger numberOfOpenBrackets;
 
 -(double) countWithStack:(id) stack;
 @end
@@ -25,7 +25,7 @@
     NSMutableArray *saveArray = [[NSMutableArray alloc] init];
     [saveArray addObject:[self.deepProgram copy]];
     [saveArray addObject:[self.deepArgu copy]];
-    [saveArray addObject:[NSNumber numberWithInt:self.numberOfOpenBrackets]];
+    [saveArray addObject:[NSNumber numberWithInteger:self.numberOfOpenBrackets]];
     [saveArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];
     
     return [saveArray copy];
@@ -77,7 +77,7 @@
     return [ACalcBrain initWithProgram:program withArgu:argu withOpenBracets:0 andIsStrongluArgu:YES];
 }
 
-+(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu
++(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(NSInteger)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu
 {
     //add from this
     static ACalcBrain *newBrain = nil;
@@ -146,7 +146,7 @@
     return  self.numberOfOpenBrackets > 0? YES: NO;
 }
 
--(int) openBracets
+-(NSInteger) openBracets
 {
     return self.numberOfOpenBrackets;
 }
@@ -875,7 +875,7 @@ typedef enum : NSInteger {
 {
     NSMutableAttributedString * mutArgStr = [inputStr mutableCopy];
     
-    NSLog(@"mutArgStr: %@",[mutArgStr string]);
+    //NSLog(@"mutArgStr: %@",[mutArgStr string]);
     //if there is array with open and close brackets - delete brackets
     NSRange firstCharacterRange = NSMakeRange(0, 1);
     NSString *firstCharacterArgu = [mutArgStr.string substringWithRange:firstCharacterRange];
@@ -1262,6 +1262,7 @@ typedef enum : NSInteger {
         NSString *key = [[topOfStack allKeys]firstObject];
         //NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];
+        //NSLog(@"valueProg: %@",valueProg);
         if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
             result = [self popOperandOfStack:stack withPreviousValue:valueProg accordingPriority:priority];
         } else if ([valueProg isKindOfClass:[NSArray class]]){
@@ -1320,9 +1321,11 @@ typedef enum : NSInteger {
                                 funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3]];
                                 
                                 
-                                NSLog(@"there is no value for y!");
+                               // NSLog(@"there is no value for y!");
                             } else {
+                                //NSLog(@"replacedArray before:%@", replacedArray);
                                 replacedArray = [ACalcBrain programm:replacedArray replaceString:@"y" withObj:value];
+                                //NSLog(@"replacedArray after Y:%@", replacedArray);
                                 //check if it was strongly argu
                                 id topOfStack = [stack lastObject];
                                 //NSLog(@"top of stack before Y: %@", topOfStack);
@@ -1342,6 +1345,7 @@ typedef enum : NSInteger {
                                 
                                 if((funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
                                    replacedArray = [ACalcBrain programm:replacedArray replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
+                                    //NSLog(@"replacedArray after x:%@", replacedArray);
                                 }
                                 
                                 if(noStronglyArguBeforeY || arg == 0.0){
@@ -1401,7 +1405,7 @@ typedef enum : NSInteger {
             double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
             if(arg == 0.0) {
                 result = [self popOperandOfStack:stack withPreviousValue:exchangeRate accordingPriority:priority];
-                NSLog(@"result from curr:%@",[NSNumber numberWithDouble:result]);
+                //NSLog(@"result from curr:%@",[NSNumber numberWithDouble:result]);
             } else {
                 double exchangeRateDouble = [exchangeRate doubleValue];
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * exchangeRateDouble)] accordingPriority:priority];
@@ -1888,7 +1892,7 @@ typedef enum : NSInteger {
         } else {
             //make mutableAttributed name of function or constant
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:key attributes:attributes];
-            NSLog(@"Key:%@",key);
+            //NSLog(@"Key:%@",key);
             //1. check if key hase atributes another case it's konstant with array
             NSRange bracketOpenRange = [key rangeOfString:@"(" options:NSBackwardsSearch];
             //it's important search from and case user insert brackets in name
@@ -1938,6 +1942,12 @@ typedef enum : NSInteger {
                     }
                     //check Y range in case string was changed top
                     key = [attArg string];
+                    bracketOpenRange = [key rangeOfString:@"(" options:NSBackwardsSearch];
+                    //it's important search from and case user insert brackets in name
+                    bracketCloseRange = [key rangeOfString:@")" options:NSBackwardsSearch];
+                    
+                    rangeOfPossibleVariables = NSMakeRange(bracketOpenRange.location+1, key.length-bracketOpenRange.location-1);
+                    
                     yRangeInStrBetwinBrackets = [key rangeOfString:@"y" options:NSLiteralSearch range:rangeOfPossibleVariables];
                     if(yRangeInStrBetwinBrackets.location != NSNotFound){
                         
@@ -1963,18 +1973,19 @@ typedef enum : NSInteger {
 
                         [attArg replaceCharactersInRange:yRangeInStrBetwinBrackets withAttributedString:[secondArguStr copy]];
                        
-                        //if top argument is multiplier of function other worlds not X argu
-                        //and this argument not equal 0
-                        //add this argument at the beginning of string
-                        if((xRangeInStrBetwinBrackets.location == NSNotFound) && (![[topArguString string] isEqual:@"0"])){
-                            [attArg insertAttributedString:topArguString atIndex:0];
-                        }
+                        
 
                     }
                     
                     
                     //check $ range in case string was changed top
                     key = [attArg string];
+                    bracketOpenRange = [key rangeOfString:@"(" options:NSBackwardsSearch];
+                    //it's important search from and case user insert brackets in name
+                    bracketCloseRange = [key rangeOfString:@")" options:NSBackwardsSearch];
+                    
+                    rangeOfPossibleVariables = NSMakeRange(bracketOpenRange.location+1, key.length-bracketOpenRange.location-1);
+                    
                     NSRange currensyRangeInStrBetwinBrackets = [key rangeOfString:@"$" options:NSLiteralSearch range:rangeOfPossibleVariables];
                     if(currensyRangeInStrBetwinBrackets.location != NSNotFound){
                         
@@ -2007,7 +2018,7 @@ typedef enum : NSInteger {
                         NSAttributedString *curAtrStr = [[NSAttributedString alloc] initWithString:currensiesString attributes:attributes];
                         
                         [attArg replaceCharactersInRange:currensyRangeInStrBetwinBrackets withAttributedString:curAtrStr];
-                        
+                        /*
                         //insert previous argu
                         id topArgu = [stack lastObject];
                         NSAttributedString *topArguString;
@@ -2020,6 +2031,14 @@ typedef enum : NSInteger {
                                 [attArg insertAttributedString:topArguString atIndex:0];
                             }
                         }
+                        */
+                    }
+                    
+                    //if top argument is multiplier of function other worlds not X argu
+                    //and this argument not equal 0
+                    //add this argument at the beginning of string
+                    if((xRangeInStrBetwinBrackets.location == NSNotFound) && (![[topArguString string] isEqual:@"0"])){
+                        [attArg insertAttributedString:topArguString atIndex:0];
                     }
                     
                     resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];

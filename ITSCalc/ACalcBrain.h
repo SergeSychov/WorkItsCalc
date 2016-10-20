@@ -48,7 +48,7 @@ typedef enum : NSInteger {
 @property(readonly) id deepProgram;
 @property (readonly) id deepArgu;
 @property (readonly) BOOL isOpenBracets;
-@property (readonly) int openBracets;
+@property (readonly) NSInteger openBracets;
 
 
 +(double)runProgram:(id) program;
@@ -71,6 +71,6 @@ typedef enum : NSInteger {
 
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;
-+(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu;
++(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(NSInteger)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu;
 
 @end

@@ -259,6 +259,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic,assign) BOOL isDecCounting;
 @property (nonatomic,assign) BOOL isResultFromMemory; //is result on screen is taked up from memory
 
+//necesarry for recount currensy
+@property (nonatomic,strong) NSCondition* recountCurrencyCondition;
+//stop until not thrue
+@property (nonatomic) BOOL isCurrencyCanBeRecount;
+
+
 //make int property only for test NSTimer
 @property (nonatomic,strong) NSIndexPath * patch;
 @property (nonatomic, strong) NSTimer *animationTimer;//for delet and set buttonsView animation
@@ -898,7 +904,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
                 programm = [self arrayForNewButtonFromArgu:[self.brain argu]];//set argu
                 //check if constant add value as description
-                //NSLog(@"[self.brain program] %@", [self.brain program]);
+               // NSLog(@"programm %@", programm);
                 //NSLog(@"[self.brain argu] %@", [self.brain argu]);
                 
                 
@@ -992,17 +998,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [outputButtonProgram addObject:constantFromProgramm];
     }else {
         [outputButtonProgram addObject:signArray];
-        /*
-         DELETE case next step is added currensy as argu
-        if(currencies){
-            [outputButtonProgram addObject:currencies];
-        }
+
+        /* not shure why i've made this
+         if([argu firstObject] && [[argu firstObject] isKindOfClass:[NSArray class]]){
+         [outputButtonProgram addObject:[argu firstObject]];
+         } else {
+         [outputButtonProgram addObject:argu];
+         }
         */
-        if([argu firstObject] && [[argu firstObject] isKindOfClass:[NSArray class]]){
-            [outputButtonProgram addObject:[argu firstObject]];
-        } else {
-            [outputButtonProgram addObject:argu];
-        }
+        [outputButtonProgram addObject:argu];
     }
     //NSLog(@"OutputProg %@", outputButtonProgram);
     return [outputButtonProgram copy];
@@ -1085,62 +1089,60 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 //delegate method asked ITSCal after request before
+
 -(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
     
-    NSArray *deepProgram = [self.brain.deepProgram copy];
-    NSArray *deepArgu = [self.brain.deepArgu copy];
+    [self performSelectorInBackground:@selector(resetWithArray:) withObject:currencies];
+}
+
+-(void) resetWithArray:(NSArray*) currencies
+{
+
+    //lock function and check if there program can be recount
+    //wright now or it need be waiting for complexed programm
+    [self.recountCurrencyCondition lock];
     
-    NSArray *brainProgram = [self.brain.program copy];
-    BOOL isExpresionRecountTotal = NO;
-
-    if([brainProgram count]==0){
-
-        isExpresionRecountTotal = YES;
+    while(!self.isCurrencyCanBeRecount){
+        [self.recountCurrencyCondition wait];
     }
+    [self.recountCurrencyCondition unlock];
     
-    NSArray *testArray = [[deepProgram lastObject] copy];
-    if(([testArray count]>0) || ([deepArgu count]>0)){
-        
-        NSMutableArray * muttableOutputArray = [[NSMutableArray alloc] init];
-        [muttableOutputArray addObject:deepProgram];
-        [muttableOutputArray addObject:deepArgu];
-        
-        if([ACalcBrain chekForCurrensiesProgramm:[muttableOutputArray copy]]){
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *deepProgram = [self.brain.deepProgram copy];
+        NSArray *deepArgu = [self.brain.deepArgu copy];
 
-            muttableOutputArray =  [[ACalcBrain programm:[muttableOutputArray copy] withReplaceWithCurrencies:currencies
-                                    ] mutableCopy];
+        //1. check and if replace currensy in program
+        if([ACalcBrain chekForCurrensiesProgramm:deepProgram]){
+            
+            deepProgram = [ACalcBrain programm:deepProgram withReplaceWithCurrencies:currencies];
         }
         
-
-        id top = [muttableOutputArray lastObject];
-        //remove result from pprogramm array!
-        [muttableOutputArray removeLastObject];
-        NSMutableArray *argArrayCopy;
-        if(top){
-            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
+        //2. check and if replace currensy in argu
+        if([ACalcBrain chekForCurrensiesProgramm:deepArgu]){
+            
+            deepArgu = [ACalcBrain programm:deepArgu withReplaceWithCurrencies:currencies];
         }
         
-        
-        NSMutableArray *programCopy = [[NSMutableArray alloc] init];
-        top = [muttableOutputArray lastObject];
-        if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        //NSLog(@"after argArrayCopy %@:",argArrayCopy );
-        ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
-        
-        self.brain = newBrain;
+        //create new prain from replaced arrays
+        self.brain = [ACalcBrain initWithProgram:deepProgram
+                                        withArgu:deepArgu
+                                 withOpenBracets:self.brain.openBracets  //catch and save important marks
+                               andIsStrongluArgu:self.brain.isStronglyArgu];//catch and save important marks
 
+        
         //show recount result
-        if(isExpresionRecountTotal){
+        if(!self.isProgramInProcess){         //if its not finished expression - count only part
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
-             [self showStringThrouhgmanagerAtEqualPress];
+            [self showStringThrouhgmanagerAtEqualPress];
+            self.isProgramInProcess = NO;
+            self.isStronglyArgu = YES;
+            self.userIsInTheMidleOfEnteringNumber = NO;
         } else {
             [self showStringThruManageDocument];
+            self.isProgramInProcess = YES;
         }
-        
-        self.isProgramInProcess = NO;
-        self.isStronglyArgu = YES;
-        self.userIsInTheMidleOfEnteringNumber = NO;        
-    }
+    });
     
 }
 
@@ -1237,6 +1239,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 #pragma mark MAIN TAPPED FUNCTION
 static const NSArray *movedCel;
 
+//need for currensy recount condition
+//when controller resived new values after reques
+//it can be not complex program% as example waiting for users Y
+//need wait til next operand
+-(void)setIsCurrencyCanBeRecount:(BOOL)isCurrencyCanBeRecount{
+    _isCurrencyCanBeRecount = isCurrencyCanBeRecount;
+    [self.recountCurrencyCondition signal];
+    
+}
+
 -(void)tappedButtonWithTitle:(id)title
 {
     NSArray * constants = [NSArray arrayWithObjects:@"π",@"e", nil];
@@ -1303,14 +1315,15 @@ static const NSArray *movedCel;
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
         }
+            self.isCurrencyCanBeRecount = YES;
         
     }else if ([title isKindOfClass:[NSDictionary class]]){
         //if there is constant or function
         //add
         NSString *keyTitle = [[title allKeys]firstObject];
         id valueProg = [title objectForKey:keyTitle];
-        //NSLog(@"Title keys func with curr:%@", keyTitle);
-        //NSLog(@"Title value func with curr:%@", valueProg);
+        //NSLog(@"Title keys :%@", keyTitle);
+        //NSLog(@"Title value func :%@", valueProg);
 
         if([valueProg isKindOfClass:[NSNumber class]]){
             if(self.userIsInTheMidleOfEnteringNumber){
@@ -1332,6 +1345,7 @@ static const NSArray *movedCel;
             self.isStronglyArgu = YES;
 
             [self showStringThruManageDocument];
+            self.isCurrencyCanBeRecount = YES;
         } else if([valueProg isKindOfClass:[NSArray class]]){
             if([valueProg containsObject:@"°"]){
                // NSLog(@"OK it was graduses");
@@ -1353,6 +1367,7 @@ static const NSArray *movedCel;
                 self.isResultFromMemory = YES;
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
+                self.isCurrencyCanBeRecount = YES;
             } else {
                 //this is a function find arguments
                 FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:title];
@@ -1402,6 +1417,8 @@ static const NSArray *movedCel;
                     [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
                     self.isStronglyArgu = YES;
                     [self showStringThruManageDocument];
+                    self.isCurrencyCanBeRecount = YES;
+                    self.isProgramInProcess = YES;
 
                 } /*else if((funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
                     
@@ -1413,6 +1430,10 @@ static const NSArray *movedCel;
                     if ((funcArg==CurrOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)){
                         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
                         NSArray* copyProgrammFroCurrensiesCheck = valueProg;
+                        
+
+                        //can't be recounted right now - waiting for Y
+                        self.isCurrencyCanBeRecount = NO;
                         
                         //if there is currensies - get the pairs array wit value else get nil
                         NSArray* possibleCurrensiesArray = [ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck];
@@ -1426,6 +1447,7 @@ static const NSArray *movedCel;
                                         withReplaceWithCurrencies:newPossibleCurrensiesArray];
                                 
                                 NSDictionary * newTitle = [[NSDictionary alloc] initWithObjectsAndKeys: valueProg,keyTitle, nil];
+                                //NSLog(@"newTitle: %@", newTitle);
                                 title = newTitle;
                             }
                         }
@@ -1476,6 +1498,7 @@ static const NSArray *movedCel;
                             }
                             
                             [self.displayRam setResult:@0];
+                            
                             [self push];
                             self.userIsInTheMidleOfEnteringNumber = NO;
                         }
@@ -1534,6 +1557,8 @@ static const NSArray *movedCel;
             }
             
         } else if([title isEqualToString:@"C"]){
+
+            
             //check if user jus delete las number
             id curentresult = [self.displayRam getResult];
             double curentValue = 1;
@@ -1551,6 +1576,8 @@ static const NSArray *movedCel;
             self.userIsInTheMidleOfEnteringNumber = NO;
 
             self.isProgramInProcess = NO;
+            //can be recounted right now if was waiting for Y
+            self.isCurrencyCanBeRecount = YES;
             
         } else if([title isEqualToString:@"⌫"]){
             if(!self.userIsInTheMidleOfEnteringNumber){
@@ -1608,6 +1635,7 @@ static const NSArray *movedCel;
             
         } else if ([operands containsObject:title]){
             
+            
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1631,7 +1659,12 @@ static const NSArray *movedCel;
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
+            //can be recounted right now if was waiting for Y
+            self.isCurrencyCanBeRecount = YES;
+
+            
         } else if([operandwithTwoArguments containsObject:title]){
+
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1658,6 +1691,10 @@ static const NSArray *movedCel;
             self.isStronglyArgu = NO;
             self.isProgramInProcess = YES;
             [self showStringThruManageDocument];
+            
+            
+            //can be recounted right now if was waiting for Y
+            self.isCurrencyCanBeRecount = YES;
             
         
         } else if ([title isEqualToString:[[self point] stringByAppendingString:@"00"]]){
@@ -1703,7 +1740,8 @@ static const NSArray *movedCel;
             [self showStringThruManageDocument];
             
         } else if ([operation containsObject:title]/*||[operandwithTwoArguments containsObject:title]*/){
-            
+
+
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1722,13 +1760,25 @@ static const NSArray *movedCel;
                 self.isStronglyArgu = YES;
             }
             
+
             
             [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            
+            //can be recounted right now if was waiting for Y
+            //self.isCurrencyCanBeRecount = YES;
+            
             self.isStronglyArgu = NO;
             self.isProgramInProcess = YES;
-            [self showStringThruManageDocument];
+            if(!self.isCurrencyCanBeRecount){
+                self.isCurrencyCanBeRecount = YES;
+            } else {
+                [self showStringThruManageDocument];
+            }
+            
+
             
         } else if ([title isEqualToString:@"="]){
+
             if(self.userIsInTheMidleOfEnteringNumber){
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1743,6 +1793,10 @@ static const NSArray *movedCel;
             //check the brackets
             [self showStringThrouhgmanagerAtEqualPress];
             [self.brain insertBracket:NO];
+            
+            //can be recounted right now if was waiting for Y
+            self.isCurrencyCanBeRecount = YES;
+
             //
             //show what i can
             //
@@ -1833,6 +1887,7 @@ static const NSArray *movedCel;
             self.userIsInTheMidleOfEnteringNumber = YES;
             self.isStronglyArgu = NO;
         } else if ([title isEqualToString:@")"]){
+
             if(self.brain.isOpenBracets){
                 if(self.userIsInTheMidleOfEnteringNumber){
                     [self push];
@@ -1848,6 +1903,10 @@ static const NSArray *movedCel;
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             }
+            
+            //can be recounted right now if was waiting for Y
+            self.isCurrencyCanBeRecount = YES;
+
             
         } else if ([title isEqualToString:@"Mc"]){
             self.display.firstMemoryLabel.text = @"";
@@ -5383,6 +5442,9 @@ static BOOL moveIsAvailable;
     self.callShowController = NO;
 
     self.isNeedToBeReloadedAfterDesignChanged = NO;
+    
+    self.recountCurrencyCondition = [[NSCondition alloc]init];
+    self.isCurrencyCanBeRecount = YES;
 }
 
 
