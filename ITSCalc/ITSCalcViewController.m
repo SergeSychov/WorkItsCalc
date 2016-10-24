@@ -1271,7 +1271,7 @@ static const NSArray *movedCel;
             //if x or y on display make shure thet it'll be muliply operation
             id checkXY = [self.displayRam getResult];
             if(checkXY && [checkXY isKindOfClass:[NSString class]] && ([checkXY isEqualToString:@"x"]||[checkXY isEqualToString:@"y"]) ){
-                NSLog(@"Right way");
+                //NSLog(@"Right way");
                 [self push];
                 self.userIsInTheMidleOfEnteringNumber = NO;
                 self.isStronglyArgu = YES;
@@ -1489,36 +1489,47 @@ static const NSArray *movedCel;
                     } else {
                         //for only Y and Y with Currensies
                         if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==CurrOnlyArgu)){
-                            [self.displayRam clearRam];
-                            if(!self.isProgramInProcess){
-                                [self setStoryInforamtion];
-                                [self.brain clearOperation]; //if it's just new argument, not new counting
-                            } else {
+                            if(self.isProgramInProcess){
+                                [self.displayRam clearRam];
                                 [self.brain clearArgu];
+                                [self.displayRam setResult:@0];
+
                             }
+                           /*
                             
-                            [self.displayRam setResult:@0];
+                            if(!self.isProgramInProcess){
+                              //  [self setStoryInforamtion];
+                              //  [self.brain clearOperation]; //if it's just new argument, not new counting
+                            } else {
+                                //[self.displayRam clearRam];
+                               // [self.brain clearArgu];
+                                //[self.displayRam setResult:@0];
+                            }
+                            */
+                           
+                           
                             
-                            [self push];
-                            self.userIsInTheMidleOfEnteringNumber = NO;
+                            //[self push];
+                            //self.userIsInTheMidleOfEnteringNumber = YES;
                         }
                         self.isStronglyArgu = YES;
                     }
 
-                    
                     
                     //if waiting for Y - clear display and set 0
                     if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)||(funcArg==X_and_Y_Argu)){
                         [self.brain perfomOperation:title];
                         [self.displayRam clearRam];
                         [self.display showString:[self.displayRam addSymbol:@0]];
+                        self.userIsInTheMidleOfEnteringNumber = YES;
                     } else {
                         [self.brain perfomOperation:title];
 
                         [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                        self.userIsInTheMidleOfEnteringNumber = NO;
                     }
 
-                    self.userIsInTheMidleOfEnteringNumber = YES;
+                    
                     self.isStronglyArgu = NO;
                     self.isProgramInProcess = YES;
                     [self showStringThruManageDocument];
@@ -1557,47 +1568,95 @@ static const NSArray *movedCel;
             }
             
         } else if([title isEqualToString:@"C"]){
-
+            //marks if prog and argu is empty
+            NSArray *argArr = [self.brain.argu copy];
+            NSInteger brainArgCount =[argArr count];
+            NSArray *progArr = [self.brain.program copy];
+            NSInteger brainProgCount = [progArr count];
+            
             
             //check if user jus delete las number
             id curentresult = [self.displayRam getResult];
-            double curentValue = 1;
-            if( curentresult && [curentresult isKindOfClass:[NSNumber class]]){
-                curentValue = [curentresult doubleValue];
-            }
-            
-            [self.displayRam clearRam];
-            [self.display showString:[self.displayRam addSymbol:@0]];
-            
-            if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
-                [self setStoryInforamtion];
-                [self.brain clearOperation];
-            }
-            self.userIsInTheMidleOfEnteringNumber = NO;
-
-            self.isProgramInProcess = NO;
-            //can be recounted right now if was waiting for Y
-            self.isCurrencyCanBeRecount = YES;
-            
-        } else if([title isEqualToString:@"⌫"]){
-            if(!self.userIsInTheMidleOfEnteringNumber){
-                self.isStronglyArgu = [self.brain deleteLastElement];
-                self.isProgramInProcess = YES;
+            if((self.userIsInTheMidleOfEnteringNumber &&
+               curentresult &&
+               [curentresult isKindOfClass:[NSNumber class]] &&
+                ![curentresult isEqualToNumber:@0]) ||
+                self.isResultFromMemory){
+                
                 [self.displayRam clearRam];
                 [self.display showString:[self.displayRam addSymbol:@0]];
+                self.userIsInTheMidleOfEnteringNumber = YES;
+                self.isResultFromMemory = NO;
+            } else  if ((brainArgCount == 0) && (brainProgCount == 0)){
+                //no program, no argu, zero on display
+                //do nothing
+            } else{
+                
+                if(self.userIsInTheMidleOfEnteringNumber){
+                    [self push];
+                    self.userIsInTheMidleOfEnteringNumber = NO;
+                }
+                
+                self.isProgramInProcess = NO;
+                self.isStronglyArgu = YES;
+                //self.isCurrencyCanBeRecount = YES;
+                
+                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+                [self showStringThrouhgmanagerAtEqualPress];
+                [self.brain insertBracket:NO];
+                
+                [self setStoryInforamtion];
+                [self.brain clearOperation];
                 self.userIsInTheMidleOfEnteringNumber = NO;
+                
+                self.isProgramInProcess = NO;
+            
+                [self.displayRam clearRam];
+                [self.display showString:[self.displayRam addSymbol:@0]];
+            }
+
+        } else if([title isEqualToString:@"⌫"]){
+            if(!self.userIsInTheMidleOfEnteringNumber){
+                //if remainder of argu is number make posible input additional digits
+                //NSLog(@"Argu: %@", self.brain.argu);
+                id lastElemInArgu = [self.brain.argu lastObject];
+                if (lastElemInArgu && [lastElemInArgu isKindOfClass:[NSNumber class]]){
+                    
+                    [self.display showString:[self.displayRam setResult:lastElemInArgu]];
+                    self.userIsInTheMidleOfEnteringNumber = YES;
+
+                    [self.brain deleteLastElement];
+                    
+                } else {
+                    self.isStronglyArgu = [self.brain deleteLastElement];
+                    self.isProgramInProcess = YES;
+                    [self.displayRam clearRam];
+                    [self.display showString:[self.displayRam addSymbol:@0]];
+                    self.userIsInTheMidleOfEnteringNumber = NO;
+                
+                }
+
+                [self showStringThruManageDocument];
+                
                 
             } else {
                 
                 [self.display showString:[self.displayRam deleteLastSymbol]];//?? what about grad
                 if(self.displayRam.isGradMinutesSecons == 0){
                     id currentResult = [self.displayRam getResult]; // this function add grad symbol not needed here
-                    if([currentResult isKindOfClass:[NSNumber class]] && ([currentResult doubleValue] == 0))
+                    if([currentResult isKindOfClass:[NSNumber class]] && ([currentResult doubleValue] == 0)){
+
                         self.userIsInTheMidleOfEnteringNumber = NO;
+                        
+                        [self showStringThruManageDocument];
+                    }
                 }
                 
             }
-            [self showStringThruManageDocument];
+
+            
+            
+            //[self showStringThruManageDocument];
             
             
         } else if([constants containsObject:title]){ //if user pressed e, Pi or others constant buttons

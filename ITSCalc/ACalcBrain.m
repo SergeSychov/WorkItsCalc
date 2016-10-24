@@ -388,8 +388,8 @@ typedef enum : NSInteger {
     
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     NSMutableArray *copyPogram = [ACalcBrain deepArrayCopy:self.programStacks];
-    NSLog(@"deleteLastElement before self.arguStack %@", self.arguStack);
-    NSLog(@"deleteLastElement before self.programStacks %@", self.programStacks);
+    //NSLog(@"deleteLastElement before self.arguStack %@", self.arguStack);
+    //NSLog(@"deleteLastElement before self.programStacks %@", self.programStacks);
     
     
     if(self.isStronglyArgu && ([copyArgu count] >0)){
@@ -553,8 +553,8 @@ typedef enum : NSInteger {
 
     }
 
-    NSLog(@"deleteLastElement after self.arguStack: %@", self.arguStack);
-    NSLog(@"deleteLastElement after self.programStacks: %@", self.programStacks);
+    //NSLog(@"deleteLastElement after self.arguStack: %@", self.arguStack);
+    //NSLog(@"deleteLastElement after self.programStacks: %@", self.programStacks);
     
     return  self.isStronglyArgu;
 }
@@ -1312,8 +1312,8 @@ typedef enum : NSInteger {
                             replacedArray = [ACalcBrain programm:lastObj replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
                             funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                          
-                        //if X argument
-                        } else if ((funcArguments==YOnlyArgu)||(funcArguments==Y_and_Curr_Argu)||(funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
+                        //if X  and Y argument
+                        } else if ((funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
                             
                             
                             if(!value){
@@ -1325,63 +1325,72 @@ typedef enum : NSInteger {
                             } else {
                                 //NSLog(@"replacedArray before:%@", replacedArray);
                                 replacedArray = [ACalcBrain programm:replacedArray replaceString:@"y" withObj:value];
-                                //NSLog(@"replacedArray after Y:%@", replacedArray);
-                                //check if it was strongly argu
-                                id topOfStack = [stack lastObject];
-                                //NSLog(@"top of stack before Y: %@", topOfStack);
-                                BOOL noStronglyArguBeforeY = NO;
-                                
-                                if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && (
-                                   ([topOfStack integerValue]==NSNotFound) ||
-                                   ([topOfStack integerValue]==0)
-                                   )){
-                                        noStronglyArguBeforeY = YES;
-                                    //[stack removeLastObject];
-                                    NSLog(@"was no argu");
-
-                                }
                                 
                                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
+                                //NSLog(@"ARg %@", [NSNumber numberWithDouble:arg]);
+
+                                replacedArray = [ACalcBrain programm:replacedArray replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
                                 
-                                if((funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
-                                   replacedArray = [ACalcBrain programm:replacedArray replaceString:@"x" withObj:[NSNumber numberWithDouble:arg]];
-                                    //NSLog(@"replacedArray after x:%@", replacedArray);
-                                }
+                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
+
+                            }
+                            
+                        }else if ((funcArguments==YOnlyArgu)||(funcArguments==Y_and_Curr_Argu)){
+
+                            if(!value){
+                                //if no value just put previous argu as result
+                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3]];
                                 
-                                if(noStronglyArguBeforeY || arg == 0.0){
-                                    funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
-                                } else {
-                                    //if there is strongly argu before Y - multiply function on this arg
-                                    if((funcArguments==X_and_Y_Argu)||(funcArguments==AllArgues)){
-                                        funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
-                                    }else {
+                                
+                                // NSLog(@"there is no value for y!");
+                            } else {
+                                //NSLog(@"value:%@", value);
+                                replacedArray = [ACalcBrain programm:replacedArray replaceString:@"y" withObj:value];
+
+                                id topOfStack = [stack lastObject];
+                                if(topOfStack){
+                                    if([topOfStack isKindOfClass:[NSNumber class]] && (([topOfStack integerValue]==NSNotFound) ||([topOfStack integerValue]==0))){
+                                        [stack removeLastObject];
+
+                                        funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]withPreviousValue:nil accordingPriority:4]];
+                                    } else if([topOfStack isKindOfClass:[NSNumber class]] ||
+                                              [topOfStack isKindOfClass:[NSArray class]]){
+                                        double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                                         funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:[replacedArray mutableCopy]])];
+                                    } else {
+                                        funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]withPreviousValue:nil accordingPriority:4]];
                                     }
+                                } else {
+                                    funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]]];
                                 }
+
                             }
                             
                         } else if (funcArguments == CurrOnlyArgu){
-                            BOOL noStronglyArguBeforeY = NO;
-                            
-                            if(topOfStack && [topOfStack isKindOfClass:[NSNumber class]] && (
-                                                                                             ([topOfStack integerValue]==NSNotFound) ||
-                                                                                             ([topOfStack integerValue]==0)
-                                                                                             )){
-                                noStronglyArguBeforeY = YES;
-                            }
-                            
-                            double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
-                            if(noStronglyArguBeforeY || arg == 0.0){
-                                NSLog(@"Curr lastObj: %@", lastObj);
-                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:lastObj]];
+                            id topOfStack = [stack lastObject];
+                            if(topOfStack){
+                                if([topOfStack isKindOfClass:[NSNumber class]] && (([topOfStack integerValue]==NSNotFound) ||([topOfStack integerValue]==0))){
+                                    [stack removeLastObject];
+                                    
+                                    funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:lastObj withPreviousValue:nil accordingPriority:4]];
+                                } else if([topOfStack isKindOfClass:[NSNumber class]] ||
+                                          [topOfStack isKindOfClass:[NSArray class]]){
+                                    double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
+                                    funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:lastObj])];
+                                } else {
+                                    funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:lastObj withPreviousValue:nil accordingPriority:4]];
+                                }
                             } else {
-                                //if there is strongly argu before Y - multiply function on this arg
-                                funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:lastObj])];
+                                funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:lastObj]];
                             }
                         }
+                            
+                             //NSLog(@"funcresult2: %@",funcResult);
+                            //NSLog(@"stack2: %@",stack);
                         result = [self popOperandOfStack:stack
                                        withPreviousValue:funcResult
                                        accordingPriority:priority];
+                           // NSLog(@"result2: %@",[NSNumber numberWithDouble:result]);
 
                         }
                     }
@@ -1918,12 +1927,26 @@ typedef enum : NSInteger {
                     id topArgu = [stack lastObject];
                     NSAttributedString *topArguString = empty;
                     NSMutableArray *arguArray = nil;
+                    NSInteger countArguArray = 0;
                     
                     if(topArgu){
                        arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+                        id firstArguObj = [arguArray firstObject];
+                        if(firstArguObj
+                           && [firstArguObj isKindOfClass:[NSArray class]]){
+                            NSArray *testArr = firstArguObj;
+                            countArguArray = [testArr count];
+                        }
+                        
+                       // NSLog(@"Arguarray count %@",[NSNumber numberWithInteger:countArguArray]);
+                        
                         topArguString = [ACalcBrain popStringOfStack:arguArray withNextArguString:empty withAttributes:attributes];
+                        
+                       //de NSLog(@"topString %@",[topArguString string]);
+
                     }
                     
+
                         //if there is x beetwin last brackets
                     if(xRangeInStrBetwinBrackets.location != NSNotFound){
 
@@ -2038,6 +2061,13 @@ typedef enum : NSInteger {
                     //and this argument not equal 0
                     //add this argument at the beginning of string
                     if((xRangeInStrBetwinBrackets.location == NSNotFound) && (![[topArguString string] isEqual:@"0"])){
+                        //if it isn't X but argu more then one
+                        //insert multiplyer symbol to it
+                        if(countArguArray>1){
+                            NSAttributedString *multMark = [[NSAttributedString alloc] initWithString:@"×" attributes:attributes];
+                            [attArg insertAttributedString:multMark atIndex:0];
+                        }
+                        
                         [attArg insertAttributedString:topArguString atIndex:0];
                     }
                     
