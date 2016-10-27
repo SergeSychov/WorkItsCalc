@@ -895,53 +895,39 @@ typedef enum : NSInteger {
 #pragma mek END HELPED FUNCTIONS
 +(NSMutableArray*) getNextArguInStack:(NSMutableArray*) stack accordingOperation:(NSArray*) operations
 {
-    //NSLog(@"getNextArguInStack stack: %@",stack);
-    
     NSMutableArray *arguArray = [[NSMutableArray alloc] init];
     NSMutableArray *backwardArguArray = [[NSMutableArray alloc] init];
     id nexTopOfStack = [stack lastObject];
     
-    
-    //chek if looking for whole list of operation including functions
-    BOOL isLookForFunc = NO;
-    id firstOfOperations = [operations firstObject];
-    if(firstOfOperations && [firstOfOperations isKindOfClass:[NSString class]] && [firstOfOperations isEqualToString:@"xʸ"]){ //just first position in whole list of operation
-        isLookForFunc = YES;
-    }
-    
-    
     //NSLog(@"getNextArguInStack nextTop:%@", nexTopOfStack);
     while (nexTopOfStack) {
+        
         if([nexTopOfStack isKindOfClass:[NSString class]] && [operations containsObject:nexTopOfStack]){
             break;
-        } else if(isLookForFunc){//check for function and nextTopOfStack is function break too
-            //check if nextTopOfStack is function
-            if([nexTopOfStack isKindOfClass:[NSDictionary class]] && ([ACalcBrain checkWichArgumentsHasFunc:nexTopOfStack] != NoArgument)){
-                break;
+        } else if([nexTopOfStack isKindOfClass:[NSDictionary class]]){
+            FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:nexTopOfStack] ;
+            if(funcArg==YOnlyArgu || funcArg==X_and_Y_Argu || funcArg == Y_and_Curr_Argu || funcArg == AllArgues){
+                 break;
             } else {
                 [stack removeLastObject];
                 [backwardArguArray addObject:nexTopOfStack];
                 nexTopOfStack = [stack lastObject];
             }
             
-            
-        } else {
+           
+        }else {
             [stack removeLastObject];
             [backwardArguArray addObject:nexTopOfStack];
             nexTopOfStack = [stack lastObject];
         }
     }
-    //NSLog(@"getNextArguInStack backwardArguArray: %@",backwardArguArray);
-
+    
     id objFromBackwardArguArray = [backwardArguArray lastObject];
     while (objFromBackwardArguArray) {
         [arguArray addObject:objFromBackwardArguArray];
         [backwardArguArray removeLastObject];
         objFromBackwardArguArray = [backwardArguArray lastObject];
     }
-    //NSLog(@"getNextArguInStack arguArray: %@",arguArray);
-
-
     return arguArray;
 }
 //change baseline and font size for mutable string
@@ -1240,10 +1226,19 @@ typedef enum : NSInteger {
     double result = 0.0;
     //NSLog(@"popOperandOfStack Stack:%@",  stack);
     //NSLog(@"popOperandOfStack Value:%@", value);
+    //stack = [stack mutableCopy];
+    if([stack isKindOfClass:[NSArray class]]){
+        //NSLog(@"Stack IS array!");
+
+        if(![stack isKindOfClass:[NSMutableArray class]]){
+            stack = [stack mutableCopy];
+        }
+    }     /*
+           else {
+        NSLog(@"Stack not array!");
+        
+    }*/
     
-    if(![stack isKindOfClass:[NSMutableArray class]]){
-        stack = [stack mutableCopy];
-    }
 
     id topOfStack = [stack lastObject];
     //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
@@ -2783,7 +2778,7 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"xʸ"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                //NSLog(@"xʸ arguArray %@",arguArray);
+                NSLog(@"xʸ arguArray %@",arguArray);
                 
                 //if there is no comples argu - add question mark
                 NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
