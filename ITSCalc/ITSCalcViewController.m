@@ -1373,10 +1373,10 @@ static const NSArray *movedCel;
                 FuncArguments funcArg = [ACalcBrain checkWichArgumentsHasFunc:title];
                 if(funcArg == NoArgument){
                     //do nothing
-                }else if((funcArg==XOnlyArgu)||(funcArg==X_and_Curr_Argu)){
+                }else if((funcArg==XOnlyArgu)||(funcArg==X_and_Curr_Argu)||(funcArg==CurrOnlyArgu)){
                     
                     //if there is currensies - replace it and make new request
-                    if (funcArg==X_and_Curr_Argu){
+                    if ((funcArg==X_and_Curr_Argu) ||(funcArg==CurrOnlyArgu)){
                         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
                         NSArray* copyProgrammFroCurrensiesCheck = valueProg;
                         
@@ -1415,19 +1415,16 @@ static const NSArray *movedCel;
                     }
                     
                     [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+                    
                     self.isStronglyArgu = YES;
                     [self showStringThruManageDocument];
                     self.isCurrencyCanBeRecount = YES;
                     self.isProgramInProcess = YES;
 
-                } /*else if((funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
-                    
-                }*/
-                    //2. if there only Y in function
-                else if ((funcArg == YOnlyArgu)||(funcArg==CurrOnlyArgu)||(funcArg==Y_and_Curr_Argu)|| (funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
+                } else if ((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)|| (funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
                     
                     //if there is currensies - replace it and make new request
-                    if ((funcArg==CurrOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)){
+                    if ((funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)){
                         //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
                         NSArray* copyProgrammFroCurrensiesCheck = valueProg;
                         
@@ -1495,39 +1492,18 @@ static const NSArray *movedCel;
                                 [self.displayRam setResult:@0];
 
                             }
-                           /*
-                            
-                            if(!self.isProgramInProcess){
-                              //  [self setStoryInforamtion];
-                              //  [self.brain clearOperation]; //if it's just new argument, not new counting
-                            } else {
-                                //[self.displayRam clearRam];
-                               // [self.brain clearArgu];
-                                //[self.displayRam setResult:@0];
-                            }
-                            */
-                           
-                           
-                            
-                            //[self push];
-                            //self.userIsInTheMidleOfEnteringNumber = YES;
+
                         }
                         self.isStronglyArgu = YES;
                     }
 
                     
                     //if waiting for Y - clear display and set 0
-                    if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)||(funcArg==AllArgues)||(funcArg==X_and_Y_Argu)){
-                        [self.brain perfomOperation:title];
-                        [self.displayRam clearRam];
-                        [self.display showString:[self.displayRam addSymbol:@0]];
-                        self.userIsInTheMidleOfEnteringNumber = YES;
-                    } else {
-                        [self.brain perfomOperation:title];
-
-                        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
-                        self.userIsInTheMidleOfEnteringNumber = NO;
-                    }
+                    [self.brain perfomOperation:title];
+                    [self.displayRam clearRam];
+                    [self.display showString:[self.displayRam addSymbol:@0]];
+                    self.userIsInTheMidleOfEnteringNumber = YES;
+                    
 
                     
                     self.isStronglyArgu = NO;
