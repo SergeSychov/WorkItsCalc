@@ -1419,7 +1419,7 @@ static const NSArray *movedCel;
                     self.isStronglyArgu = YES;
                     [self showStringThruManageDocument];
                     self.isCurrencyCanBeRecount = YES;
-                    self.isProgramInProcess = YES;
+                    self.isProgramInProcess = NO;
 
                 } else if ((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)|| (funcArg==X_and_Y_Argu)||(funcArg==AllArgues)){
                     
@@ -1453,6 +1453,7 @@ static const NSArray *movedCel;
                     
                     
                     //if x or y on display make shure thet it'll be muliply operation
+                    /*
                     if((funcArg == YOnlyArgu)||(funcArg==Y_and_Curr_Argu)){
                         id checkXY = [self.displayRam getResult];
                         if(checkXY && [checkXY isKindOfClass:[NSString class]] && ([checkXY isEqualToString:@"x"]||[checkXY isEqualToString:@"y"]) ){
@@ -1467,7 +1468,7 @@ static const NSArray *movedCel;
                             self.isProgramInProcess = YES;
                             self.isResultFromMemory = NO;
                         }
-                    }
+                    }*/
                     
                     
                     

@@ -1349,7 +1349,8 @@ typedef enum : NSInteger {
 
                                         funcResult = [NSNumber numberWithDouble:[self popOperandOfStack:[replacedArray mutableCopy]withPreviousValue:nil accordingPriority:4]];
                                     } else if([topOfStack isKindOfClass:[NSNumber class]] ||
-                                              [topOfStack isKindOfClass:[NSArray class]]){
+                                              [topOfStack isKindOfClass:[NSArray class]] ||
+                                              [topOfStack isKindOfClass:[NSDictionary class]]){
                                         double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
                                         funcResult = [NSNumber numberWithDouble:(arg * [self popOperandOfStack:[replacedArray mutableCopy]])];
                                     } else {
@@ -1515,7 +1516,7 @@ typedef enum : NSInteger {
                 
             } else if ([operation isEqualToString:@"x²"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:4];
-                NSLog(@"x² argu:%@",[NSNumber numberWithDouble:arg]);
+                //NSLog(@"x² argu:%@",[NSNumber numberWithDouble:arg]);
                 
                 result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,2)] accordingPriority:priority];
                 
@@ -1922,19 +1923,29 @@ typedef enum : NSInteger {
                     id topArgu = [stack lastObject];
                     NSAttributedString *topArguString = empty;
                     NSMutableArray *arguArray = nil;
-                    NSInteger countArguArray = 0;
+                    NSInteger countArguArray = 2;
                     
                     if(topArgu){
                        arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                        id firstArguObj = [arguArray firstObject];
-                        if(firstArguObj
-                           && [firstArguObj isKindOfClass:[NSArray class]]){
-                            NSArray *testArr = firstArguObj;
+                        
+                        //this neet for multiply F(y) funct or F($) function
+                        //if its number counter = 0 and multiply mark not necessary
+                        //else - necessary
+                        id lastArguObj = [arguArray lastObject];
+                        if(lastArguObj && [lastArguObj isKindOfClass:[NSArray class]]){
+                            NSArray *testArr = lastArguObj;
                             countArguArray = [testArr count];
+                            if(countArguArray<2){
+                                id firstOfFirstArgu = [lastArguObj firstObject];
+                                //if its only one number or variables X or Y
+                                if(firstOfFirstArgu && [firstOfFirstArgu isKindOfClass:[NSNumber class]]){
+                                    countArguArray = 1;
+                                }
+                            }
+                        } else if(lastArguObj && [lastArguObj isKindOfClass:[NSNumber class]]){
+                            countArguArray = 1;
                         }
-                        
-                       // NSLog(@"Arguarray count %@",[NSNumber numberWithInteger:countArguArray]);
-                        
+
                         topArguString = [ACalcBrain popStringOfStack:arguArray withNextArguString:empty withAttributes:attributes];
                         
                        //de NSLog(@"topString %@",[topArguString string]);
@@ -2778,7 +2789,7 @@ typedef enum : NSInteger {
                 
             } else if([topOfStack isEqualToString:@"xʸ"]){
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
-                NSLog(@"xʸ arguArray %@",arguArray);
+                //NSLog(@"xʸ arguArray %@",arguArray);
                 
                 //if there is no comples argu - add question mark
                 NSMutableAttributedString* mutAttArg = [[ACalcBrain addQuestionMarkInString:argStr
