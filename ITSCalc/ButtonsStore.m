@@ -465,8 +465,7 @@
 {
     NSFetchRequest *request;
     //all posible variation of end function
-    NSArray *possibleStringArray = [NSArray arrayWithObjects:@"(x)",@"(y)",@"($)",
-                                                            @"(x,y)",@"(x,$)",
+    NSArray *possibleStringArray = [NSArray arrayWithObjects:@"",@"(x)",@"(y)",@"($)",@"(x,y)",@"(x,$)",
                                                             @"(y,$)",
                                                             @"(x,y,$)",nil];
 
@@ -476,7 +475,7 @@
         request = [NSFetchRequest fetchRequestWithEntityName:entityName];
         request.predicate = [NSPredicate predicateWithFormat:@"nameButton = %@", checkStr];
         
-        NSLog(@"Check str: %@", checkStr);
+        //NSLog(@"Check str: %@", checkStr);
         
         NSError *error;
         NSArray *matches = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
