@@ -1560,7 +1560,15 @@ typedef enum : NSInteger {
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
                     //NSLog(@"there is VALUE for xy!");
+                    double convertDoubleValue = 1/[value doubleValue];
+                    int restDeviedTwoIntPart = (int)floor(convertDoubleValue )%2;
+                    double restOfIntPart = convertDoubleValue  - floor(convertDoubleValue);
+                    
+                    if((arg <0)&& (restOfIntPart==0)&&(restDeviedTwoIntPart !=0)){
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:-pow(-arg,[value doubleValue])] accordingPriority:priority];
+                    } else{
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,[value doubleValue])] accordingPriority:priority];
+                    }
                 } else {
                    // NSLog(@"there is no value for xy!");
 
@@ -1571,7 +1579,15 @@ typedef enum : NSInteger {
                 
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
-                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],arg)] accordingPriority:priority];
+                    double convertDoubleArg = 1/arg;
+                    int restDeviedTwoIntPart = (int)floor(convertDoubleArg )%2;
+                    double restOfIntPart = convertDoubleArg  - floor(convertDoubleArg);
+                    
+                    if(([value doubleValue] <0)&& (restOfIntPart==0)&&(restDeviedTwoIntPart !=0)){
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:-pow(-[value doubleValue],arg)] accordingPriority:priority];
+                    } else{
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],arg)] accordingPriority:priority];
+                    }
                 } else {
                     result = arg;
                 }
@@ -1579,7 +1595,17 @@ typedef enum : NSInteger {
                 
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
+                    //solving pow problem
+                    double doublevalue = [value doubleValue];
+                    int restDeviedTwoIntPart = (int)floor(doublevalue)%2;
+                    double restOfIntPart = doublevalue - floor(doublevalue);
+                    
+                    if((arg <0)&& (restOfIntPart==0)&&(restDeviedTwoIntPart !=0)){
+                       result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:-pow(-arg,1 / [value doubleValue])] accordingPriority:priority];
+                    } else{
+                    
                     result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow(arg,1 / [value doubleValue])] accordingPriority:priority];
+                    }
                 } else {
                     result = arg;
                 }
@@ -1587,7 +1613,16 @@ typedef enum : NSInteger {
             } else if ([operation isEqualToString:@"ˣ√y"]){
                 double arg = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3];
                 if(value){
-                    result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],1 / arg)] accordingPriority:priority];
+                    double convertDoubleArg = arg;
+                    int restDeviedTwoIntPart = (int)floor(convertDoubleArg )%2;
+                    double restOfIntPart = convertDoubleArg  - floor(convertDoubleArg);
+                    
+                    if(([value doubleValue] <0)&& (restOfIntPart==0)&&(restDeviedTwoIntPart !=0)){
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:-pow(-[value doubleValue],1 / arg)] accordingPriority:priority];
+                    } else{
+
+                        result = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:pow([value doubleValue],1 / arg)] accordingPriority:priority];
+                    }
                 } else {
                     result = arg;
                 }

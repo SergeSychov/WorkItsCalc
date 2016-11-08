@@ -69,6 +69,10 @@ typedef enum : NSInteger {
 
 +(FuncArguments)checkWichArgumentsHasFunc:(NSDictionary*)func;//check wich arguments has a func
 
+//change baseline and font size for mutable string
++(NSAttributedString*)changeForString:(NSAttributedString*)inputAttrStr fontSizeWith:(CGFloat)devider andBaseLine:(CGFloat)multiplier;
+
+
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(NSInteger)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu;
