@@ -18,17 +18,25 @@
 //important delete
 //#import <StoreKit/StoreKit.h>
 
-@interface ITSCalcViewController : UIViewController <ADBannerViewDelegate/* important delete, SKPaymentTransactionObserver, SKProductsRequestDelegate*/>
+@interface ITSCalcViewController : UIViewController /* <ADBannerViewDelegate important delete, SKPaymentTransactionObserver, SKProductsRequestDelegate>*/
 
 
-@property (weak, nonatomic) IBOutlet UIView *dynamicContainer; //dynamic container to set pickers view
+//@property (weak, nonatomic) IBOutlet UIView *dynamicContainer; //dynamic container to set pickers view
 
-@property (nonatomic) CGFloat labelViewHeight;//to set right origin y for pickers
+//@property (nonatomic) CGFloat labelViewHeight;//to set right origin y for pickers
 //Buttons collection
 
 @property (weak, nonatomic) IBOutlet ButtonsCollectionView *buttonsCollection;
 //initial layout
 @property (weak, nonatomic) IBOutlet UIView *viewforCurrencyRecognizer; //dublicate area of button collection
+@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
+
+//constrains
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainContainerHeight;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainContainerWidth;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *calcScreenHeightConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *histroyTableHeightConstrain;
+//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *buttonscollectionHeightConstrain;
 
 //Models
 @property (nonatomic, strong) ACalcBrain *brain; //main brain

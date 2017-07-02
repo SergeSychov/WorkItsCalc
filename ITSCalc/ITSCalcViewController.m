@@ -100,6 +100,13 @@
 #define DELETED_USER_BUTTON 5
 
 
+//for constrain layout
+
+#define IPHONE_RATIO_BUTTONS_VIEW 1.33
+#define IPAD_RAIO_BUTTONS_VIEW 1.3
+#define IPHONE_SCREEN_VS_WIDTH_RATIO 0.21
+#define IPAD_SCREEN_VS_WIDTH_RATIO 0.14
+
 //NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
 //NSString *const MainControllerNotAvailableForBuingNotification = @"MainControllerNotAvailableForBuingNotification";
 #pragma mark CHANGES FROM OTHER CONTROLLERS
@@ -111,6 +118,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //outlets
 //
 //Main container view
+
+#pragma mark INSERTED PROPERTIES
+@property (nonatomic) CGFloat howHistoryShowed; // float from 0 to 1 show how heigh is history table view
+//it depend opasity of buutons and screen label, and view of histroydrager
 
 
 #pragma mark TRANSITOPN PROPERTIES
@@ -143,7 +154,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressRecognizer;
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *moveButtonsPanGestureRecognizer; //pan gesture recognizer
 
-@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
+//@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 //Display view
 @property (weak, nonatomic) IBOutlet UIView *displayContainer;
 @property (weak, nonatomic) IBOutlet  DisplayLabel *display; //calc display
@@ -152,17 +163,17 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (weak, nonatomic) UIView*blackViewforPhotoBackground;
 //@property (weak, nonatomic) IBOutlet UIToolbar *backgroundToolBar; //background for display
 //fix button to fix changes and settibgs
-@property (weak, nonatomic) IBOutlet ShareButton *noticeButton;
-@property (weak, nonatomic) IBOutlet NoticeButton *noticeRealButton;
+
+@property (weak, nonatomic) IBOutlet NoticeButton *noticeButton;
 
 @property (weak, nonatomic) IBOutlet PlusButton *plusButton;
 
 @property (weak, nonatomic) IBOutlet recBut *recountButton;
-@property (weak, nonatomic) IBOutlet UIButton *upButton;
+
 @property (weak, nonatomic) IBOutlet DelButton *deleteButton;
-@property (weak,nonatomic) IBOutlet SettingButton *settingsButton;
-@property (weak,nonatomic) IBOutlet DownButton *downButton;
-@property (weak, nonatomic) IBOutlet SettingButton *settingsBottomButtn;
+@property (weak, nonatomic) IBOutlet ShareButton *shareButton;
+
+@property (weak, nonatomic) IBOutlet SettingButton *settingsButton;
 
 //History table view
 @property (weak, nonatomic) IBOutlet HistoryTableView *historyTable;
@@ -192,11 +203,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) NSInteger nexNeedShovewTrialViewDay;// ask user 1, 5, 10, 20 to the end of trial period to buy whole version
 //iAd banner
 @property (weak, nonatomic) IBOutlet UIView *bannerContainerView;
-@property (weak, nonatomic) IBOutlet ADBannerView *iAdBanner;
+//@property (weak, nonatomic) IBOutlet ADBannerView *iAdBanner;
 
-@property (nonatomic) BOOL isIAdBaneerAvailable;
+//@property (nonatomic) BOOL isIAdBaneerAvailable;
 @property (nonatomic) NSInteger bannerRequestCounter;// need to limitation of IAd banner request at pressing "equal"
-@property (nonatomic) BOOL isIAdBannerOnScreen; //to find out if the banner on the screen
+//@property (nonatomic) BOOL isIAdBannerOnScreen; //to find out if the banner on the screen
 
 //Settings
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
@@ -260,7 +271,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic,assign) BOOL isResultFromMemory; //is result on screen is taked up from memory
 
 //make int property only for test NSTimer
-@property (nonatomic,strong) NSIndexPath * patch;
+//@property (nonatomic,strong) NSIndexPath * patch;
 @property (nonatomic, strong) NSTimer *animationTimer;//for delet and set buttonsView animation
 @property (nonatomic, strong) NSTimer *secondTimer; //for move button at pan gesture
 @property (nonatomic,strong) NSMutableArray *buttonsToMoveArray;
@@ -565,26 +576,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     self.settingsButton.shadowSize = buttonShadowSize;
     [self.settingsButton setNeedsDisplay];
     
-    self.settingsBottomButtn.shadowColor = buttonShadowColor;
-    self.settingsBottomButtn.shadowBlur = buttonShadowBlur;
-    self.settingsBottomButtn.shadowSize = buttonShadowSize;
-    [self.settingsBottomButtn setNeedsDisplay];
     
-    self.downButton.shadowColor = buttonShadowColor;
-    self.downButton.shadowBlur = buttonShadowBlur;
-    self.downButton.shadowSize = buttonShadowSize;
-    [self.downButton setNeedsDisplay];
-    
-    self.noticeButton.shadowColor = buttonShadowColor;
-    self.noticeButton.shadowBlur = buttonShadowBlur;
-    self.noticeButton.shadowSize = buttonShadowSize;
-    [self.noticeButton setNeedsDisplay];
-    
-    if(self.noticeRealButton){
-        self.noticeRealButton.shadowColor = buttonShadowColor;
-        self.noticeRealButton.shadowBlur = buttonShadowBlur;
-        self.noticeRealButton.shadowSize = buttonShadowSize;
-        [self.noticeRealButton setNeedsDisplay];
+    if(self.noticeButton){
+        self.noticeButton.shadowColor = buttonShadowColor;
+        self.noticeButton.shadowBlur = buttonShadowBlur;
+        self.noticeButton.shadowSize = buttonShadowSize;
+        [self.noticeButton setNeedsDisplay];
     }
     self.isNeedToBeReloadedAfterDesignChanged = YES;
 
@@ -658,6 +655,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 #pragma mark COUNTING METHODS AND PROPERTIES
+//used
 -(void) setIsDecCounting:(BOOL)isDecCounting
 {
     _isDecCounting = isDecCounting;
@@ -737,8 +735,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     switch (self.counterForShowingAllertView) {
         case 30:{
             HintView *hintView =
-            [HintView newHintViewWithFrame:self.dynamicContainer.frame
-                                 labelRect:self.displayContainer.frame
+            [HintView newHintViewWithFrame:self.mainContainerView.frame
+                                 labelRect:self.mainContainerView.frame
                                       type:self.counterForShowingAllertView];
             hintView.alpha = 0;
             [self.mainContainerView addSubview:hintView];
@@ -759,7 +757,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
                 collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
                 HintView *hintView =
-                [HintView newHintViewWithFrame:self.dynamicContainer.frame
+                [HintView newHintViewWithFrame:self.mainContainerView.frame
                                      labelRect:collectionVisibleRect
                                           type:self.counterForShowingAllertView];
                 hintView.alpha = 0;
@@ -782,7 +780,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             collectionVisibleRect.size.height -= self.displayContainer.bounds.size.height;
             collectionVisibleRect.origin.y += self.displayContainer.bounds.size.height;
             HintView *hintView =
-            [HintView newHintViewWithFrame:self.dynamicContainer.frame
+            [HintView newHintViewWithFrame:self.mainContainerView.frame
                                  labelRect:collectionVisibleRect
                                       type:self.counterForShowingAllertView];
             hintView.alpha = 0;
@@ -840,6 +838,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
       //  [self makeTwoArrays];
       //  [self.buttonsCollection reloadData];
         [self.buttonsStore renewArraysAccordingNewButtonsSize];
+        [self newButtonsSize];
         
     }
 }
@@ -1842,27 +1841,29 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             self.buttonsCollection.userInteractionEnabled = NO;
             
             
-            CGRect newDynamicFrame = self.dynamicContainer.frame;
-            newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
+            //CGRect newDynamicFrame = self.mainContainerView.frame;
+            //newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
             
             //if self.isButtonsCollectionUnderChanging = YES;
-            newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
+            //newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
 
             
             CGRect buttonsCollectionViewBounds = self.viewforCurrencyRecognizer.frame;
             buttonsCollectionViewBounds.size.height = self.mainContainerView.frame.size.height;
-            buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height - self.labelViewHeight;
+            buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height;// - self.labelViewHeight;
 
             //allow show settings button only in paid version
             if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = NO;
-            self.downButton.hidden = NO;
             //[self.buttonsCollection reloadData];
             
             [UIView animateWithDuration:.35
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
-                                 [self.dynamicContainer setFrame:newDynamicFrame];
+//IMPORTANT
+                                 //Delete this set frame
+                                 //[self.dynamicContainer setFrame:newDynamicFrame];
+                                 /*
                                  if(self.isIAdBaneerAvailable){
                                      NSInteger bannerHeight;
                                      if(IS_IPAD){
@@ -1873,6 +1874,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                      [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
                                      [self.iAdBanner setFrame:self.bannerContainerView.bounds];
                                  }
+                                 */
                                 // [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
                                  [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
                                  [self.buttonsCollection setFrame: self.viewforCurrencyRecognizer.bounds];
@@ -1880,7 +1882,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                  
                                  //allow show settings button only in paid version
                                  if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 1.;
-                                 self.downButton.alpha = 1.;
                                  
                              } completion:^(BOOL finihed){
                                 
@@ -2037,11 +2038,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
 
-    CGRect dynamicRect = self.dynamicContainer.frame;
-    dynamicRect.size.height = 2*self.mainContainerView.bounds.size.height - self.histroryTableViewHeight - self.labelViewHeight;
+    //CGRect dynamicRect = self.dynamicContainer.frame;
+    //dynamicRect.size.height = 2*self.mainContainerView.bounds.size.height - self.histroryTableViewHeight - self.labelViewHeight;
     
     //initial origin
-    dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
+    //dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
     
     CGRect buttonsCollectionViewBounds = self.mainContainerView.bounds;
     buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
@@ -2051,9 +2052,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
-
-                         [self.dynamicContainer setFrame:dynamicRect];
-                         
+//IMPORTANT
+                         //delete here
+                        // [self.dynamicContainer setFrame:dynamicRect];
+                         /*
                          if(self.isIAdBannerOnScreen){
                              NSInteger bannerHeight;
                              if(IS_IPAD){
@@ -2066,24 +2068,22 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              [self.iAdBanner setFrame:self.bannerContainerView.bounds];
 
                          }
-                         
-                        [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
-                         [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
+                         */
+                        //[self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
+                         //[self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
 
 
                          
-                         self.settingsBottomButtn.alpha = 0.;
-                         self.noticeButton.alpha = 0.;
+                         self.settingsButton.alpha = 0.;
                          if(IS_IPAD){
-                             self.noticeRealButton.alpha = 0.;
+                             self.noticeButton.alpha = 0.;
                          }
                          
                          self.recountButton.alpha = 0.;
-                         self.upButton.alpha = 0.;
+                         self.shareButton.alpha = 0.;
                          self.deleteButton.alpha = 0.;
                          //allow show settings button only in paid version
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 0.;
-                         self.downButton.alpha = 0.;
                          self.plusButton.alpha = 0.;
                          
                          self.display.alpha = 1.;
@@ -2091,17 +2091,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                      } completion:^(BOOL finished){
                          self.isButtonsCollectionUnderChanging = NO;
 
-                         self.settingsBottomButtn.hidden = YES;
-                         self.noticeButton.hidden = YES;
+                         self.settingsButton.hidden = YES;
                          if(IS_IPAD){
-                             self.noticeRealButton.hidden = YES;
+                             self.noticeButton.hidden = YES;
                          }
                          self.recountButton.hidden = YES;
-                         self.upButton.hidden = YES;
+                         self.shareButton.hidden = YES;
                          self.deleteButton.hidden = YES;
                          //allow show settings button only in paid version
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = YES;
-                         self.downButton.hidden = YES;
                          self.plusButton.hidden = YES;
 
                          //think about it
@@ -2156,12 +2154,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     if(sender.state == UIGestureRecognizerStateBegan){
         
         self.svipeGestureLocation = currentSvipeGestureLocation;
-        self.wasDynamicOriginY = self.dynamicContainer.frame.origin.y;
+        self.wasDynamicOriginY = self.mainContainerView.frame.origin.y;
         
-        self.settingsBottomButtn.hidden = NO;
-        self.noticeButton.hidden = NO;
+        self.settingsButton.hidden = NO;
+
         if(IS_IPAD){
-            self.noticeRealButton.hidden = NO;
+            self.noticeButton.hidden = NO;
         }
         self.plusButton.hidden = NO;
         self.recountButton.hidden = NO;
@@ -2171,24 +2169,26 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
         CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
         
-        if(hopeDynamicOriginY > -self.view.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight
+        if(hopeDynamicOriginY > -self.view.frame.size.height + self.histroryTableViewHeight/* + self.labelViewHeight*/
            && hopeDynamicOriginY < 0){
-            CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.frame.size.height);
+            CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight  - self.mainContainerView.frame.size.height);//+ self.labelViewHeight
             
             self.display.alpha = opacityMark;
-            self.settingsBottomButtn.alpha =1 - opacityMark;
-            self.noticeButton.alpha = 1 - opacityMark;
+            self.settingsButton.alpha =1 - opacityMark;
             if(IS_IPAD){
-                self.noticeRealButton.alpha = 1 - opacityMark;
+                self.noticeButton.alpha = 1 - opacityMark;
             }
             self.plusButton.alpha = 1 - opacityMark;
             self.recountButton.alpha = 1 - opacityMark;
             self.deleteButton.alpha = 1 - opacityMark;
             self.isHistoryWholeShowed = 1 - opacityMark;
-            
-            CGRect dynamicRect = self.dynamicContainer.frame;
+//IMPORTANT
+            //delete here
+            /*
+            CGRect dynamicRect = self.mainContainerView.frame;
             dynamicRect.origin.y = hopeDynamicOriginY;
             [self.dynamicContainer setFrame:dynamicRect];
+             */
 
         }
         //if drag down
@@ -2196,15 +2196,15 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     } else if (sender.state == UIGestureRecognizerStateEnded){
         
         CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
-        CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.frame.size.height);
-        if(hopeDynamicOriginY >= -self.view.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight
-           && hopeDynamicOriginY < 0){
+        CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight - self.mainContainerView.frame.size.height);// + self.labelViewHeight
+        if(hopeDynamicOriginY >= -self.view.frame.size.height + self.histroryTableViewHeight
+           && hopeDynamicOriginY < 0){ //+ self.labelViewHeight
             
             self.display.alpha = opacityMark;
-            self.settingsBottomButtn.alpha =1 - opacityMark;
-            self.noticeButton.alpha = 1 - opacityMark;
+            self.settingsButton.alpha =1 - opacityMark;
+
             if(IS_IPAD){
-                self.noticeRealButton.alpha = 1 - opacityMark;
+                self.noticeButton.alpha = 1 - opacityMark;
             }
             self.plusButton.alpha = 1 - opacityMark;
             self.recountButton.alpha = 1 - opacityMark;
@@ -2213,7 +2213,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
         }
         
-        if(self.wasDynamicOriginY == -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight) {
+        if(self.wasDynamicOriginY == -self.mainContainerView.frame.size.height + self.histroryTableViewHeight) {// + self.labelViewHeight
             if(opacityMark < 0.9){
                 [self finishDraggingDownWithVelocity:[sender velocityInView:self.view]];
             } else {
@@ -2242,50 +2242,48 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
     
     velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.mainContainerView]];
     dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.dynamicContainer];
+    [dynamicItem addLinearVelocity:velocity forItem:self.mainContainerView];
     [animator addBehavior:dynamicItem];
     
-    CGFloat centerY = self.mainContainerView.frame.size.height - self.dynamicContainer.frame.size.height/2;
+    CGFloat centerY = self.mainContainerView.frame.size.height - self.mainContainerView.frame.size.height/2;
     
     CGPoint snapPoint = CGPointMake(CGRectGetMidX(self.mainContainerView.frame),
                                     centerY);
     
-    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.dynamicContainer snapToPoint:snapPoint];
+    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.mainContainerView snapToPoint:snapPoint];
     snap.damping = 0.3;
     
     __weak typeof (self) weakSelf = self;
     snap.action = ^{
         typeof(self) strongSelf = weakSelf;
-        UIView *view = strongSelf.dynamicContainer;
+        UIView *view = strongSelf.mainContainerView;
         
-        CGFloat opacityMark = strongSelf.dynamicContainer.frame.origin.y/(strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height);
+        CGFloat opacityMark = strongSelf.mainContainerView.frame.origin.y/(strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height);// + strongSelf.labelViewHeight
         
         strongSelf.display.alpha =  opacityMark;
-        strongSelf.settingsBottomButtn.alpha =1- opacityMark;
-        strongSelf.noticeButton.alpha = 1-opacityMark;
+        strongSelf.settingsButton.alpha =1- opacityMark;
         if(IS_IPAD){
-            strongSelf.noticeRealButton.alpha = 1 - opacityMark;
+            strongSelf.noticeButton.alpha = 1 - opacityMark;
         }
         strongSelf.plusButton.alpha = 1-opacityMark;
         strongSelf.recountButton.alpha = 1-opacityMark;
         strongSelf.deleteButton.alpha = 1-opacityMark;
         strongSelf.isHistoryWholeShowed = 1-opacityMark;
         
-        CGFloat needY = strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height;
+        CGFloat needY = strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height;// + strongSelf.labelViewHeight
 
-        if(ABS(CGRectGetMidY(strongSelf.dynamicContainer.frame) - centerY) < 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
+        if(ABS(CGRectGetMidY(strongSelf.mainContainerView.frame) - centerY) < 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
            [animator removeAllBehaviors];
             CGRect dynamicRect = view.frame;
             dynamicRect.origin.y = needY;
             [view setFrame:dynamicRect];
             
             strongSelf.display.alpha =  1;
-            strongSelf.settingsBottomButtn.alpha =0;
-            strongSelf.noticeButton.alpha = 0;
+            strongSelf.settingsButton.alpha =0;
             if(IS_IPAD){
-                strongSelf.noticeRealButton.alpha = 0.;
+                strongSelf.noticeButton.alpha = 0.;
             }
             strongSelf.plusButton.alpha = 0;
             strongSelf.recountButton.alpha = 0;
@@ -2321,18 +2319,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
-    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.mainContainerView]];
     gravity.gravityDirection = CGVectorMake(0.0, 4.0);
     [animator addBehavior:gravity];
     
     velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.dynamicContainer]];
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.mainContainerView]];
     dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.dynamicContainer];
+    [dynamicItem addLinearVelocity:velocity forItem:self.mainContainerView];
     [animator addBehavior:dynamicItem];
     
-    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.dynamicContainer]];
-    CGFloat stopY = 2* self.mainContainerView.frame.size.height - self.labelViewHeight - self.histroryTableViewHeight;
+    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.mainContainerView]];
+    CGFloat stopY = 2* self.mainContainerView.frame.size.height - self.histroryTableViewHeight;// - self.labelViewHeight
     [collision addBoundaryWithIdentifier:@"dynamic"
                                        fromPoint:CGPointMake(0, stopY)
                                          toPoint:CGPointMake(self.mainContainerView.frame.size.width, stopY)];
@@ -2342,13 +2340,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         typeof(self) strongSelf = weakSelf;
         
-        CGFloat opacityMark = strongSelf.dynamicContainer.frame.origin.y/(strongSelf.histroryTableViewHeight + strongSelf.labelViewHeight - strongSelf.mainContainerView.frame.size.height);
+        CGFloat opacityMark = strongSelf.mainContainerView.frame.origin.y/(strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height);// + strongSelf.labelViewHeight
         
         strongSelf.display.alpha = opacityMark;
-        strongSelf.settingsBottomButtn.alpha =1- opacityMark;
-        strongSelf.noticeButton.alpha = 1- opacityMark;
+        strongSelf.settingsButton.alpha =1- opacityMark;
         if(IS_IPAD){
-            strongSelf.noticeRealButton.alpha = 1 - opacityMark;
+            strongSelf.noticeButton.alpha = 1 - opacityMark;
         }
         strongSelf.plusButton.alpha = 1- opacityMark;
         strongSelf.recountButton.alpha = 1- opacityMark;
@@ -2357,7 +2354,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
         //if self.isHistoryWholeShowed = 1.;
         CGFloat needY = 0;
-        UIView *view = strongSelf.dynamicContainer;
+        UIView *view = strongSelf.mainContainerView;
 
         if(view.frame.origin.y > needY - 3 && ABS([dynamicItem linearVelocityForItem:view].y) < 0.01){
             [animator removeAllBehaviors];
@@ -2366,10 +2363,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [view setFrame:dynamicRect];
             
             strongSelf.display.alpha =  0;
-            strongSelf.settingsBottomButtn.alpha =1.;
-            strongSelf.noticeButton.alpha = 1.;
+            strongSelf.settingsButton.alpha =1.;
+
             if(IS_IPAD){
-                strongSelf.noticeRealButton.alpha = 1.;
+                strongSelf.noticeButton.alpha = 1.;
             }
             strongSelf.plusButton.alpha = 1.;
             strongSelf.recountButton.alpha = 1.;
@@ -2393,14 +2390,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [self finisDraggingUpWithVelocity:CGPointMake(0, 0)];
         } else {
             self.display.alpha =  0.99;
-            self.settingsBottomButtn.hidden = NO;
-            self.settingsBottomButtn.alpha =.01;
-            
-            self.noticeButton.hidden = NO;
-            self.noticeButton.alpha = .01;
+            self.settingsButton.hidden = NO;
+            self.settingsButton.alpha =.01;
+
             if(IS_IPAD){
-                self.noticeRealButton.hidden = NO;
-                self.noticeRealButton.alpha = .01;
+                self.noticeButton.hidden = NO;
+                self.noticeButton.alpha = .01;
             }
             
             self.plusButton.hidden = NO;
@@ -2420,22 +2415,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 #pragma mark - MOVE BUTTONS Methods
-
-//define properties of each button
-#define INSERT_BUTTON 1
-#define DELETE_BUTTON 2
-#define CHANGE_BUTTON_POISTION 3
-#define MOVE_TO_ENABLE 4
-#define MOVE_TO_DISABLE 5
-#define RELOAD 0
-
-
-#pragma mark MOVE BUTTON STATIC PROPERTIES
-static newButtonView* buttonsAsSubView;
-static NewButtonsCollectionViewCell* findCell;
-static NewButtonsCollectionViewCell* subCell;
-static NSArray *movedCells;
-static BOOL moveIsAvailable;
 
 //method change offset in pan gesture is included new Thread
 -(CGFloat) moveButtonsCollectioViewByOffsetDown:(CGFloat) offset
@@ -2565,7 +2544,7 @@ static BOOL moveIsAvailable;
                             findCell = subCell;
                             break;
                         }
-                        patch = [self.buttonsCollection indexPathForCell:findCell];
+                        patchForUse = [self.buttonsCollection indexPathForCell:findCell];
                     }
                     
                 }
@@ -2757,7 +2736,7 @@ static BOOL moveIsAvailable;
                                               [buttonsAsSubView removeFromSuperview ];
                                               buttonsAsSubView = nil;
                                               [self.buttonsStore removeUsersButton:button];
-                                              self.patch = patch;
+                                              patchForUse = patch;
                                           }];
                      }];
 }
@@ -2826,23 +2805,139 @@ static BOOL moveIsAvailable;
                 }
             }
 }
+
+#pragma mark BUTTONS
+UICollectionViewFlowLayout *buttonsFlowLayout;
+CGFloat buttonsCollectionWidth;
+CGFloat screenHeight;
+CGFloat buttonsWidth;
+CGFloat buttonsHeight;
+CGFloat buttonsIntens;
+NSIndexPath* patchForUse;
+//BOOL isBigSizeButtons;
+
+#pragma mark MOVE BUTTON STATIC PROPERTIES
+static newButtonView* buttonsAsSubView;
+static NewButtonsCollectionViewCell* findCell;
+static NewButtonsCollectionViewCell* subCell;
+static NSArray *movedCells;
+static BOOL moveIsAvailable;
+
+
+
+//define properties of each button
+#define INSERT_BUTTON 1
+#define DELETE_BUTTON 2
+#define CHANGE_BUTTON_POISTION 3
+#define MOVE_TO_ENABLE 4
+#define MOVE_TO_DISABLE 5
+#define RELOAD 0
+
+#pragma mark BUTTONS SIZE CHANGE
+#define BUTTON_SIDES_RATIO_IPAD 1.8
+#define BUTTON_SIDES_RATIO_IPHONE 1.4
+#define INSENT_BUTTONS_PART 9. //insent first row
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    
+    if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
+        if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
+            buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
+            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            [self newButtonsSize];
+            
+        } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
+            screenHeight = self.calcScreenHeightConstrain.constant;
+            //need for iPad if changed screen height without changing buttonCollection width
+            [self newButtonsSize];
+            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+        }
+    }
+}
+
+-(void)newButtonsSize
+{
+    //find the minimum side for small and big button
+    CGFloat buttonsRatio;
+    if(IS_IPAD){
+        buttonsRatio=BUTTON_SIDES_RATIO_IPAD;
+    }else {
+        buttonsRatio=BUTTON_SIDES_RATIO_IPHONE;
+    }
+    
+    //qantity for big and small button
+    NSInteger xQantity;
+    NSInteger yQantity;
+    if(self.isBigSizeButtons) {
+        xQantity = 4;
+        yQantity = 5;
+    }else {
+        xQantity = 5;
+        yQantity = 6;
+    }
+    
+    //find min side
+
+    CGFloat xFindSide = self.buttonsCollection.bounds.size.width/xQantity;
+    
+    
+    //count max button collection heigth
+    //independ of how histroy showed
+    CGFloat buttCollectionHeight;
+    if(IS_IPAD){
+        buttCollectionHeight =  self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+    } else {
+        buttCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+    }
+    CGFloat yFindSide = buttCollectionHeight/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height)/yQantity;
+    
+    //NSLog(@"buttCollectionHeight: %f, real: %f",buttCollectionHeight, self.buttonsCollectionView.bounds.size.height);
+    
+    //define wich side will be
+    if(xFindSide<yFindSide*buttonsRatio){
+        
+        buttonsWidth = self.buttonsCollection.bounds.size.width/xQantity;
+        buttonsIntens = 0;
+        
+        //find buttonsHeight
+        yQantity = (NSInteger) round((buttCollectionHeight- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));//round((buttCollectionHeight-self.displayContainer.bounds.size.height- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
+        
+    } else {
+        
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
+        buttonsIntens = 0;
+        
+        //find buttonsHeight
+        xQantity = (NSInteger) round(self.buttonsCollection.bounds.size.width/(yFindSide*buttonsRatio));
+        buttonsWidth = (self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity;
+    }
+    UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
+    
+    flow.itemSize = CGSizeMake(buttonsWidth, buttonsHeight);
+    flow.minimumInteritemSpacing = buttonsIntens;
+    flow.minimumLineSpacing = buttonsIntens;
+    
+    UIEdgeInsets insets;
+    insets.top = INSENT_BUTTONS_PART+ buttonsIntens;//self.displayContainer.bounds.size.height+INSENT_BUTTONS_PART+ buttonsIntens;
+    insets.bottom = buttonsIntens;
+    insets.left = buttonsIntens;
+    insets.right = buttonsIntens;
+    flow.sectionInset = insets;
+    
+    buttonsFlowLayout = flow;
+    
+    [self.buttonsCollection setCollectionViewLayout:buttonsFlowLayout animated:YES];
+}
+
+#pragma mark - MOVE BUTTONS Methods
+
 #pragma mark BUTTONS DELEGATE
+
 -(NSInteger) numberColumsInCollectionView
 {
-    CGFloat oneButtonWidth = [self collectionView:self.buttonsCollection
-                                           layout:self.collectionViewFlowLayout
-                           sizeForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]].width;
-    CGFloat collectionWidth;
-    if(IS_IPAD) {
-        if(self.willBePortraitRotated){
-            collectionWidth = 768;
-        } else {
-            collectionWidth = 1024;
-        }
-    } else { //if it's iPhone ore iPod
-        collectionWidth = 320;
-    }
-    return ABS(collectionWidth/oneButtonWidth);
+    return ABS(buttonsCollectionWidth/buttonsWidth);
 }
 
 -(void)buttonsArrayDidChangedWithReloadOperation:(NSInteger)operation
@@ -2871,7 +2966,7 @@ static BOOL moveIsAvailable;
         }
     } else if(operation == DELETE_BUTTON){
         [self.buttonsCollection performBatchUpdates:^{
-            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:self.patch, nil];
+            NSArray *indexPatchs = [[NSArray alloc]initWithObjects:patchForUse, nil];
             [self.buttonsCollection deleteItemsAtIndexPaths:indexPatchs];
         } completion:^(BOOL finished) {
             nil;
@@ -3132,6 +3227,7 @@ static BOOL moveIsAvailable;
         }
         
     }
+    //NSLog(@"CellWidth - %f, CellHeight - %f", cell.bounds.size.width, cell.bounds.size.height);
     return cell;
 }
 
@@ -3140,36 +3236,21 @@ static BOOL moveIsAvailable;
 #pragma mark - UICollectionViewDelegateFlowLayout
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-  //fix there to change buttons for iphone 6 and ipad
-    CGSize result;
-    if(IS_IPAD) {
-                if(self.willBePortraitRotated){
-            if(self.isBigSizeButtons){
-                result = CGSizeMake(140, 83);
-            } else {
-                result = CGSizeMake(117, 72);
-            }
-            //result = CGSizeMake(140, 83);
-        } else {
-            if(self.isBigSizeButtons){
-                result = CGSizeMake(133, 71);
-            } else {
-                result = CGSizeMake(118, 59);
-            }
-        }
-        
-    } else { //if it's iPhone ore iPod
-        if(self.isBigSizeButtons){
-            result = CGSizeMake(76, 46);
-        } else {
-            result = CGSizeMake(60, 40);
-        }
-    }
-    return  result;
+    NSLog(@"buttonsWidth - %f, buttonsHeight - %f", buttonsWidth, buttonsHeight);
+
+    NSLog(@"buttonsCollectionWidth - %f, buttonsCollectionHeight - %f", self.buttonsCollection.bounds.size.width, self.buttonsCollection.bounds.size.height);
+    
+    NSLog(@"displayWidth - %f, displayHeight - %f", self.displayContainer.bounds.size.width, self.displayContainer.bounds.size.height);
+    
+    NSLog(@"main.width - %f, main.height - %f", self.mainContainerView.bounds.size.width, self.mainContainerView.bounds.size.height);
+    
+
+    
+    return  CGSizeMake(buttonsWidth, buttonsHeight);
 }
 
 
-
+/*
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
     UIEdgeInsets insets;
@@ -3213,9 +3294,51 @@ static BOOL moveIsAvailable;
     }
     return linespasing;
 }
-
+*/
 
 #pragma mark - UITABLE VIEW DATA SOURSE DELEGATE
+#pragma mark SET HISTORY TABLE TO RIGHT POSITION
+//set in functoins:
+//performFetch
+//controllerDidChangeContent
+//setLastRowDataArray
+//changeLayoutDynamicContainerWithSize
+//discard changing
+//finish draggin uo with velocity
+//
+///
+///------WAS INSERTED-------------------------------------------
+//--------------------------------------------------------------
+NSIndexPath *lastVisibleCellPatch;
+
+
+-(void)moveHistoryTableContentToRightPosition
+{
+    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
+        
+        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+        
+    } else {
+        [self.historyTable setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
+    }
+    
+    [self.historyTable scrollToRowAtIndexPath:lastVisibleCellPatch
+                                 atScrollPosition:UITableViewScrollPositionBottom
+                                         animated:NO];
+    
+}
+
+-(void) selectLastRowInHistory {
+    
+    if([self.historyTable numberOfRowsInSection:0] > 1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
+        [self moveHistoryTableContentToRightPosition];
+    }
+}
+///------WAS INSERTED-------------------------------------------
+//--------------------------------------------------------------
 -(void) resetHeightOfFirstCell
 {
     NSMutableArray *mutArray = [self.heightsOfRows mutableCopy];
@@ -4027,12 +4150,13 @@ static BOOL moveIsAvailable;
                 //check banner show counter
                 //if ok banner not on the screen  - show it, without count incrise
                 //if no - incrise counter
+                /*
                 if(!self.isIAdBannerOnScreen && self.isIAdBaneerAvailable){
                     if((self.bannerRequestCounter % TIMES_TO_LIMIT_IAD_BANNER) == 0){
                         [self ShowIAdBanner];
                     }
                      self.bannerRequestCounter++;
-                }
+                }*/
             }
             self.heigthsOfNewRowsAccordingNewObjs = [mutDiction copy];
             //replace row above
@@ -4139,6 +4263,9 @@ static BOOL moveIsAvailable;
     */
 }
 
+//REPLASED
+//-----------------------------------------------------------------------------------------
+/*
 -(void)moveHistoryTableContentToRightPosition
 {
     
@@ -4161,6 +4288,8 @@ static BOOL moveIsAvailable;
     
     
 }
+*/
+//-----------------------------------------------------------------------------------------
 
 #pragma mark SHOW VIEW
 
@@ -4836,17 +4965,14 @@ static BOOL moveIsAvailable;
     UIGraphicsEndImageContext();
 
     
-    self.settingsBottomButtn.hidden = YES;
-    self.settingsBottomButtn.alpha = 0;
-    
-    self.noticeButton.hidden = YES;
-    self.noticeButton.enabled = NO;
-    self.noticeButton.alpha = 0;
+    self.settingsButton.hidden = YES;
+    self.settingsButton.alpha = 0;
+
     
     if(IS_IPAD){
-        self.noticeRealButton.hidden = YES;
-        //self.noticeRealButton.enabled = NO;
-        self.noticeRealButton.alpha = 0.;
+        self.noticeButton.hidden = YES;
+        //self.noticeButton.enabled = NO;
+        self.noticeButton.alpha = 0;
     }
     
     self.plusButton.hidden = YES;
@@ -4857,8 +4983,8 @@ static BOOL moveIsAvailable;
     self.recountButton.enabled = NO;
     self.recountButton.alpha = 0;
     
-    self.upButton.hidden = YES;
-    self.upButton.alpha = 0;
+    self.shareButton.hidden = YES;
+    self.shareButton.alpha = 0;
     
     self.deleteButton.hidden = YES;
     self.deleteButton.enabled = NO;
@@ -4867,7 +4993,6 @@ static BOOL moveIsAvailable;
     self.settingsButton.hidden = YES;
     self.settingsButton.alpha = 0;
     
-    self.downButton.hidden = YES;
     
     //set pan gesture delegate
     self.moveButtonsPanGestureRecognizer.delegate = self;
@@ -4879,7 +5004,7 @@ static BOOL moveIsAvailable;
         
     } else {
         self.isBigDataBase = NO;
-        self.isBigSizeButtons = YES;
+        self.isBigSizeButtons = YES;//self.isBigSizeButtons = YES;
         self.isSoundOn = YES;
         self.design = DESIGN_CLASSIC;
         self.lastShowAllertViewDate = [NSDate date];
@@ -4961,10 +5086,13 @@ static BOOL moveIsAvailable;
     } else {
         self.wasPurshaised = NO;
     }
+    /* works with banner
     if(!self.wasPurshaised){
+        
         
         self.isIAdBaneerAvailable = NO;
         self.isIAdBannerOnScreen = NO;
+        
         //set initial banners frame
         NSInteger bannerHeight;
         if(IS_IPAD){
@@ -4981,10 +5109,14 @@ static BOOL moveIsAvailable;
         
     } else {
         self.bannerContainerView.hidden = YES;
-    }
-    [self setHeightOfElementAccordingToScreenIPhone];
+    }*/
+    
+    //[self setHeightOfElementAccordingToScreenIPhone];
     //Important don't remember why i close it
+    //IMPORTANT DELETE HERE
+    /*
     [self initialLayoutDynamiccontainer];
+    */
     //set the sounds properties
     NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"error" ofType:@"caf"];
     self.errorSoundFileURLRef =  [NSURL fileURLWithPath:soundPath];
@@ -5014,311 +5146,199 @@ static BOOL moveIsAvailable;
     self.callShowController = NO;
 
     self.isNeedToBeReloadedAfterDesignChanged = NO;
-}
-
-
-
-#pragma mark VIEW LAYOUT
-
--(void) setHeightOfElementAccordingToScreenIPhone
-{
-    CGRect buttonsRect;
-    if(IS_IPAD){
-        buttonsRect = CGRectMake(0, 0, 60, 60);
-        //for ipad try through autolayout
-        //copy from here
-        if(self.view.bounds.size.height > self.view.bounds.size.width){
-            self.histroryTableViewHeight = 257.f;
-            self.labelViewHeight = 118.f;
-        } else {
-            self.histroryTableViewHeight = 182.f;
-            self.labelViewHeight = 108.f;
-        }
-        self.lastRowHistoryTableHeight = 85.f;
-
-        //else if iPhone
-    } else if(IS_568_SCREEN){
-        buttonsRect = CGRectMake(0, 0, 60, 60);
-        self.histroryTableViewHeight = 136.f;
-        self.labelViewHeight = 72.f;
-        self.lastRowHistoryTableHeight = 65.f;
-    } else {
-        self.histroryTableViewHeight = 112.f;
-        self.labelViewHeight = 65;
-        self.lastRowHistoryTableHeight = 60.f;
-    }
     
+    //
+    [self.buttonsCollection addObserver:self forKeyPath:@"bounds" options:0 context:nil];
 }
 
 
--(void) initialLayoutDynamiccontainer
-{
-    [self initialLayoutDynamicContainerWithSize:self.view.bounds.size];
-
-}
-
--(void) initialLayoutDynamicContainerWithSize:(CGSize)size
-{
-    CGRect rect = CGRectMake(0, 0, size.width, size.height);
-    [self.mainContainerView setFrame:rect];
-    if(IS_IPAD){
+#pragma mark ROTATION
+-(void)rotateIPhoneAsNonRotateWithSize:(CGSize)size{
+    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
+    CGFloat angleShowedViewController = 0;
+    BOOL needToShowShowedController = NO;
+    BOOL needToDissmisShowedViewcontroller = NO;
+    BOOL needStopAnimation = YES;
+    if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
+        
         if(size.height > size.width){
-
-            self.histroryTableViewHeight = 257.f;
-            self.labelViewHeight = 118.f;
-            self.willBePortraitRotated = YES;
+            
+            switch (self.showedController.wasOrient) {
+                case UIDeviceOrientationLandscapeLeft:
+                    angleShowedViewController = M_PI/2;
+                    needStopAnimation = YES;
+                    break;
+                case UIDeviceOrientationLandscapeRight:
+                    angleShowedViewController = -M_PI/2;
+                    needStopAnimation = YES;
+                    break;
+                    
+                default:
+                    angleShowedViewController = 0;
+                    needStopAnimation = NO;
+                    break;
+            }
+            needToDissmisShowedViewcontroller = YES;
+            
         } else {
-            self.histroryTableViewHeight = 182.f;
-            self.labelViewHeight = 108.f;
-            self.willBePortraitRotated = NO;
+            switch (self.showedController.wasOrient) {
+                case UIDeviceOrientationPortrait:
+                    angleShowedViewController = 0;
+                    needStopAnimation = YES;
+                    break;
+                case UIDeviceOrientationPortraitUpsideDown:
+                    angleShowedViewController = 0;
+                    needStopAnimation = YES;
+                    break;
+                    
+                default:
+                    angleShowedViewController = 0;
+                    needStopAnimation = NO;
+                    break;
+            }
         }
-    }
-    
-    [self.dynamicContainer setFrame:CGRectMake(0,
-                                                -self.mainContainerView.frame.size.height + self.histroryTableViewHeight + self.labelViewHeight,
-                                                self.mainContainerView.frame.size.width,
-                                                2*size.height - self.histroryTableViewHeight - self.labelViewHeight )];
-
-    
-    [self.historyTable setFrame:CGRectMake(0,
-                                            0,
-                                            self.mainContainerView.bounds.size.width,
-                                            size.height - self.labelViewHeight)];
-    CGRect displayViewFrame = CGRectMake(0,
-                                        self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                        self.mainContainerView.bounds.size.width,
-                                        self.labelViewHeight);//self.displayContainer.frame;
         
-    [self.displayContainer setFrame:displayViewFrame];
-    self.display.frame = self.displayContainer.bounds;
-    self.displayBackground.frame = self.displayContainer.frame;
+    }
+    CGFloat angleMainTransform;
     
-    //if Ipad set Layout for display buttons
-    if(IS_IPAD){
-        CGSize displaySize = self.displayContainer.bounds.size;
-        [self setDisplayButtonsLayout:displaySize];
+    switch (orient) {
+        case UIDeviceOrientationPortraitUpsideDown:
+            angleMainTransform = M_PI/2;
+            break;
+        case UIDeviceOrientationPortrait:
+            angleMainTransform = 0;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angleMainTransform = -M_PI/2;
+            
+            needToShowShowedController = YES;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angleMainTransform = M_PI/2;
+            needToShowShowedController = YES;
+            break;
+        default:
+            angleMainTransform = 0;
+            break;
     }
     
-    /*
-    [self.buttonsCollection setFrame:CGRectMake(0,
-                                                self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                                self.mainContainerView.bounds.size.width,
-                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
-    */
-    [self.viewforCurrencyRecognizer setFrame:CGRectMake(0,
-                                                self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                                self.mainContainerView.bounds.size.width,
-                                                self.mainContainerView.bounds.size.height - self.histroryTableViewHeight)];
-    
-    [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
-    
-
-    
-    
-    CGRect sviperRect = self.historyTableSviper.frame;
-    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
-    sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
-    [self.historyTableSviper setFrame:sviperRect];
-    if(self.imageBackgroundView){
-        CGFloat inset;
-        if(IS_IPAD){
-            inset = -60;
-        } else {
-            inset = -40;
+    if(needStopAnimation){
+        [UIView setAnimationsEnabled:NO]; //turn off animation on time
+        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+        if(self.showedController){
+            [self.showedController.containerView setTransform:CGAffineTransformMakeRotation(angleShowedViewController)];
         }
-        [self.imageBackgroundView setFrame:CGRectInset(rect,inset, inset)];
-        //[self.imageBackgroundView setFrame:CGRectInset(self.view.frame,inset, inset)];
-        if(self.blackViewforPhotoBackground){
-            [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
-        }
-    }
-
-}
-
--(void) changeLayoutDynamicContainerWithSize:(CGSize)size
-{
-    if(self.animator){
-        self.animator = nil;
-    }
-    
-    CGRect rect = CGRectMake(0, 0, size.width, size.height);
-    
-    [self.mainContainerView setFrame:rect];
-    if(self.imageBackgroundView){
-        CGFloat inset;
-        if(IS_IPAD){
-            inset = -60;
-        } else {
-            inset = -40;
-        }
-        [self.imageBackgroundView setFrame:CGRectInset(rect,inset, inset)];
-        if(self.blackViewforPhotoBackground){
-            [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
-        }
-    }
-    
-    if(IS_IPAD){
-        if(self.willBePortraitRotated){
-            self.histroryTableViewHeight = 257.f;
-            self.labelViewHeight = 118.f;
-        } else {
-            self.histroryTableViewHeight = 182.f;
-            self.labelViewHeight = 108.f;
-        }
-    }
-    
-    //set origin.y for dynamicContainer
-    CGFloat originYDynamicContainer;
-    if(self.isButtonsCollectionUnderChanging){
-       originYDynamicContainer = -self.mainContainerView.frame.size.height + self.labelViewHeight;
-    } else if (self.isHistoryWholeShowed == 1){
-        originYDynamicContainer = 0;
-    } else {//initial setting
-        originYDynamicContainer = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
-    }
-    
-    [self.dynamicContainer setFrame:CGRectMake(0,
-                                               originYDynamicContainer,
-                                               size.width,
-                                               2*size.height - self.histroryTableViewHeight - self.labelViewHeight )];
-    
-    
-   
-    CGRect displayViewFrame = CGRectMake(0,
-                                         self.mainContainerView.frame.size.height - self.labelViewHeight,
-                                         self.mainContainerView.bounds.size.width,
-                                         self.labelViewHeight);//self.displayContainer.frame;
-    
-    [self.displayContainer setFrame:displayViewFrame];
-    self.display.frame = self.displayContainer.bounds;
-    self.displayBackground.frame = self.displayContainer.frame;
-    
-    
-    
-    //if Ipad set Layout for display buttons
-    if(IS_IPAD){
-        CGSize displaySize = self.displayContainer.bounds.size;
-        [self setDisplayButtonsLayout:displaySize];
-    }
-    
-    
-    CGRect sviperRect = self.historyTableSviper.frame;
-    sviperRect.origin.x = (self.mainContainerView.bounds.size.width - self.historyTableSviper.bounds.size.width)/2;
-    sviperRect.origin.y = self.displayContainer.frame.origin.y - self.historyTableSviper.bounds.size.height*2/3;
-    [self.historyTableSviper setFrame:sviperRect];
-    
-    if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         
-        [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0, 0, 0)];
+        
+        int64_t delayInSeconds = 0.05;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            
+            
+            if(needToShowShowedController){
+                [self showSowedViewController];
+            }
+            
+            if(self.showedController){
+                self.showedController.wasOrient = orient;
+                
+                [self.view setFrame:[UIScreen mainScreen].bounds];
+                if(needToDissmisShowedViewcontroller){
+                    [self.showedController dismis];
+                }
+                
+            }
+            [UIView setAnimationsEnabled:YES];
+        });
     } else {
-        [self.historyTable setContentInset:UIEdgeInsetsMake(size.height - self.labelViewHeight,0,0,0)];
-    }
-    
-    [self.historyTable setFrame:CGRectMake(0,
-                                           0,
-                                           self.mainContainerView.bounds.size.width,
-                                           size.height - self.labelViewHeight)];
-    
-    
-    //impo
-    for (UIView *subview in self.historyTable.subviews)
-    {
-        if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewWrapperView"])
-        {
-            subview.frame = CGRectMake(0, 0, self.historyTable.bounds.size.width, self.historyTable.bounds.size.height);
+        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+        
+        if(self.showedController){
+            [self.showedController.containerView setTransform:CGAffineTransformMakeRotation(angleShowedViewController)];
+            self.showedController.wasOrient = orient;
         }
     }
-    //IMOPRTANT TEST
-    /*
-    //self.historyTable.style=
-    CGRect rc = self.historyTable.frame;
-    NSLog(@"Rect:%f, %f, %f, %f", rc.origin.x,
-          rc.origin.y,
-          rc.size.width,
-          rc.size.height);
-    */
-    
-    /*
-    [self.buttonsCollection setFrame:CGRectMake(0,
-                                                displayViewFrame.origin.y,
-                                                size.width,
-                                                self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
-    */
-    [self.viewforCurrencyRecognizer setFrame:CGRectMake(0,
-                                                displayViewFrame.origin.y,
-                                                size.width,
-                                                self.dynamicContainer.bounds.size.height - self.historyTable.frame.size.height)];
-    [self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
-    
-    
-    //Important may be Need to deleted it
-    if([self.historyTable numberOfRowsInSection:0] > 1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-    }
-    
-    if(IS_IPAD){
-        [self.buttonsStore renewArraysAccordingNewButtonsSize];
-        //[self setUpMainButtonsStartWithPosition];//ipad
-        //[self makeTwoArrays];//ipad
-       // [self.buttonsCollection reloadData];//ipad
-    }
-    
-    
 }
 
--(void) setDisplayButtonsLayout:(CGSize)displaySize
-{
-    NSInteger numberOfButtons = 5;
-    CGFloat partForOneButton = displaySize.width / numberOfButtons;
-    CGFloat centerForOneButton = partForOneButton / 2;
-    CGFloat displayHeightCenter = displaySize.height / 2;
-    //1th button
-    [self.settingsBottomButtn setCenter:CGPointMake(0 + centerForOneButton, displayHeightCenter)];
-    //2nd button (share)
-    [self.noticeButton setCenter:CGPointMake((1 * partForOneButton)+ centerForOneButton, displayHeightCenter)];
-    //3d button
-    [self.noticeRealButton setCenter:CGPointMake((2 * partForOneButton)+ centerForOneButton, displayHeightCenter)];
-    //4th button (recount) - in 4 place!!!
-    [self.recountButton setCenter:CGPointMake((3 * partForOneButton)+ centerForOneButton, displayHeightCenter)];
-    //!!! iportant set Note button
-    //self.upButton; //now it doesn't work
-     //5th button - in 5 place!!!
-    [self.deleteButton setCenter:CGPointMake((4 * partForOneButton)+ centerForOneButton, displayHeightCenter)];
-    //self.settingsButton; // not necessary do it now
-    //self.downButton; // not necessary do it now
-
-}
-
-
--(void) viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    if(IS_IPAD){
-        //[self.mainContainerView setFrame:self.view.bounds];
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+    if(!IS_IPAD){
+        [self rotateIPhoneAsNonRotateWithSize:size];
     }
+    //NSLog(@"viewWillTransitionToSize");
+}
+#pragma mark VIEW LAYOUT
+CGFloat minButtonsCollectionHeight;
+CGFloat maxButtonsCollectionHeight;
+-(void)viewDidLayoutSubviews{
     
-    self.displayBackground.frame = self.displayContainer.frame;
-    //set size buttonsViews and frames
-    struct Color clr;
-    clr.r = 0.95;//0.26;
-    clr.g = 0.95;//0.57;
-    clr.b = 0.95;//0.70;
-    clr.a = 1.0;
-
-    CGFloat yDisplayCenter = self.displayContainer.frame.size.height/2;
-    CGFloat widthdisplay = self.displayContainer.frame.size.width;
-
-    if(self.wasPurshaised || self.isTrialPeriod){
-        self.downButton.center = CGPointMake(widthdisplay*2/3, yDisplayCenter);
+    CGSize viewSize = self.view.bounds.size;
+    if(!IS_IPAD){
         
-        self.settingsButton.center = CGPointMake(widthdisplay/3, yDisplayCenter);
+        //for iphone alwais short size is width (as nonrotated)
+        self.mainContainerWidth.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
+        self.mainContainerHeight.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
+        NSLog(@"mainContainerHeight %f",self.mainContainerHeight.constant);
+        if(self.showedController){
+            self.showedController.containerWidthConstrain.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
+            self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
+        }
+        
+        //set calc screen height
+        self.calcScreenHeightConstrain.constant = self.mainContainerWidth.constant*IPHONE_SCREEN_VS_WIDTH_RATIO;
+        NSLog(@"calcScreenHeightConstrain %f",self.calcScreenHeightConstrain.constant);
+        
+        //if history table whole showed
+        //how history showed can change from 1 to 0
+        // need detect whole way
+        minButtonsCollectionHeight = 0;//self.calcScreenHeightConstrain.constant;
+        maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+        
+        
+        //self.buttonscollectionHeightConstrain.constant =minButtonsHeight + (maxButtonsHeigth-minButtonsHeight)*(1-self.howHistoryShowed);
+        
     } else {
         
-        self.downButton.center = CGPointMake(widthdisplay/2, yDisplayCenter);
+        self.mainContainerWidth.constant = viewSize.width;
+        self.mainContainerHeight.constant = viewSize.height;
+        
+        //set calc screen height
+        CGFloat minSide = self.mainContainerWidth.constant < self.mainContainerHeight.constant? self.mainContainerWidth.constant : self.mainContainerHeight.constant;
+        
+        //
+        if(minSide*IPAD_SCREEN_VS_WIDTH_RATIO/self.mainContainerHeight.constant < 0.09){
+            //if so narrow screen - fix it
+            self.calcScreenHeightConstrain.constant = self.mainContainerHeight.constant*0.09;
+        } else {
+            self.calcScreenHeightConstrain.constant = minSide*IPAD_SCREEN_VS_WIDTH_RATIO;
+        }
+        
+        
+        //if history table whole showed
+        //how history showed can change from 1 to 0
+        // need detect whole way
+        minButtonsCollectionHeight = 0;//self.calcScreenHeightConstrain.constant;
+        maxButtonsCollectionHeight = self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+        
+        //self.buttonscollectionHeightConstrain.constant = minButtonsHeight + (maxButtonsHeigth-minButtonsHeight)*(1-self.howHistoryShowed);
+    }
+    
+    //history table height
+    self.histroyTableHeightConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
+    
+    
+    //NSLog(@"%@", [UIDevice currentDevice].model);
+    //screen buttons according interfase size
+    if(self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
+        self.noticeButton.hidden = YES;
+    } else {
+        if(IS_IPAD && self.shareButton.hidden == NO){
+            self.noticeButton.hidden = NO;
+        }
     }
 }
+
+#pragma mark updateKVStoreItems
 
 - (void)updateKVStoreItems:(NSNotification*)notification {
 
@@ -5455,8 +5475,9 @@ static BOOL moveIsAvailable;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
     request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-    NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
+
     /*
+    NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
     for(Buttons *btn in buttonsFromCoreData){
         NSLog(@"Button %@ position %@",btn.nameButton, btn.position);
     }
@@ -5583,12 +5604,12 @@ static BOOL moveIsAvailable;
 
 -(void) wholeViewReloadAfterdesignChanged
 {
-    [self initialLayoutDynamiccontainer];
+    //[self initialLayoutDynamiccontainer];
     self.display.alpha =  1;
-    self.settingsBottomButtn.alpha =0;
-    self.noticeButton.alpha = 0;
+    self.settingsButton.alpha =0;
+
     if(IS_IPAD){
-        self.noticeRealButton.alpha = 0.;
+        self.noticeButton.alpha = 0.;
     }
     self.plusButton.alpha = 0;
     self.recountButton.alpha = 0;
@@ -5633,7 +5654,7 @@ sourceController:(UIViewController *)source
         NSString *key = keys[0];
         if([key isEqualToString:@"isBigSizeButtons"]){
             
-            self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];//self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];
             
         } else if([key isEqualToString:@"isSoundOn"]){
             
@@ -6368,8 +6389,21 @@ sourceController:(UIViewController *)source
 }
 
 
-#pragma mark ROTATION
 
+
+#pragma SHOW CONTROLLER TRANSITION
+-(void) showSowedViewController{
+    if(!self.showedController){
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        ShowedViewController *showedVC = [storyBoard instantiateViewControllerWithIdentifier:@"ShowedViewController"];
+        showedVC.transitioningDelegate = self;
+        showedVC.wasOrient = [UIDevice currentDevice].orientation;
+        self.showedController = showedVC;
+        [self presentViewController:showedVC animated:YES completion:nil];
+        
+    }
+}
+/*
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     
@@ -6388,14 +6422,14 @@ sourceController:(UIViewController *)source
         [self iPhoneTransitionToSize:size withTransitionCoordinator:coordinator];
     }
     if(!self.wasPurshaised){
-        /*
+        ///
         CGRect bannerFrame = self.bannerContainerView.frame;
         bannerFrame.size.width = size.width;
         bannerFrame.size.height = bannerHeight;
         
         [self.bannerContainerView setFrame:bannerFrame];
         [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-         */
+        ///
     }
     //[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
@@ -6422,7 +6456,7 @@ sourceController:(UIViewController *)source
     //[self setUpMainButtonsStartWithPosition];//ipad
     //[self makeTwoArrays];//ipad
     //[self.buttonsCollection reloadData];//ipad
-    [self changeLayoutDynamicContainerWithSize:size];//ipad
+    //[self changeLayoutDynamicContainerWithSize:size];//ipad
     
     if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
         [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -6472,6 +6506,7 @@ sourceController:(UIViewController *)source
 
         //NSLog(@"Main viewWillTransitionToSize");
         
+        ///
         if(!self.wasPurshaised){
             
             CGRect bannerFrame = self.bannerContainerView.frame;
@@ -6481,6 +6516,7 @@ sourceController:(UIViewController *)source
             [self.bannerContainerView setFrame:bannerFrame];
             [self.iAdBanner setFrame:self.bannerContainerView.bounds];
         }
+         ///
     }
 
 
@@ -6675,7 +6711,7 @@ sourceController:(UIViewController *)source
                         //[self.historyTable reloadData];
                         [self wholeViewReloadAfterdesignChanged];
                         [self initialLayoutDynamicContainerWithSize:size];
-                        /*
+                        ///
                         if(self.imageBackgroundView){
                             CGFloat inset;
                             if(IS_IPAD){
@@ -6689,7 +6725,7 @@ sourceController:(UIViewController *)source
                                 [self.blackViewforPhotoBackground setFrame:self.imageBackgroundView.bounds];
                             }
                         }
-                        */
+                        ///
                     }
                     //[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
                     self.callShowController = needCallcontroller;
@@ -6699,9 +6735,10 @@ sourceController:(UIViewController *)source
         }
 }
 
-
+*/
 
 #pragma mark SHOWING IAd BANNER
+/*
 //but exactly here need to show banner
 //1. delay banner appearence
 //2. show banner with dynamic gravity and collission
@@ -6732,6 +6769,7 @@ sourceController:(UIViewController *)source
     });
     }
 }
+
 //3. hide banner with alpha animation and set to needed hight
 -(void) hideIAdBanner
 {
@@ -6787,7 +6825,7 @@ sourceController:(UIViewController *)source
     
     
 }
-
+*/
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
 -(NSString *) point

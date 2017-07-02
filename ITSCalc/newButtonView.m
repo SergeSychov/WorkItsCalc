@@ -7,7 +7,7 @@
 //
 
 #import "newButtonView.h"
-#import "cmyk.h"
+//#import "cmyk.h"
 #import "Clr.h"
 
 #define X_OFFSET = 2.0f

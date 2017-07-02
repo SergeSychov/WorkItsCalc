@@ -10,6 +10,10 @@
 
 @interface ShowedViewController : ThirdController
 
+@property (weak, nonatomic) IBOutlet UIView *containerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerHeightConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerWidthConstrain;
+
 @property (nonatomic,weak) UIView *testView; //the view that need be rotated
 
 @property (nonatomic) BOOL isBluePanOrRed;

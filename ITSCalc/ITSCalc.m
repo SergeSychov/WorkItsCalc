@@ -28,9 +28,15 @@
 @property (weak, nonatomic) UIView *blurBackGroundView;
 @property (weak, nonatomic) UIPickerView *currencyFromPicker;
 @property (weak, nonatomic) UIPickerView *currencyToPicker;
-@property (weak, nonatomic) UILabel *resultLabel;
-@property (weak, nonatomic) ConvertBut *convertButton;
-@property (weak, nonatomic) CalcButton *backButton;
+
+//convert buttons stack constrain
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *convertStackViewHeight;// initial multiplayer 0.3 at showing 1
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *convertStackViewTop;//initial second item view.Bottom at showing view.Top
+
+
+@property (weak, nonatomic) IBOutlet UILabel *resultLabel;
+@property (weak, nonatomic) IBOutlet ConvertBut *convertButton;
+@property (weak, nonatomic) IBOutlet CalcButton *backButton;
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *showCurrensiesGestureRecognizer;
 
 
@@ -165,6 +171,12 @@
 {
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.blur];
     velocity.y = 0;
+    NSLog(@"self.currencyFromPicker %f, %f, %f, %f", self.currencyFromPicker.frame.origin.x, self.currencyFromPicker.frame.origin.y, self.currencyFromPicker.frame.size.width,self.currencyFromPicker.frame.size.height);
+    NSLog(@"self.currencyToPicker %f, %f, %f, %f", self.currencyToPicker.frame.origin.x, self.currencyToPicker.frame.origin.y, self.currencyToPicker.frame.size.width,self.currencyToPicker.frame.size.height);
+    NSLog(@"self.resultLabel %f, %f, %f, %f", self.resultLabel.frame.origin.x, self.resultLabel.frame.origin.y, self.resultLabel.frame.size.width,self.resultLabel.frame.size.height);
+    NSLog(@"self.convertButton %f, %f, %f, %f", self.convertButton.frame.origin.x, self.convertButton.frame.origin.y, self.convertButton.frame.size.width,self.convertButton.frame.size.height);
+    NSLog(@"self.backButton %f, %f, %f, %f", self.backButton.frame.origin.x, self.backButton.frame.origin.y, self.backButton.frame.size.width,self.backButton.frame.size.height);
+    
     UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.currencyFromPicker, self.currencyToPicker, self.resultLabel, self.convertButton,self.backButton]];
     dynamicItem.allowsRotation = NO;
     //add dinamics for pickers
@@ -370,10 +382,9 @@
 
 
 #pragma mark BUTTONS TAPPED
--(void)convertButtonTapped:(id)sender
-{
+- (IBAction)convertButtonTapped:(id)sender {
     //call function to renew usersDictionary: synbol and Array [0] - count of using, [1] - last date using
-        //1. make array from string
+    //1. make array from string
     NSArray* symbolsArray = [[NSArray alloc]initWithObjects:self.fromCur,self.toCur, nil];
     NSArray *countArray = [[NSArray alloc] initWithObjects:@"$",self.fromCur,self.toCur, self.value, nil];
     [self.currensies renewUsersCurrensies:symbolsArray];
@@ -389,10 +400,9 @@
     [[NSUserDefaults standardUserDefaults] setObject:self.toCur forKey:LAST_TO_CURRENCY];
     
     [self endDrawCurrencyConverterOn:NO withVelocity:CGPointMake(0, 0)];
-
 }
 
--(void)backButtonTapped:(id)sender
+-(IBAction)backButtonTapped:(id)sender
 {
     [self endDrawCurrencyConverterOn:NO withVelocity:CGPointMake(0, 0)];
     
@@ -692,9 +702,9 @@
     
     [self setNecessaryViews];
     CGRect blurFrameRect = CGRectMake(self.viewforCurrencyRecognizer.frame.origin.x,
-                                      self.viewforCurrencyRecognizer.frame.origin.y +self.labelViewHeight,
+                                      self.viewforCurrencyRecognizer.frame.origin.y,// +self.labelViewHeight,
                                       self.viewforCurrencyRecognizer.frame.size.width,
-                                      self.viewforCurrencyRecognizer.frame.size.height - self.labelViewHeight);
+                                      self.viewforCurrencyRecognizer.frame.size.height);// - self.labelViewHeight);
     
     [self.blur setFrame:blurFrameRect];
     
@@ -746,7 +756,7 @@
 {
     UIVisualEffectView *blur = [[UIVisualEffectView alloc] init];
     blur.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    [self.dynamicContainer addSubview:blur];
+    [self.mainContainerView addSubview:blur];
     self.blur = blur;
     self.blur.alpha = 0;
     self.blurAlpha = self.blur.alpha;
@@ -815,7 +825,7 @@
                                                  object:nil];
 
     //inint necessary views
-    //[self setNecessaryViews];
+    [self setNecessaryViews];
     
 }
 

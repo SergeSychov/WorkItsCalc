@@ -58,7 +58,6 @@
 		5021BD2818FDB372001749D4 /* HistroryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2218FDB372001749D4 /* HistroryTableViewCell.m */; };
 		5021BD2918FDB372001749D4 /* newButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2518FDB372001749D4 /* newButtonView.m */; };
 		5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD2718FDB372001749D4 /* NewButtonsCollectionViewCell.m */; };
-		502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 502E82AB197EA5B800B05E83 /* IPad.storyboard */; };
 		5032B9CD1C3BBB40008C4989 /* Currensies.m in Sources */ = {isa = PBXBuildFile; fileRef = 5032B9CC1C3BBB40008C4989 /* Currensies.m */; };
 		504750171B79346C001AD553 /* myTextureSych 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 504750161B79346C001AD553 /* myTextureSych 3.png */; };
 		5047501D1B7BC45A001AD553 /* PlusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5047501C1B7BC45A001AD553 /* PlusButton.m */; };
@@ -174,7 +173,7 @@
 		5010476A192BB31B00A0CB1F /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ACalcTryViewControllerTable.strings; sourceTree = "<group>"; };
 		50119EEA1B07531700E4BDE0 /* AppearedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppearedViewController.h; sourceTree = "<group>"; };
 		50119EEB1B07531700E4BDE0 /* AppearedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppearedViewController.m; sourceTree = "<group>"; };
-		50142CF71ADC3B64006CB247 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "../Launch Screen.xib"; sourceTree = "<group>"; };
+		50142CF71ADC3B64006CB247 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		5021BC7F18FDAE3C001749D4 /* Its Calc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Its Calc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5021BC8218FDAE3C001749D4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5021BC8418FDAE3C001749D4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -272,7 +271,6 @@
 		5021BD4F18FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/Main.strings; sourceTree = "<group>"; };
 		5021BD5018FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5021BD5118FDCC32001749D4 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		502E82AB197EA5B800B05E83 /* IPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = IPad.storyboard; sourceTree = "<group>"; };
 		5032B9CB1C3BBB40008C4989 /* Currensies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Currensies.h; sourceTree = "<group>"; };
 		5032B9CC1C3BBB40008C4989 /* Currensies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Currensies.m; sourceTree = "<group>"; };
 		504750161B79346C001AD553 /* myTextureSych 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "myTextureSych 3.png"; sourceTree = "<group>"; };
@@ -632,9 +630,6 @@
 				5006BC90193792210081F44E /* ACalcTryViewControllerTableAdditional.strings */,
 				5010475C192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings */,
 				64206BCE1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings */,
-				5021BC9418FDAE3C001749D4 /* Main.storyboard */,
-				502E82AB197EA5B800B05E83 /* IPad.storyboard */,
-				50142CF71ADC3B64006CB247 /* Launch Screen.xib */,
 				357DE42C1ADAF20C0065C256 /* Logo.png */,
 				5021BD1018FDB1E6001749D4 /* HistoryTableSviper.h */,
 				5021BD1118FDB1E6001749D4 /* HistoryTableSviper.m */,
@@ -708,6 +703,8 @@
 		5074EB9E1B544AE500291799 /* New Group */ = {
 			isa = PBXGroup;
 			children = (
+				5021BC9418FDAE3C001749D4 /* Main.storyboard */,
+				50142CF71ADC3B64006CB247 /* Launch Screen.xib */,
 				5022730B1C8306B30021968A /* need to delete */,
 				5021BC8818FDAE3C001749D4 /* ITSCalc */,
 			);
@@ -887,7 +884,6 @@
 				50FAC44F1BC1781F00442FEF /* photoGround.png in Resources */,
 				64206BCC1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings in Resources */,
 				5021BCE218FDB08B001749D4 /* shutter.caf in Resources */,
-				502E82AC197EA5B800B05E83 /* IPad.storyboard in Resources */,
 				5010475A192BB2FB00A0CB1F /* ACalcTryViewControllerTable.strings in Resources */,
 				5080B9621965F0F90004EEED /* bluePanSelected2.png in Resources */,
 				5021BC9B18FDAE3C001749D4 /* Images.xcassets in Resources */,
@@ -1094,6 +1090,7 @@
 				5021BD4F18FDCC32001749D4 /* hi */,
 			);
 			name = Main.storyboard;
+			path = ITSCalc;
 			sourceTree = "<group>";
 		};
 		5021BCAA18FDAE3C001749D4 /* InfoPlist.strings */ = {
@@ -1169,7 +1166,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "8b97b138-c373-40fb-98ad-fe325c8eca0e";
 				SDKROOT = iphoneos;
@@ -1189,7 +1186,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1251,7 +1248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "8b97b138-c373-40fb-98ad-fe325c8eca0e";
 				SDKROOT = iphoneos;
@@ -1271,7 +1268,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

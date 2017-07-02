@@ -14,4 +14,6 @@
 @property (nonatomic,strong) NSString *toCur;// save in archive
 @property (nonatomic,strong) NSNumber *value;
 
+
+
 @end
