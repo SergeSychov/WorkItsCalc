@@ -828,20 +828,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     return self.isBigDataBase ? 200 : 500;
 }
 
--(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
-{
-    _isBigSizeButtons = isBigSizeButtons;
-    //reset buttons size only when core data available
-    //as exemple don't set in view didload
-    if(self.buttonManagedObjectContext){
-      //  [self setUpMainButtonsStartWithPosition];
-      //  [self makeTwoArrays];
-      //  [self.buttonsCollection reloadData];
-        [self.buttonsStore renewArraysAccordingNewButtonsSize];
-        [self newButtonsSize];
-        
-    }
-}
+
 
 
 
@@ -2837,6 +2824,20 @@ static BOOL moveIsAvailable;
 #define BUTTON_SIDES_RATIO_IPAD 1.8
 #define BUTTON_SIDES_RATIO_IPHONE 1.4
 #define INSENT_BUTTONS_PART 9. //insent first row
+-(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
+{
+    _isBigSizeButtons = isBigSizeButtons;
+    //reset buttons size only when core data available
+    //as exemple don't set in view didload
+    if(self.buttonManagedObjectContext){
+        //  [self setUpMainButtonsStartWithPosition];
+        //  [self makeTwoArrays];
+        //  [self.buttonsCollection reloadData];
+        //[self.buttonsStore renewArraysAccordingNewButtonsSize];
+        [self newButtonsSize];
+        
+    }
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -2871,10 +2872,10 @@ static BOOL moveIsAvailable;
     NSInteger yQantity;
     if(self.isBigSizeButtons) {
         xQantity = 4;
-        yQantity = 5;
+        yQantity = 6;
     }else {
         xQantity = 5;
-        yQantity = 6;
+        yQantity = 7;
     }
     
     //find min side
@@ -2913,6 +2914,12 @@ static BOOL moveIsAvailable;
         xQantity = (NSInteger) round(self.buttonsCollection.bounds.size.width/(yFindSide*buttonsRatio));
         buttonsWidth = (self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity;
     }
+    
+    //renew buttons array
+    [self.buttonsStore renewArraysAccordingNewButtonsSize];
+    [self.buttonsCollection reloadData];
+    
+    //renew buttonsCollectionLayout
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
     
     flow.itemSize = CGSizeMake(buttonsWidth, buttonsHeight);
@@ -2927,8 +2934,10 @@ static BOOL moveIsAvailable;
     flow.sectionInset = insets;
     
     buttonsFlowLayout = flow;
-    
     [self.buttonsCollection setCollectionViewLayout:buttonsFlowLayout animated:YES];
+
+    
+
 }
 
 #pragma mark - MOVE BUTTONS Methods

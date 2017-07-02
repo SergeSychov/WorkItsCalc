@@ -293,7 +293,7 @@
                                         </connections>
                                     </tableView>
                                     <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="LsF-jj-Vfx" customClass="HistoryTableSviper">
-                                        <rect key="frame" x="184" y="138" width="42" height="42"/>
+                                        <rect key="frame" x="184" y="147" width="42" height="42"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <gestureRecognizers/>
                                         <constraints>
@@ -311,7 +311,6 @@
                                     <constraint firstAttribute="trailing" secondItem="FK6-Yi-iBk" secondAttribute="trailing" id="37e-t4-NWw"/>
                                     <constraint firstItem="FK6-Yi-iBk" firstAttribute="top" secondItem="b0U-wF-F1m" secondAttribute="bottom" id="5Hu-mJ-QEo"/>
                                     <constraint firstItem="65m-qJ-35V" firstAttribute="bottom" secondItem="FK6-Yi-iBk" secondAttribute="bottom" id="B29-T6-y6j"/>
-                                    <constraint firstItem="LsF-jj-Vfx" firstAttribute="bottom" secondItem="wUU-dX-Cqj" secondAttribute="bottom" id="CfD-hg-qHo"/>
                                     <constraint firstAttribute="height" constant="736" id="Iec-8o-Svd"/>
                                     <constraint firstItem="b0U-wF-F1m" firstAttribute="leading" secondItem="2Y9-ja-9gk" secondAttribute="leading" id="LXj-G8-PEI"/>
                                     <constraint firstAttribute="width" constant="410" id="LnE-pQ-xzG"/>
@@ -325,6 +324,7 @@
                                     <constraint firstItem="LsF-jj-Vfx" firstAttribute="height" secondItem="b0U-wF-F1m" secondAttribute="height" multiplier="0.5" id="kSn-rz-Efj"/>
                                     <constraint firstItem="b0U-wF-F1m" firstAttribute="top" secondItem="wUU-dX-Cqj" secondAttribute="bottom" id="l3t-Oa-Pav"/>
                                     <constraint firstAttribute="trailing" secondItem="wUU-dX-Cqj" secondAttribute="trailing" id="ljc-4n-LaJ"/>
+                                    <constraint firstItem="LsF-jj-Vfx" firstAttribute="bottom" secondItem="b0U-wF-F1m" secondAttribute="top" multiplier="1.05" id="nGY-MJ-dkG"/>
                                     <constraint firstItem="eK6-Ew-deE" firstAttribute="leading" secondItem="b0U-wF-F1m" secondAttribute="leading" id="qPB-rI-O19"/>
                                     <constraint firstItem="FK6-Yi-iBk" firstAttribute="bottom" secondItem="2Y9-ja-9gk" secondAttribute="bottom" id="tOQ-93-W8e"/>
                                     <constraint firstItem="LsF-jj-Vfx" firstAttribute="centerX" secondItem="2Y9-ja-9gk" secondAttribute="centerX" id="tPo-ou-Hu6"/>
