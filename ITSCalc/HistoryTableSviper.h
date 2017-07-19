@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DesignObject.h"
 
 @interface HistoryTableSviper : UIView
-@property (nonatomic) CGFloat pattOfDown;
-@property (nonatomic) NSInteger design;
+@property (nonatomic) CGFloat pathOfDown;
+//@property (nonatomic) NSInteger design;
+@property (nonatomic, weak) DesignObject *designObj;
 
 @end

@@ -16,15 +16,6 @@
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_568_SCREEN (fabs((double)[[UIScreen mainScreen]bounds].size.height - (double)568) < DBL_EPSILON)
 
-//define design numbers
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
 
 //define type of buttons
 #define MAIN_BUTTON 1
@@ -42,28 +33,11 @@
 @end
 
 @implementation NewButtonsCollectionViewCell
+-(void)setDesignObj:(DesignObject *)designObj{
+    _designObj = designObj;
+    self.cellSubView.designObj = designObj;
+}
 
--(void)setDesign:(NSInteger)design
-{
-    _design = design;
-    self.cellSubView.design = design;
-}
-/*
--(NSInteger)design {
-    if((self.design != DESIGN_CLASSIC) &&
-       (self.design != DESIGN_PAPER)&&
-       (self.design != DESIGN_COLOR_BLUE) &&
-       (self.design != DESIGN_COLOR_GREEN) &&
-       (self.design != DESIGN_COLOR_PINK) &&
-       (self.design != DESIGN_COLOR_YELOW) &&
-       (self.design != DESIGN_COLOR_GRAY) &&
-       (self.design != DESIGN_PHOTO )){
-        _design = DESIGN_CLASSIC;
-    }
-    
-    return _design;
-}
-*/
 -(void) setName:(NSString *)name
 {
     
@@ -107,7 +81,7 @@
 {
     if(!self.isUnderChanging){
         self.rectArchive = self.frame;
-        if(self.design == DESIGN_PAPER){
+        if(self.designObj.designNumber == DESIGN_PAPER){
             CGFloat radiusCorner;
             if(IS_IPAD){
                radiusCorner = (self.frame.size.height-4)/ 3.;
@@ -160,7 +134,7 @@
 {
     if(!self.isUnderChanging){
 
-        if(self.design == DESIGN_PAPER){
+        if(self.designObj.designNumber == DESIGN_PAPER){
 
             [UIView animateWithDuration:0.8
                                   delay:0.0
@@ -562,7 +536,7 @@
     } else {
         self.incr = 2.1;
     }
-    
+    self.cellSubView.designObj = self.designObj;
     [self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
 }
 

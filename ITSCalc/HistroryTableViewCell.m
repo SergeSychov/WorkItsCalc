@@ -102,24 +102,51 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
 }
 
--(void)setDesign:(NSInteger)design{
-    _design = design;
-    switch (self.design) {
+#pragma marks SET DESIGN PROPERZTIES
+-(UIColor*)colorSelectedFirstGradient{
+    return self.designObj.colorSelectedFirstGradient;
+}
+-(UIColor*)colorSelectedSecondGradient{
+    return self.designObj.colorSelectedSecondGradient;
+}
+-(UIColor*)colorUnselectedFirstGradient{
+    return self.designObj.colorUnselectedFirstGradient;
+}
+-(UIColor*)colorUnselectedSecondGradient{
+    return self.designObj.colorUnselectedSecondGradient;
+}
+-(UIColor*)colorForSelectedText{
+    return self.designObj.colorForSelectedText;
+}
+-(UIColor*)colorForUnselectedText{
+    return self.designObj.colorForUnselectedText;
+}
+-(UIColor*)moreButtonColor{
+    return self.designObj.moreButtonColor;
+}
+-(UIColor*)moreButtonBackgroundColor{
+    return self.designObj.moreButtonBackgroundColor;
+}
+-(UIColor*)deleteButtonColor{
+    return self.designObj.deleteButtonColor;
+}
+-(UIColor*)deleteButtonBackgroundColor{
+    return self.designObj.deleteButtonBackgroundColor;
+}
+-(UIColor*)buttonShadowColor{
+    return self.designObj.buttonShadowColor;
+}
+-(CGSize)buttonShadowSize{
+    return self.designObj.buttonShadowSize;
+}
+-(CGFloat)buttonShadowBlur{
+    return self.designObj.buttonShadowBlur;
+}
+
+-(void) setDesignObj:(DesignObject *)designObj{
+    _designObj = designObj;
+    switch (designObj.designNumber) {
         case DESIGN_CLASSIC:
-            self.colorSelectedFirstGradient = [UIColor whiteColor];
-            self.colorSelectedSecondGradient = [UIColor whiteColor];
-            self.colorUnselectedFirstGradient = [UIColor colorWithWhite:0.95 alpha:1];
-            self.colorUnselectedSecondGradient = [UIColor colorWithWhite:0.9 alpha:1];
-            self.colorForSelectedText = [UIColor darkTextColor];
-            self.colorForUnselectedText = [UIColor grayColor];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
@@ -127,182 +154,60 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
             break;
             
         case DESIGN_PAPER:
-
-            self.colorSelectedFirstGradient = [UIColor clearColor];
-            self.colorSelectedSecondGradient = [UIColor clearColor];
-            self.colorUnselectedFirstGradient = [UIColor clearColor];
-            self.colorUnselectedSecondGradient = [UIColor clearColor];
-            self.colorForSelectedText = [Clr paperButton];
-            self.colorForUnselectedText = [[Clr paperButton] colorWithAlphaComponent:0.6];
             if(!self.lineView){
                 LineView *lineView = [[LineView alloc] init];
                 lineView.backgroundColor = [UIColor clearColor];
                 [self.contentView addSubview:lineView];
                 self.lineView = lineView;
             }
-
-            //[self.contentView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]]];
-            self.lineView.color = self.colorForUnselectedText;
-            self.lineView.shadowColor = [UIColor whiteColor];
-            self.lineView.shadowBlur = 0.5;
-            self.lineView.shadowSize = CGSizeMake(1., 1.);
-            
-            self.moreButtonColor = [Clr paperEqual];
-            self.moreButtonBackgroundColor = [UIColor clearColor];
-            self.deleteButtonColor =[UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
-            self.deleteButtonBackgroundColor = [UIColor clearColor];
-            self.buttonShadowColor = [UIColor whiteColor];
-            self.buttonShadowSize = CGSizeMake(1., 1.);
-            self.buttonShadowBlur = 0.5;
-
             break;
             
         case DESIGN_COLOR_BLUE:
-            self.colorSelectedFirstGradient = [UIColor whiteColor];
-            self.colorSelectedSecondGradient = [UIColor whiteColor];
-            self.colorUnselectedFirstGradient = [Clr blueFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr blueSecondGradient];
-            self.colorForSelectedText = [Clr blueDisplay];
-            self.colorForUnselectedText =  [[Clr blueDisplay] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [Clr blueMoreButton];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [Clr blueDelButton];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         case DESIGN_COLOR_GREEN:
-            self.colorSelectedFirstGradient = [Clr greenFirstGradient];
-            self.colorSelectedSecondGradient = [Clr greenFirstGradient];
-            self.colorUnselectedFirstGradient = [Clr greenFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr greenSecondGradient];
-            self.colorForSelectedText = [Clr greenDisplay];
-            self.colorForUnselectedText =  [[Clr greenDisplay] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [Clr greenMoreButton];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [Clr greenDelButton];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         case DESIGN_COLOR_YELOW:
-            self.colorSelectedFirstGradient = [Clr yellowFirstGradient];
-            self.colorSelectedSecondGradient = [Clr yellowFirstGradient];
-            self.colorUnselectedFirstGradient = [Clr yellowFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr yellowSecondGradient];
-            self.colorForSelectedText = [Clr yellowText];
-            self.colorForUnselectedText =  [[Clr yellowText] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [Clr yellowMoreButton];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [Clr yellowDelButton];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         case DESIGN_COLOR_PINK:
-            self.colorSelectedFirstGradient = [Clr pinkFirstGradient];
-            self.colorSelectedSecondGradient = [Clr pinkFirstGradient];
-            self.colorUnselectedFirstGradient = [Clr pinkFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr pinkSecondGradient];
-            self.colorForSelectedText = [Clr pinkText];
-            self.colorForUnselectedText =  [[Clr pinkDisplay] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [Clr pinkMoreButton];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [Clr pinkDelButton];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         case DESIGN_COLOR_GRAY:
-            self.colorSelectedFirstGradient = [Clr grayFirstGradient];
-            self.colorSelectedSecondGradient = [Clr grayFirstGradient];
-            self.colorUnselectedFirstGradient = [Clr grayFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr graySecondGradient];
-            self.colorForSelectedText = [Clr grayText];
-            self.colorForUnselectedText =  [[Clr grayText] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [Clr grayMoreButton];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [Clr grayDelButton];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         case DESIGN_PHOTO:
-            self.colorSelectedFirstGradient = [UIColor colorWithWhite:0 alpha:0.2];
-            self.colorSelectedSecondGradient = [UIColor colorWithWhite:0 alpha:0.2];
-            self.colorUnselectedFirstGradient = [Clr photoFirstGradient];
-            self.colorUnselectedSecondGradient = [Clr photoSecondGradient];
-            self.colorForSelectedText = [UIColor whiteColor];
-            self.colorForUnselectedText =  [[UIColor whiteColor] colorWithAlphaComponent:0.6];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [UIColor colorWithWhite:0 alpha:0.1];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [UIColor colorWithWhite:0 alpha:0.1];
-            self.buttonShadowColor = [UIColor grayColor];
-            self.buttonShadowSize = CGSizeMake(2, 2.);
-            self.buttonShadowBlur = 3.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
             break;
         default:
-            self.colorSelectedFirstGradient = [UIColor whiteColor];
-            self.colorSelectedSecondGradient = [UIColor whiteColor];
-            self.colorUnselectedFirstGradient = [Clr blueButton];
-            self.colorUnselectedSecondGradient =[UIColor colorWithWhite:0.8 alpha:1];
-            
-            self.colorForSelectedText = [UIColor darkTextColor];
-            self.colorForUnselectedText = [UIColor grayColor];
-            [self.contentView setBackgroundColor:[UIColor clearColor]];
-            
-            self.moreButtonColor = [UIColor whiteColor];
-            self.moreButtonBackgroundColor = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
-            self.deleteButtonColor = [UIColor whiteColor];
-            self.deleteButtonBackgroundColor = [UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
-            self.buttonShadowColor = [UIColor clearColor];
-            self.buttonShadowSize = CGSizeMake(0, 0.);
-            self.buttonShadowBlur = 0.;
             if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
             }
-            
             break;
     }
-
+    
     [self setNeedsDisplay];
+
 }
 
 
@@ -431,9 +336,9 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         
         [atrStr beginEditing];
         [atrStr addAttribute:NSForegroundColorAttributeName value:self.colorForSelectedText range:wholeRange];
-        if(self.design == DESIGN_PAPER){
+        if(self.designObj.designNumber == DESIGN_PAPER){
             [atrStr addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:wholeRange];
-        } else if(self.design == DESIGN_PHOTO){
+        } else if(self.designObj.designNumber == DESIGN_PHOTO){
             NSShadow *shadow = [[NSShadow alloc] init];
             shadow.shadowBlurRadius = 3.;
             shadow.shadowColor = [UIColor blackColor];

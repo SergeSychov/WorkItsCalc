@@ -27,8 +27,10 @@
 @implementation HistoryTableSviper
 
 -(UIColor*)color{
-    if(!_color){
-        _color = [UIColor blackColor];
+    if(self.designObj.designNumber == DESIGN_PHOTO){
+        self.color = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
+    } else {
+        self.color = [[UIColor blackColor] colorWithAlphaComponent:0.3];
     }
     return _color;
 }
@@ -36,28 +38,16 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.pattOfDown = 0;
+        self.pathOfDown = 0;
         // Initialization code
     }
     return self;
 }
-
--(void) setPattOfDown:(CGFloat)pattOfDown
-{
-    _pattOfDown = pattOfDown;
+-(void)setPathOfDown:(CGFloat)pathOfDown{
+    _pathOfDown = pathOfDown;
     [self setNeedsDisplay];
 }
 
--(void) setDesign:(NSInteger)design
-{
-    _design = design;
-    if(design == DESIGN_PHOTO){
-        self.color = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
-    } else {
-        self.color = [[UIColor blackColor] colorWithAlphaComponent:0.3];
-    }
-    [self setNeedsDisplay];
-}
 -(void) drawSwipeSymbolInContext:(CGContextRef) context
 {
     CGFloat fivePart = self.frame.size.height/5;
@@ -70,7 +60,7 @@
     CGContextSetLineWidth(context, lineWith);
     CGContextMoveToPoint(context, rect.size.width/6 +.5, rect.size.height /2 +.5 + 2*fivePart);
     
-    CGContextAddLineToPoint(context, rect.size.width/2 +.5, 2*fivePart +.5 + (rect.size.height * (1-  self.pattOfDown)));
+    CGContextAddLineToPoint(context, rect.size.width/2 +.5, 2*fivePart +.5 + (rect.size.height * (1-  self.pathOfDown)));
     /*
     if(self.isShowedButtom){
         CGContextAddLineToPoint(context, rect.size33333.width/2 +.5, rect.size.height /2 + thirdPart +.5 + (lineWith) );

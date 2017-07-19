@@ -7,6 +7,7 @@
 //
 
 #import "SecondViewController.h"
+#import "DesignObject.h"
 
 @interface SettingsViewController : SecondViewController
 
@@ -15,7 +16,9 @@
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) BOOL isSoundOn;
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
-@property (nonatomic) NSInteger design; //number of design
+
+@property (nonatomic) DesignObject* designObj;
+//@property (nonatomic) NSInteger design; //number of design
 
 @property (nonatomic) BOOL isTrialPeriod;
 @property (nonatomic) BOOL wasPurshaised;

@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DesignObject.h"
 
 @interface designButtonView : UIView
 @property (nonatomic,weak) NSString* title;
-@property (nonatomic) NSInteger design;
+@property (nonatomic) NSInteger designIndex;
 
 @end

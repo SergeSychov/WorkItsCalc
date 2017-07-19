@@ -14,14 +14,14 @@
 #define BUTTON_HEIGHT 60.f
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
+//#define DESIGN_CLASSIC 1
+//#define DESIGN_PAPER 2
+//#define DESIGN_COLOR_BLUE 30
+//#define DESIGN_COLOR_GREEN 31
+//#define DESIGN_COLOR_PINK 32
+//#define DESIGN_COLOR_YELOW 33
+//#define DESIGN_COLOR_GRAY 34
+//#define DESIGN_PHOTO 4
 
 
 @interface DisplayLabel()
@@ -31,45 +31,17 @@
 
 @implementation DisplayLabel
 
--(void) setDesign:(NSInteger)design
-{
-    _design = design;
-    UIColor *textColor;
-    
-    switch (self.design) {
-        case DESIGN_PHOTO:
-            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightBold];
-            textColor = [UIColor whiteColor];
-            break;
-            
-        case DESIGN_CLASSIC:
-            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
-            textColor = [UIColor colorWithWhite:0.95 alpha:1];
-            break;
-            
-        case DESIGN_PAPER:
-            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
-            textColor = [Clr paperButton];
-            break;
-            
-        default:
-            //mainFont =[UIFont systemFontOfSize:size weight:UIFontWeightLight ];
-            textColor = [UIColor colorWithWhite:0.95 alpha:1];
-            break;
-            
-    }
-    
-    [self.decRadLabel setTextColor:textColor];
-    [self.firstMemoryLabel setTextColor:textColor];
-    [self.secondMemoryLabel  setTextColor:textColor];
-    
-    [self showString:self.attributedText.string];
-    
+-(void) setDesignObj:(DesignObject *)designObj{
+    _designObj = designObj;
+    //self.textColor =self.designObj.screenTextColor;
+    //self.backgroundColor = [UIColor yellowColor];
+   // [self setNeedsDisplay];
 }
+
 
 -(void) showString:(NSString *)str
 {
-    NSMutableAttributedString *mutAttrString = [[NSMutableAttributedString alloc] initWithString:str];
+    NSMutableAttributedString *mutAttrString = [[NSMutableAttributedString alloc] initWithString:str attributes:[self.attributedText attributesAtIndex:0 effectiveRange:nil]];//:str];
     //all kernels to -2
     if([mutAttrString length] > 0){
         [mutAttrString addAttribute:NSKernAttributeName
@@ -108,6 +80,8 @@
             }
         }
     }
+    
+    /*
     //set textcolor aacroding design
     UIColor *textColor;
     switch (self.design) {
@@ -126,9 +100,14 @@
         default:
             break;
     }
+    */
     
-    self.attributedText = [mutAttrString copy];
+   // self.attributedText = [mutAttrString copy];
+    
+
+    
 }
+/*
 -(void) setup
 {
     UIFont *font; //if there is no needed font
@@ -197,17 +176,21 @@
     [super awakeFromNib];
     [self setup];
 }
+*/
 
 
-/*
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-   // [self addMaskLayerWithRect: rect];
+    //self.textColor = [UIColor lightTextColor];//self.designObj.screenTextColor;
+    //self.backgroundColor = [UIColor yellowColor];
+    //NSLog(@"self.textColor: %@", self.textColor);
+    
+    // [self addMaskLayerWithRect: rect];
 }
-*/
+
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
 -(NSString *) point

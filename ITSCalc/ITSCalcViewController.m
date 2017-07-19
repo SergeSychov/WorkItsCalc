@@ -5,7 +5,7 @@
 //  Created by Serge Sychov on 15.04.14.
 //  Copyright (c) 2014 Sergey Sychov. All rights reserved.
 //
-@import UIKit;
+//#import <UIKit/UIKit.h>;
 #import <QuartzCore/QuartzCore.h>
 #import <CoreData/CoreData.h>
 #import <CoreText/CTStringAttributes.h>
@@ -19,7 +19,8 @@
 
 #import "ACalcBrain.h"
 
-#import "DisplayLabel.h"
+//#import "DisplayLabel.h"
+#import "DisplayScreenLabel.h"
 #import "DisplayRam.h"
 #import "History.h"
 #import "History+Maker.h"
@@ -56,6 +57,7 @@
 #import "DesignButton.h"
 
 #import "Clr.h"
+#import "DesignObject.h"
 
 #import "CreateNewButtonViewController.h"
 
@@ -83,21 +85,21 @@
 #define INDENT 20.0f
 
 //define design numbers
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
+//#define DESIGN_CLASSIC 1
+//#define DESIGN_PAPER 2
+//#define DESIGN_COLOR_BLUE 30
+//#define DESIGN_COLOR_GREEN 31
+//#define DESIGN_COLOR_PINK 32
+//#define DESIGN_COLOR_YELOW 33
+//#define DESIGN_COLOR_GRAY 34
+//#define DESIGN_PHOTO 4
 
 //types of calculator buttons
-#define MAIN_BUTTON 1
-#define CHANGE_BUTTON 2
-#define CHANGE_BUTTON_NOT_DELETABLE 3
-#define DELETED_BUTTON 4
-#define DELETED_USER_BUTTON 5
+//#define MAIN_BUTTON 1
+//#define CHANGE_BUTTON 2
+//#define CHANGE_BUTTON_NOT_DELETABLE 3
+//#define DELETED_BUTTON 4
+//#define DELETED_USER_BUTTON 5
 
 
 //for constrain layout
@@ -112,7 +114,7 @@
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate>
+@interface ITSCalcViewController () <UIDynamicAnimatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate>
 
 
 //outlets
@@ -133,6 +135,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL callShowController;
 @property (nonatomic) BOOL showControllerIsForward;
 
+#pragma mark DESIGN OBJECT
+//design objeckt
+@property (nonatomic, strong) DesignObject* designObj;
 
 
 @property (weak, nonatomic) HintView *hintView;
@@ -157,9 +162,21 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 //Display view
 @property (weak, nonatomic) IBOutlet UIView *displayContainer;
-@property (weak, nonatomic) IBOutlet  DisplayLabel *display; //calc display
-@property (nonatomic, strong) DisplayRam *displayRam; //outbut dta from dislplay /input to display
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *displayBackground;
+
+@property (weak, nonatomic) IBOutlet UIView *labelsDisplayContainer;
+
+@property (weak, nonatomic) IBOutlet DisplayScreenLabel *mainLabel;
+//@property (weak, nonatomic) IBOutlet DisplayLabel *mainLabel;
+@property (weak, nonatomic) IBOutlet UILabel *decLabel;
+@property (weak, nonatomic) IBOutlet UILabel *memoryOneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *memoryTwoLabel;
+
+
+
+
+@property (nonatomic, strong) DisplayRam *displayRam; //outbut dta from dislplay /input to display
+
 @property (weak, nonatomic) UIView*blackViewforPhotoBackground;
 //@property (weak, nonatomic) IBOutlet UIToolbar *backgroundToolBar; //background for display
 //fix button to fix changes and settibgs
@@ -188,7 +205,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 @property (nonatomic) CGFloat wasDynamicOriginY;
 @property (weak, nonatomic) IBOutlet HistoryTableSviper *historyTableSviper;
-@property (nonatomic) CGPoint svipeGestureLocation;
+//@property (nonatomic) CGPoint svipeGestureLocation;
 
 
 //bool property for paid version
@@ -214,7 +231,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL isSoundOn;
 @property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) int limitInDataBase;
-@property (nonatomic) NSInteger design;
+//@property (nonatomic) NSInteger design;
 @property (nonatomic) BOOL isNeedToBeReloadedAfterDesignChanged;
 
 @property (nonatomic) BOOL isiCloudInUse;
@@ -319,6 +336,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(BOOL) prefersStatusBarHidden
 {
     return YES;
+    //self.buttonsCollection.frame
 }
 
 #pragma mark LASY INITIALIZATION
@@ -432,159 +450,56 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
--(void) setDesign:(NSInteger)design
-{
-    //if(_design != design){
-    _design = design;
-    self.display.design = design;
-    self.historyTableSviper.design = design;
-    UIColor* buttonShadowColor;
-    CGSize buttonShadowSize;
-    CGFloat buttonShadowBlur;
-    switch (_design) {
-        case DESIGN_CLASSIC:
-            self.view.backgroundColor = [UIColor blackColor];
-            self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.historyTable.backgroundColor = [UIColor whiteColor];
-            self.displayBackground.alpha = 1;
-            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            
-            if(self.imageBackgroundView){
-                [self.imageBackgroundView removeFromSuperview];
-            }
-            
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-            
-        case DESIGN_PAPER:
-            self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            self.displayContainer.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            self.historyTable.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-
-            self.displayBackground.alpha = 0;
-            if(self.imageBackgroundView){
-                [self.imageBackgroundView removeFromSuperview];
-            }
-            
-            buttonShadowColor = [UIColor whiteColor];
-            buttonShadowSize = CGSizeMake(1., 1.);
-            buttonShadowBlur = 0.5;
-
-            break;
-            
-        case DESIGN_COLOR_BLUE:
-            self.view.backgroundColor = [Clr blueGround];
-            self.displayContainer.backgroundColor = [Clr blueDisplay];
-            self.historyTable.backgroundColor = [Clr blueFirstGradient];
-            self.displayBackground.alpha = 0.;
-            [self setPhotoBackGround:NO];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-        case DESIGN_COLOR_GREEN:
-            self.view.backgroundColor = [Clr greenGround];
-            self.displayContainer.backgroundColor = [Clr greenDisplay];
-            self.historyTable.backgroundColor = [Clr greenFirstGradient];
-            self.displayBackground.alpha = 0;
-            [self setPhotoBackGround:NO];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-        case DESIGN_COLOR_YELOW:
-            self.view.backgroundColor = [Clr yellowGround];
-            self.displayContainer.backgroundColor = [Clr yellowDisplay];
-            self.historyTable.backgroundColor = [Clr yellowFirstGradient];
-            self.displayBackground.alpha = 0;
-            [self setPhotoBackGround:NO];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-        case DESIGN_COLOR_PINK:
-            self.view.backgroundColor = [Clr pinkGround];
-            self.displayContainer.backgroundColor = [Clr pinkDisplay];
-            self.historyTable.backgroundColor = [Clr pinkFirstGradient];
-            self.displayBackground.alpha = 0;
-            [self setPhotoBackGround:NO];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-        case DESIGN_COLOR_GRAY:
-            self.view.backgroundColor = [Clr grayGround];
-            self.displayContainer.backgroundColor = [Clr grayDisplay];
-            self.historyTable.backgroundColor = [Clr grayFirstGradient];
-            self.displayBackground.alpha = 0;
-            [self setPhotoBackGround:NO];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-            break;
-        case DESIGN_PHOTO:
-
-            self.view.backgroundColor = [Clr blueGround];
-            self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.historyTable.backgroundColor = [Clr photoFirstGradient];
-            self.displayBackground.alpha = 1;
-            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            
-            
-            [self setPhotoBackGround:YES];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-
-            break;
-        default:
-            self.view.backgroundColor = [UIColor clearColor];
-            self.displayContainer.backgroundColor = [UIColor clearColor];
-            self.historyTable.backgroundColor = [UIColor clearColor];
-            self.displayBackground.alpha = 1;
-            self.displayBackground.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            buttonShadowColor = [UIColor clearColor];
-            buttonShadowSize = CGSizeMake(0., 0.);
-            buttonShadowBlur = 0.;
-
-            break;
-    }
-
-    [self.historyTable reloadData];
-    [self.buttonsCollection reloadData];
+-(void)setDesignObj:(DesignObject *)designObj{
+    _designObj = designObj;
+    self.view.backgroundColor = self.designObj.mainViewBackgroundColor;
+    self.historyTable.backgroundColor = self.designObj.historyTableColor;
+    self.historyTableSviper.designObj = self.designObj;
     
-    self.plusButton.shadowColor = buttonShadowColor;
-    self.plusButton.shadowBlur = buttonShadowBlur;
-    self.plusButton.shadowSize = buttonShadowSize;
-    [self.plusButton setNeedsDisplay];
-    
-    self.recountButton.shadowColor = buttonShadowColor;
-    self.recountButton.shadowBlur = buttonShadowBlur;
-    self.recountButton.shadowSize = buttonShadowSize;
-    [self.recountButton setNeedsDisplay];
-
-    
-    self.deleteButton.shadowColor = buttonShadowColor;
-    self.deleteButton.shadowBlur = buttonShadowBlur;
-    self.deleteButton.shadowSize = buttonShadowSize;
-    [self.deleteButton setNeedsDisplay];
-    
-    self.settingsButton.shadowColor = buttonShadowColor;
-    self.settingsButton.shadowBlur = buttonShadowBlur;
-    self.settingsButton.shadowSize = buttonShadowSize;
-    [self.settingsButton setNeedsDisplay];
+    self.displayContainer.backgroundColor = self.designObj.displayContainerColor;
+    self.displayBackground.hidden = self.designObj.isScreenBlurHiden;
+    self.displayBackground.effect = self.designObj.screenBlurEffect;
     
     
-    if(self.noticeButton){
-        self.noticeButton.shadowColor = buttonShadowColor;
-        self.noticeButton.shadowBlur = buttonShadowBlur;
-        self.noticeButton.shadowSize = buttonShadowSize;
-        [self.noticeButton setNeedsDisplay];
-    }
+    self.mainLabel.designObj = self.designObj;
+    
+    
+    
+    //self.mainLabel.textColor = self.designObj.screenTextColor;
+    self.decLabel.textColor = self.designObj.screenTextColor;
+    self.memoryOneLabel.textColor = self.designObj.screenTextColor;
+    self.memoryTwoLabel.textColor = self.designObj.screenTextColor;
+    
+    //display's buttons
+    self.settingsButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.settingsButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.settingsButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    self.shareButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.shareButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.shareButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    self.noticeButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.noticeButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.noticeButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    self.plusButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.plusButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.plusButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    self.recountButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.recountButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.recountButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    self.deleteButton.shadowColor = self.designObj.screenButtonShadowColor;
+    self.deleteButton.shadowBlur = self.designObj.screenButtonShadowBlur;
+    self.deleteButton.shadowSize = self.designObj.screenButtonShadowSize;
+    
+    
+    //may be this not need  - let check
     self.isNeedToBeReloadedAfterDesignChanged = YES;
-
+    
+    
 }
 
 #pragma mark TEXT ATTRIBUTES
@@ -660,9 +575,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     _isDecCounting = isDecCounting;
     if(isDecCounting){
-        [self.display.decRadLabel setText:@" DEG"];
+        [self.decLabel setText:@" DEG"];
     } else {
-        [self.display.decRadLabel setText:@" RAD"];
+        [self.decLabel setText:@" RAD"];
     }
 }
 
@@ -999,7 +914,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
         self.brain = newBrain;
-        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1051,7 +966,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.brain = newBrain;
 
         
-        [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
         self.isProgramInProcess = NO;
         self.isStronglyArgu = YES;
         self.userIsInTheMidleOfEnteringNumber = NO;
@@ -1186,7 +1101,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
            // NSString *resStr = [NSString stringWithFormat:@"%.2f",[self.brain performOperationInArgu:title]]; //formated string from double
             //resStr = [resStr stringByAppendingString:(NSString*)title[2]];
             //[self.display showString:[self.displayRam setResult:resStr]];
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1213,7 +1128,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     [self.brain clearArgu];
                 }
             }
-            [self.display showString:[self.displayRam addSymbol:title]];
+            [self.mainLabel showString:[self.displayRam addSymbol:title]];
             //[self.brain performOperationInArgu:title];
             self.isResultFromMemory = YES;
             self.isStronglyArgu = YES;
@@ -1233,7 +1148,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         [self.brain clearArgu];
                     }
                 }
-                [self.display showString:[self.displayRam addSymbol:title]];
+                [self.mainLabel showString:[self.displayRam addSymbol:title]];
                 //[self.brain performOperationInArgu:title];
                 self.isResultFromMemory = YES;
                 self.isStronglyArgu = YES;
@@ -1247,29 +1162,29 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if((([title floatValue] != 0.0) || [title isEqualToString:@"0"]) && ![operands containsObject:title] ){
             NSNumber *symbol = [NSNumber numberWithInt:[title intValue]];
             if(self.userIsInTheMidleOfEnteringNumber){
-                [self.display showString:[self.displayRam addSymbol:symbol]];
+                [self.mainLabel showString:[self.displayRam addSymbol:symbol]];
             }else {
                 [self.displayRam clearRam];
                 if(!self.isProgramInProcess){
                     [self setStoryInforamtion];
                     [self.brain clearOperation]; //if it's just new argument, not new counting
                 }
-                [self.display showString:[self.displayRam addSymbol:symbol]];
+                [self.mainLabel showString:[self.displayRam addSymbol:symbol]];
                 self.userIsInTheMidleOfEnteringNumber = YES;
             }
             
         } else if([title isEqualToString:[self point]]){
             if(self.userIsInTheMidleOfEnteringNumber){
                 
-                [self.display showString:[self.displayRam addSymbol:@"."]];
+                [self.mainLabel showString:[self.displayRam addSymbol:@"."]];
             } else {
                 [self.displayRam clearRam];
-                [self.display showString:[self.displayRam addSymbol:@0]];
+                [self.mainLabel showString:[self.displayRam addSymbol:@0]];
                 if(!self.isProgramInProcess){
                     [self setStoryInforamtion];
                     [self.brain clearOperation];
                 }
-                [self.display showString:[self.displayRam addSymbol:@"."]];
+                [self.mainLabel showString:[self.displayRam addSymbol:@"."]];
                 self.userIsInTheMidleOfEnteringNumber = YES;
             }
             
@@ -1282,7 +1197,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             }
             
             [self.displayRam clearRam];
-            [self.display showString:[self.displayRam addSymbol:@0]];
+            [self.mainLabel showString:[self.displayRam addSymbol:@0]];
             
             if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
                 [self setStoryInforamtion];
@@ -1297,12 +1212,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.isStronglyArgu = [self.brain deleteLastElement];
                 self.isProgramInProcess = YES;
                 [self.displayRam clearRam];
-                [self.display showString:[self.displayRam addSymbol:@0]];
+                [self.mainLabel showString:[self.displayRam addSymbol:@0]];
                 self.userIsInTheMidleOfEnteringNumber = NO;
                 
             } else {
                 
-                [self.display showString:[self.displayRam deleteLastSymbol]];//?? what about grad
+                [self.mainLabel showString:[self.displayRam deleteLastSymbol]];//?? what about grad
                 if(self.displayRam.isGradMinutesSecons == 0){
                     id currentResult = [self.displayRam getResult]; // this function add grad symbol not needed here
                     if([currentResult isKindOfClass:[NSNumber class]] && ([currentResult doubleValue] == 0))
@@ -1326,7 +1241,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     [self.brain clearArgu];
                 }
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1339,7 +1254,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1351,7 +1266,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:@".00"]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:@".00"]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1368,7 +1283,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             } else {
                 title = [@"r" stringByAppendingString:title];
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1381,7 +1296,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.isResultFromMemory = NO;
             }
             [self.brain pushArguForPerCent];
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain performOperationInArgu:title]]]];
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
             
@@ -1395,7 +1310,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain perfomOperation:title]]]];
             self.isStronglyArgu = NO;
             self.isProgramInProcess = YES;
             [self showStringThruManageDocument];
@@ -1408,7 +1323,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
             self.isProgramInProcess = NO;
             self.isStronglyArgu = YES;
             
@@ -1472,14 +1387,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(self.userIsInTheMidleOfEnteringNumber){
                 double number =[[self.displayRam getResult] doubleValue];
                 if([self.displayRam isGradValue]){
-                    [self.display showString:[self.displayRam addSymbol:@"∓°"]];
+                    [self.mainLabel showString:[self.displayRam addSymbol:@"∓°"]];
                 } else if(number == 0){
-                    [self.display showString:[self.displayRam addSymbol:@"-"]];
+                    [self.mainLabel showString:[self.displayRam addSymbol:@"-"]];
                 } else {
-                    [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:number *(-1.0)]]];
+                    [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:number *(-1.0)]]];
                 }
             } else {
-                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
+                [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             }
@@ -1491,7 +1406,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 [self push];
                 self.isResultFromMemory = NO;
             }
-            [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
+            [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain checkMinusOrDivideOperationOnDubble:title]]]];
             
             self.isStronglyArgu = YES;
             [self showStringThruManageDocument];
@@ -1500,7 +1415,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             
             [self.brain insertBracket:YES];
             [self.displayRam clearRam];
-            [self.display showString:[self.displayRam addSymbol:@0]];
+            [self.mainLabel showString:[self.displayRam addSymbol:@0]];
             [self showStringThruManageDocument];
             self.userIsInTheMidleOfEnteringNumber = YES;
             self.isStronglyArgu = NO;
@@ -1515,49 +1430,49 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 
                 self.userIsInTheMidleOfEnteringNumber = NO;
                 self.isProgramInProcess = NO;
-                [self.display showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+                [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
                 [self.brain insertBracket:NO];
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             }
             
         } else if ([title isEqualToString:@"Mc"]){
-            self.display.firstMemoryLabel.text = @"";
+            self.memoryOneLabel.text = @"";
             [self.displayRam clearMemory:YES];
             
         } else if ([title isEqualToString:@"Mr"]){
-            if([self.display.firstMemoryLabel.text isEqualToString:@"M"]){
+            if([self.memoryOneLabel.text isEqualToString:@"M"]){
                 self.isResultFromMemory = YES;
-                [self.display showString:[self.displayRam getResultFromMemory:YES]];
+                [self.mainLabel showString:[self.displayRam getResultFromMemory:YES]];
             }
             
         } else if ([title isEqualToString:@"M+"]){
-            self.display.firstMemoryLabel.text = @"M";
+            self.memoryOneLabel.text = @"M";
             [self.displayRam addResToMemory:YES inRadians:!self.isDecCounting];
             self.isResultFromMemory = YES;
             
         } else if ([title isEqualToString:@"M-"]){
-            self.display.firstMemoryLabel.text = @"M";
+            self.memoryOneLabel.text = @"M";
             [self.displayRam substractResFromMemory:YES inRadians:!self.isDecCounting];
             self.isResultFromMemory = YES;
             
         } else if ([title isEqualToString:@"MIc"]){
-            self.display.secondMemoryLabel.text = @"";
+            self.memoryTwoLabel.text = @"";
             [self.displayRam clearMemory:NO];
             
         } else if ([title isEqualToString:@"MIr"]){
-            if([self.display.secondMemoryLabel.text isEqualToString:@"MI"]){
+            if([self.memoryTwoLabel.text isEqualToString:@"MI"]){
                 self.isResultFromMemory = YES;
-                [self.display showString:[self.displayRam getResultFromMemory:NO]];
+                [self.mainLabel showString:[self.displayRam getResultFromMemory:NO]];
             }
             
         } else if ([title isEqualToString:@"MI+"]){
-            self.display.secondMemoryLabel.text = @"MI";
+            self.memoryTwoLabel.text = @"MI";
             [self.displayRam addResToMemory:NO inRadians:!self.isDecCounting];
             self.isResultFromMemory = YES;
             
         } else if ([title isEqualToString:@"MI-"]){
-            self.display.secondMemoryLabel.text = @"MI";
+            self.memoryTwoLabel.text = @"MI";
             [self.displayRam substractResFromMemory:NO inRadians:!self.isDecCounting];
             self.isResultFromMemory = YES;
             
@@ -1577,7 +1492,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     [self.brain clearArgu];
                 }
             }
-            [self.display showString:[self.displayRam addSymbol:[title lowercaseString]]];
+            [self.mainLabel showString:[self.displayRam addSymbol:[title lowercaseString]]];
             [self.brain performOperationInArgu:[title lowercaseString]];
 
             self.isStronglyArgu = YES;
@@ -1595,24 +1510,25 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         } else if ([title isEqualToString:@"rad"] || [title isEqualToString:@"deg"] ) {
             if([title isEqualToString:@"rad"]){
                 //cell.name = @"deg";
-                [self.display.decRadLabel setText:@" RAD"];
+                [self.decLabel setText:@" RAD"];
                 self.isDecCounting = NO;
             } else if ([title isEqualToString:@"deg"]){
                 //cell.name = @"rad";
-                [self.display.decRadLabel setText:@" DEG"];
+                [self.decLabel setText:@" DEG"];
                 self.isDecCounting = YES;
             }
             
         } else if ([title isEqualToString:@"° ′″"]){
             if(self.userIsInTheMidleOfEnteringNumber){
-                [self.display showString:[self.displayRam addSymbol:@"° ′″"]];
+                [self.mainLabel showString:[self.displayRam addSymbol:@"° ′″"]];
             } else {
-                [self.display showString:[self.displayRam setResult: self.isDecCounting? @"D" : @"R"]];
+                [self.mainLabel showString:[self.displayRam setResult: self.isDecCounting? @"D" : @"R"]];
             }
             
         }
 
     }
+
     
 }
 
@@ -1791,14 +1707,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 - (IBAction)displayLongPress:(UILongPressGestureRecognizer *)sender
 {
    //if display is show number
-    if(self.display.alpha == 1){
+    if(self.mainLabel.alpha == 1){
         if(sender.state == UIGestureRecognizerStateBegan){
         
             UIPasteboard *pb = [UIPasteboard generalPasteboard];
-            [pb setString:self.display.attributedText.string];
+            [pb setString:self.mainLabel.attributedText.string];
         
         //may be add some signal
-            UIView *signalView = [[UIView alloc] initWithFrame:self.display.frame];
+            UIView *signalView = [[UIView alloc] initWithFrame:self.mainLabel.frame];
             signalView.backgroundColor = [UIColor whiteColor];
             signalView.alpha = 1.0;
             [self.displayContainer addSubview:signalView];
@@ -1864,8 +1780,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                  */
                                 // [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
                                  [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
-                                 [self.buttonsCollection setFrame: self.viewforCurrencyRecognizer.bounds];
-                                 self.display.alpha = .0;
+                                 //[self.buttonsCollection setFrame: self.viewforCurrencyRecognizer.bounds];
+                                 self.labelsDisplayContainer.alpha = .0;
                                  
                                  //allow show settings button only in paid version
                                  if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 1.;
@@ -1900,7 +1816,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
                         buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)subCell).cellSubView.title;
                         buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)subCell).cellSubView.buttonColor;
-                        buttonsAsSubView.design = self.design;
+                        buttonsAsSubView.designObj = self.designObj;
                         buttonsAsSubView.alpha = 0.8;
                         [self.buttonsCollection addSubview:buttonsAsSubView];
                         subCell.hidden = YES;
@@ -2073,7 +1989,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 0.;
                          self.plusButton.alpha = 0.;
                          
-                         self.display.alpha = 1.;
+                         self.labelsDisplayContainer.alpha = 1.;
                          
                      } completion:^(BOOL finished){
                          self.isButtonsCollectionUnderChanging = NO;
@@ -2124,175 +2040,173 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         [self discardChanging];
     }
 }
-#pragma mark sviper gesture recognizer
--(void)setIsHistoryWholeShowed:(CGFloat)isHistoryWholeShowed
-{
-    self.historyTableSviper.pattOfDown = isHistoryWholeShowed;
-    _isHistoryWholeShowed = isHistoryWholeShowed;
+#pragma mark DRAGGER HISTORY
+CGPoint startDragerLocation;
+CGFloat screenYOrigin;
+CGFloat howHistoryWasShowedBeforeDrag;
+
+
+-(void) setHowHistoryShowed:(CGFloat)howHistoryShowed{
+    _howHistoryShowed = howHistoryShowed;
+    self.historyTableSviper.pathOfDown = self.howHistoryShowed;
+    
+    //set new frame for
+    CGFloat newTopDisplay = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
+    self.displayTopConstrain.constant = newTopDisplay;
+
+    [self moveHistoryTableContentToRightPosition];
+    
+    
+    if(howHistoryShowed==0 || howHistoryShowed ==1){
+        [self.view setNeedsUpdateConstraints];
+    }
+    
+    if(howHistoryShowed == 0){
+        self.settingsButton.hidden = YES;
+        self.shareButton.hidden = YES;
+        self.noticeButton.hidden = YES;
+        self.plusButton.hidden = YES;
+        self.recountButton.hidden = YES;
+        self.deleteButton.hidden = YES;
+        
+        
+    } else {
+        self.settingsButton.hidden = NO;
+        self.settingsButton.alpha = powf(howHistoryShowed,2.);//COOL
+        self.shareButton.hidden = NO;
+        self.shareButton.alpha = powf(howHistoryShowed,2.);
+        self.plusButton.hidden = NO;
+        self.plusButton.alpha = powf(howHistoryShowed,2.);
+        self.recountButton.hidden = NO;
+        self.recountButton.alpha = powf(howHistoryShowed,2.);
+        self.deleteButton.hidden = NO;
+        self.deleteButton.alpha = powf(howHistoryShowed,2.);
+        if(IS_IPAD && self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
+            self.noticeButton.hidden = NO;
+            self.noticeButton.alpha = powf(howHistoryShowed,2.);
+        }
+    }
+    //NEED self.settingsBottomButtn.hidden = NO;
+    //NEED self.noticeButton.hidden = NO;
+    if(IS_IPAD){
+        //NEED self.noticeRealButton.hidden = NO;
+    }
+    //NEED self.plusButton.hidden = NO;
+    //NEED self.recountButton.hidden = NO;
+    //NEED self.deleteButton.hidden = NO;
+    
+}
+- (IBAction)tapHistoryDragger:(UITapGestureRecognizer *)sender {
+    lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+    if(self.howHistoryShowed == 1.){
+        [self finisDraggingUpWithVelocity:CGPointZero];
+    } else {
+        [self finishDraggingDownWithVelocity:CGPointZero];
+    }
 }
 
 
 - (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender
 {
-    if((IS_IPAD)||(!([UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight ))){
-    if(!self.isButtonsCollectionUnderChanging){
-    CGPoint currentSvipeGestureLocation = [sender locationInView:self.view];
-    
     if(sender.state == UIGestureRecognizerStateBegan){
         
-        self.svipeGestureLocation = currentSvipeGestureLocation;
-        self.wasDynamicOriginY = self.mainContainerView.frame.origin.y;
+        lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+        startDragerLocation = [sender locationInView:self.mainContainerView];
+        howHistoryWasShowedBeforeDrag = self.howHistoryShowed;
+        screenYOrigin = self.calcScreenHeightConstrain.constant;
         
-        self.settingsButton.hidden = NO;
-
-        if(IS_IPAD){
-            self.noticeButton.hidden = NO;
-        }
-        self.plusButton.hidden = NO;
-        self.recountButton.hidden = NO;
-        self.deleteButton.hidden = NO;
         
     } else if (sender.state == UIGestureRecognizerStateChanged){
-
-        CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
         
-        if(hopeDynamicOriginY > -self.view.frame.size.height + self.histroryTableViewHeight/* + self.labelViewHeight*/
-           && hopeDynamicOriginY < 0){
-            CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight  - self.mainContainerView.frame.size.height);//+ self.labelViewHeight
-            
-            self.display.alpha = opacityMark;
-            self.settingsButton.alpha =1 - opacityMark;
-            if(IS_IPAD){
-                self.noticeButton.alpha = 1 - opacityMark;
-            }
-            self.plusButton.alpha = 1 - opacityMark;
-            self.recountButton.alpha = 1 - opacityMark;
-            self.deleteButton.alpha = 1 - opacityMark;
-            self.isHistoryWholeShowed = 1 - opacityMark;
-//IMPORTANT
-            //delete here
-            /*
-            CGRect dynamicRect = self.mainContainerView.frame;
-            dynamicRect.origin.y = hopeDynamicOriginY;
-            [self.dynamicContainer setFrame:dynamicRect];
-             */
-
+        
+        CGFloat deltaHeight;// = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
+        if(howHistoryWasShowedBeforeDrag == 0){
+            deltaHeight = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
+        } else {
+            deltaHeight = maxButtonsCollectionHeight+[sender locationInView:self.mainContainerView].y - startDragerLocation.y;
         }
-        //if drag down
-        
-    } else if (sender.state == UIGestureRecognizerStateEnded){
-        
-        CGFloat hopeDynamicOriginY =self.wasDynamicOriginY + currentSvipeGestureLocation.y - self.svipeGestureLocation.y;
-        CGFloat opacityMark = hopeDynamicOriginY/(self.histroryTableViewHeight - self.mainContainerView.frame.size.height);// + self.labelViewHeight
-        if(hopeDynamicOriginY >= -self.view.frame.size.height + self.histroryTableViewHeight
-           && hopeDynamicOriginY < 0){ //+ self.labelViewHeight
-            
-            self.display.alpha = opacityMark;
-            self.settingsButton.alpha =1 - opacityMark;
 
-            if(IS_IPAD){
-                self.noticeButton.alpha = 1 - opacityMark;
-            }
-            self.plusButton.alpha = 1 - opacityMark;
-            self.recountButton.alpha = 1 - opacityMark;
-            self.deleteButton.alpha = 1 - opacityMark;
-            self.isHistoryWholeShowed = 1 - opacityMark;
-            
-        }
         
-        if(self.wasDynamicOriginY == -self.mainContainerView.frame.size.height + self.histroryTableViewHeight) {// + self.labelViewHeight
-            if(opacityMark < 0.9){
-                [self finishDraggingDownWithVelocity:[sender velocityInView:self.view]];
+        CGFloat newHowHistoryShowed = deltaHeight/maxButtonsCollectionHeight;
+        
+
+        if(newHowHistoryShowed<= 0){
+            self.howHistoryShowed = 0;// histroy showed all
+            
+        } else if(newHowHistoryShowed>= 1){
+            self.howHistoryShowed = 1;// histroy showed min
+        } else {
+            self.howHistoryShowed = newHowHistoryShowed;
+        }
+
+        
+    } else {
+        
+        
+        CGPoint velosity = [sender velocityInView:self.mainContainerView];
+        if(howHistoryWasShowedBeforeDrag == 1.) {//think it'll be need to drag up
+            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
+                //do nothing
+            }else if(self.howHistoryShowed < 0.85){
+                //exactly drag up
+                [self finisDraggingUpWithVelocity:velosity];
             } else {
-                
-                [self finisDraggingUpWithVelocity:[sender velocityInView:self.view]];
+                //return back
+                [self finishDraggingDownWithVelocity:velosity];
+            }
+        } else if(howHistoryWasShowedBeforeDrag ==0.){ //think it'll be need to drag down to show history
+            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
+                //do nothing
+            }else if(self.howHistoryShowed > 0.15){
+                //exactly drag down
+                [self finishDraggingDownWithVelocity:velosity];
+            } else {
+                //return back
+                [self finisDraggingUpWithVelocity:velosity];
             }
         } else {
-            if(opacityMark < 0.1){
-                [self finishDraggingDownWithVelocity:[sender velocityInView:self.view]];
+            NSLog(@"Error can't show finaly history tab not 1 and not 0");
+            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
+                //do nothing
+            }else if(self.howHistoryShowed > 0.5){
+                //exactly drag down
+                [self finishDraggingDownWithVelocity:CGPointZero];
             } else {
-                
-                [self finisDraggingUpWithVelocity:[sender velocityInView:self.view]];
+                //return back
+                [self finisDraggingUpWithVelocity:CGPointZero];
             }
         }
     }
-    else if (sender.state == UIGestureRecognizerStateCancelled || sender.state == UIGestureRecognizerStateFailed){
-       // NSLog(@"filed or canceled");
-    }
-    }
-    }
-    
+
 }
+
+#pragma mark DYNAMIC ANIMATION
+NSString *finishDrugDirection;// = @"CloseHistroy";
 
 -(void) finisDraggingUpWithVelocity:(CGPoint)velocity
 {
+    finishDrugDirection = @"CloseHistroy";
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
+    animator.delegate = self;
     
     velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.mainContainerView]];
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.displayContainer]];
     dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.mainContainerView];
+    [dynamicItem addLinearVelocity:velocity forItem:self.displayContainer];
     [animator addBehavior:dynamicItem];
     
-    CGFloat centerY = self.mainContainerView.frame.size.height - self.mainContainerView.frame.size.height/2;
+    CGFloat centerY = self.mainContainerView.frame.size.height -maxButtonsCollectionHeight- self.displayContainer.frame.size.height/2;
     
     CGPoint snapPoint = CGPointMake(CGRectGetMidX(self.mainContainerView.frame),
                                     centerY);
     
-    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.mainContainerView snapToPoint:snapPoint];
-    snap.damping = 0.3;
+    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.displayContainer snapToPoint:snapPoint];
+    snap.damping = 0.35;
     
     __weak typeof (self) weakSelf = self;
     snap.action = ^{
         typeof(self) strongSelf = weakSelf;
-        UIView *view = strongSelf.mainContainerView;
-        
-        CGFloat opacityMark = strongSelf.mainContainerView.frame.origin.y/(strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height);// + strongSelf.labelViewHeight
-        
-        strongSelf.display.alpha =  opacityMark;
-        strongSelf.settingsButton.alpha =1- opacityMark;
-        if(IS_IPAD){
-            strongSelf.noticeButton.alpha = 1 - opacityMark;
-        }
-        strongSelf.plusButton.alpha = 1-opacityMark;
-        strongSelf.recountButton.alpha = 1-opacityMark;
-        strongSelf.deleteButton.alpha = 1-opacityMark;
-        strongSelf.isHistoryWholeShowed = 1-opacityMark;
-        
-        CGFloat needY = strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height;// + strongSelf.labelViewHeight
-
-        if(ABS(CGRectGetMidY(strongSelf.mainContainerView.frame) - centerY) < 1 && [dynamicItem linearVelocityForItem:view].y < 0.01){
-           [animator removeAllBehaviors];
-            CGRect dynamicRect = view.frame;
-            dynamicRect.origin.y = needY;
-            [view setFrame:dynamicRect];
-            
-            strongSelf.display.alpha =  1;
-            strongSelf.settingsButton.alpha =0;
-            if(IS_IPAD){
-                strongSelf.noticeButton.alpha = 0.;
-            }
-            strongSelf.plusButton.alpha = 0;
-            strongSelf.recountButton.alpha = 0;
-            strongSelf.deleteButton.alpha = 0;
-            strongSelf.isHistoryWholeShowed = 0;
-            
-            [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
-            
-            if(strongSelf.historyTable.contentSize.height < strongSelf.historyTable.frame.size.height){
-
-
-               [strongSelf.historyTable setContentInset:UIEdgeInsetsMake(strongSelf.historyTable.frame.size.height - strongSelf.historyTable.contentSize.height,0, 0, 0)];
-            } else {
-
-            }
-            if([strongSelf.historyTable numberOfRowsInSection:0] > 1){
-                NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[strongSelf.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-                
-                [strongSelf.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-            }
-
-        }
+        strongSelf.howHistoryShowed = ((strongSelf.displayContainer.frame.origin.y+strongSelf.displayContainer.frame.size.height)-(strongSelf.mainContainerView.bounds.size.height-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
         
     };
     
@@ -2303,103 +2217,71 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 }
 
 -(void) finishDraggingDownWithVelocity:(CGPoint)velocity
+
 {
-    
+    finishDrugDirection = @"OpenHistory";
+    //UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
-    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.mainContainerView]];
+    
+    //animator.delegate = self;
+    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.displayContainer]];
     gravity.gravityDirection = CGVectorMake(0.0, 4.0);
     [animator addBehavior:gravity];
     
     velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.mainContainerView]];
+    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.displayContainer]];
     dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.mainContainerView];
+    [dynamicItem addLinearVelocity:velocity forItem:self.displayContainer];
     [animator addBehavior:dynamicItem];
     
-    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.mainContainerView]];
-    CGFloat stopY = 2* self.mainContainerView.frame.size.height - self.histroryTableViewHeight;// - self.labelViewHeight
+    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.displayContainer]];
+
     [collision addBoundaryWithIdentifier:@"dynamic"
-                                       fromPoint:CGPointMake(0, stopY)
-                                         toPoint:CGPointMake(self.mainContainerView.frame.size.width, stopY)];
+                               fromPoint:CGPointMake(0, self.mainContainerView.bounds.size.height)
+                                 toPoint:CGPointMake(self.mainContainerView.bounds.size.width, self.mainContainerView.bounds.size.height)];
     
     __weak typeof (self) weakSelf = self;
     gravity.action = ^{
-        
         typeof(self) strongSelf = weakSelf;
         
-        CGFloat opacityMark = strongSelf.mainContainerView.frame.origin.y/(strongSelf.histroryTableViewHeight - strongSelf.mainContainerView.frame.size.height);// + strongSelf.labelViewHeight
+       strongSelf.howHistoryShowed = ((strongSelf.displayContainer.frame.origin.y+strongSelf.displayContainer.frame.size.height)-(strongSelf.mainContainerView.bounds.size.height-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
         
-        strongSelf.display.alpha = opacityMark;
-        strongSelf.settingsButton.alpha =1- opacityMark;
-        if(IS_IPAD){
-            strongSelf.noticeButton.alpha = 1 - opacityMark;
-        }
-        strongSelf.plusButton.alpha = 1- opacityMark;
-        strongSelf.recountButton.alpha = 1- opacityMark;
-        strongSelf.deleteButton.alpha = 1- opacityMark;
-        self.isHistoryWholeShowed = 1- opacityMark;
-
-        //if self.isHistoryWholeShowed = 1.;
-        CGFloat needY = 0;
-        UIView *view = strongSelf.mainContainerView;
-
-        if(view.frame.origin.y > needY - 3 && ABS([dynamicItem linearVelocityForItem:view].y) < 0.01){
+       
+        UIView *view = strongSelf.displayContainer;
+        
+        if(strongSelf.howHistoryShowed >0.97 && ABS([dynamicItem linearVelocityForItem:view].y) < 0.01){
             [animator removeAllBehaviors];
-            CGRect dynamicRect = view.frame;
-            dynamicRect.origin.y = needY;
-            [view setFrame:dynamicRect];
-            
-            strongSelf.display.alpha =  0;
-            strongSelf.settingsButton.alpha =1.;
-
-            if(IS_IPAD){
-                strongSelf.noticeButton.alpha = 1.;
-            }
-            strongSelf.plusButton.alpha = 1.;
-            strongSelf.recountButton.alpha = 1.;
-            strongSelf.deleteButton.alpha = 1.;
-            strongSelf.isHistoryWholeShowed = 1.;
-            
+            strongSelf.howHistoryShowed = 1;
         }
-
+        
     };
-    [animator addBehavior:collision];
     
+    [animator addBehavior:collision];
     self.animator = animator;
 }
 
-//tap on history sviper
-- (IBAction)tapSviper:(UITapGestureRecognizer *)sender
+#pragma mark - UIDynamicAnimator Delegate
+- (void)dynamicAnimatorDidPause:(UIDynamicAnimator *)animator
 {
-    if((IS_IPAD)||(!([UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight ))){
-    if(!self.isButtonsCollectionUnderChanging){
-        if(self.isHistoryWholeShowed == 1){
-            [self finisDraggingUpWithVelocity:CGPointMake(0, 0)];
-        } else {
-            self.display.alpha =  0.99;
-            self.settingsButton.hidden = NO;
-            self.settingsButton.alpha =.01;
-
-            if(IS_IPAD){
-                self.noticeButton.hidden = NO;
-                self.noticeButton.alpha = .01;
-            }
-            
-            self.plusButton.hidden = NO;
-            self.plusButton.alpha = .01;
-            
-            self.recountButton.hidden = NO;
-            self.recountButton.alpha = .01;
-            
-            self.deleteButton.hidden = NO;
-            self.deleteButton.alpha = .01;
-            
-            self.isHistoryWholeShowed = .01;
-            [self finishDraggingDownWithVelocity:CGPointMake(0, 0)];
-        }
-    }
-    }
+    if([finishDrugDirection isEqualToString:@"OpenHistory"]){
+        self.howHistoryShowed = 1;
+    } else {/*if ([finishDrugDirection isEqualToString:@"CloseHistory"]){*/
+        self.howHistoryShowed = 0;
+    }/*else {
+      self.howHistoryShowed = 0;
+      }*/
+    [self.animator removeAllBehaviors];
+    self.animator = nil;
+    
+    
 }
+
+- (void)dynamicAnimatorWillResume:(UIDynamicAnimator *)animator
+{
+    
+}
+
+
 
 #pragma mark - MOVE BUTTONS Methods
 
@@ -2698,7 +2580,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     buttonsAsSubView = [[newButtonView alloc] initWithFrame:subViewFrame];
     buttonsAsSubView.title = ((NewButtonsCollectionViewCell*)delCell).cellSubView.title;
     buttonsAsSubView.buttonColor = ((NewButtonsCollectionViewCell*)delCell).cellSubView.buttonColor;
-    buttonsAsSubView.design = self.design;
+    buttonsAsSubView.designObj = self.designObj;
     [self.buttonsCollection addSubview:buttonsAsSubView];
     delCell.alpha = 0.0;
 
@@ -2843,17 +2725,19 @@ static BOOL moveIsAvailable;
 {
     
     if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
+        //NSLog(@"buttonsCollectionHeight %f - ", self.buttonsCollection.bounds.size.height);
         if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
             buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
             [self newButtonsSize];
             
         } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
-            screenHeight = self.calcScreenHeightConstrain.constant;
+            //screenHeight = self.calcScreenHeightConstrain.constant;
             //need for iPad if changed screen height without changing buttonCollection width
             [self newButtonsSize];
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
         }
+        screenHeight = self.calcScreenHeightConstrain.constant;
     }
 }
 
@@ -3115,12 +2999,13 @@ static BOOL moveIsAvailable;
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Button" forIndexPath:indexPath];
     ((NewButtonsCollectionViewCell *)cell).delegate = (ButtonsCollectionView*)collectionView;
     ((NewButtonsCollectionViewCell *)cell).isIpadPortraitView = self.willBePortraitRotated;
+    ((NewButtonsCollectionViewCell *)cell).designObj = self.designObj;
     [((NewButtonsCollectionViewCell *)cell)removeFromSuperview];
     [collectionView insertSubview:((NewButtonsCollectionViewCell *)cell) atIndex:indexPath.item];
     
     if([cell isKindOfClass:[NewButtonsCollectionViewCell class]]){
         NSInteger item = indexPath.item;
-        ((NewButtonsCollectionViewCell*)cell).design = self.design;
+        ((NewButtonsCollectionViewCell*)cell).designObj = self.designObj;
         if(self.isButtonsCollectionUnderChanging){
            
              Buttons *button = [self.buttonsStore.allButtonObj objectAtIndex:item];
@@ -3213,7 +3098,7 @@ static BOOL moveIsAvailable;
         } else {
             NSString* nameFromModel = [self.buttonsStore.workButtonsNames objectAtIndex:item];
             ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
-            ((NewButtonsCollectionViewCell*)cell).design = self.design;
+            ((NewButtonsCollectionViewCell*)cell).designObj = self.designObj;
             
             //((NewButtonsCollectionViewCell*)cell).removeButton.hidden = YES;
             //((NewButtonsCollectionViewCell*)cell).closeAndSetButton.hidden = YES;
@@ -3243,23 +3128,24 @@ static BOOL moveIsAvailable;
 
 
 #pragma mark - UICollectionViewDelegateFlowLayout
+/*
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"buttonsWidth - %f, buttonsHeight - %f", buttonsWidth, buttonsHeight);
+    //NSLog(@"buttonsWidth - %f, buttonsHeight - %f", buttonsWidth, buttonsHeight);
 
-    NSLog(@"buttonsCollectionWidth - %f, buttonsCollectionHeight - %f", self.buttonsCollection.bounds.size.width, self.buttonsCollection.bounds.size.height);
+    //NSLog(@"buttonsCollectionWidth - %f, buttonsCollectionHeight - %f", self.buttonsCollection.bounds.size.width, self.buttonsCollection.bounds.size.height);
     
-    NSLog(@"displayWidth - %f, displayHeight - %f", self.displayContainer.bounds.size.width, self.displayContainer.bounds.size.height);
+    //NSLog(@"displayWidth - %f, displayHeight - %f", self.displayContainer.bounds.size.width, self.displayContainer.bounds.size.height);
     
-    NSLog(@"main.width - %f, main.height - %f", self.mainContainerView.bounds.size.width, self.mainContainerView.bounds.size.height);
+    //NSLog(@"main.width - %f, main.height - %f", self.mainContainerView.bounds.size.width, self.mainContainerView.bounds.size.height);
     
 
     
-    return  CGSizeMake(buttonsWidth, buttonsHeight);
+    //return  CGSizeMake(buttonsWidth, buttonsHeight);
 }
 
 
-/*
+
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
     UIEdgeInsets insets;
@@ -3634,7 +3520,7 @@ NSIndexPath *lastVisibleCellPatch;
     if([cell isKindOfClass:[HistroryTableViewCell class]]){
         
         ((HistroryTableViewCell*)cell).delegate = self;
-        ((HistroryTableViewCell*)cell).design = self.design;
+        ((HistroryTableViewCell*)cell).designObj = self.designObj;
         
         if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
             ((HistroryTableViewCell*)cell).isCanDrag = NO;
@@ -4327,7 +4213,7 @@ NSIndexPath *lastVisibleCellPatch;
             if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
                 NSString *lastSymbol = [strToShare substringWithRange:NSMakeRange(strToShare.length -1, 1)];
                 if([lastSymbol isEqualToString: @"="]){
-                    NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.display.attributedText.string attributes:self.attributes];
+                    NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.mainLabel.attributedText.string attributes:self.attributes];
                     [atrStrFromString insertAttributedString:result atIndex:atrStrFromString.length];
                 }
             }
@@ -4931,6 +4817,23 @@ NSIndexPath *lastVisibleCellPatch;
 #pragma mark VIEW_DID_LOAD
 - (void)viewDidLoad
 {
+    //USER DEFAULT
+    id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
+    if(userDefault && [self extractFromUserDefault:userDefault]){
+        
+    } else {
+        self.isBigDataBase = NO;
+        self.isBigSizeButtons = YES;//self.isBigSizeButtons = YES;
+        self.isSoundOn = YES;
+        //self.design = DESIGN_CLASSIC;
+        self.designObj = [[DesignObject alloc] initWithDesignIndex:DESIGN_CLASSIC forDelegator:self];
+        //self.designObj = [[DesignObject alloc] initWithDesignIndex:DESIGN_CLASSIC];
+        self.lastShowAllertViewDate = [NSDate date];
+        self.counterForShowingAllertView = 26;
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    }
+    
     ButtonsStore *buttonsStore = [[ButtonsStore alloc] init];
     buttonsStore.delegate = self;
 
@@ -5007,33 +4910,20 @@ NSIndexPath *lastVisibleCellPatch;
     self.moveButtonsPanGestureRecognizer.delegate = self;
     self.isThreadInWork = NO;
     
-    //USER DEFAULT
-    id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
-    if(userDefault && [self extractFromUserDefault:userDefault]){
-        
-    } else {
-        self.isBigDataBase = NO;
-        self.isBigSizeButtons = YES;//self.isBigSizeButtons = YES;
-        self.isSoundOn = YES;
-        self.design = DESIGN_CLASSIC;
-        self.lastShowAllertViewDate = [NSDate date];
-        self.counterForShowingAllertView = 26;
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
-    }
+    
 
     
     //key value iCloudStorage
     if([self extractKeyValuesFromStorage]){
-        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+        [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
         //[self showStringThruManageDocument];
     } else {
         [self.displayRam clearRam];//to key value
-        [self.display showString:[self.displayRam addSymbol:@0]];//to key value
+        [self.mainLabel showString:[self.displayRam addSymbol:@0]];//to key value
         
-        self.display.firstMemoryLabel.text = @"";//to key value
-        self.display.secondMemoryLabel.text = @"";//to key value
-        self.display.decRadLabel.text = @"DEG";//to key value
+        self.memoryOneLabel.text = @"";//to key value
+        self.memoryTwoLabel.text = @"";//to key value
+        self.decLabel.text = @"DEG";//to key value
         self.userIsInTheMidleOfEnteringNumber = YES;//to key value
         self.isProgramInProcess = NO;//to key value
         self.isStronglyArgu = NO;//to key value
@@ -5158,6 +5048,9 @@ NSIndexPath *lastVisibleCellPatch;
     
     //
     [self.buttonsCollection addObserver:self forKeyPath:@"bounds" options:0 context:nil];
+    
+    //INSERTED
+    self.howHistoryShowed = 0;
 }
 
 
@@ -5287,7 +5180,7 @@ CGFloat maxButtonsCollectionHeight;
         //for iphone alwais short size is width (as nonrotated)
         self.mainContainerWidth.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
         self.mainContainerHeight.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
-        NSLog(@"mainContainerHeight %f",self.mainContainerHeight.constant);
+        //NSLog(@"mainContainerHeight %f",self.mainContainerHeight.constant);
         if(self.showedController){
             self.showedController.containerWidthConstrain.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
             self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
@@ -5295,7 +5188,7 @@ CGFloat maxButtonsCollectionHeight;
         
         //set calc screen height
         self.calcScreenHeightConstrain.constant = self.mainContainerWidth.constant*IPHONE_SCREEN_VS_WIDTH_RATIO;
-        NSLog(@"calcScreenHeightConstrain %f",self.calcScreenHeightConstrain.constant);
+        //NSLog(@"calcScreenHeightConstrain %f",self.calcScreenHeightConstrain.constant);
         
         //if history table whole showed
         //how history showed can change from 1 to 0
@@ -5333,7 +5226,11 @@ CGFloat maxButtonsCollectionHeight;
     }
     
     //history table height
-    self.histroyTableHeightConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
+    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
+    
+    //NSLog(@"histroyTableHeightConstrain.constant %f",self.displayTopConstrain.constant);
+    
+   // self.buttonCollectionHeightconstrain.constant = self.mainContainerHeight.constant-self.calcScreenHeightConstrain.constant- self.histroyTableHeightConstrain.constant;
     
     
     //NSLog(@"%@", [UIDevice currentDevice].model);
@@ -5346,6 +5243,8 @@ CGFloat maxButtonsCollectionHeight;
         }
     }
 }
+
+
 
 #pragma mark updateKVStoreItems
 
@@ -5395,14 +5294,14 @@ CGFloat maxButtonsCollectionHeight;
     
     //[self extractKeyValuesFromStorage];
     if([self extractKeyValuesFromStorage]){
-        [self.display showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+        [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
     } else {
         [self.displayRam clearRam];//to key value
-        [self.display showString:[self.displayRam addSymbol:@0]];//to key value
+        [self.mainLabel showString:[self.displayRam addSymbol:@0]];//to key value
         
-        self.display.firstMemoryLabel.text = @"";//to key value
-        self.display.secondMemoryLabel.text = @"";//to key value
-        self.display.decRadLabel.text = @"DEG";//to key value
+        self.memoryOneLabel.text = @"";//to key value
+        self.memoryTwoLabel.text = @"";//to key value
+        self.decLabel.text = @"DEG";//to key value
         self.userIsInTheMidleOfEnteringNumber = YES;//to key value
         self.isProgramInProcess = NO;//to key value
         self.isStronglyArgu = NO;//to key value
@@ -5614,7 +5513,7 @@ CGFloat maxButtonsCollectionHeight;
 -(void) wholeViewReloadAfterdesignChanged
 {
     //[self initialLayoutDynamiccontainer];
-    self.display.alpha =  1;
+    self.labelsDisplayContainer.alpha =  1;
     self.settingsButton.alpha =0;
 
     if(IS_IPAD){
@@ -5702,7 +5601,10 @@ sourceController:(UIViewController *)source
             
         } else if ([key isEqualToString:@"ChangedDesign"]){
             NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
-            self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            self.designObj.designNumber = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            //IMPORTANT NEED TO RELOAD ALL VIEWS
+            [self.view setNeedsDisplay];
+            
         } else {
             NSLog(@"Not find right key");
         }
@@ -5717,7 +5619,9 @@ sourceController:(UIViewController *)source
     self.callShowController = NO;
     
     SettingsViewController *settingsController = [[SettingsViewController alloc] init];
+    
     //set all properties
+    settingsController.designObj = self.designObj;
     settingsController.isiCloudInUse = self.isiCloudInUse;;
     settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
     settingsController.isSoundOn = self.isSoundOn;
@@ -5725,7 +5629,7 @@ sourceController:(UIViewController *)source
     settingsController.isTrialPeriod = self.isTrialPeriod;
     settingsController.wasPurshaised = self.wasPurshaised;
     settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
-    settingsController.design = self.design;
+    settingsController.designObj = self.designObj;
 
     //settingsController.isTrialPeriod = self.isTrialPeriod;
     //settingsController.wasPurshaised = self.wasPurshaised;
@@ -5806,7 +5710,7 @@ sourceController:(UIViewController *)source
                 
                 NSString *lastSymbol = [atrStrFromString.string substringWithRange:NSMakeRange(atrStrFromString.string.length -1, 1)];
                 if([lastSymbol isEqualToString: @"="]){
-                    [atrStrFromString insertAttributedString:self.display.attributedText atIndex:atrStrFromString.length];
+                    [atrStrFromString insertAttributedString:self.mainLabel.attributedText atIndex:atrStrFromString.length];
                 }
             }
             
@@ -6148,9 +6052,9 @@ sourceController:(UIViewController *)source
                 //set the memory mark
                 NSArray* test = [top copy];
                 if([test count] > 0) {
-                    self.display.secondMemoryLabel.text = @"MI";
+                    self.memoryTwoLabel.text = @"MI";
                 } else {
-                    self.display.secondMemoryLabel.text = @"";
+                    self.memoryTwoLabel.text = @"";
                 }
                 [displayRamArray removeLastObject];
                 top = [displayRamArray lastObject];
@@ -6163,9 +6067,9 @@ sourceController:(UIViewController *)source
                 //set the memory mark
                 NSArray* test = [top copy];
                 if([test count] > 0) {
-                    self.display.firstMemoryLabel.text = @"M";
+                    self.memoryOneLabel.text = @"M";
                 } else {
-                    self.display.firstMemoryLabel.text = @"";
+                    self.memoryOneLabel.text = @"";
                 }
             
             } else {
@@ -6286,7 +6190,7 @@ sourceController:(UIViewController *)source
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];
-    [controllerArray addObject:[NSNumber numberWithInteger:self.design]];
+    [controllerArray addObject:[NSNumber numberWithInteger:self.designObj.designNumber]];
     [controllerArray addObject: self.currentProgrammVersion];
     [controllerArray addObject:[NSNumber numberWithInteger:self.counterForShowingAllertView]];
     
@@ -6338,7 +6242,8 @@ sourceController:(UIViewController *)source
             return NO;
         }
         if(top && [top isKindOfClass:[NSNumber class]]){
-            self.design = [top integerValue];
+            //self.designObj =[[DesignObject alloc] initWithDesignIndex:[top integerValue]];
+            self.designObj = [[DesignObject alloc] initWithDesignIndex:[top integerValue] forDelegator:self];
             [controllerArray removeLastObject];
             top = [controllerArray lastObject];
         } else {
@@ -6835,6 +6740,11 @@ sourceController:(UIViewController *)source
     
 }
 */
+#pragma mark DesignAtr delegate
+-(UIUserInterfaceSizeClass)currentInterfaceClassSize{
+    return self.view.traitCollection.horizontalSizeClass;
+}
+
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
 -(NSString *) point

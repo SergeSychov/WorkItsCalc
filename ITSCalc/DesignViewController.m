@@ -23,14 +23,14 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define INDENT 20.0f
 //define design numbers
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
+//#define DESIGN_CLASSIC 1
+//#define DESIGN_PAPER 2
+//#define DESIGN_COLOR_BLUE 30
+//#define DESIGN_COLOR_GREEN 31
+//#define DESIGN_COLOR_PINK 32
+//#define DESIGN_COLOR_YELOW 33
+//#define DESIGN_COLOR_GRAY 34
+//#define DESIGN_PHOTO 4
 
 @interface DesignViewController() <UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design
 
@@ -79,7 +79,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 #pragma mark SET NEW DESIGN
 -(void)sendNoteChangeDesign:(NSInteger)design
 {
-    self.design = design;
+    //self.design = design;
     NSNumber *message = [NSNumber numberWithInteger:design];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
     NSNotification *note = [[NSNotification alloc] initWithName:DesignSendChangedNotification object:nil userInfo:userInfo];
@@ -88,7 +88,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 
 -(void)trySetDesign:(NSInteger)design
 {
-    if(self.design != design){
+    if(self.designIndex != design){
         if(design == DESIGN_PHOTO){
             //check is there user photo in store
             NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -201,7 +201,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         NSString *key = keys[0];
         if([key isEqualToString:@"ChangedDesign"]){
             
-            self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            self.designIndex = [[notification.userInfo objectForKey:keys[0]] integerValue];
             
         }
         //NSLog(@"recived wrong notification");
@@ -290,7 +290,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         if([senderView isKindOfClass:[TestButtonBackGroundView class]]){
             design = ((TestButtonBackGroundView*)senderView).designIndex;
         } else if ([senderView isKindOfClass:[designButtonView class]]){
-            design = ((designButtonView*)senderView).design;
+            design = ((designButtonView*)senderView).designIndex;
         } else if([senderView isKindOfClass:[UIView class]]){
             design = ((UIView*)senderView).tag;
         }
@@ -369,7 +369,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     designButtonView *colorButtonView= [[designButtonView alloc] init];
     
     //IMPORTANT need to be according design
-    colorButtonView.design = DESIGN_COLOR_BLUE;
+    colorButtonView.designIndex = DESIGN_COLOR_BLUE;
     colorButtonView.backgroundColor = [UIColor clearColor];
     [self.cView addSubview:colorButtonView];
     self.colorButtonView = colorButtonView;
@@ -468,7 +468,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     self.addNewPhotoButton = addNewPhotoButton;
     [self.cView addSubview:addNewPhotoButton];
     
-    switch (self.design) {
+    switch (self.designIndex) {
         case DESIGN_CLASSIC:
             self.classicButton.isChoosed = YES;
             break;
@@ -540,14 +540,14 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     CGFloat origWidth;
     //nex two parts need be in setLayout in case of redrawing views
     self.classicButton.designIndex = DESIGN_CLASSIC;
-    self.classicButtonView.design = DESIGN_CLASSIC;
+    self.classicButtonView.designIndex = DESIGN_CLASSIC;
     self.classicPartView.tag = DESIGN_CLASSIC;
     
     self.paperButton.designIndex = DESIGN_PAPER;
-    self.paperButtonView.design = DESIGN_PAPER;
+    self.paperButtonView.designIndex = DESIGN_PAPER;
     self.paperPartView.tag = DESIGN_PAPER;
     
-    self.colorButtonView.design = DESIGN_COLOR_BLUE;
+    self.colorButtonView.designIndex = DESIGN_COLOR_BLUE;
     self.clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
     self.colorPinkButton.designIndex = DESIGN_COLOR_PINK;
     self.colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
@@ -555,10 +555,12 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     self.colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
     
     self.photoPartView.tag = DESIGN_PHOTO;
-    self.photoButtonView.design = DESIGN_PHOTO;
+    self.photoButtonView.designIndex = DESIGN_PHOTO;
     self.photButton.designIndex = DESIGN_PHOTO;
     
-    switch (self.design) {
+    
+    //IMPORTANT REPLY TWICE IN setNeedViews
+    switch (self.designIndex) {
         case DESIGN_CLASSIC:
             self.classicButton.isChoosed = YES;
             break;

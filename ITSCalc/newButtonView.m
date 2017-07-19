@@ -15,14 +15,6 @@
 #define ANGLE_OFFSET = (M_PI_4*0.1f)
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
 
 @interface newButtonView()
 @property (nonatomic,strong) NSArray *symbolsToMakeBigger;// = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=", nil];//, @"-"
@@ -69,132 +61,47 @@
 }
 
 //self.fotnWeight = UIFontWeightLight;
--(void) setDesign:(NSInteger)design
-{
-    _design = design;
-    switch (_design) {
-        case DESIGN_CLASSIC:
-            self.digitsColor = [Clr digitsButton];
-            self.cColor = [Clr cButton];
-            self.equalColor = [Clr equalButton];
-            self.mainColor = [Clr button];
-            self.fotnWeight = UIFontWeightLight;
-            self.borderVSRadius = 8.2;;
-            self.fillButton = NO;
-            
-            self.shadowColor = [UIColor clearColor];
-            self.shadowBlur = 0.;
-            self.shadowSize = CGSizeMake(0, 0);
-            break;
-        case DESIGN_PAPER:
-            self.digitsColor = [Clr paperButton];
-            self.cColor = [Clr paperC];
-            self.equalColor = [Clr paperEqual];
-            self.mainColor = [Clr paperButton];
-            self.fotnWeight = UIFontWeightMedium;
-            self.borderVSRadius = 8.2;;
-            self.fillButton = NO;
-            
-            self.shadowColor = [UIColor whiteColor];
-            self.shadowBlur = 0.5;
-            self.shadowSize = CGSizeMake(1, 1);
-            break;
-        case DESIGN_COLOR_BLUE:
-            self.digitsColor = [Clr blueDigits];
-            self.cColor = [Clr blueC];
-            self.equalColor = [Clr blueC];
-            self.mainColor = [Clr blueButton];
-            self.fotnWeight = UIFontWeightLight;
-            self.borderVSRadius = 8.2;
-            self.fillButton = YES;
+#pragma mark DESIGN PROPERTIES
+//set buttons design behaviours
+-(UIColor*)digitsColor{
+    return self.designObj.digitsColor;
+}
+-(UIColor*) cColor{
+    return self.designObj.cColor;
+}
+-(UIColor*)equalColor{
+    return self.designObj.equalColor;
+}
+-(UIColor*)mainColor{
+    return self.designObj.mainColor;
+}
+-(CGFloat)fotnWeight{
+    return self.designObj.fotnWeight;
+}
+-(CGFloat)borderVSRadius{
+    return self.designObj.borderVSRadius;
+}
+-(BOOL)fillButton{
+    return self.designObj.fillButton;
+}
+-(UIColor*)shadowColor{
+    return self.designObj.shadowColor;
+}
 
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 3.;
-            self.shadowSize = CGSizeMake(2, 2);
-            break;
-        case DESIGN_COLOR_GREEN:
-            self.digitsColor = [Clr greenDigits];
-            self.cColor = [Clr greenC];
-            self.equalColor = [Clr greenC];
-            self.mainColor = [Clr greenButton];
-            self.fotnWeight = UIFontWeightMedium;
-            self.borderVSRadius = 8.2;
-            self.fillButton = YES;
+-(CGFloat)shadowBlur{
+    return self.designObj.shadowBlur;
+}
+-(CGSize)shadowSize{
+    return self.designObj.shadowSize;
+}
 
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 3.;
-            self.shadowSize = CGSizeMake(2, 2);
-            break;
-        case DESIGN_COLOR_PINK:
-            self.digitsColor = [Clr pinkDigits];
-            self.cColor = [Clr pinkC];
-            self.equalColor = [Clr pinkC];
-            self.mainColor = [Clr pinkButton];
-            self.fotnWeight = UIFontWeightMedium;
-            self.borderVSRadius = 8.2;
-            self.fillButton = YES;
-
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 3.;
-            self.shadowSize = CGSizeMake(2, 2);
-            break;
-        case DESIGN_COLOR_YELOW:
-            self.digitsColor = [Clr yellowDigits];
-            self.cColor = [Clr yellowC];
-            self.equalColor = [Clr yellowC];
-            self.mainColor = [Clr yellowButton];
-            self.fotnWeight = UIFontWeightMedium;
-            self.borderVSRadius = 8.2;
-            self.fillButton = YES;
-
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 3.;
-            self.shadowSize = CGSizeMake(2, 2);
-            break;
-        case DESIGN_COLOR_GRAY:
-            self.digitsColor = [Clr grayDigits];
-            self.cColor = [Clr grayC];
-            self.equalColor = [Clr grayC];
-            self.mainColor = [Clr grayButton];
-            self.fotnWeight = UIFontWeightLight;
-            self.borderVSRadius = 8.2;
-            self.fillButton = YES;
-
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 3.;
-            self.shadowSize = CGSizeMake(2, 2);
-            break;
-        case DESIGN_PHOTO:
-            self.digitsColor = [UIColor whiteColor];
-            self.cColor = [UIColor whiteColor];
-            self.equalColor = [UIColor whiteColor];
-            self.mainColor = [UIColor whiteColor];
-            self.fotnWeight = UIFontWeightMedium;
-            self.borderVSRadius = 8.2;;
-            self.fillButton = NO;
-            
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlur = 8.2;
-            self.shadowSize = CGSizeMake(2, 2);
-
-            break;
-        default:
-            self.digitsColor = [Clr digitsButton];
-            self.cColor = [Clr cButton];
-            self.equalColor = [Clr equalButton];
-            self.mainColor = [Clr button];
-            self.fotnWeight = UIFontWeightLight;
-            self.borderVSRadius = 8.2;;
-            self.fillButton = NO;
-            
-            self.shadowColor = [UIColor clearColor];
-            self.shadowBlur = 0.;
-            self.shadowSize = CGSizeMake(0, 0);
-            break;
-    }
+-(void)setDesignObj:(DesignObject *)designObj{
+    _designObj = designObj;
     [self setButtonColorAccordingTitle:self.title];
     [self setNeedsDisplay];
 }
+
+
 -(void) setup
 {
     self.backgroundColor = [UIColor clearColor];
@@ -204,16 +111,16 @@
         self.radiusCorner =(self.frame.size.height-4)/ 2.8;
     }
     
-    self.digitsColor = [Clr digitsButton];
-    self.cColor = [Clr cButton];
-    self.equalColor = [Clr equalButton];
-    self.mainColor = [Clr button];
-    self.fotnWeight = UIFontWeightLight;
-    self.borderVSRadius = 8.2;
-    self.fillButton = NO;
-    self.shadowColor = [UIColor clearColor];
-    self.shadowBlur = 0.;
-    self.shadowSize = CGSizeMake(0, 0);
+    //self.digitsColor = [Clr digitsButton];
+    //self.cColor = [Clr cButton];
+    //self.equalColor = [Clr equalButton];
+    //self.mainColor = [Clr button];
+    //self.fotnWeight = UIFontWeightLight;
+    //self.borderVSRadius = 8.2;
+    //self.fillButton = NO;
+    //self.shadowColor = [UIColor clearColor];
+    //self.shadowBlur = 0.;
+    //self.shadowSize = CGSizeMake(0, 0);
 
     self.isOnsuperView = NO;
     self.symbolsToMakeBigger = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=",@"-"/*,@"∓"*/, nil];//, @"-"
@@ -367,14 +274,14 @@
     
     neededRect.origin.y = (rect.size.height - neededRect.size.height)/2;
     neededRect.origin.x = (rect.size.width - neededRect.size.width) /2+0.5;
-    if(self.design  == DESIGN_COLOR_BLUE || self.design == DESIGN_COLOR_GRAY || self.design == DESIGN_COLOR_GREEN || self.design ==DESIGN_COLOR_PINK || self.design == DESIGN_COLOR_YELOW){
+    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN || self.designObj.designNumber ==DESIGN_COLOR_PINK || self.designObj.designNumber == DESIGN_COLOR_YELOW){
         CGContextSetShadowWithColor(context, CGSizeMake(-1., -1.), 1,[UIColor colorWithWhite:0 alpha:0.3].CGColor);
     }
 
     //setColor ofAttributed string
     NSMutableAttributedString *mutAtrStr = [self.attrbutedTitle mutableCopy];
     UIColor *textColor;
-    if(self.design == DESIGN_PAPER){
+    if(self.designObj.designNumber == DESIGN_PAPER){
         textColor = self.buttonColor;
     } else {
         textColor = [UIColor colorWithWhite:1. alpha:1];

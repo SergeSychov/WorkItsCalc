@@ -32,15 +32,6 @@
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 #define INDENT 20.0f
 
-//define design numbers
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
 
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
@@ -141,7 +132,8 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
         NSString *key = keys[0];
         if([key isEqualToString:@"ChangedDesign"]){
             
-            self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            //self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
+            [self.view setNeedsDisplay];
             
         }
         //NSLog(@"recived wrong notification");
@@ -153,7 +145,7 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 
 -(void)sendNoteChangeDesign:(NSInteger)design
 {
-    self.design = design;
+    //self.design = design;
     NSNumber *message = [NSNumber numberWithInteger:design];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
     NSNotification *note = [[NSNotification alloc] initWithName:SettingReciveChangedNotification object:nil userInfo:userInfo];
@@ -161,7 +153,7 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 }
 -(void)trySetDesign:(NSInteger)design
 {
-    if(self.design != design){
+    if(self.designObj.designNumber != design){
         if(design == DESIGN_PHOTO){
             //check is there user photo in store
             NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -271,9 +263,8 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     DesignViewController *designViewController = [[DesignViewController alloc] init];
     designViewController.delegate = self;
     designViewController.transitioningDelegate = self;
-    designViewController.design = self.design;
+    designViewController.designObj = self.designObj;
     self.designViewController = designViewController;
-    //self.designViewController.transitioningDelegate=self;
     
     [self presentViewController:self.designViewController animated:YES completion:nil];
     
@@ -506,7 +497,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         if([senderView isKindOfClass:[TestButtonBackGroundView class]]){
             design = ((TestButtonBackGroundView*)senderView).designIndex;
         } else if ([senderView isKindOfClass:[designButtonView class]]){
-            design = ((designButtonView*)senderView).design;
+            design = ((designButtonView*)senderView).designIndex;
         } else if([senderView isKindOfClass:[UIView class]]){
             design = ((UIView*)senderView).tag;
         }
@@ -740,7 +731,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             designButtonView *colorButtonView= [[designButtonView alloc] init];
             
             //IMPORTANT need to be according design
-            colorButtonView.design = DESIGN_COLOR_BLUE;
+            colorButtonView.designIndex = DESIGN_COLOR_BLUE;
             colorButtonView.backgroundColor = [UIColor clearColor];
             [self.cView addSubview:colorButtonView];
             self.colorButtonView = colorButtonView;
@@ -833,7 +824,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             self.addNewPhotoButton = addNewPhotoButton;
             [self.cView addSubview:addNewPhotoButton];
             
-            switch (self.design) {
+            switch (self.designObj.designNumber) {
                 case DESIGN_CLASSIC:
                     self.classicButton.isChoosed = YES;
                     break;
@@ -1123,14 +1114,14 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             CGFloat origHeight;
             //nex two parts need be in setLayout in case of redrawing views
             self.classicButton.designIndex = DESIGN_CLASSIC;
-            self.classicButtonView.design = DESIGN_CLASSIC;
+            self.classicButtonView.designIndex = DESIGN_CLASSIC;
             self.classicPartView.tag = DESIGN_CLASSIC;
             
             self.paperButton.designIndex = DESIGN_PAPER;
-            self.paperButtonView.design = DESIGN_PAPER;
+            self.paperButtonView.designIndex = DESIGN_PAPER;
             self.paperPartView.tag = DESIGN_PAPER;
             
-            self.colorButtonView.design = DESIGN_COLOR_BLUE;
+            self.colorButtonView.designIndex = DESIGN_COLOR_BLUE;
             self.clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
             self.colorPinkButton.designIndex = DESIGN_COLOR_PINK;
             self.colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
@@ -1138,10 +1129,10 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             self.colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
             
             self.photoPartView.tag = DESIGN_PHOTO;
-            self.photoButtonView.design = DESIGN_PHOTO;
+            self.photoButtonView.designIndex = DESIGN_PHOTO;
             self.photButton.designIndex = DESIGN_PHOTO;
             
-            switch (self.design) {
+            switch (self.designObj.designNumber) {
                 case DESIGN_CLASSIC:
                     self.classicButton.isChoosed = YES;
                     break;

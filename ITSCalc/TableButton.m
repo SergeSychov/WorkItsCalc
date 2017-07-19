@@ -1,22 +1,20 @@
 //
-//  recBut.m
-//  ITSCalc
+//  TableButton.m
+//  CalcLayout
 //
-//  Created by Serge Sychov on 16.11.14.
-//  Copyright (c) 2014 Sergey Sychov. All rights reserved.
+//  Created by Serge Sychov on 30.05.17.
+//  Copyright © 2017 Serge Sychov. All rights reserved.
 //
 
-#import "recBut.h"
+#import "TableButton.h"
+@interface TableButton()
 
-@interface recBut()
 @property (nonatomic,strong) UIColor* storkeColor;
 @property (nonatomic,strong) UIColor *normalColor;
 @property (nonatomic,strong) UIColor *touchedColor;
 
 @end
-
-@implementation recBut
-
+@implementation TableButton
 
 -(UIColor*)shadowColor{
     if(!_shadowColor){
@@ -75,49 +73,47 @@
     return _storkeColor;
 }
 
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
     // Drawing code
     
-    //defend center
-    CGPoint center = CGPointMake(rect.size.width/2, rect.size.height/2);
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
+  
+
     UIBezierPath *patch = [UIBezierPath bezierPath];
-    
     CGPathRef pathOfRect;
-    /*
-     CGFloat width;
-     if(rect.size.width > rect.size.height){
-     width = rect.size.width;
-     } else {
-     width = rect.size.height;
-     }
-     */
-    //start positoin
     
-    [patch addArcWithCenter:center
-                     radius:rect.size.width/4
-                 startAngle:0
-                   endAngle:-M_PI*3/2
-                  clockwise:NO];
-    //make arrow
-    [patch moveToPoint:CGPointMake(center.x - 1.5*rect.size.width/20, center.y + rect.size.width/4 - 1.5*rect.size.width/20)];
-    [patch addLineToPoint:CGPointMake(center.x,center.y + rect.size.width/4)];
-    [patch addLineToPoint:CGPointMake(center.x - 1.5*rect.size.width/20, center.y + rect.size.width/4 + 1.5*rect.size.width/20)];
-    //make equal sign
-    [patch moveToPoint:CGPointMake(center.x - 2*rect.size.width/20, center.y - rect.size.width/20)];
-    [patch addLineToPoint:CGPointMake(center.x + 2*rect.size.width/20, center.y - rect.size.width/20)];
+    CGFloat widthStep = rect.size.width/5;
+    CGFloat rad = widthStep/4;
+    CGPoint center = CGPointMake(rect.size.width/2-rad, rect.size.height/2+rad);
     
-    [patch moveToPoint:CGPointMake(center.x - 2*rect.size.width/20, center.y + rect.size.width/20)];
-    [patch addLineToPoint:CGPointMake(center.x + 2*rect.size.width/20, center.y + rect.size.width/20)];
+    //inside rect as 2/3
+    CGRect iRct = CGRectMake(rect.size.width/6, rect.size.height/6, rect.size.width*2/3, rect.size.height*2/3);
+
+    //Draw axises
+    CGFloat width_4 = iRct.size.width/2;
+    
+    
+    [patch moveToPoint:CGPointMake(center.x, center.y - 1.5*widthStep)];
+    [patch addLineToPoint:CGPointMake(center.x, center.y + widthStep)];
+    
+    CGFloat height_5 = iRct.size.height/6;
+    [patch moveToPoint:CGPointMake(center.x-1.5*widthStep, center.y+height_5)];
+    [patch addLineToPoint:CGPointMake(center.x+1.5*widthStep, center.y+height_5)];
+    
+
+    [patch moveToPoint:CGPointMake(center.x-1.5*widthStep, center.y-height_5)];
+    [patch addLineToPoint:CGPointMake(center.x+1.5*widthStep, center.y-height_5)];
     
     CGContextSetLineWidth(context, rect.size.width/35);
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
     
-    UIColor *color;
+    UIColor *color =  [UIColor colorWithRed:0. green:0. blue:0. alpha:1.0]; ;
     if(self.state == UIControlStateNormal){
         color = self.tintColor;
         
@@ -126,16 +122,16 @@
     }
     CGContextSetStrokeColorWithColor(context, color.CGColor);
     
-    
-    
     pathOfRect = patch.CGPath;
-    
-    
     CGContextAddPath(context, pathOfRect);
+
     CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
     
-}
+    CGContextSetTextDrawingMode(context, kCGTextFill);
+    [@"X" drawAtPoint:CGPointMake(center.x-1.1*widthStep, center.y-width_4-0.2*widthStep) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:widthStep], NSForegroundColorAttributeName:color}];
+    [@"Y" drawAtPoint:CGPointMake(center.x+0.4*widthStep, center.y-width_4-0.2*widthStep) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:widthStep], NSForegroundColorAttributeName: color}];
 
+}
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "SecondViewController.h"
+#import "DesignObject.h"
 
 
 @class DesignViewController;
@@ -18,6 +19,8 @@
 
 @interface DesignViewController : SecondViewController
 @property (nonatomic,weak) id <DesignViewControllerProtocol> delegate;
-@property (nonatomic) NSInteger design;
+
+@property (nonatomic, weak) DesignObject* designObj;
+@property (nonatomic) NSInteger designIndex;
 
 @end

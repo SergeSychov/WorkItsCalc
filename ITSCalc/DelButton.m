@@ -31,7 +31,7 @@
     CGPathRef pathOfRect;
     CGPoint center = CGPointMake(rect.size.width/2, rect.size.height/2);
     CGFloat width = rect.size.width/6;
-
+    
     CGPoint pointOne = CGPointMake(center.x+width, center.y-width);
     CGPoint pointTwo = CGPointMake(center.x-width, center.y+width);
     CGPoint pointThree = CGPointMake(center.x-width, center.y-width);
@@ -46,13 +46,15 @@
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-    if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
-    }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
-    }
     
+    UIColor *color;
+    if(self.state == UIControlStateNormal){
+        color = self.tintColor;
+        
+    }else if (self.state == UIControlStateDisabled){
+        color = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    }
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
     
     
     pathOfRect = patch.CGPath;

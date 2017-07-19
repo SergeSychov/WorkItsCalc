@@ -8,18 +8,8 @@
 
 #import "designButtonView.h"
 #import "Clr.h"
+#import "DesignObject.h"
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-
-//define design string
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
 
 @interface designButtonView()
 @property (nonatomic,weak) UILabel *titleLabel;
@@ -39,155 +29,21 @@
 @end
 
 @implementation designButtonView
--(void) setDesign:(NSInteger)design
-{
-    _design = design;
-    if(IS_IPAD){
-        self.titleFont = [UIFont systemFontOfSize:18];
-    } else {
-        self.titleFont = [UIFont systemFontOfSize:20];
-    }
-    switch (self.design) {
-        case DESIGN_CLASSIC:
-            self.title = @"классический";
-            self.borderColor = [Clr digitsButton];
-            self.bodyColor = [UIColor clearColor];
+-(void) setDesignIndex:(NSInteger)designIndex{
+    _designIndex = designIndex;
+    
+    self.title = [DesignObject titleButtonForDesign:designIndex];
+    self.titleFont = [DesignObject titleFontForDesing:designIndex];
+    self.borderColor = [DesignObject borderColorForDesing:designIndex];
+    self.bodyColor = [DesignObject bodyColorForDesing:designIndex];
+    self.titleColor = [DesignObject titleColorForDesing:designIndex];
+    self.borderVsRadius = [DesignObject borderVsRadiusForDesing:designIndex];
+    self.shadowOpacity = [DesignObject shadowOpacityForDesing:designIndex];
+    self.shadowBlur = [DesignObject shadowBlurForDesing:designIndex];
+    self.shadowColor = [DesignObject shadowColorForDesing:designIndex];
+    self.shadowOffset = [DesignObject shadowOffsetForDesing:designIndex];
+    
 
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0;
-            self.shadowBlur = 0;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
-            self.shadowOffset = CGSizeMake(0, 0);
-            break;
-            
-        case DESIGN_PAPER:
-            self.title = @"бумажный";
-            self.borderColor = [UIColor darkTextColor];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor darkTextColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 1;
-            self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor colorWithWhite:1 alpha:1.];
-            self.shadowOffset = CGSizeMake(1, 1);
-            break;
-            
-        case DESIGN_COLOR_BLUE:
-            self.title = @"цветной";
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr blueButton];
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_GREEN:
-            self.title = @"цветной";
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr greenButton];
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_YELOW:
-            self.title = @"цветной";
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr yellowButton];
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_PINK:
-            self.title = @"цветной";
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor =[Clr pinkButton];
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_GRAY:
-            self.title = @"цветной";
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr grayButton];
-            self.titleColor = [UIColor whiteColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_PHOTO:
-            self.title = @"фото";
-            self.borderColor = [UIColor whiteColor];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor whiteColor];
-            
-            if(IS_IPAD){
-                self.titleFont = [UIFont boldSystemFontOfSize:18];
-            } else {
-                self.titleFont = [UIFont boldSystemFontOfSize:20];
-            }
-            self.borderVsRadius = 6.2;
-            
-            self.shadowOpacity = 0.5;
-            self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowOffset = CGSizeMake(1, 1);
-            break;
-            
-        default:
-            self.title =@"NO DESIGN";
-            self.borderColor = [UIColor lightGrayColor];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor lightGrayColor];
-            
-            //self.titleFont = [UIFont systemFontOfSize:20];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0;
-            self.shadowBlur = 0;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
-            self.shadowOffset = CGSizeMake(0, 0);
-            break;
-    }
     [self setNeedsDisplay];
 }
 
@@ -274,7 +130,7 @@
 
     CGRect labelRect = CGRectInset(rect, rect.size.height/5, rect.size.height/5);
     [self.titleLabel setFrame:labelRect];
-    if(self.design ==DESIGN_PHOTO || self.design == DESIGN_PAPER){
+    if(self.designIndex ==DESIGN_PHOTO || self.designIndex == DESIGN_PAPER){
         self.titleLabel.shadowColor = self.shadowColor;
         self.titleLabel.shadowOffset = self.shadowOffset;
     }

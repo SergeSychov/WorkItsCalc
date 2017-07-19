@@ -8,7 +8,15 @@
 
 #import "SettingButton.h"
 
+@interface SettingButton ()
+@property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor *normalColor;
+@property (nonatomic,strong) UIColor *touchedColor;
+
+@end
+
 @implementation SettingButton
+
 
 
 -(UIColor*)shadowColor{
@@ -19,6 +27,56 @@
     }
     return _shadowColor;
 }
+
+-(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    
+    self.storkeColor = self.touchedColor;
+    [self setNeedsDisplay];
+    return [super beginTrackingWithTouch:touch withEvent:event];
+    
+}
+-(void) endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+    self.storkeColor = self.normalColor;
+    [self setNeedsDisplay];
+    [super endTrackingWithTouch:touch
+                      withEvent:event];
+}
+
+
+-(UIColor*) normalColor{
+    
+    if(self.state != UIControlStateDisabled){
+        _normalColor = self.currentTitleColor;
+    } else {
+        _normalColor = [UIColor darkGrayColor];
+    }
+    return _normalColor;
+}
+
+-(UIColor*) touchedColor{
+    if(self.state == UIControlStateNormal){
+        if(!_touchedColor){
+            _touchedColor = [UIColor colorWithWhite:0.95 alpha:1];
+        }
+    } else {
+        _touchedColor = [UIColor greenColor];
+    }
+    return _touchedColor;
+    
+}
+-(UIColor*) storkeColor
+{
+    
+    if(!_storkeColor){
+        _storkeColor = self.normalColor;
+    }
+    
+    return _storkeColor;
+}
+
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -57,13 +115,13 @@
     [patch moveToPoint:pointOne];
     [patch addLineToPoint:pointTwo];
     //first arc
-   
+    
     [patch addArcWithCenter:CGPointMake((pointTwo.x + pointThree.x)/2 , (pointTwo.y + pointThree.y)/2)
                      radius:rad*sin(M_PI/12)
                  startAngle:(M_PI- M_PI/6)
                    endAngle:(M_PI/6)
                   clockwise:NO];
-  
+    
     //[patch moveToPoint:pointThree];
     
     
@@ -84,11 +142,11 @@
                  startAngle:(-M_PI/6)
                    endAngle:(M_PI -M_PI/6)
                   clockwise:NO];
-   
+    
     //[patch moveToPoint:pointSeven];
     
     [patch addLineToPoint:pointEight];
-  
+    
     [patch addArcWithCenter:CGPointMake((pointEight.x + pointNine.x)/2 , (pointEight.y + pointNine.y)/2)
                      radius:rad*sin(M_PI/12)
                  startAngle:(-M_PI/6)
@@ -98,7 +156,7 @@
     //[patch moveToPoint:pointNine];
     
     [patch addLineToPoint:pointTen];
-   
+    
     [patch addArcWithCenter:CGPointMake((pointTen.x + pointEleven.x)/2 , (pointTen.y + pointEleven.y)/2)
                      radius:rad*sin(M_PI/12)
                  startAngle:(M_PI_2)
@@ -116,19 +174,21 @@
                    endAngle:(-M_PI/6)
                   clockwise:NO];
     
-   // [patch moveToPoint:pointOne];
+    // [patch moveToPoint:pointOne];
     
     
     CGContextSetLineWidth(context, rect.size.width/35);
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
+    UIColor *color;
     if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
+        color = self.tintColor;
+        
     }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
+        color = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
     }
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
     
     
     
@@ -138,7 +198,7 @@
     CGContextAddPath(context, pathOfRect);
     CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
-
+    
 }
 
 

@@ -1,23 +1,20 @@
 //
-//  ShareButton.m
-//  ITSCalc
+//  GraphButton.m
+//  CalcLayout
 //
-//  Created by Serge Sychov on 23.11.14.
-//  Copyright (c) 2014 Sergey Sychov. All rights reserved.
+//  Created by Serge Sychov on 30.05.17.
+//  Copyright © 2017 Serge Sychov. All rights reserved.
 //
 
-#import "ShareButton.h"
-
-@interface ShareButton()
+#import "GraphButton.h"
+@interface GraphButton()
 
 @property (nonatomic,strong) UIColor* storkeColor;
 @property (nonatomic,strong) UIColor *normalColor;
 @property (nonatomic,strong) UIColor *touchedColor;
 
 @end
-
-@implementation ShareButton
-
+@implementation GraphButton
 
 -(UIColor*)shadowColor{
     if(!_shadowColor){
@@ -76,7 +73,9 @@
     return _storkeColor;
 }
 
-
+-(CGFloat) func:(CGFloat)arg{
+    return powf(arg,0.5)/2;//*cosf(arg);
+}
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -86,78 +85,80 @@
     UIBezierPath *patch = [UIBezierPath bezierPath];
     CGPathRef pathOfRect;
     
-    //defend center
     CGFloat width_2 = rect.size.width/5;
     CGFloat rad = width_2/4;
-    CGPoint center = CGPointMake(rect.size.width/2, rect.size.height/2+rad);
+    CGPoint center = CGPointMake(rect.size.width/2-rad, rect.size.height/2+rad);
     
-    CGPoint startPoint = CGPointMake(center.x+2*rad, center.y-width_2);
-    CGPoint endPoint = CGPointMake(center.x-2*rad, center.y-width_2);
+    //inside rect as 2/3
+    CGRect iRct = CGRectMake(rect.size.width/6, rect.size.height/6, rect.size.width*2/3, rect.size.height*2/3);
+    CGFloat x0 = rect.size.width/6-rad;
+    CGFloat y0 = center.y-1.8*width_2;//rect.size.height/6+rad;
+
+    CGFloat heighD = rad*2/3;
+    //Draw axises
+    CGFloat width_4 = iRct.size.width/2;
+
     
-    CGPoint pointOne = CGPointMake(center.x-width_2, center.y-width_2+rad);
-    CGPoint pointTwo = CGPointMake(center.x+width_2-rad, center.y-width_2);
-    CGPoint pointThree = CGPointMake(center.x+width_2, center.y+width_2-rad);
-    CGPoint pointFour = CGPointMake(center.x-width_2+rad, center.y+width_2);
+    [patch moveToPoint:CGPointMake(x0+width_4, y0)];
+    [patch addLineToPoint:CGPointMake(x0+width_4, y0+iRct.size.height-2*rad)];
+    CGFloat height_4 = iRct.size.height/2;
+    [patch moveToPoint:CGPointMake(x0+2*rad, y0+height_4)];
+    [patch addLineToPoint:CGPointMake(center.x+1.8*width_2, y0+height_4)];
     
-    CGPoint centerOne = CGPointMake(center.x+width_2-rad, center.y-width_2+rad);
-    CGPoint centerTwo = CGPointMake(center.x+width_2-rad, center.y+width_2-rad);
-    CGPoint centerThree = CGPointMake(center.x-width_2+rad, center.y+width_2-rad);
-    CGPoint centerFour = CGPointMake(center.x-width_2+rad, center.y-width_2+rad);
+    //Draw axis's arrows
+
+    //Y arrow
+    [patch moveToPoint:CGPointMake(x0+width_4-1.5*rad, y0+1.5*rad)];
+    [patch addLineToPoint:CGPointMake(x0+width_4, y0)];
+    [patch addLineToPoint:CGPointMake(x0+width_4+1.5*rad, y0+1.5*rad)];
+    //X arrow
+    [patch moveToPoint:CGPointMake(center.x+1.8*width_2-1.5*rad, y0+height_4-1.5*rad)];
+    [patch addLineToPoint:CGPointMake(center.x+1.8*width_2,y0+height_4)];
+    [patch addLineToPoint:CGPointMake(center.x+1.8*width_2-1.5*rad, y0+height_4+1.5*rad)];
+
+
+    //draw graph
     
     
-    //draw rect
+    CGPoint startPoint = CGPointMake(center.x+width_2, center.y-width_2-heighD);
+    CGPoint endPoint = CGPointMake(center.x, center.y-width_2-heighD);
+    
+    CGPoint pointOne = CGPointMake(center.x+width_2, center.y+width_2-3*rad-heighD);
+    CGPoint pointTwo = CGPointMake(center.x, center.y+width_2-heighD);
+    CGPoint pointThree = CGPointMake(center.x-width_2, center.y+width_2-heighD);
+    CGPoint pointFour = CGPointMake(center.x-width_2, center.y-width_2+3*rad-heighD);
+
+    CGPoint centerOne = CGPointMake(center.x+width_2-3*rad, center.y+width_2-3*rad-heighD);
+    CGPoint centerTwo = CGPointMake(center.x-width_2+3*rad, center.y-width_2+3*rad-heighD);
+
+    //draw graph
+
     [patch moveToPoint:startPoint];
-    [patch addLineToPoint:pointTwo];
+    [patch addLineToPoint:pointOne];
     [patch addArcWithCenter:centerOne
-                     radius:rad
-                 startAngle:-M_PI_2
-                   endAngle:0
-                  clockwise:YES];
-    
-    [patch addLineToPoint:pointThree];
-    [patch addArcWithCenter:centerTwo
-                     radius:rad
+                     radius:3*rad
                  startAngle:0
                    endAngle:M_PI_2
                   clockwise:YES];
     
-    [patch addLineToPoint:pointFour];
-    [patch addArcWithCenter:centerThree
-                     radius:rad
-                 startAngle:M_PI_2
-                   endAngle:2*M_PI_2
-                  clockwise:YES];
+    [patch addLineToPoint:pointTwo];
     
-    [patch addLineToPoint:pointOne];
-    [patch addArcWithCenter:centerFour
-                     radius:rad
+    [patch moveToPoint:pointThree];
+    
+    [patch addLineToPoint:pointFour];
+    [patch addArcWithCenter:centerTwo
+                     radius:3*rad
                  startAngle:M_PI
                    endAngle:-M_PI_2
                   clockwise:YES];
     
     [patch addLineToPoint:endPoint];
-    
-    
-    //make arrow
-    
-    //points for arrow
-    CGPoint arrowStart = CGPointMake(center.x, center.y-width_2/2);
-    CGPoint arrowOne = CGPointMake(center.x-1.5*rad, center.y-1.8*width_2+1.5*rad);
-    CGPoint arrowTwo = CGPointMake(center.x, center.y-1.8*width_2);
-    CGPoint arrowThree = CGPointMake(center.x+1.5*rad, center.y-1.8*width_2+1.5*rad);
-    
-    [patch moveToPoint:arrowStart];
-    [patch addLineToPoint:arrowTwo];
-    [patch moveToPoint:arrowOne];
-    [patch addLineToPoint:arrowTwo];
-    [patch addLineToPoint:arrowThree];
-    
-    
+
     CGContextSetLineWidth(context, rect.size.width/35);
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-    
+
     UIColor *color;
     if(self.state == UIControlStateNormal){
         color = self.tintColor;
@@ -173,7 +174,6 @@
     CGContextAddPath(context, pathOfRect);
     CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
-    
 }
 
 @end

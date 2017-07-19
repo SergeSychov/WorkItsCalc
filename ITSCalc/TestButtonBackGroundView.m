@@ -15,18 +15,6 @@
 
 #define INDENT 20.
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-
-//define design string
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
-
 NSString *const TestButtonReciveChangedNotification=@"SendChangedNotification";
 
 @interface TestButtonBackGroundView()
@@ -131,122 +119,15 @@ NSString *const TestButtonReciveChangedNotification=@"SendChangedNotification";
 -(void) setDesignIndex:(NSInteger)designIndex
 {
     _designIndex = designIndex;
-    switch (self.designIndex) {
-        case DESIGN_CLASSIC:
-            self.borderColor = [Clr digitsButton];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = YES;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0;
-            self.shadowBlur = 0;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
-            self.shadowOffset = CGSizeMake(0, 0);
-            break;
-            
-        case DESIGN_PAPER:
-            self.borderColor = [UIColor darkTextColor];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor darkTextColor];
-            self.titleShadow = YES;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 1;
-            self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor colorWithWhite:1 alpha:1.];
-            self.shadowOffset = CGSizeMake(1, 1);
-            break;
-            
-        case DESIGN_COLOR_BLUE:
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr blueButton];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = NO;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_GREEN:
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr greenButton];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = NO;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_YELOW:
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr yellowButton];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = NO;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_PINK:
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr pinkButton];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = NO;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_COLOR_GRAY:
-            self.borderColor = [UIColor clearColor];
-            self.bodyColor = [Clr grayButton];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = NO;
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0.3;
-            self.shadowBlur = 6;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
-            self.shadowOffset = CGSizeMake(3, 3);
-            break;
-            
-        case DESIGN_PHOTO:
-            self.borderColor = [UIColor whiteColor];
-            self.bodyColor = [UIColor clearColor];
-            self.titleColor = [UIColor whiteColor];
-            self.titleShadow = YES;
-            self.borderVsRadius = 6.2;
-            
-            self.shadowOpacity = 0.5;
-            self.shadowBlur = 0.5;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowOffset = CGSizeMake(1, 1);
-            break;
-            
-        default:
-            self.borderColor = [UIColor lightGrayColor];
-            self.bodyColor = [UIColor clearColor];
-            self.borderVsRadius = 12.2;
-            
-            self.shadowOpacity = 0;
-            self.shadowBlur = 0;
-            self.shadowColor = [UIColor colorWithWhite:0 alpha:0];
-            self.shadowOffset = CGSizeMake(0, 0);
-            break;
-    }
+    self.borderColor = [DesignObject borderColorForDesing:designIndex];
+    self.bodyColor = [DesignObject bodyColorForDesing:designIndex];
+    self.titleColor = [DesignObject titleColorForDesing:designIndex];
+    self.titleShadow = [DesignObject titleShadowForDesign:designIndex];
+    self.borderVsRadius = [DesignObject borderVsRadiusForDesing:designIndex];
+    self.shadowOpacity = [DesignObject shadowOpacityForDesing:designIndex];
+    self.shadowBlur = [DesignObject shadowBlurForDesing:designIndex];
+    self.shadowColor = [DesignObject shadowColorForDesing:designIndex];
+    self.shadowOffset = [DesignObject shadowOffsetForDesing:designIndex];
     
 }
 

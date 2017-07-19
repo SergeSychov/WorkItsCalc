@@ -48,14 +48,14 @@
     
     //draw rect
     /*
-    [patch moveToPoint:startPoint];
-    [patch addLineToPoint:pointTwo];
-    [patch addArcWithCenter:centerOne
-                     radius:rad
-                 startAngle:-M_PI_2
-                   endAngle:0
-                  clockwise:YES];
-    */
+     [patch moveToPoint:startPoint];
+     [patch addLineToPoint:pointTwo];
+     [patch addArcWithCenter:centerOne
+     radius:rad
+     startAngle:-M_PI_2
+     endAngle:0
+     clockwise:YES];
+     */
     [patch moveToPoint:startPoint];
     [patch addLineToPoint:pointThree];
     [patch addArcWithCenter:centerTwo
@@ -112,14 +112,15 @@
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
+    
+    UIColor *color;
     if(self.state == UIControlStateNormal){
-        UIColor *color = self.tintColor;
-        CGContextSetStrokeColorWithColor(context, color.CGColor);
+        color = self.tintColor;
+        
     }else if (self.state == UIControlStateDisabled){
-        CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
-    }else if (self.state == UIControlStateHighlighted){
-        CGContextSetRGBStrokeColor(context, 0.5, 0.5, 0.5, 1.0);
+        color = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
     }
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
     
     
     

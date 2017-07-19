@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "newButtonView.h"
 #import "CloseSetButton.h"
+#import "DesignObject.h"
 
 @class NewButtonsCollectionViewCell;
 
@@ -25,7 +26,8 @@
 
 @interface NewButtonsCollectionViewCell : UICollectionViewCell //<SetingCellFrameDelegate>
 
-@property (nonatomic) NSInteger design;
+@property (nonatomic, weak) DesignObject* designObj;
+//@property (nonatomic) NSInteger design;
 @property (strong, nonatomic) CloseSetButton *closeAndSetButton;
 @property (strong, nonatomic) CloseSetButton *removeButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;

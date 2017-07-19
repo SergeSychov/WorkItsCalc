@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DesignObject.h"
 @class HistroryTableViewCell;
 
 @protocol HistoryTableViewCellDelegate <NSObject>
@@ -24,7 +25,9 @@
 @property (nonatomic,strong) NSString *historyExchangeCurrencyString;
 @property (nonatomic) BOOL isCanDrag; //can't drag last cell also set changeble uitextview
 @property (nonatomic, strong) UITextView *programTextView;
-@property (nonatomic) NSInteger design;
+
+@property (nonatomic, weak) DesignObject* designObj;
+//@property (nonatomic) NSInteger design;
 
 //thi property allow user recount history sell / alow apeasr recount button
 //@property (nonatomic) BOOL wasPurhased;
