@@ -106,7 +106,7 @@
 
 #define IPHONE_RATIO_BUTTONS_VIEW 1.33
 #define IPAD_RAIO_BUTTONS_VIEW 1.3
-#define IPHONE_SCREEN_VS_WIDTH_RATIO 0.21
+#define IPHONE_SCREEN_VS_WIDTH_RATIO 0.25
 #define IPAD_SCREEN_VS_WIDTH_RATIO 0.14
 
 //NSString *const MainControllerSendPayPossibilityNotification = @"MainControllerSendPayPossibilityNotification";
@@ -114,7 +114,7 @@
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UIDynamicAnimatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate>
 
 
 //outlets
@@ -122,7 +122,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //Main container view
 
 #pragma mark INSERTED PROPERTIES
-@property (nonatomic) CGFloat howHistoryShowed; // float from 0 to 1 show how heigh is history table view
+//need thees properties for right calc layout
+@property (nonatomic) BOOL isCalcShowed;
+@property (nonatomic) BOOL isHistoryShowed;
+
+
 //it depend opasity of buutons and screen label, and view of histroydrager
 
 
@@ -194,7 +198,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 //History table view
 @property (weak, nonatomic) IBOutlet HistoryTableView *historyTable;
-@property (nonatomic) CGFloat isHistoryWholeShowed;
 //property to show is one row from history table is selected
 @property (weak,nonatomic) HistroryTableViewCell *selectedRow;
 //attributes for historyTable
@@ -1689,15 +1692,71 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     
     _isButtonsCollectionUnderChanging = is;
+    //lock interaction
+    self.buttonsCollection.userInteractionEnabled = NO;
     
     if(is){
-        self.longPressRecognizer.minimumPressDuration = 0.1;
+        self.displayTopConstrain.constant = 0;
+        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;
+        [UIView animateWithDuration:.6
+                              delay:0
+             usingSpringWithDamping:0.8
+              initialSpringVelocity:velocitySviperUnderChangin.y
+                            options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                                [self.view layoutIfNeeded];
+                                self.labelsDisplayContainer.alpha = 0;
+
+                                /*
+                                 if(self.isIAdBaneerAvailable){
+                                 NSInteger bannerHeight;
+                                 if(IS_IPAD){
+                                 bannerHeight = 66;
+                                 } else {
+                                 bannerHeight = 50;
+                                 }
+                                 [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
+                                 [self.iAdBanner setFrame:self.bannerContainerView.bounds];
+                                 }
+                                 */
+                            } completion:^(BOOL finished) {
+                                [self.buttonsCollection reloadData];
+                                //ulock interaction
+                                self.buttonsCollection.userInteractionEnabled = YES;
+                                self.longPressRecognizer.minimumPressDuration = 0.1;
+                            }];
     } else {
-        self.longPressRecognizer.minimumPressDuration = 0.5;
+
+       
+        self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/20.;
+        [self.buttonsCollection reloadData];
+        
+        [UIView animateWithDuration:.6
+                              delay:0
+             usingSpringWithDamping:0.8
+              initialSpringVelocity:velocitySviperUnderChangin.y
+                            options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                                [self.view layoutIfNeeded];
+                                self.labelsDisplayContainer.alpha = 1;
+
+
+                                 //if(self.isIAdBaneerAvailable){
+                                 //NSInteger bannerHeight;
+                                 //if(IS_IPAD){
+                                 //bannerHeight = 66;
+                                 //} else {
+                                 //bannerHeight = 50;
+                                // }
+                                 //[self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
+                                // [self.iAdBanner setFrame:self.bannerContainerView.bounds];
+                                //}
+
+                            } completion:^(BOOL finished) {
+                                //ulock interaction
+                                self.buttonsCollection.userInteractionEnabled = YES;
+                                self.longPressRecognizer.minimumPressDuration = 0.5;
+                            }];
     }
-    
-   // [self.buttonsCollection reloadData];
-  
 }
 
 
@@ -1714,7 +1773,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [pb setString:self.mainLabel.attributedText.string];
         
         //may be add some signal
-            UIView *signalView = [[UIView alloc] initWithFrame:self.mainLabel.frame];
+            UIView *signalView = [[UIView alloc] initWithFrame:self.displayContainer.bounds];
             signalView.backgroundColor = [UIColor whiteColor];
             signalView.alpha = 1.0;
             [self.displayContainer addSubview:signalView];
@@ -1739,64 +1798,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     {
         [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
         if(!self.isButtonsCollectionUnderChanging){
-
-            //lock interaction
-            self.buttonsCollection.userInteractionEnabled = NO;
-            
-            
-            //CGRect newDynamicFrame = self.mainContainerView.frame;
-            //newDynamicFrame.size.height = 2*self.mainContainerView.frame.size.height - self.labelViewHeight;
-            
-            //if self.isButtonsCollectionUnderChanging = YES;
-            //newDynamicFrame.origin.y = -self.mainContainerView.frame.size.height + self.labelViewHeight;
-
-            
-            CGRect buttonsCollectionViewBounds = self.viewforCurrencyRecognizer.frame;
-            buttonsCollectionViewBounds.size.height = self.mainContainerView.frame.size.height;
-            buttonsCollectionViewBounds.origin.y = self.mainContainerView.frame.size.height;// - self.labelViewHeight;
-
-            //allow show settings button only in paid version
-            if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.hidden = NO;
-            //[self.buttonsCollection reloadData];
-            
-            [UIView animateWithDuration:.35
-                                  delay:0
-                                options:UIViewAnimationOptionBeginFromCurrentState
-                             animations:^{
-//IMPORTANT
-                                 //Delete this set frame
-                                 //[self.dynamicContainer setFrame:newDynamicFrame];
-                                 /*
-                                 if(self.isIAdBaneerAvailable){
-                                     NSInteger bannerHeight;
-                                     if(IS_IPAD){
-                                         bannerHeight = 66;
-                                     } else {
-                                         bannerHeight = 50;
-                                     }
-                                     [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
-                                     [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-                                 }
-                                 */
-                                // [self.buttonsCollection setFrame: buttonsCollectionViewBounds];
-                                 [self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
-                                 //[self.buttonsCollection setFrame: self.viewforCurrencyRecognizer.bounds];
-                                 self.labelsDisplayContainer.alpha = .0;
-                                 
-                                 //allow show settings button only in paid version
-                                 if(self.wasPurshaised || self.isTrialPeriod) self.settingsButton.alpha = 1.;
-                                 
-                             } completion:^(BOOL finihed){
-                                
-                                 if(!(self.wasPurshaised || self.isTrialPeriod)){
-                                     [self showSettingsViewcontroller];
-
-                                }
-                                 self.isButtonsCollectionUnderChanging = YES;
-                                 [self.buttonsCollection reloadData];
-                                 //ulock interaction
-                                 self.buttonsCollection.userInteractionEnabled = YES;
-                             }];
+            velocitySviperUnderChangin = CGPointZero;
+            self.isButtonsCollectionUnderChanging = YES;//launch changes constrains with animation
         } else {
             //1. fix button postion
             
@@ -2015,7 +2018,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                          //
                          [self.buttonsCollection reloadData];
                          self.buttonsCollection.scrollEnabled = YES;
-                         self.isHistoryWholeShowed = 0;
                          
                         [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
                          
@@ -2041,69 +2043,85 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 #pragma mark DRAGGER HISTORY
+//IMPORTANT
+//    [self moveHistoryTableContentToRightPosition];
+//IMPORTANT
+
+
+
 CGPoint startDragerLocation;
-CGFloat screenYOrigin;
+//CGFloat screenYOrigin;
 CGFloat howHistoryWasShowedBeforeDrag;
+CGPoint velocitySviperUnderChangin;
 
-
--(void) setHowHistoryShowed:(CGFloat)howHistoryShowed{
-    _howHistoryShowed = howHistoryShowed;
-    self.historyTableSviper.pathOfDown = self.howHistoryShowed;
-    
-    //set new frame for
-    CGFloat newTopDisplay = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
-    self.displayTopConstrain.constant = newTopDisplay;
-
-    [self moveHistoryTableContentToRightPosition];
-    
-    
-    if(howHistoryShowed==0 || howHistoryShowed ==1){
-        [self.view setNeedsUpdateConstraints];
-    }
-    
-    if(howHistoryShowed == 0){
+-(void)setIsCalcShowed:(BOOL)isCalcShowed{
+    _isCalcShowed = isCalcShowed;
+    if(isCalcShowed){
+       
         self.settingsButton.hidden = YES;
         self.shareButton.hidden = YES;
         self.noticeButton.hidden = YES;
         self.plusButton.hidden = YES;
         self.recountButton.hidden = YES;
         self.deleteButton.hidden = YES;
-        
-        
+         [self changeHowHistoryShowed:0];
     } else {
         self.settingsButton.hidden = NO;
-        self.settingsButton.alpha = powf(howHistoryShowed,2.);//COOL
         self.shareButton.hidden = NO;
-        self.shareButton.alpha = powf(howHistoryShowed,2.);
+        self.noticeButton.hidden = NO;
         self.plusButton.hidden = NO;
-        self.plusButton.alpha = powf(howHistoryShowed,2.);
         self.recountButton.hidden = NO;
-        self.recountButton.alpha = powf(howHistoryShowed,2.);
         self.deleteButton.hidden = NO;
-        self.deleteButton.alpha = powf(howHistoryShowed,2.);
         if(IS_IPAD && self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
             self.noticeButton.hidden = NO;
-            self.noticeButton.alpha = powf(howHistoryShowed,2.);
         }
     }
-    //NEED self.settingsBottomButtn.hidden = NO;
-    //NEED self.noticeButton.hidden = NO;
-    if(IS_IPAD){
-        //NEED self.noticeRealButton.hidden = NO;
-    }
-    //NEED self.plusButton.hidden = NO;
-    //NEED self.recountButton.hidden = NO;
-    //NEED self.deleteButton.hidden = NO;
-    
 }
+
+-(void) setIsHistoryShowed:(BOOL)isHistoryShowed{
+    _isHistoryShowed = isHistoryShowed;
+    if(isHistoryShowed){
+        self.labelsDisplayContainer.hidden = YES;
+        [self changeHowHistoryShowed:1];
+
+    } else {
+        self.labelsDisplayContainer.hidden = NO;
+    }
+}
+
+-(void) changeHowHistoryShowed:(CGFloat)howHistoryShowed{
+    self.historyTableSviper.pathOfDown = howHistoryShowed;
+    
+    self.labelsDisplayContainer.alpha = powf((1-howHistoryShowed),3.);
+    self.settingsButton.alpha = powf(howHistoryShowed,3.);//COOL
+    self.shareButton.alpha = powf(howHistoryShowed,3.);
+    self.plusButton.alpha = powf(howHistoryShowed,3.);
+    self.recountButton.alpha = powf(howHistoryShowed,3.);
+    self.deleteButton.alpha = powf(howHistoryShowed,3.);
+    if(IS_IPAD && self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
+        self.noticeButton.alpha = powf(howHistoryShowed,3.);
+    }
+    
+    //IMPORTANT
+   // [self moveHistoryTableContentToRightPosition];
+}
+
 - (IBAction)tapHistoryDragger:(UITapGestureRecognizer *)sender {
     lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
-    if(self.howHistoryShowed == 1.){
+    if(self.isButtonsCollectionUnderChanging == YES){
+        velocitySviperUnderChangin = CGPointZero;
+        self.isButtonsCollectionUnderChanging = NO;
+    } else if(self.isHistoryShowed){
+        self.isHistoryShowed = NO;
         [self finisDraggingUpWithVelocity:CGPointZero];
-    } else {
+    } else if(self.isCalcShowed){
+        self.isCalcShowed  = NO;
         [self finishDraggingDownWithVelocity:CGPointZero];
+    } else {
+       [self finishDraggingDownWithVelocity:CGPointZero];
     }
 }
+
 
 
 - (IBAction)dragSviperGesturRecognizer:(UIPanGestureRecognizer *)sender
@@ -2112,68 +2130,122 @@ CGFloat howHistoryWasShowedBeforeDrag;
         
         lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
         startDragerLocation = [sender locationInView:self.mainContainerView];
-        howHistoryWasShowedBeforeDrag = self.howHistoryShowed;
-        screenYOrigin = self.calcScreenHeightConstrain.constant;
         
+        if(!self.isButtonsCollectionUnderChanging){
+            if(self.isCalcShowed){
+                howHistoryWasShowedBeforeDrag = 0;
+            } else if (self.isHistoryShowed){
+                howHistoryWasShowedBeforeDrag = 1;
+            } else {
+                howHistoryWasShowedBeforeDrag = 0.5;
+            }
+            //start draggin - no calc and no history showed
+            self.isCalcShowed = NO;
+            self.isHistoryShowed = NO;
+        }
         
     } else if (sender.state == UIGestureRecognizerStateChanged){
         
-        
-        CGFloat deltaHeight;// = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
-        if(howHistoryWasShowedBeforeDrag == 0){
+        CGFloat deltaHeight;
+        if(self.isButtonsCollectionUnderChanging){
             deltaHeight = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
-        } else {
-            deltaHeight = maxButtonsCollectionHeight+[sender locationInView:self.mainContainerView].y - startDragerLocation.y;
-        }
-
-        
-        CGFloat newHowHistoryShowed = deltaHeight/maxButtonsCollectionHeight;
-        
-
-        if(newHowHistoryShowed<= 0){
-            self.howHistoryShowed = 0;// histroy showed all
+            CGFloat normalScreenTop=self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+            if(deltaHeight>= normalScreenTop){
+                self.displayTopConstrain.constant = normalScreenTop;
+            } else if(deltaHeight > 0){
+                self.displayTopConstrain.constant = deltaHeight;
+            }
+            [self.view layoutIfNeeded];
             
-        } else if(newHowHistoryShowed>= 1){
-            self.howHistoryShowed = 1;// histroy showed min
         } else {
-            self.howHistoryShowed = newHowHistoryShowed;
+            deltaHeight = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
+            startDragerLocation = [sender locationInView:self.mainContainerView];
+            CGFloat newScreenTop =  self.displayTopConstrain.constant + deltaHeight;
+            CGFloat howHistoryShowed = ((newScreenTop+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
+            if(howHistoryShowed >= 1){
+                self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant;
+                howHistoryShowed = 1;
+            } else if (howHistoryShowed <= 0){
+                self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+                howHistoryShowed = 0;
+            } else {
+                self.displayTopConstrain.constant = newScreenTop;
+            }
+
+            [self changeHowHistoryShowed:howHistoryShowed];
+            [self.view layoutIfNeeded];
         }
+
+    
 
         
     } else {
-        
-        
-        CGPoint velosity = [sender velocityInView:self.mainContainerView];
-        if(howHistoryWasShowedBeforeDrag == 1.) {//think it'll be need to drag up
-            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
-                //do nothing
-            }else if(self.howHistoryShowed < 0.85){
-                //exactly drag up
-                [self finisDraggingUpWithVelocity:velosity];
+
+        CGFloat deltaHeight;
+        if(self.isButtonsCollectionUnderChanging){
+            deltaHeight = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
+            CGFloat normalScreenTop=self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+            velocitySviperUnderChangin = CGPointZero;//[sender velocityInView:self.mainContainerView];
+            if(deltaHeight>= normalScreenTop/3){
+                self.isButtonsCollectionUnderChanging = NO;
             } else {
-                //return back
-                [self finishDraggingDownWithVelocity:velosity];
-            }
-        } else if(howHistoryWasShowedBeforeDrag ==0.){ //think it'll be need to drag down to show history
-            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
-                //do nothing
-            }else if(self.howHistoryShowed > 0.15){
-                //exactly drag down
-                [self finishDraggingDownWithVelocity:velosity];
-            } else {
-                //return back
-                [self finisDraggingUpWithVelocity:velosity];
+                self.isButtonsCollectionUnderChanging = YES;
             }
         } else {
-            NSLog(@"Error can't show finaly history tab not 1 and not 0");
-            if(self.howHistoryShowed == 1 || self.howHistoryShowed == 0){
-                //do nothing
-            }else if(self.howHistoryShowed > 0.5){
-                //exactly drag down
-                [self finishDraggingDownWithVelocity:CGPointZero];
+            
+            deltaHeight = [sender locationInView:self.mainContainerView].y - startDragerLocation.y;
+            startDragerLocation = [sender locationInView:self.mainContainerView];
+            self.displayTopConstrain.constant += deltaHeight;
+            CGPoint velosity = [sender velocityInView:self.mainContainerView];
+            
+            [self.view layoutIfNeeded];
+            
+            CGFloat howHistoryShowed = ((self.displayTopConstrain.constant+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
+            [self changeHowHistoryShowed:howHistoryShowed];
+            
+            if(howHistoryWasShowedBeforeDrag == 1.) {//think it'll be need to drag up
+                if(howHistoryShowed == 1){
+                    self.isCalcShowed = NO;
+                    self.isHistoryShowed = YES;
+                }else if(howHistoryShowed == 0){
+                    self.isCalcShowed = YES;
+                    self.isHistoryShowed = NO;
+                }else if(howHistoryShowed < 0.7){
+                    //exactly drag up
+                    [self finisDraggingUpWithVelocity:velosity];
+                } else {
+                    //return back
+                    [self finishDraggingDownWithVelocity:velosity];
+                }
+            } else if(howHistoryWasShowedBeforeDrag ==0.){ //think it'll be need to drag down to show history
+                if(howHistoryShowed == 1){
+                    self.isCalcShowed = NO;
+                    self.isHistoryShowed = YES;
+                }else if(howHistoryShowed == 0){
+                    self.isCalcShowed = YES;
+                    self.isHistoryShowed = NO;
+                } else if(howHistoryShowed > 0.3){
+                    //exactly drag down
+                    [self finishDraggingDownWithVelocity:velosity];
+                } else {
+                    //return back
+                    [self finisDraggingUpWithVelocity:velosity];
+                }
             } else {
-                //return back
-                [self finisDraggingUpWithVelocity:CGPointZero];
+                NSLog(@"Error can't show finaly history tab not 1 and not 0");
+                if(howHistoryShowed == 1){
+                    self.isCalcShowed = NO;
+                    self.isHistoryShowed = YES;
+                }else if(howHistoryShowed == 0){
+                    self.isCalcShowed = YES;
+                    self.isHistoryShowed = NO;
+                }else if(howHistoryShowed > 0.5){
+                    //exactly drag down
+                    [self finishDraggingDownWithVelocity:CGPointZero];
+                } else {
+                    //return back
+                    [self finisDraggingUpWithVelocity:CGPointZero];
+                }
             }
         }
     }
@@ -2185,102 +2257,61 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 
 -(void) finisDraggingUpWithVelocity:(CGPoint)velocity
 {
-    finishDrugDirection = @"CloseHistroy";
-    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
-    animator.delegate = self;
-    
-    velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.displayContainer]];
-    dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.displayContainer];
-    [animator addBehavior:dynamicItem];
-    
-    CGFloat centerY = self.mainContainerView.frame.size.height -maxButtonsCollectionHeight- self.displayContainer.frame.size.height/2;
-    
-    CGPoint snapPoint = CGPointMake(CGRectGetMidX(self.mainContainerView.frame),
-                                    centerY);
-    
-    UISnapBehavior *snap = [[UISnapBehavior alloc] initWithItem:self.displayContainer snapToPoint:snapPoint];
-    snap.damping = 0.35;
-    
-    __weak typeof (self) weakSelf = self;
-    snap.action = ^{
-        typeof(self) strongSelf = weakSelf;
-        strongSelf.howHistoryShowed = ((strongSelf.displayContainer.frame.origin.y+strongSelf.displayContainer.frame.size.height)-(strongSelf.mainContainerView.bounds.size.height-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
-        
-    };
-    
-    
-    [animator addBehavior:snap];
 
-    self.animator = animator;
+    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+    self.historyTableSviper.pathOfDown = 0;
+    [UIView animateWithDuration:0.8
+                          delay:0
+         usingSpringWithDamping:0.6
+          initialSpringVelocity:velocitySviperUnderChangin.y
+                        options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                            [self.view layoutIfNeeded];
+                            
+                            self.labelsDisplayContainer.alpha = 1.;
+                            
+                            self.settingsButton.alpha = 0.;
+                            self.shareButton.alpha = 0.;
+                            self.plusButton.alpha = 0.;
+                            self.recountButton.alpha = 0.;
+                            self.deleteButton.alpha = 0.;
+                            if(IS_IPAD && self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
+                                self.noticeButton.alpha = 0.;
+                            }
+
+                        } completion:^(BOOL finished) {
+                            self.isCalcShowed = YES;
+                            
+                        }];
 }
 
 -(void) finishDraggingDownWithVelocity:(CGPoint)velocity
 
 {
-    finishDrugDirection = @"OpenHistory";
-    //UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-    UIDynamicAnimator *animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.mainContainerView];
-    
-    //animator.delegate = self;
-    UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[self.displayContainer]];
-    gravity.gravityDirection = CGVectorMake(0.0, 4.0);
-    [animator addBehavior:gravity];
-    
-    velocity.x = 0;
-    UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[self.displayContainer]];
-    dynamicItem.allowsRotation = NO;
-    [dynamicItem addLinearVelocity:velocity forItem:self.displayContainer];
-    [animator addBehavior:dynamicItem];
-    
-    UICollisionBehavior *collision = [[UICollisionBehavior alloc] initWithItems:@[self.displayContainer]];
-
-    [collision addBoundaryWithIdentifier:@"dynamic"
-                               fromPoint:CGPointMake(0, self.mainContainerView.bounds.size.height)
-                                 toPoint:CGPointMake(self.mainContainerView.bounds.size.width, self.mainContainerView.bounds.size.height)];
-    
-    __weak typeof (self) weakSelf = self;
-    gravity.action = ^{
-        typeof(self) strongSelf = weakSelf;
-        
-       strongSelf.howHistoryShowed = ((strongSelf.displayContainer.frame.origin.y+strongSelf.displayContainer.frame.size.height)-(strongSelf.mainContainerView.bounds.size.height-maxButtonsCollectionHeight))/maxButtonsCollectionHeight;
-        
-       
-        UIView *view = strongSelf.displayContainer;
-        
-        if(strongSelf.howHistoryShowed >0.97 && ABS([dynamicItem linearVelocityForItem:view].y) < 0.01){
-            [animator removeAllBehaviors];
-            strongSelf.howHistoryShowed = 1;
-        }
-        
-    };
-    
-    [animator addBehavior:collision];
-    self.animator = animator;
+    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant;
+    self.historyTableSviper.pathOfDown = 1;
+    [UIView animateWithDuration:.8
+                          delay:0
+         usingSpringWithDamping:0.6
+          initialSpringVelocity:velocitySviperUnderChangin.y
+                        options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                            [self.view layoutIfNeeded];
+                            
+                            self.labelsDisplayContainer.alpha = 0.;
+                            
+                            self.settingsButton.alpha = 1.;
+                            self.shareButton.alpha = 1.;
+                            self.plusButton.alpha = 1.;
+                            self.recountButton.alpha = 1.;
+                            self.deleteButton.alpha = 1.;
+                            if(IS_IPAD && self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
+                                self.noticeButton.alpha = 1.;
+                            }
+                            
+                        } completion:^(BOOL finished) {
+                            
+                            self.isHistoryShowed = YES;
+                        }];
 }
-
-#pragma mark - UIDynamicAnimator Delegate
-- (void)dynamicAnimatorDidPause:(UIDynamicAnimator *)animator
-{
-    if([finishDrugDirection isEqualToString:@"OpenHistory"]){
-        self.howHistoryShowed = 1;
-    } else {/*if ([finishDrugDirection isEqualToString:@"CloseHistory"]){*/
-        self.howHistoryShowed = 0;
-    }/*else {
-      self.howHistoryShowed = 0;
-      }*/
-    [self.animator removeAllBehaviors];
-    self.animator = nil;
-    
-    
-}
-
-- (void)dynamicAnimatorWillResume:(UIDynamicAnimator *)animator
-{
-    
-}
-
 
 
 #pragma mark - MOVE BUTTONS Methods
@@ -2723,21 +2754,21 @@ static BOOL moveIsAvailable;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    
     if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
         //NSLog(@"buttonsCollectionHeight %f - ", self.buttonsCollection.bounds.size.height);
         if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
             buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
             [self newButtonsSize];
+            screenHeight = self.calcScreenHeightConstrain.constant;
             
         } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
             //screenHeight = self.calcScreenHeightConstrain.constant;
             //need for iPad if changed screen height without changing buttonCollection width
             [self newButtonsSize];
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            screenHeight = self.calcScreenHeightConstrain.constant;
         }
-        screenHeight = self.calcScreenHeightConstrain.constant;
     }
 }
 
@@ -4877,33 +4908,14 @@ NSIndexPath *lastVisibleCellPatch;
     UIGraphicsEndImageContext();
 
     
-    self.settingsButton.hidden = YES;
-    self.settingsButton.alpha = 0;
-
-    
+    /*
     if(IS_IPAD){
-        self.noticeButton.hidden = YES;
         //self.noticeButton.enabled = NO;
-        self.noticeButton.alpha = 0;
     }
-    
-    self.plusButton.hidden = YES;
     self.plusButton.enabled = NO;
-    self.plusButton.alpha = 0;
-    
-    self.recountButton.hidden = YES;
     self.recountButton.enabled = NO;
-    self.recountButton.alpha = 0;
-    
-    self.shareButton.hidden = YES;
-    self.shareButton.alpha = 0;
-    
-    self.deleteButton.hidden = YES;
     self.deleteButton.enabled = NO;
-    self.deleteButton.alpha = 0;
-    
-    self.settingsButton.hidden = YES;
-    self.settingsButton.alpha = 0;
+    */
     
     
     //set pan gesture delegate
@@ -5039,7 +5051,7 @@ NSIndexPath *lastVisibleCellPatch;
     //replace from show count
 
     
-    self.isHistoryWholeShowed = 0;
+    //self.isHistoryWholeShowed = 0;
     //set other cursor color
     //transition to third controller
     self.callShowController = NO;
@@ -5048,9 +5060,11 @@ NSIndexPath *lastVisibleCellPatch;
     
     //
     [self.buttonsCollection addObserver:self forKeyPath:@"bounds" options:0 context:nil];
+    [self.displayContainer addObserver:self forKeyPath:@"frame" options:0 context:nil];
     
     //INSERTED
-    self.howHistoryShowed = 0;
+    self.isCalcShowed = YES;
+    self.isHistoryShowed = NO;
 }
 
 
@@ -5170,9 +5184,10 @@ NSIndexPath *lastVisibleCellPatch;
     //NSLog(@"viewWillTransitionToSize");
 }
 #pragma mark VIEW LAYOUT
-CGFloat minButtonsCollectionHeight;
+//CGFloat minButtonsCollectionHeight;
 CGFloat maxButtonsCollectionHeight;
 -(void)viewDidLayoutSubviews{
+    //NSLog(@"viewDidLayoutSubviews");
     
     CGSize viewSize = self.view.bounds.size;
     if(!IS_IPAD){
@@ -5188,16 +5203,11 @@ CGFloat maxButtonsCollectionHeight;
         
         //set calc screen height
         self.calcScreenHeightConstrain.constant = self.mainContainerWidth.constant*IPHONE_SCREEN_VS_WIDTH_RATIO;
-        //NSLog(@"calcScreenHeightConstrain %f",self.calcScreenHeightConstrain.constant);
-        
         //if history table whole showed
         //how history showed can change from 1 to 0
         // need detect whole way
-        minButtonsCollectionHeight = 0;//self.calcScreenHeightConstrain.constant;
         maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
         
-        
-        //self.buttonscollectionHeightConstrain.constant =minButtonsHeight + (maxButtonsHeigth-minButtonsHeight)*(1-self.howHistoryShowed);
         
     } else {
         
@@ -5219,21 +5229,32 @@ CGFloat maxButtonsCollectionHeight;
         //if history table whole showed
         //how history showed can change from 1 to 0
         // need detect whole way
-        minButtonsCollectionHeight = 0;//self.calcScreenHeightConstrain.constant;
+        //minButtonsCollectionHeight = 0;//self.calcScreenHeightConstrain.constant;
         maxButtonsCollectionHeight = self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
         
-        //self.buttonscollectionHeightConstrain.constant = minButtonsHeight + (maxButtonsHeigth-minButtonsHeight)*(1-self.howHistoryShowed);
     }
     
     //history table height
-    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - (maxButtonsCollectionHeight*(1-self.howHistoryShowed));
-    
-    //NSLog(@"histroyTableHeightConstrain.constant %f",self.displayTopConstrain.constant);
-    
-   // self.buttonCollectionHeightconstrain.constant = self.mainContainerHeight.constant-self.calcScreenHeightConstrain.constant- self.histroyTableHeightConstrain.constant;
-    
-    
-    //NSLog(@"%@", [UIDevice currentDevice].model);
+    if(self.isButtonsCollectionUnderChanging){
+        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;
+    } else {
+        if(self.isCalcShowed){
+            self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+            [self changeHowHistoryShowed:0];
+            
+        } else if(self.isHistoryShowed){
+            self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant;
+            [self changeHowHistoryShowed:1];
+        } else {
+
+            [self changeHowHistoryShowed:((self.displayTopConstrain.constant+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight];
+        }
+        
+        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/10.;
+        //IMPORTANT
+        //    [self moveHistoryTableContentToRightPosition];
+        //IMPORTANT
+    }
     //screen buttons according interfase size
     if(self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
         self.noticeButton.hidden = YES;
@@ -5290,9 +5311,7 @@ CGFloat maxButtonsCollectionHeight;
         
         [store synchronize];
     }
-    
-    
-    //[self extractKeyValuesFromStorage];
+
     if([self extractKeyValuesFromStorage]){
         [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
     } else {
@@ -5522,7 +5541,6 @@ CGFloat maxButtonsCollectionHeight;
     self.plusButton.alpha = 0;
     self.recountButton.alpha = 0;
     self.deleteButton.alpha = 0;
-    self.isHistoryWholeShowed = 0;
     [self.buttonsCollection reloadData];
 }
 #pragma mark TRANSITION DELEGATE

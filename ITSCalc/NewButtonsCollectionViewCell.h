@@ -17,6 +17,7 @@
 
 @protocol ButtonCellSource <NSObject>
 -(CGFloat) buttonCollectionOffset;
+-(CGFloat) buttonCollectionInset;
 @end
 
 @protocol CellButtonActionDelegate <NSObject>

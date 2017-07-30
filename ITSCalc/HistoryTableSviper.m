@@ -30,7 +30,7 @@
     if(self.designObj.designNumber == DESIGN_PHOTO){
         self.color = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
     } else {
-        self.color = [[UIColor blackColor] colorWithAlphaComponent:0.3];
+        self.color = [[UIColor grayColor] colorWithAlphaComponent:0.5];
     }
     return _color;
 }
@@ -48,6 +48,8 @@
     [self setNeedsDisplay];
 }
 
+
+
 -(void) drawSwipeSymbolInContext:(CGContextRef) context
 {
     CGFloat fivePart = self.frame.size.height/5;
@@ -56,7 +58,7 @@
                              self.frame.size.width,
                              fivePart);
     
-    CGFloat lineWith = rect.size.height/3;
+    CGFloat lineWith = rect.size.height/2;
     CGContextSetLineWidth(context, lineWith);
     CGContextMoveToPoint(context, rect.size.width/6 +.5, rect.size.height /2 +.5 + 2*fivePart);
     

@@ -22,6 +22,11 @@
     return self.contentOffset.y;
 }
 
+-(CGFloat) buttonCollectionInset
+{
+    return self.contentInset.top;
+}
+
 /*
 
 // Only override drawRect: if you perform custom drawing.

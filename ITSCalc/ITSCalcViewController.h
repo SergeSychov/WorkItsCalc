@@ -36,6 +36,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainContainerWidth;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *calcScreenHeightConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *displayTopConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sviperBottomConstrain;
 
 //@property (weak, nonatomic) IBOutlet NSLayoutConstraint *buttonscollectionHeightConstrain;
 

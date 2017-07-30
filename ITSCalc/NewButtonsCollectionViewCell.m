@@ -483,23 +483,7 @@
 //-------------------------------------------------------------------------------------------------
 
 -(CGRect) getRect{
-    CGFloat collectionInsect;
 
-    if(IS_IPAD) {
-
-        if(self.isIpadPortraitView){
-            collectionInsect = 118;
-        } else {
-            collectionInsect = 108;
-        }
-    } else {
-
-        if(IS_568_SCREEN){
-            collectionInsect = 72;
-        } else {
-            collectionInsect= 65;
-        }
-    }
     [self.superview bringSubviewToFront:self]; //set cell on the top of collectionView
     
     CGFloat subX = self.frame.origin.x - (self.incr -1)*self.frame.size.width /2;
@@ -508,8 +492,8 @@
     CGFloat subHeight = self.frame.size.height * self.incr;
     
     CGFloat collectionYOffset = [self.delegate buttonCollectionOffset];
+    CGFloat collectionInsect = [self.delegate buttonCollectionInset];
     
-
     if(subX < 0){
         subX = 0;
     }
