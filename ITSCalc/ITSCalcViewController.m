@@ -2064,7 +2064,6 @@ CGPoint velocitySviperUnderChangin;
         self.plusButton.hidden = YES;
         self.recountButton.hidden = YES;
         self.deleteButton.hidden = YES;
-         [self changeHowHistoryShowed:0];
     } else {
         self.settingsButton.hidden = NO;
         self.shareButton.hidden = NO;
@@ -2082,7 +2081,6 @@ CGPoint velocitySviperUnderChangin;
     _isHistoryShowed = isHistoryShowed;
     if(isHistoryShowed){
         self.labelsDisplayContainer.hidden = YES;
-        [self changeHowHistoryShowed:1];
 
     } else {
         self.labelsDisplayContainer.hidden = NO;
@@ -2103,11 +2101,14 @@ CGPoint velocitySviperUnderChangin;
     }
     
     //IMPORTANT
-   // [self moveHistoryTableContentToRightPosition];
+    [self moveHistoryTableContentToRightPosition];
 }
 
 - (IBAction)tapHistoryDragger:(UITapGestureRecognizer *)sender {
     lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+    selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+
+
     if(self.isButtonsCollectionUnderChanging == YES){
         velocitySviperUnderChangin = CGPointZero;
         self.isButtonsCollectionUnderChanging = NO;
@@ -2129,6 +2130,8 @@ CGPoint velocitySviperUnderChangin;
     if(sender.state == UIGestureRecognizerStateBegan){
         
         lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+        selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+
         startDragerLocation = [sender locationInView:self.mainContainerView];
         
         if(!self.isButtonsCollectionUnderChanging){
@@ -2266,6 +2269,7 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
           initialSpringVelocity:velocitySviperUnderChangin.y
                         options:UIViewAnimationOptionBeginFromCurrentState animations:^{
                             [self.view layoutIfNeeded];
+                            [self moveHistoryTableContentToRightPosition];
                             
                             self.labelsDisplayContainer.alpha = 1.;
                             
@@ -2280,6 +2284,8 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 
                         } completion:^(BOOL finished) {
                             self.isCalcShowed = YES;
+                            [self.historyTable reloadData];
+                            [self.historyTable selectRowAtIndexPath:selectedRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
                             
                         }];
 }
@@ -2295,6 +2301,7 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
           initialSpringVelocity:velocitySviperUnderChangin.y
                         options:UIViewAnimationOptionBeginFromCurrentState animations:^{
                             [self.view layoutIfNeeded];
+                            [self moveHistoryTableContentToRightPosition];
                             
                             self.labelsDisplayContainer.alpha = 0.;
                             
@@ -2310,6 +2317,8 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
                         } completion:^(BOOL finished) {
                             
                             self.isHistoryShowed = YES;
+                            [self.historyTable reloadData];
+                            [self.historyTable selectRowAtIndexPath:selectedRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
                         }];
 }
 
@@ -2759,6 +2768,7 @@ static BOOL moveIsAvailable;
         if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
             buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            selectedRowPatch = [self.historyTable indexPathForSelectedRow];
             [self newButtonsSize];
             screenHeight = self.calcScreenHeightConstrain.constant;
             
@@ -2767,6 +2777,7 @@ static BOOL moveIsAvailable;
             //need for iPad if changed screen height without changing buttonCollection width
             [self newButtonsSize];
             lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            selectedRowPatch = [self.historyTable indexPathForSelectedRow];
             screenHeight = self.calcScreenHeightConstrain.constant;
         }
     }
@@ -3236,10 +3247,12 @@ static BOOL moveIsAvailable;
 ///------WAS INSERTED-------------------------------------------
 //--------------------------------------------------------------
 NSIndexPath *lastVisibleCellPatch;
+NSIndexPath* selectedRowPatch;
 
 
 -(void)moveHistoryTableContentToRightPosition
 {
+    NSLog(@"moveHistoryTableContentToRightPosition");
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
@@ -3247,7 +3260,7 @@ NSIndexPath *lastVisibleCellPatch;
     } else {
         [self.historyTable setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     }
-    
+
     [self.historyTable scrollToRowAtIndexPath:lastVisibleCellPatch
                                  atScrollPosition:UITableViewScrollPositionBottom
                                          animated:NO];
@@ -3255,12 +3268,13 @@ NSIndexPath *lastVisibleCellPatch;
 }
 
 -(void) selectLastRowInHistory {
-    
-    if([self.historyTable numberOfRowsInSection:0] > 1){
+    if([self.historyTable numberOfRowsInSection:0] >= 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
-        [self moveHistoryTableContentToRightPosition];
+        lastVisibleCellPatch = lastRowPatch;
+        selectedRowPatch = lastRowPatch;
+        
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
     }
 }
 ///------WAS INSERTED-------------------------------------------
@@ -3349,6 +3363,7 @@ NSIndexPath *lastVisibleCellPatch;
     } else {
         
     }
+    //HERE
     //set height for first row not from coreData
     if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init]; //if no array till now
     NSAttributedString* stringInCell = [self resizeStrforFirstCell:[self getAttributedStringFromArray:self.lastRowDataArray]];
@@ -3381,6 +3396,7 @@ NSIndexPath *lastVisibleCellPatch;
     
 }
 
+//HERE
 -(NSArray*) heightsOfRows
 {
     if(!_heightsOfRows){
@@ -3562,9 +3578,9 @@ NSIndexPath *lastVisibleCellPatch;
             NSAttributedString *resultAtrStr = self.lastRowsString;//[self getAttributedStringFromArray:self.lastRowDataArray];
             ((HistroryTableViewCell*)cell).historyProgramString = [self resizeStrforFirstCell:[resultAtrStr copy]];
             ((HistroryTableViewCell*)cell).programTextView.delegate = self;
-            //if(![self.historyTable indexPathForSelectedRow]){
-             //  [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
-           //}
+            if(![self.historyTable indexPathForSelectedRow]){
+                [self selectLastRowInHistory];
+            }
         } else {
            // NSIndexPath *needPatch = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:indexPath.section];
             NSIndexPath *needPatch = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
@@ -3583,6 +3599,8 @@ NSIndexPath *lastVisibleCellPatch;
     return cell;
 }
 
+
+//HERE
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat height = 60;
@@ -3919,7 +3937,7 @@ NSIndexPath *lastVisibleCellPatch;
     //[self deleteEmptyProgram];
     [self resetHeightsofRows];
     [self.historyTable reloadData];
-    [self moveHistoryTableContentToRightPosition];
+    [self selectLastRowInHistory];
 
 }
 
@@ -3967,19 +3985,8 @@ NSIndexPath *lastVisibleCellPatch;
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
                              withRowAnimation:UITableViewRowAnimationFade];
     [self.historyTable endUpdates];
-   // [self.historyTable selectRowAtIndexPath:lastRow animated:NO scrollPosition:UITableViewScrollPositionBottom];
-
-    //--------------------------
-    //INSERTED HERE
-    //________________________
-    /*
-    if([self.historyTable numberOfRowsInSection:0] > 1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-    }
-    */
-    [self moveHistoryTableContentToRightPosition];
+    
+    lastVisibleCellPatch = lastRow;
 }
 
 
@@ -4155,11 +4162,12 @@ NSIndexPath *lastVisibleCellPatch;
     self.heightsOfRows = [mutArray copy];
     
     [self.historyTable endUpdates];
+    [self selectLastRowInHistory];
     //[self.historyTable reloadData];
     
     //!! Set that at history class!!!
     //------------------------------------------------------------
-    [self moveHistoryTableContentToRightPosition];
+    //[self moveHistoryTableContentToRightPosition];
     /*
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
        // self.historyTable.isNeedToSetOffsetToButton = YES;
@@ -5240,20 +5248,17 @@ CGFloat maxButtonsCollectionHeight;
     } else {
         if(self.isCalcShowed){
             self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
-            [self changeHowHistoryShowed:0];
+            //[self changeHowHistoryShowed:0];
             
         } else if(self.isHistoryShowed){
             self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant;
-            [self changeHowHistoryShowed:1];
+            //[self changeHowHistoryShowed:1];
         } else {
 
             [self changeHowHistoryShowed:((self.displayTopConstrain.constant+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight];
         }
         
         self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/10.;
-        //IMPORTANT
-        //    [self moveHistoryTableContentToRightPosition];
-        //IMPORTANT
     }
     //screen buttons according interfase size
     if(self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
