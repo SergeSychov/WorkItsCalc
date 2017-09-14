@@ -452,6 +452,66 @@
     }
     return deepCopy;
 }
+#pragma MARK CHECK AND STRING FUNCTION
++(NSArray*) checkForFunctionsInProgramm:(NSArray*)programm{
+    NSArray* functionsArray = nil;
+
+    NSMutableArray *mutableFunctionsArray = [[NSMutableArray alloc]init];
+    for(id obj in programm){
+        if([obj isKindOfClass:[NSDictionary class]]){
+            
+            NSString *key = [[obj allKeys]firstObject];
+            id valueProg = [obj objectForKey:key];
+            
+            if([valueProg isKindOfClass:[NSNumber class]]){//if there is conctant
+                [mutableFunctionsArray addObject:obj];
+            } else if ([valueProg isKindOfClass:[NSArray class]]){
+                if([valueProg containsObject:@"°"]){
+                   //do nothing
+                } else {
+                     [mutableFunctionsArray addObject:obj];
+                }
+            }
+        }else if([obj isKindOfClass:[NSArray class]]){
+                if([ACalcBrain checkForFunctionsInProgramm:obj]){
+                    [mutableFunctionsArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
+                }
+        }
+    }
+    //if there is functions or constants
+    if([mutableFunctionsArray lastObject]) functionsArray = [mutableFunctionsArray copy];
+    
+    return functionsArray;
+}
+
++(NSAttributedString*)stringFunctionInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
+    NSAttributedString *returnString = nil;
+    
+    //if programm has currensies, get currencies array
+    NSArray* functions = [ACalcBrain checkForFunctionsInProgramm:[programm copy]];
+    
+    //if currensies was, make string from each pair in array and add to currString
+    if(functions){
+        NSMutableAttributedString* descriptions = [[NSMutableAttributedString alloc] initWithString:@"" attributes:atrbutes];
+
+
+        for(NSDictionary* func in functions){
+            NSAttributedString * name = [[NSAttributedString alloc] initWithString:[[func allKeys]firstObject] attributes:atrbutes];
+            [descriptions insertAttributedString:name atIndex:[descriptions length]];
+            NSAttributedString * equalMark = [[NSAttributedString alloc] initWithString:@"=" attributes:atrbutes];
+            [descriptions insertAttributedString:equalMark atIndex:[descriptions length]];
+            NSAttributedString* description = [ACalcBrain descriptionOfProgram:[func objectForKey:[[func allKeys] firstObject]] withAttributes:atrbutes];
+            [descriptions insertAttributedString:description atIndex:[descriptions length]];
+            NSAttributedString * space = [[NSAttributedString alloc] initWithString:@"; " attributes:atrbutes];
+            [descriptions insertAttributedString:space atIndex:[descriptions length]];
+
+        }
+       if([descriptions length]>0) returnString = [descriptions copy];
+    }
+
+    
+    return returnString;
+}
 
 +(NSSet*) chekForVariablesInProgramm:(NSArray*)programm {
     
@@ -471,6 +531,26 @@
 
     return [variableSet copy];
 }
+
++(NSAttributedString*)stringVariableInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
+    NSAttributedString *returnString = nil;
+    
+    //if programm has currensies, get currencies array
+    NSSet* variables = [ACalcBrain chekForVariablesInProgramm:[programm copy]];
+    
+    //if currensies was, make string from each pair in array and add to currString
+    if([variables count]>0){
+        NSString *varStr = @"";
+        for(NSString* var in variables){
+            varStr = [varStr stringByAppendingString:[var capitalizedString]];
+            varStr = [varStr stringByAppendingString:@"=1. "];
+
+        }
+        returnString = [[NSAttributedString alloc] initWithString:varStr attributes:atrbutes];
+    }
+    return returnString;
+}
+
 
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm {
@@ -522,7 +602,30 @@
 
     return currenciesArray;
 }
+
++(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
+    NSAttributedString *returnString = nil;
     
+    //if programm has currensies, get currencies array
+    NSArray* currensies = [ACalcBrain chekForCurrensiesProgramm:[programm copy]];
+
+    //if currensies was, make string from each pair in array and add to currString
+    if(currensies){
+        NSString *currStr = @"";
+        for(NSArray* currPair in currensies){
+            currStr = [currStr stringByAppendingString:currPair[1]];
+            currStr = [currStr stringByAppendingString:@"/"];
+            currStr = [currStr stringByAppendingString:currPair[2]];
+            currStr = [currStr stringByAppendingString:@"="];
+            currStr = [currStr stringByAppendingString:[currPair[3] stringValue]];
+            currStr = [currStr stringByAppendingString:@" "];
+        }
+        returnString = [[NSAttributedString alloc] initWithString:currStr attributes:atrbutes];
+    }
+    
+    return returnString;
+}
+
 //replace arrays with currencies in program with new values of currencies exhange
 //for each element chek if array
 // if - currencies - replace, else - recrucive call

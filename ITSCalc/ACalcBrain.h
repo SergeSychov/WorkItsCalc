@@ -47,11 +47,16 @@
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes;
 +(id) deepArrayCopy:(NSArray*) arrayToCopy;
 
++(NSArray*) checkForFunctionsInProgramm:(NSArray*)programm;
++(NSAttributedString*)stringFunctionInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes;
+
 //check if programm has variables inside
 +(NSSet*) chekForVariablesInProgramm:(NSArray*)programm;
++(NSAttributedString*)stringVariableInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes;
 
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
++(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)curArray withAtrtributes:(NSDictionary*)atrbutes;
 
 //replace arrays with currencies in program with new values of currencies exhange
 +(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;

@@ -11,9 +11,10 @@
 
 @interface DesignObject()
 //for attributed text
-@property (nonatomic) NSDictionary* atrforHistoryTableIn;
-@property (nonatomic) NSDictionary* atrForScreenIn;
-@property (nonatomic) NSDictionary* atrforButtonsIn;
+@property (nonatomic, strong) NSDictionary* atrforHistoryTableIn;
+@property (nonatomic, strong) NSDictionary* atrForLabelHistoryTableIn;
+@property (nonatomic, strong) NSDictionary* atrForScreenIn;
+@property (nonatomic, strong) NSDictionary* atrforButtonsIn;
 
 @property (nonatomic,  strong)UIColor* mainAtrTextColorIn;
 @property (nonatomic) UIFontTextStyle compactTextStyleIn;
@@ -87,7 +88,7 @@
     switch (self.designNumber) {
         case DESIGN_CLASSIC:
             //for attr text
-            self.mainAtrTextColorIn = [UIColor lightTextColor];
+            self.mainAtrTextColorIn = [UIColor whiteColor];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
@@ -133,7 +134,7 @@
             
             //calc screen
             self.displayContainerColorIn = [UIColor clearColor];
-            self.screenTextColorIn = [UIColor whiteColor];
+            self.screenTextColorIn = [UIColor lightTextColor];
             self.isScreenBlurHidenIn = NO;
             self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
             self.screenButtonShadowColorIn = [UIColor clearColor];;
@@ -585,14 +586,38 @@
             
             break;
     }
-             [self setAtrforHistoryTableInWith:self.mainAtrTextColorIn];
-             [self setAtrForScreenInWith:self.screenTextColor];
+             [self setAtrforHistoryTableInWith:self.colorForUnselectedText];
+            [self setAtrForLabelHistoryTableInWith:self.colorForUnselectedText];
              [self setAtrforButtonsInWith:self.mainColorIn];
     
 }
 
 //set attributes for text
--(void)setAtrForScreenInWith:(UIColor *)texColor{
+             
+-(void)setAtrforHistoryTableInWith:(UIColor *)texColor{
+
+    //change font size
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    //style.s
+    UIFontDescriptor* fontDescriptor;
+    UIFont *font;
+    if ([self.delegate currentInterfaceClassSize] == UIUserInterfaceSizeClassCompact) {
+        //get current class size
+        fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.compactTextStyleIn];
+        font  = [UIFont fontWithDescriptor:fontDescriptor size:20];
+        style.alignment = NSTextAlignmentLeft;
+    }else {
+        fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.regularTextStyle];
+        font  = [UIFont fontWithDescriptor:fontDescriptor size:45];
+       // font  = [UIFont preferredFontForTextStyle:self.regularTextStyle];
+        style.alignment = NSTextAlignmentRight;
+    }
+    self.atrforHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,self.colorForUnselectedText, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+    
+}
+
+-(void)setAtrForLabelHistoryTableInWith:(UIColor *)texColor{
+    
     //change font size
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     //style.s
@@ -605,32 +630,12 @@
         style.alignment = NSTextAlignmentLeft;
     }else {
         fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.regularTextStyle];
-        font  = [UIFont fontWithDescriptor:fontDescriptor size:18];
+        font  = [UIFont fontWithDescriptor:fontDescriptor size:16];
         // font  = [UIFont preferredFontForTextStyle:self.regularTextStyle];
         style.alignment = NSTextAlignmentRight;
     }
-    self.atrforHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,texColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
-}
-             
--(void)setAtrforHistoryTableInWith:(UIColor *)texColor{
-
-    //change font size
-    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    //style.s
-    UIFontDescriptor* fontDescriptor;
-    UIFont *font;
-    if ([self.delegate currentInterfaceClassSize] == UIUserInterfaceSizeClassCompact) {
-        //get current class size
-        fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.compactTextStyleIn];
-        font  = [UIFont fontWithDescriptor:fontDescriptor size:100];
-        style.alignment = NSTextAlignmentLeft;
-    }else {
-        fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.regularTextStyle];
-        font  = [UIFont fontWithDescriptor:fontDescriptor size:100];
-       // font  = [UIFont preferredFontForTextStyle:self.regularTextStyle];
-        style.alignment = NSTextAlignmentRight;
-    }
-    self.atrforHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,texColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+    self.atrForLabelHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,self.colorForUnselectedText, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+    
 }
 
 -(void)setAtrforButtonsInWith:(UIColor *)texColor{
@@ -650,20 +655,26 @@
         // font  = [UIFont preferredFontForTextStyle:self.regularTextStyle];
         style.alignment = NSTextAlignmentRight;
     }
-    self.atrforHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,texColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+    self.atrforButtonsIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,texColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+}
+
+-(void) changeClassSize{
+    [self setAtrforHistoryTableInWith:self.mainAtrTextColorIn];
+    [self setAtrForLabelHistoryTableInWith:self.mainAtrTextColorIn];
+    [self setAtrforButtonsInWith:self.mainColorIn];
 }
 
 
 //for attributed text color
-
--(NSDictionary*)atrForScreen{
-    return self.atrForScreenIn;
-}
 -(NSDictionary*)atrforButtons{
     return self.atrforButtonsIn;
 }
 -(NSDictionary*)atrforHistoryTable{
     return self.atrforHistoryTableIn;
+}
+-(NSDictionary*)atrForLabelHistoryTable{
+    //NSLog(@"atrForLabelHistoryTable %@", [self.atrForLabelHistoryTableIn objectForKey:NSFontAttributeName]);
+    return self.atrForLabelHistoryTableIn;
 }
 
 -(UIColor*)mainAtrTextColor{

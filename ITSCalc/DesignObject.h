@@ -50,7 +50,8 @@
 
 //for main attributed string
 @property (nonatomic, readonly) NSDictionary* atrforHistoryTable;
-@property (nonatomic, readonly) NSDictionary* atrForScreen;
+@property (nonatomic, readonly) NSDictionary* atrForLabelHistoryTable;
+//@property (nonatomic, readonly) NSDictionary* atrForScreen;
 @property (nonatomic, readonly) NSDictionary* atrforButtons;
 
 @property (nonatomic, readonly) UIColor* mainAtrTextColor;
@@ -103,6 +104,7 @@
 -(id)initWithDesignIndex:(NSInteger)designIndex forDelegator:(id)controller;
 -(UIColor*)textcolorButtonWithTitle:(NSString*)title;
 -(NSAttributedString*)atrStrForButtonsFrom:(NSAttributedString*)inStr;
+-(void)changeClassSize;
 
 
 //external function for designButtonView

@@ -18,7 +18,6 @@
 -(void) setDesignObj:(DesignObject *)designObj{
     _designObj = designObj;
     self.textColor =self.designObj.screenTextColor;
-    self.attributes = self.designObj.atrForScreen;
 
 }
 
@@ -64,7 +63,8 @@
             }
         }
     }
-    
+    //NSLog(@"DisplayScreenLabel atribut: %@",[mutAttrString attributesAtIndex:0 effectiveRange:NULL]);
+
     self.attributedText = [mutAttrString copy];
 }
 

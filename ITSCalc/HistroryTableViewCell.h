@@ -20,18 +20,25 @@
 
 @interface HistroryTableViewCell : UITableViewCell
 
-@property (nonatomic,strong) NSAttributedString *historyProgramString;
-@property (nonatomic, strong) NSString *historyDateString;
-@property (nonatomic,strong) NSString *historyExchangeCurrencyString;
-@property (nonatomic) BOOL isCanDrag; //can't drag last cell also set changeble uitextview
-@property (nonatomic, strong) UITextView *programTextView;
+@property (nonatomic,strong) NSAttributedString* programAtrString;
 
-@property (nonatomic, weak) DesignObject* designObj;
+//ONLY FOR TEST
+@property (nonatomic, strong) NSAttributedString* dateString;
+@property (nonatomic,strong) NSAttributedString* exchangeCurrencyString;
+@property (nonatomic, strong) NSAttributedString* variableValuesString;
+@property (nonatomic, strong) NSAttributedString* funcDescriptAtrString;
+
+
+@property (nonatomic) BOOL isCanDrag; //can't drag last cell also set changeble uitextview
+//@property (nonatomic, strong) UITextView *programTextView;
 //@property (nonatomic) NSInteger design;
+@property (nonatomic, weak) DesignObject* design;
+
 
 //thi property allow user recount history sell / alow apeasr recount button
 //@property (nonatomic) BOOL wasPurhased;
--(void) showButtons:(UISwipeGestureRecognizer *)sender;
+-(void) showButtons:(UIGestureRecognizer *)sender;
+-(void) setTextForLabels;
 
 @property (nonatomic,weak) id <HistoryTableViewCellDelegate> delegate;
 

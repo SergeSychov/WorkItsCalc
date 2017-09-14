@@ -17,6 +17,7 @@
 		355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142AA1B0BC8BE00471CCD /* DesignButton.m */; };
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
 		35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */; };
+		35CD631E1F311DEF00F44FFE /* AtrStrStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CD631D1F311DEF00F44FFE /* AtrStrStore.m */; };
 		35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */; };
 		35EF55381C46D55F007B4087 /* ButtonsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EF55371C46D55F007B4087 /* ButtonsStore.m */; };
 		5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5006BC90193792210081F44E /* ACalcTryViewControllerTableAdditional.strings */; };
@@ -144,6 +145,8 @@
 		357DE42C1ADAF20C0065C256 /* Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Logo.png; path = ../Logo.png; sourceTree = "<group>"; };
 		35CC27A01B0C6E4B00BB0A89 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		35CD631C1F311DEF00F44FFE /* AtrStrStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtrStrStore.h; sourceTree = "<group>"; };
+		35CD631D1F311DEF00F44FFE /* AtrStrStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AtrStrStore.m; sourceTree = "<group>"; };
 		35EAE2AB1AD5A5D400F428BC /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AboutViewController.h; path = ../AboutViewController.h; sourceTree = "<group>"; };
 		35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AboutViewController.m; path = ../AboutViewController.m; sourceTree = "<group>"; };
 		35EF55361C46D55F007B4087 /* ButtonsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonsStore.h; sourceTree = "<group>"; };
@@ -426,10 +429,41 @@
 		3524A5F21F140D6900699B20 /* Design */ = {
 			isa = PBXGroup;
 			children = (
+				5021BD2318FDB372001749D4 /* cmyk.h */,
 				3524A5F71F15490700699B20 /* DesignObject.h */,
 				3524A5F81F15490700699B20 /* DesignObject.m */,
+				35CD631C1F311DEF00F44FFE /* AtrStrStore.h */,
+				35CD631D1F311DEF00F44FFE /* AtrStrStore.m */,
 			);
 			name = Design;
+			sourceTree = "<group>";
+		};
+		35CD631A1F31060C00F44FFE /* History table */ = {
+			isa = PBXGroup;
+			children = (
+				5061850A1BB6AB9C005F209A /* GradientView.h */,
+				5061850B1BB6AB9C005F209A /* GradientView.m */,
+				5021BD0618FDB11E001749D4 /* HistoryTableView.h */,
+				5021BD0718FDB11E001749D4 /* HistoryTableView.m */,
+				5021BD2118FDB372001749D4 /* HistroryTableViewCell.h */,
+				5021BD2218FDB372001749D4 /* HistroryTableViewCell.m */,
+				5061850D1BB6E99E005F209A /* LineView.h */,
+				5061850E1BB6E99E005F209A /* LineView.m */,
+			);
+			name = "History table";
+			sourceTree = "<group>";
+		};
+		35CD631B1F31064000F44FFE /* Buttons collection */ = {
+			isa = PBXGroup;
+			children = (
+				5021BD2418FDB372001749D4 /* newButtonView.h */,
+				5021BD2518FDB372001749D4 /* newButtonView.m */,
+				5021BD2618FDB372001749D4 /* NewButtonsCollectionViewCell.h */,
+				5021BD2718FDB372001749D4 /* NewButtonsCollectionViewCell.m */,
+				5021BD0818FDB11E001749D4 /* ButtonsCollectionView.h */,
+				5021BD0918FDB11E001749D4 /* ButtonsCollectionView.m */,
+			);
+			name = "Buttons collection";
 			sourceTree = "<group>";
 		};
 		500E274C1C3AD88600FB5D8E /* CurrensiesPicker */ = {
@@ -582,8 +616,6 @@
 				50F312531A2222F7002604FB /* DownButton.m */,
 				5021BCC918FDB08B001749D4 /* error.caf */,
 				504EA8A51A17C6E000E225F7 /* iPads */,
-				5061850D1BB6E99E005F209A /* LineView.h */,
-				5061850E1BB6E99E005F209A /* LineView.m */,
 				50C3C4C41B981049005A6854 /* MarkView.h */,
 				50C3C4C51B981049005A6854 /* MarkView.m */,
 				504750161B79346C001AD553 /* myTextureSych 3.png */,
@@ -630,19 +662,8 @@
 		5021BD0518FDB0F5001749D4 /* ScrollViews */ = {
 			isa = PBXGroup;
 			children = (
-				5021BD2118FDB372001749D4 /* HistroryTableViewCell.h */,
-				5021BD2218FDB372001749D4 /* HistroryTableViewCell.m */,
-				5061850A1BB6AB9C005F209A /* GradientView.h */,
-				5061850B1BB6AB9C005F209A /* GradientView.m */,
-				5021BD2318FDB372001749D4 /* cmyk.h */,
-				5021BD2418FDB372001749D4 /* newButtonView.h */,
-				5021BD2518FDB372001749D4 /* newButtonView.m */,
-				5021BD2618FDB372001749D4 /* NewButtonsCollectionViewCell.h */,
-				5021BD2718FDB372001749D4 /* NewButtonsCollectionViewCell.m */,
-				5021BD0618FDB11E001749D4 /* HistoryTableView.h */,
-				5021BD0718FDB11E001749D4 /* HistoryTableView.m */,
-				5021BD0818FDB11E001749D4 /* ButtonsCollectionView.h */,
-				5021BD0918FDB11E001749D4 /* ButtonsCollectionView.m */,
+				35CD631B1F31064000F44FFE /* Buttons collection */,
+				35CD631A1F31060C00F44FFE /* History table */,
 			);
 			name = ScrollViews;
 			sourceTree = "<group>";
@@ -1009,6 +1030,7 @@
 				35055C871F09876A00BDC445 /* GraphButton.m in Sources */,
 				505156001B01311400E2E042 /* AddViewController.m in Sources */,
 				50F312481A20DCEE002604FB /* ArchiveSizeView.m in Sources */,
+				35CD631E1F311DEF00F44FFE /* AtrStrStore.m in Sources */,
 				50961B641A1A875C00868777 /* SettingButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
