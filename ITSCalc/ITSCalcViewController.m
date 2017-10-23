@@ -70,6 +70,7 @@
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812.)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
 //important
@@ -106,6 +107,7 @@
 //for constrain layout
 
 #define IPHONE_RATIO_BUTTONS_VIEW 1.33
+#define IPHONE_X_RATIO_BUTTONS_VIEW 1.54
 #define IPAD_RAIO_BUTTONS_VIEW 1.3
 #define IPHONE_SCREEN_VS_WIDTH_RATIO 0.25
 #define IPAD_SCREEN_VS_WIDTH_RATIO 0.14
@@ -244,7 +246,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
 @property (nonatomic) BOOL fristLunchWithicloudAvailable;
 //need to set iClouds images whole & empty
-
+//arrays to quick start scrollViews (buttonsCollection & historyTable)
+@property (nonatomic) NSArray* buttonsNames;
+@property (nonatomic) NSArray *cellHeights;
+@property (nonatomic) NSArray *infoAttributedStrings;
+@property (nonatomic) NSArray *mainAttributedStrings;
 //Showed View
 @property (nonatomic, strong) UIDynamicAnimator *animator;
 
@@ -260,6 +266,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //   since the NSFetchedResultsController will notice and update the table automatically).
 // This will also automatically be called if you change the fetchedResultsController @property.
 @property (nonatomic,strong) NSArray* lastRowDataArray;
+
+//IMPORTANT NEED TO DELETE THIS PROPERTY
 @property (nonatomic,strong) NSAttributedString *lastRowsString;
 
 //for set values of row hight in historyTableView
@@ -1567,6 +1575,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
         //NSLog(@"muttableOutputArray %@", muttableOutputArray);
         self.lastRowDataArray = [muttableOutputArray copy];
+        [self lastRowUpdate];
 
     }
 }
@@ -1593,6 +1602,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [muttableOutputArray addObject:emptyArray];
     
     self.lastRowDataArray = [muttableOutputArray copy];
+    [self lastRowUpdate];
     
 }
 
@@ -1680,6 +1690,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         NSArray *new = [[NSArray alloc] init];
         self.lastRowDataArray = new;
+        [self lastRowUpdate];
     }
 
 
@@ -2817,6 +2828,8 @@ static BOOL moveIsAvailable;
             //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
             [self newButtonsSize];
             screenHeight = self.calcScreenHeightConstrain.constant;
+            [self updateHistoryTableArraysAndGoBottom:NO];
+            //[self.historyTable reloadData];
             
         } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
             //screenHeight = self.calcScreenHeightConstrain.constant;
@@ -2827,7 +2840,7 @@ static BOOL moveIsAvailable;
             screenHeight = self.calcScreenHeightConstrain.constant;
         }
         [self.designObj changeClassSize];
-        [self.historyTable reloadData];
+        //[self.historyTable reloadData];
     }
 }
 
@@ -3068,6 +3081,7 @@ static BOOL moveIsAvailable;
 
 
 #pragma mark - UICOLLECTIONS VIEW DELEGATE
+
 -(NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     NSInteger section = 0;
@@ -3299,17 +3313,19 @@ NSIndexPath *lastVisibleCellPatch;
         // self.historyTable.isNeedToSetOffsetToButton = YES;
  
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+        //[self.historyTable setContentOffset:<#(CGPoint)#>]
  
-    } /*else {
-        [self.historyTable setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
-        // self.historyTable.isNeedToSetOffsetToButton = YES;
-    }*/
+    } else {
+        [self.historyTable setContentInset:UIEdgeInsetsMake(0,0, 0, 0)];
+        //[self.historyTable setContentOffset:CGPointMake(0, self.historyTable.contentSize.height-self.historyTable.frame.size.height)];
+        [self.historyTable setContentOffset:CGPointMake(0, self.historyTable.contentSize.height-self.historyTable.frame.size.height) animated:YES];
+    }
  
-    if([self.historyTable numberOfRowsInSection:0] >=1){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
+    if([self.cellHeights count] >=1){
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]-1  inSection:0];
  
         //[self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
-        [self.historyTable scrollToRowAtIndexPath:lastRowPatch atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+       // [self.historyTable scrollToRowAtIndexPath:lastRowPatch atScrollPosition:UITableViewScrollPositionBottom animated:YES];
         //[self.historyTable scrollRectToVisible:[self.historyTable cellForRowAtIndexPath:lastRowPatch].frame animated:YES];
         
         //[self.historyTable scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionBottom animated:NO];
@@ -3320,14 +3336,17 @@ NSIndexPath *lastVisibleCellPatch;
 
 #pragma mark - WORK WITH LAST ROW
 -(void) selectLastRowInHistory {
-    if(self.historyTable && ([self.historyTable numberOfRowsInSection:0] >= 1)){
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
-        //NSLog(@"selectLastRowInHistory lastRowPatch: %lu", lastRowPatch.row);
+
+    
+    if(self.historyTable && ([self.cellHeights count] >= 1)){
+        
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
+        NSLog(@"selectLastRowInHistory lastRowPatch: %lu", lastRowPatch.row);
         
         //lastVisibleCellPatch = lastRowPatch;
         //selectedRowPatch = lastRowPatch;
         
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];//animated:YES scrollPosition:UITableViewScrollPositionNone];
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];//animated:YES scrollPosition:UITableViewScrollPositionNone];
        // [self.historyTable scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }
     //NSLog(@"FetchedController count: %lu", [self.fetchedResultsController.fetchedObjects count]);
@@ -3343,28 +3362,87 @@ NSIndexPath *lastVisibleCellPatch;
         _lastRowDataArray = lastRowDataArray;
     }
     
-    self.lastRowsString = [self getAttributedStringFromArray:self.lastRowDataArray];
+    self.lastRowsString = [self getAttributedStringFromArray:_lastRowDataArray];
+}
 
-    NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0];
+-(void)lastRowUpdate{
+    NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
+   // NSLog(@"Last row %ld", (long)lastRow.row);
 
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
                              withRowAnimation:UITableViewRowAnimationFade];
+    
     [self selectLastRowInHistory];
 
     if(![self.historyTable.indexPathsForVisibleRows containsObject:lastRow]){
         [self moveHistoryTableContentToRightPosition];
     }
+    
     //NSLog(@"self.historyTable.rowHeight: %f", self.historyTable.rowHeight);
 }
 
 
 #pragma mark HISTORY TABLE VIEW DELEGATE
+
+//ONLY FOR TEST
+-(NSArray*)buttonsNames{
+    if(!_buttonsNames){
+        _buttonsNames =[[NSArray alloc]init];
+    }
+    return _buttonsNames;
+}
+
+-(NSArray*)cellHeights {
+    if(!_cellHeights){
+        _cellHeights = [[NSArray alloc] init];
+    }
+    return _cellHeights;
+}
+-(NSArray*)infoAttributedStrings{
+    if(!_infoAttributedStrings){
+        _infoAttributedStrings = [[NSArray alloc] init];
+    }
+    return _infoAttributedStrings;
+}
+-(NSArray*)mainAttributedStrings{
+    if(!_mainAttributedStrings){
+        _mainAttributedStrings = [[NSArray alloc] init];
+    }
+    return _mainAttributedStrings;
+
+}
+
+
 /*
 -(CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return  100.;
+    if([cellHeights objectForKey:indexPath]){
+        return [[cellHeights objectForKey:indexPath] floatValue];
+    } else {
+        return  60;
+    }
 }
+
 */
 
+#define MIN_CELL_HEIGHT 60.f
+
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    //NSLog(@"CEll height count: %lu",(unsigned long)[self.cellHeights count] );
+    
+    CGFloat retHeight;
+    if(([self.cellHeights count]==0) || indexPath.row>([self.cellHeights count]-1)){
+        NSAttributedString* mainLabel =  [self getAttributedStringFromArray:self.lastRowDataArray];
+        NSAttributedString* infoLabel = [[NSAttributedString alloc] initWithString:@" "];
+        
+        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel];
+    } else {
+        retHeight =  [[self.cellHeights objectAtIndex:indexPath.row] floatValue];
+    }
+    return retHeight;//MIN_CELL_HEIGHT;
+
+
+}
 /* was setted only for test -WILL DELETE IT
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -3381,6 +3459,7 @@ NSIndexPath *lastVisibleCellPatch;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     NSInteger sections = 1;
+    
     if([[self.fetchedResultsController sections] count] > 0){
         sections = [[self.fetchedResultsController sections] count];
     }
@@ -3390,14 +3469,15 @@ NSIndexPath *lastVisibleCellPatch;
 {
     //return one more rows than in fatched result controller
     NSInteger rows = 1;
+    
     self.noticeButton.enabled = NO;
     
-    if ([[self.fetchedResultsController sections] count] > 0) {
-        id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
-        rows = [sectionInfo numberOfObjects]+1;
-        self.noticeButton.enabled = YES;
+    if ([self.cellHeights count] > 0) {
+        rows = [self.cellHeights count] +1;
+        //self.noticeButton.enabled = YES;
     }
-    
+    //NSLog(@"numberOfRowsInSection rowsNumber:%ld", (long)rows);
+
     return rows;
 }
 
@@ -3415,10 +3495,22 @@ NSIndexPath *lastVisibleCellPatch;
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [self.historyTable dequeueReusableCellWithIdentifier:@"HistoryCell"];
-
+    //NSLog(@"CALL cellForRowAtIndexPath");
     
     if([cell isKindOfClass:[HistroryTableViewCell class]]){
+
+
+        if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
+            ((HistroryTableViewCell*)cell).mainProgrammLabel.attributedText = [self getAttributedStringFromArray:self.lastRowDataArray];
+            ((HistroryTableViewCell*)cell).infoLabel.attributedText = [self getAttrInfStringFromProg:self.lastRowDataArray and:nil];
+            
+        } else {
+            ((HistroryTableViewCell*)cell).mainProgrammLabel.attributedText =[self.mainAttributedStrings objectAtIndex:indexPath.row];
+            ((HistroryTableViewCell*)cell).infoLabel.attributedText = [self.infoAttributedStrings objectAtIndex:indexPath.row];
+        }
+
         
+        /*
         ((HistroryTableViewCell*)cell).delegate = self;
         ((HistroryTableViewCell*)cell).design = self.designObj;
         
@@ -3478,8 +3570,11 @@ NSIndexPath *lastVisibleCellPatch;
             ((HistroryTableViewCell*)cell).programAtrString = [self getAttributedStringFromStory:story];
             
         }
-    }
         [(HistroryTableViewCell*)cell setTextForLabels];
+         */
+
+    }
+    //[cellHeights setObject:[NSNumber numberWithFloat:cell.bounds.size.height] forKey:indexPath];
     
     return cell;
 }
@@ -3676,6 +3771,7 @@ NSIndexPath *lastVisibleCellPatch;
  }
 
 */
+#pragma mark GET ATTRIBUTED STRINGS
 -(NSMutableAttributedString*) getAttributedStringFronFetchForIndexPatch:(NSIndexPath*) indexPath
 {
     return [self getAttributedStringFromStory:[self.fetchedResultsController objectAtIndexPath:indexPath]];
@@ -3721,6 +3817,8 @@ NSIndexPath *lastVisibleCellPatch;
         } else if (result && [result isKindOfClass:[NSString class]]){
             resultString = result;
         }
+    } else {
+        resultString = @" ";
     }
     
     //IMPORTANT delete properties self.attributes
@@ -3784,6 +3882,79 @@ NSIndexPath *lastVisibleCellPatch;
     
 }
 
+-(NSAttributedString*)getAttrInfStringFromStory:(History*)story{
+    
+    
+    return [self getAttrInfStringFromProg:[NSKeyedUnarchiver unarchiveObjectWithData:story.program] and:story.date];
+}
+
+-(NSAttributedString*)getAttrInfStringFromProg:(NSArray*)prog and:(NSDate*)date{
+    
+    NSMutableAttributedString *wholeInfo = [[NSMutableAttributedString alloc] initWithString:@" " attributes:self.designObj.atrForLabelHistoryTable];
+    NSAttributedString* spaceMark = [[NSAttributedString alloc] initWithString:@" "];//IMPORTANT Check if it need to set attributes
+    
+    //get date
+    if(date){
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+    
+    NSAttributedString *dateString = [[NSAttributedString alloc]
+                                      initWithString:[[dateFormatter stringFromDate:date] stringByAppendingString:@"  "]
+                                      attributes:self.designObj.atrForLabelHistoryTable];
+        [wholeInfo insertAttributedString:dateString atIndex:0];
+        [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
+    } else {
+        [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
+    }
+    
+    //get currensies part
+    NSAttributedString* exchangeCurrencyString = [ACalcBrain stringCurrensiesInProgram:prog
+                                                                       withAtrtributes:self.designObj.atrForLabelHistoryTable];
+    if(exchangeCurrencyString){
+        [wholeInfo insertAttributedString:exchangeCurrencyString atIndex:[wholeInfo length]];
+        [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
+    }
+    
+    //get variables part
+    NSAttributedString* variableValuesString = [ACalcBrain stringVariableInProgram:prog
+                                                                   withAtrtributes:self.designObj.atrForLabelHistoryTable];
+    if(variableValuesString){
+        [wholeInfo insertAttributedString:variableValuesString atIndex:[wholeInfo length]];
+        [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
+    }
+    
+    //get functions part
+    NSAttributedString* funcDescriptAtrString = [ACalcBrain stringFunctionInProgram:prog
+                                                                    withAtrtributes:self.designObj.atrForLabelHistoryTable];
+    if(funcDescriptAtrString){
+        [wholeInfo insertAttributedString:funcDescriptAtrString atIndex:[wholeInfo length]];
+        [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
+    }
+    
+    return [wholeInfo copy];
+    
+}
+
+#pragma mark HEIGHT OF CELL
+-(CGFloat)getCellHeightFromMain:(NSAttributedString*)mainStr and:(NSAttributedString*)infStr{
+    CGFloat needHeight;
+    
+    CGFloat needWidth = self.mainContainerWidth.constant - 4;
+    CGSize needSize = CGSizeMake(needWidth, 1000);
+    NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
+    
+    CGRect needInfoRect = [infStr boundingRectWithSize:needSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                  context:drawContext];
+    CGRect needMainRect = [mainStr boundingRectWithSize:needSize options:NSStringDrawingUsesLineFragmentOrigin
+                                                  context:drawContext];
+    needHeight = needInfoRect.size.height+needMainRect.size.height+20.;
+    
+    if(needHeight < MIN_CELL_HEIGHT){
+        return MIN_CELL_HEIGHT;
+    } else {
+        return needHeight;
+    }
+}
 
 #pragma mark TEXT VIEW DELEGATE
 //hide "past/copy menu
@@ -4066,6 +4237,53 @@ NSIndexPath *lastVisibleCellPatch;
 }
 
 
+#pragma mark SET HISTORY ARRAYS
+
+-(void) updateHistoryTableArraysAndGoBottom:(BOOL) toBottom{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
+        
+        NSMutableArray* mainHistoryAttributedStrings = [[NSMutableArray alloc] init];
+        NSMutableArray* infoHistoryAttributedStrings = [[NSMutableArray alloc] init];
+        NSMutableArray* heightsHistoryCells = [[NSMutableArray alloc]init];
+        
+        if([fetchedObjects count]>0){
+            for(History* story in fetchedObjects){
+                NSAttributedString *mainStr;
+                NSAttributedString *infStr;
+                CGFloat cellHeight;
+                
+                //1. get main string
+                mainStr = [self getAttributedStringFromStory:story];
+                //2. get inf str
+                infStr = [self getAttrInfStringFromStory:story];
+                //3. calculate need cell Heigh
+                cellHeight = [self getCellHeightFromMain:mainStr and:infStr];
+                
+                //add to arrays
+                [mainHistoryAttributedStrings addObject:mainStr];
+                [infoHistoryAttributedStrings addObject:infStr];
+                [heightsHistoryCells addObject:[NSNumber numberWithFloat:cellHeight]];
+            }
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //[self.historyTable  beginUpdates];
+            self.mainAttributedStrings = [mainHistoryAttributedStrings copy];
+            self.infoAttributedStrings = [infoHistoryAttributedStrings copy];
+            self.cellHeights = [heightsHistoryCells copy];
+            // [self.historyTable endUpdates];
+            
+            [self.historyTable reloadData];
+
+            
+             if(toBottom){
+                 
+                 [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0] animated:NO scrollPosition:UITableViewScrollPositionBottom];
+                 [self moveHistoryTableContentToRightPosition];
+             }
+        });
+    });
+}
 
 #pragma mark - FETCHING
 - (void)performFetch
@@ -4082,12 +4300,7 @@ NSIndexPath *lastVisibleCellPatch;
     } else {
 
     }
-    //[self deleteEmptyProgram];
-    //[self resetHeightsofRows];
-    [self.historyTable reloadData];
-    [self selectLastRowInHistory];
-    [self moveHistoryTableContentToRightPosition];
-
+    [self updateHistoryTableArraysAndGoBottom:YES];
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
@@ -4102,7 +4315,7 @@ NSIndexPath *lastVisibleCellPatch;
         if (newfrc) {
             [self performFetch];
         } else {
-            [self.historyTable reloadData];
+            [self updateHistoryTableArraysAndGoBottom:YES];
         }
     }
     
@@ -4121,7 +4334,7 @@ NSIndexPath *lastVisibleCellPatch;
     }
     */
 }
-
+    
 
 #pragma mark - NSFetchedResultsControllerDelegate
 //what I need to change array
@@ -4229,6 +4442,34 @@ BOOL isNewTableRow;
                  self.bannerRequestCounter++;
                  }*/
             }
+            /*HERE IS THE PROBLEM
+            History* newStory = [self.fetchedResultsController.fetchedObjects objectAtIndex:newIndexPath.row];
+            NSMutableArray *mainAttrArrMut = [self.mainAttributedStrings mutableCopy];
+            [mainAttrArrMut insertObject:<#(nonnull id)#> atIndex:<#(NSUInteger)#>]
+            */
+            
+            //for history arrays changes
+            NSMutableArray* mainHistoryAttributedStrings = [self.mainAttributedStrings mutableCopy];
+            NSMutableArray* infoHistoryAttributedStrings = [self.infoAttributedStrings mutableCopy];
+            NSMutableArray* heightsHistoryCells = [self.cellHeights mutableCopy];
+            
+            History* storyObj = [self.fetchedResultsController objectAtIndexPath:newIndexPath];
+            
+            //1. get main string
+            NSAttributedString* mainStr = [self getAttributedStringFromStory:storyObj];
+            //2. get inf str
+            NSAttributedString* infStr = [self getAttrInfStringFromStory:storyObj];
+            //3. calculate need cell Heigh
+            CGFloat cellHeight = [self getCellHeightFromMain:mainStr and:infStr];
+            
+            //add to arrays
+            [mainHistoryAttributedStrings addObject:mainStr];
+            [infoHistoryAttributedStrings addObject:infStr];
+            [heightsHistoryCells addObject:[NSNumber numberWithFloat:cellHeight]];
+            
+            self.mainAttributedStrings = [mainHistoryAttributedStrings copy];
+            self.infoAttributedStrings = [infoHistoryAttributedStrings copy];
+            self.cellHeights = [heightsHistoryCells copy];
             
             [self.historyTable insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             isNewTableRow = YES;
@@ -4240,6 +4481,23 @@ BOOL isNewTableRow;
         case NSFetchedResultsChangeDelete: {
             //self.historyTable.isNeedToSetOffsetToButton = NO;
             //NSMutableIndexSet *mutSet = [self.deletedIndexesSet mutableCopy];
+            
+            //for history arrays changes
+            NSMutableArray* mainHistoryAttributedStrings = [self.mainAttributedStrings mutableCopy];
+            NSMutableArray* infoHistoryAttributedStrings = [self.infoAttributedStrings mutableCopy];
+            NSMutableArray* heightsHistoryCells = [self.cellHeights mutableCopy];
+            
+
+            
+            //add to arrays
+            [mainHistoryAttributedStrings removeObjectAtIndex:indexPath.row];
+            [infoHistoryAttributedStrings removeObjectAtIndex:indexPath.row];
+            [heightsHistoryCells removeObjectAtIndex:indexPath.row];
+            
+            self.mainAttributedStrings = [mainHistoryAttributedStrings copy];
+            self.infoAttributedStrings = [infoHistoryAttributedStrings copy];
+            self.cellHeights = [heightsHistoryCells copy];
+            
             [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             
             //[mutSet addIndex:indexPath.row];
@@ -4337,10 +4595,11 @@ BOOL isNewTableRow;
 */
    
     if(isNewTableRow) {
-        NSLog(@"controllerDidChangeContent %lu", [self.historyTable numberOfRowsInSection:0]-1);
+        //NSLog(@"controllerDidChangeContent %lu", [self.historyTable numberOfRowsInSection:0]-1);
         [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0]
                                        animated:YES
                                  scrollPosition:UITableViewScrollPositionBottom];
+       // [self moveHistoryTableContentToRightPosition];
 
     }
    
@@ -4488,10 +4747,14 @@ BOOL isNewTableRow;
 -(void) documentIsReady:(UIManagedDocument*) document
 {
     if(document.documentState == UIDocumentStateNormal){
-        self.managedObjectContext = document.managedObjectContext;
+        //try to save core data through update document
+        self.doc = document;
+        
+       
         NSManagedObjectContext *buttonContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [buttonContext setParentContext:self.managedObjectContext];
+        [buttonContext setParentContext:document.managedObjectContext];
         self.buttonManagedObjectContext = buttonContext;
+        self.managedObjectContext = document.managedObjectContext;
 
     }
 }
@@ -4968,7 +5231,7 @@ BOOL isNewTableRow;
     }
     
     //try to save core data through update document
-    self.doc = document;
+    //self.doc = document;
     
 }
 
@@ -4988,6 +5251,7 @@ BOOL isNewTableRow;
         [document openWithCompletionHandler:^(BOOL success) {
             if (success) {
               [self documentIsReady: document];
+                [self setStoreNotifications];
 
             }
         }];
@@ -4996,13 +5260,14 @@ BOOL isNewTableRow;
           completionHandler:^(BOOL success) {
               if (success){
                   [self documentIsReady: document];
+                  [self setStoreNotifications];
               }
           }];
     }
     //try to save core data through update document
-    self.doc = document;
+    //self.doc = document;
 
-    [self setStoreNotifications];
+    
 }
 
 
@@ -5042,6 +5307,10 @@ BOOL isNewTableRow;
 #pragma mark VIEW_DID_LOAD
 - (void)viewDidLoad
 {
+    ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
+    NSDate* launchTime = appClass.launchDate;
+    //NSDate* appearDate = [NSDate date];
+    NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
     if(userDefault && [self extractFromUserDefault:userDefault]){
@@ -5103,11 +5372,12 @@ BOOL isNewTableRow;
     
     [super viewDidLoad];
     
+    /*
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
 
     
-    /*
+    
     if(IS_IPAD){
         //self.noticeButton.enabled = NO;
     }
@@ -5142,6 +5412,7 @@ BOOL isNewTableRow;
         self.isDecCounting = YES;//to key value
         //Important WOKS With days trial
         self.isTrialPeriod = YES;
+        self.lastRowDataArray = nil;
         
         //
         //
@@ -5150,10 +5421,7 @@ BOOL isNewTableRow;
         self.startTrialDate = date;
     }
     
-    
-    self.historyTable.allowsMultipleSelectionDuringEditing = NO;
-    self.historyTable.allowsSelectionDuringEditing = NO;
-    self.historyTable.allowsMultipleSelection = NO;
+
     if(IS_BLACK_MODE){
         [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
         [self.buttonsCollection setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
@@ -5265,10 +5533,11 @@ BOOL isNewTableRow;
     //INSERTED
     self.isCalcShowed = YES;
     self.isHistoryShowed = NO;
-    self.historyTable.rowHeight = UITableViewAutomaticDimension;
-    self.historyTable.estimatedRowHeight = 60;
+    //cellHeights = [[NSMutableArray alloc] init];
+    //self.historyTable.rowHeight = UITableViewAutomaticDimension;
+    //self.historyTable.estimatedRowHeight = 60;
 
-    
+    NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
 }
 
 
@@ -5410,7 +5679,11 @@ CGFloat maxButtonsCollectionHeight;
         //if history table whole showed
         //how history showed can change from 1 to 0
         // need detect whole way
-        maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+        if(IS_X){//if iPhoneX
+            maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_X_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+        } else {
+            maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+        }
         
         
     } else {
@@ -5710,6 +5983,15 @@ CGFloat maxButtonsCollectionHeight;
        // [self.historyTable reloadData];
        // [self initialLayoutDynamicContainerWithSize:self.view.frame.size];
     }
+
+    
+    [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0] animated:NO scrollPosition:UITableViewScrollPositionBottom];
+    
+    ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
+    NSDate* launchTime = appClass.launchDate;
+    //NSDate* appearDate = [NSDate date];
+    NSLog(@"Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    
     
     
 }
@@ -5920,6 +6202,7 @@ sourceController:(UIViewController *)source
         NSMutableAttributedString *atrStrFromString;
         if(indexPath.row == lastRowPatch.row){
             if(!self.lastRowDataArray) self.lastRowDataArray = [[NSArray alloc] init];//if no array till now
+            [self lastRowUpdate];
             atrStrFromString = [self.lastRowsString mutableCopy];//[self getAttributedStringFromArray:self.lastRowDataArray];
         } else {
             atrStrFromString=  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
@@ -6383,12 +6666,13 @@ sourceController:(UIViewController *)source
             
             if(top && [top isKindOfClass:[NSArray class]]){
                 self.lastRowDataArray = top;
+                //[controllerArray removeLastObject];
+                //top = [controllerArray lastObject];
                 
             } else {
                 return  NO;
             }
 
-        
         } else {
             return  NO;
         }
@@ -6400,11 +6684,29 @@ sourceController:(UIViewController *)source
 }
 
 #pragma mark FOR USER DEFAULT
+#define SAVE_HISTORY_QNTITY 10
+-(NSArray*)returnOnlyMinQntity:(NSInteger)qnt fromArray:(NSArray*)arr{
+    NSArray* retArray;
+    //save only ten history cells heights
+    if([arr count]>SAVE_HISTORY_QNTITY){
+        retArray =[arr objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange([arr count]-SAVE_HISTORY_QNTITY, SAVE_HISTORY_QNTITY)]];
+    } else {
+        retArray = arr;
+    }
+    return retArray;
+}
 -(NSArray*) arrayToUserDefault
 {
     NSMutableArray *wholeArray = [[NSMutableArray alloc] init];
     
     NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
+    
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsNames]];
+    
+    [controllerArray addObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.cellHeights]];
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.mainAttributedStrings]]];
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.infoAttributedStrings]]];
+
     [controllerArray addObject:self.lastShowAllertViewDate];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
     [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
@@ -6496,9 +6798,33 @@ sourceController:(UIViewController *)source
         if(top && [top isKindOfClass:[NSDate class]]){
             // self.self.lastShowAllertViewDate = top;
             self.lastShowAllertViewDate = top;
+            [controllerArray removeLastObject];
+            top = [controllerArray lastObject];
+
         } else {
             return NO;
         }
+        if(top && [top isKindOfClass:[NSData class]]){
+            self.infoAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:top];
+            [controllerArray removeLastObject];
+            top = [controllerArray lastObject];
+        }
+        if(top && [top isKindOfClass:[NSData class]]){
+            self.mainAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:top];
+            [controllerArray removeLastObject];
+            top = [controllerArray lastObject];
+        }
+        if(top && [top isKindOfClass:[NSArray class]]){
+            self.cellHeights = top;
+            [controllerArray removeLastObject];
+            top = [controllerArray lastObject];
+        }
+        if(top && [top isKindOfClass:[NSData class]]){
+            self.buttonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:top];
+            //[controllerArray removeLastObject];
+            //top = [controllerArray lastObject];
+        }
+
         
     } else {
         return NO;

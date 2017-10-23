@@ -307,15 +307,15 @@
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HistoryCell" id="wuO-1N-kP6" customClass="HistroryTableViewCell">
                                                 <rect key="frame" x="0.0" y="28" width="410" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wuO-1N-kP6" id="pX9-nR-ngu" customClass="GradientView">
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wuO-1N-kP6" id="pX9-nR-ngu">
                                                     <rect key="frame" x="0.0" y="0.0" width="410" height="43.666666666666664"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GvF-Sh-8W5">
-                                                            <rect key="frame" x="5" y="0.0" width="400" height="43"/>
+                                                            <rect key="frame" x="10" y="0.0" width="390" height="43"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMr-Nq-QKJ">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="400" height="20.333333333333332"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="390" height="20.333333333333332"/>
                                                                     <attributedString key="attributedText">
                                                                         <fragment content="Label">
                                                                             <attributes>
@@ -326,7 +326,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rb0-no-UaV">
-                                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="400" height="22.666666666666671"/>
+                                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="390" height="22.666666666666671"/>
                                                                     <attributedString key="attributedText">
                                                                         <fragment content="Label">
                                                                             <attributes>
@@ -340,8 +340,12 @@
                                                         </stackView>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstAttribute="trailing" secondItem="GvF-Sh-8W5" secondAttribute="trailing" constant="5" id="BTz-ne-k7F"/>
-                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="leading" secondItem="pX9-nR-ngu" secondAttribute="leading" constant="5" id="GUE-lv-B6f"/>
+                                                        <constraint firstAttribute="trailing" secondItem="GvF-Sh-8W5" secondAttribute="trailing" constant="20" id="BTz-ne-k7F">
+                                                            <variation key="widthClass=compact" constant="10"/>
+                                                        </constraint>
+                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="leading" secondItem="pX9-nR-ngu" secondAttribute="leading" constant="20" id="GUE-lv-B6f">
+                                                            <variation key="widthClass=compact" constant="10"/>
+                                                        </constraint>
                                                         <constraint firstAttribute="bottom" secondItem="GvF-Sh-8W5" secondAttribute="bottom" id="JFI-gR-SEc"/>
                                                         <constraint firstItem="GvF-Sh-8W5" firstAttribute="top" secondItem="pX9-nR-ngu" secondAttribute="top" id="Qwt-kN-dEX"/>
                                                     </constraints>

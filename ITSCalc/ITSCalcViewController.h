@@ -10,6 +10,8 @@
 #import <iAd/iAd.h>
 #import <AudioToolbox/AudioToolbox.h>
 
+#import "ITSCalcAppDelegate.h"
+
 #import "ButtonsCollectionView.h"
 
 #import "Currensies.h"
