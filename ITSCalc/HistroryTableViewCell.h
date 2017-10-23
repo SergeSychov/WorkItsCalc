@@ -20,6 +20,9 @@
 
 @interface HistroryTableViewCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UILabel *infoLabel;
+@property (weak, nonatomic) IBOutlet UILabel *mainProgrammLabel;
+
 @property (nonatomic,strong) NSAttributedString* programAtrString;
 
 //ONLY FOR TEST

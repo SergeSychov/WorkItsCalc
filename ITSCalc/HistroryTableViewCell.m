@@ -32,8 +32,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 @property (nonatomic,strong) UIImageView* moreImage;
 
 @property (weak, nonatomic) IBOutlet GradientView *scrollGradientView;
-@property (weak, nonatomic) IBOutlet UILabel *infoLabel;
-@property (weak, nonatomic) IBOutlet UILabel *mainProgrammLabel;
+
 
 
 //check why
@@ -58,7 +57,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
 }
 
-
+/*
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
    
@@ -79,7 +78,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     //NSLog(@"Self selected");
     
 }
-
+*/
 
 -(void) setTextForLabels{
     
@@ -156,7 +155,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     return [atrOutStr copy];
 }
-
+/*
 -(void)drawRect:(CGRect)rect
 {
     if(self.selected){
@@ -177,7 +176,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         [self.mainProgrammLabel setTextColor:self.design.colorForUnselectedText];
     }
 }
-
+*/
 -(void)enclosingTableViewDidScroll
 {
     [self hideButtons];
@@ -311,19 +310,14 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         }
     }
 }
-
+/*
 -(void)awakeFromNib {
     [super awakeFromNib];
     
     [self setup];
 }
-
+*/
 //check may be not needed
--(void)layoutSubviews{
-    [super layoutSubviews];
-    self.mainProgrammLabel.preferredMaxLayoutWidth = self.frame.size.width;
-    self.infoLabel.preferredMaxLayoutWidth = self.frame.size.width;
-}
 
 -(void)dealloc
 {

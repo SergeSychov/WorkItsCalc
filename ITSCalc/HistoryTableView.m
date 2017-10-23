@@ -30,7 +30,7 @@
     [self setup];
 }
 
-
+/*
 -(void) setContentSize:(CGSize)contentSize{
     [super setContentSize:contentSize];
     
@@ -45,6 +45,6 @@
     }
     
 }
-
+*/
 
 @end
