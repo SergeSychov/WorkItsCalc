@@ -16,6 +16,7 @@
 		355142AB1B0BC8BE00471CCD /* ClearHistoryButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */; };
 		355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142AA1B0BC8BE00471CCD /* DesignButton.m */; };
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
+		3580CC2E1F9EA3AC0035C20D /* TestView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3580CC2D1F9EA3AC0035C20D /* TestView.m */; };
 		35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */; };
 		35CD631E1F311DEF00F44FFE /* AtrStrStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CD631D1F311DEF00F44FFE /* AtrStrStore.m */; };
 		35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */; };
@@ -143,6 +144,8 @@
 		355142A91B0BC8BE00471CCD /* DesignButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignButton.h; sourceTree = "<group>"; };
 		355142AA1B0BC8BE00471CCD /* DesignButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignButton.m; sourceTree = "<group>"; };
 		357DE42C1ADAF20C0065C256 /* Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Logo.png; path = ../Logo.png; sourceTree = "<group>"; };
+		3580CC2C1F9EA3AB0035C20D /* TestView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestView.h; sourceTree = "<group>"; };
+		3580CC2D1F9EA3AC0035C20D /* TestView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestView.m; sourceTree = "<group>"; };
 		35CC27A01B0C6E4B00BB0A89 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		35CD631C1F311DEF00F44FFE /* AtrStrStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtrStrStore.h; sourceTree = "<group>"; };
@@ -447,6 +450,8 @@
 				5021BD0718FDB11E001749D4 /* HistoryTableView.m */,
 				5021BD2118FDB372001749D4 /* HistroryTableViewCell.h */,
 				5021BD2218FDB372001749D4 /* HistroryTableViewCell.m */,
+				3580CC2C1F9EA3AB0035C20D /* TestView.h */,
+				3580CC2D1F9EA3AC0035C20D /* TestView.m */,
 				5061850D1BB6E99E005F209A /* LineView.h */,
 				5061850E1BB6E99E005F209A /* LineView.m */,
 			);
@@ -586,8 +591,6 @@
 				50F312461A20DCEE002604FB /* ArchiveSizeView.h */,
 				50F312471A20DCEE002604FB /* ArchiveSizeView.m */,
 				5021BCC618FDB08B001749D4 /* blank.m4a */,
-				35055C851F09876A00BDC445 /* GraphButton.h */,
-				35055C861F09876A00BDC445 /* GraphButton.m */,
 				5080B9541965F0F90004EEED /* bluePanSelected2.png */,
 				5080B9551965F0F90004EEED /* bluePanUnselected2.png */,
 				5073EEC81A209EF60027EE0E /* CalcButton.h */,
@@ -595,11 +598,8 @@
 				50F3123A1A20AFFB002604FB /* CleanButton.h */,
 				50F3123B1A20AFFB002604FB /* CleanButton.m */,
 				355142A71B0BC8BE00471CCD /* ClearHistoryButton.h */,
-				35055C881F09877A00BDC445 /* TableButton.h */,
-				35055C891F09877A00BDC445 /* TableButton.m */,
 				355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */,
 				50F312551A22448F002604FB /* CloseSetButton.h */,
-				50F312561A22448F002604FB /* CloseSetButton.m */,
 				50F312401A20BA19002604FB /* CloudView.h */,
 				50F312411A20BA19002604FB /* CloudView.m */,
 				50A7D6FE1BAC33B900ABCB0C /* Clr.h */,
@@ -611,10 +611,13 @@
 				50545AFD1B00CB0C0036EAD8 /* DesignView.h */,
 				50545AFE1B00CB0C0036EAD8 /* DesignView.m */,
 				50C3C5051BA5AD9D005A6854 /* DesignViewFromButton.h */,
+				50F312561A22448F002604FB /* CloseSetButton.m */,
 				50C3C5061BA5AD9D005A6854 /* DesignViewFromButton.m */,
 				50F312521A2222F7002604FB /* DownButton.h */,
 				50F312531A2222F7002604FB /* DownButton.m */,
 				5021BCC918FDB08B001749D4 /* error.caf */,
+				35055C851F09876A00BDC445 /* GraphButton.h */,
+				35055C861F09876A00BDC445 /* GraphButton.m */,
 				504EA8A51A17C6E000E225F7 /* iPads */,
 				50C3C4C41B981049005A6854 /* MarkView.h */,
 				50C3C4C51B981049005A6854 /* MarkView.m */,
@@ -637,6 +640,8 @@
 				5021BCC718FDB08B001749D4 /* shutter.caf */,
 				50F312431A20CCFD002604FB /* SoundView.h */,
 				50F312441A20CCFD002604FB /* SoundView.m */,
+				35055C881F09877A00BDC445 /* TableButton.h */,
+				35055C891F09877A00BDC445 /* TableButton.m */,
 				5021BCC818FDB08B001749D4 /* tap.caf */,
 				5080B952196477CB0004EEED /* tap2.caf */,
 			);
@@ -963,6 +968,7 @@
 				50F3124B1A21F7EF002604FB /* ShareButton.m in Sources */,
 				50832D331B67F7AA00ACD00F /* designButtonView.m in Sources */,
 				5021BD2A18FDB372001749D4 /* NewButtonsCollectionViewCell.m in Sources */,
+				3580CC2E1F9EA3AC0035C20D /* TestView.m in Sources */,
 				5073EEC91A209EF60027EE0E /* CalcButton.m in Sources */,
 				5021BD2918FDB372001749D4 /* newButtonView.m in Sources */,
 				5032B9CD1C3BBB40008C4989 /* Currensies.m in Sources */,
@@ -1234,7 +1240,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1316,7 +1322,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

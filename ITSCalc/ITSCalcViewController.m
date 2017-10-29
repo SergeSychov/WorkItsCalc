@@ -3579,7 +3579,49 @@ NSIndexPath *lastVisibleCellPatch;
     return cell;
 }
 
+#define EDIT ROW
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
+        return NO;
+    } else {
+        return YES;
+    }
+}
+/*
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+}
 
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                    {
+                                        // Delete something here
+                                        NSLog(@"Delete action");
+                                    }];
+    delete.backgroundColor = [UIColor redColor];
+    
+    UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" More " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                  {
+                                      NSLog(@"More action");
+                                  }];
+    more.backgroundColor = [UIColor colorWithRed:0.188 green:0.514 blue:0.984 alpha:1];
+    
+    return @[delete, more]; //array with all the buttons you want. 1,2,3, etc...
+}
+
+-(UISwipeActionsConfiguration*)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (@available(iOS 11.0, *)) {
+        UIContextualAction *editAction = [UIContextualAction contextualActionWithStyle:UIControlStateNormal title:@"Edit" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+            NSLog(@"Do editing");
+            completionHandler(YES);
+        }];
+        editAction.image = [UIImage imageNamed:@"MyEditImage"];
+        editAction.backgroundColor = [UIColor blueColor];
+        return [UISwipeActionsConfiguration configurationWithActions:@[editAction]];
+
+}
+    */
 //HERE
 /*
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

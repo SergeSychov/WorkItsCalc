@@ -77,8 +77,12 @@
     [self myTouchEnded];
 }
 
+NSDate *methodStart;
+
+
 -(void) myTouchBegan
 {
+    methodStart = [NSDate date];
     if(!self.isUnderChanging){
         self.rectArchive = self.frame;
         if(self.designObj.designNumber == DESIGN_PAPER){
@@ -164,6 +168,8 @@
         self.cellSubView.isTaped = NO;
         if([self.cellSubView.title isEqualToString:@"M-"]) NSLog(@"REct %f", self.frame.size.height);
     }
+    NSDate *finishDate = [NSDate date];
+    NSLog(@"Timecexecution time: %f", [finishDate timeIntervalSinceDate:methodStart]);
 }
 -(void)setTypeOfButton:(NSInteger)typeOfButton{
     

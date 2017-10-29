@@ -13,5 +13,6 @@
 @interface ITSCalcAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) NSDate* launchDate;
 
 @end
