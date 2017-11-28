@@ -102,7 +102,7 @@
             self.colorUnselectedFirstGradientIn = [UIColor colorWithWhite:0.95 alpha:1];
             self.colorUnselectedSecondGradientIn = [UIColor colorWithWhite:0.9 alpha:1];
             self.colorForSelectedTextIn = [UIColor darkTextColor];
-            self.colorForUnselectedTextIn = [UIColor grayColor];
+            self.colorForUnselectedTextIn = [UIColor lightGrayColor];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
@@ -437,7 +437,7 @@
             self.colorUnselectedFirstGradientIn = [Clr grayFirstGradient];
             self.colorUnselectedSecondGradientIn = [Clr graySecondGradient];
             self.colorForSelectedTextIn = [Clr grayText];
-            self.colorForUnselectedTextIn =  [[Clr grayText] colorWithAlphaComponent:0.6];
+            self.colorForUnselectedTextIn = [[Clr grayText] colorWithAlphaComponent:0.4];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             self.moreButtonBackgroundColorIn = [Clr grayMoreButton];

@@ -17,19 +17,19 @@
 
 
 
-NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"HistoryTableViewCellViewDidBeginScrolingNotification";
+//NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"HistoryTableViewCellViewDidBeginScrolingNotification";
 
 
 @interface HistroryTableViewCell() <UITextFieldDelegate>
 
 
-@property (nonatomic) BOOL isButtonShowed;
+//@property (nonatomic) BOOL isButtonShowed;
 @property (nonatomic) BOOL sel;
-@property (nonatomic,strong) DelButton *deleteButton;
-@property (nonatomic,strong) UIImageView* deleteImage;
+//@property (nonatomic,strong) DelButton *deleteButton;
+//@property (nonatomic,strong) UIImageView* deleteImage;
 
-@property (nonatomic,strong) recBut *moreButton;
-@property (nonatomic,strong) UIImageView* moreImage;
+//@property (nonatomic,strong) recBut *moreButton;
+//@property (nonatomic,strong) UIImageView* moreImage;
 
 @property (weak, nonatomic) IBOutlet GradientView *scrollGradientView;
 
@@ -38,48 +38,43 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 //check why
 @property (nonatomic,weak) LineView* lineView;
 
-@property (nonatomic) CGFloat curentXofSwiper;
-@property (nonatomic) CGFloat deltaXofSwiper;
+//@property (nonatomic) CGFloat curentXofSwiper;
+//@property (nonatomic) CGFloat deltaXofSwiper;
 
 @end
 
 @implementation HistroryTableViewCell
 -(void)setup {
-    self.isButtonShowed = NO;
-    
-    self.programAtrString = nil;
-    self.dateString = nil;
-    self.exchangeCurrencyString = nil;
-    self.variableValuesString = nil;
-    self.funcDescriptAtrString = nil;
-    
+    //self.isButtonShowed = NO;
+    //self.sel = NO;
+    //self.programAtrString = nil;
+    //self.dateString = nil;
+    //self.exchangeCurrencyString = nil;
+    //self.variableValuesString = nil;
+    //self.funcDescriptAtrString = nil;
+    /*
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enclosingTableViewDidScroll) name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
+    */
+    
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+    if(self.sel != selected){
+        _sel = selected;
+        [self setNeedsDisplay];
+        if(selected){
+            [self.delegate cellDidSelect:self];
+        }
+    }
+
+    //[super setSelected:selected animated:animated];
+    //NSLog(@"Self selected");
     
 }
 
 /*
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-   
-    if(self.sel != selected){
-
-        _sel = selected;
-        //self.selected = selected;
-    // [self setHistoryProgramString:self.historyProgramString];
-        if(!selected && self.deleteButton){}//IMPORTANT check condition LOOP [self hideButtons];
-    
-        if(selected){
-            [self.delegate cellDidSelect:self];
-        }
-        //[super setSelected:selected animated:animated];
-        [self setNeedsDisplay];
-    }
-    [super setSelected:selected animated:animated];
-    //NSLog(@"Self selected");
-    
-}
-*/
-
 -(void) setTextForLabels{
     
     //set info string according strings
@@ -155,37 +150,47 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     
     return [atrOutStr copy];
 }
-/*
+*/
+
+
 -(void)drawRect:(CGRect)rect
 {
+    //NSLog(@"Draw rect history cell");
+    //self.contentView.frame = self.bounds;
     if(self.selected){
+        /*
         self.scrollGradientView.firstGradientColor = self.design.colorSelectedFirstGradient;
         self.scrollGradientView.secondGradientColor = self.design.colorSelectedSecondGradient;
         [self.scrollGradientView setNeedsDisplay];
-        
+        */
+        self.contentView.backgroundColor = [UIColor whiteColor];
         [self.infoLabel setTextColor:self.design.colorForSelectedText];
         [self.mainProgrammLabel setTextColor:self.design.colorForSelectedText];
         
     } else {
-        
+        /*
         self.scrollGradientView.firstGradientColor = self.design.colorUnselectedFirstGradient;
         self.scrollGradientView.secondGradientColor = self.design.colorUnselectedSecondGradient;
         [self.scrollGradientView setNeedsDisplay];
-        
+        */
+        self.contentView.backgroundColor= [UIColor colorWithWhite:0.95 alpha:1];
+
         [self.infoLabel setTextColor:self.design.colorForUnselectedText];
+        
         [self.mainProgrammLabel setTextColor:self.design.colorForUnselectedText];
+        //NSLog(@"Color for %@",self.design.colorForSelectedText);
     }
 }
-*/
+/*
 -(void)enclosingTableViewDidScroll
 {
     [self hideButtons];
     
     [self setSelected:NO animated:NO];
 }
-
+*/
 #pragma mark - Private Methods
-
+/*
 -(void)userPressedDeleteButton:(id)sender {
     [self.delegate cellDidSelectDelete:self];
 }
@@ -194,9 +199,9 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
     [self.delegate cellDidSelectRecount:self];
     // [self.scrollView setContentOffset:CGPointZero animated:YES];
 }
-
+*/
 #pragma mark - Overridden Methods
-
+/*
 -(void) hideButtons
 {
     CGFloat needWidth;
@@ -310,6 +315,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
         }
     }
 }
+*/
 /*
 -(void)awakeFromNib {
     [super awakeFromNib];
@@ -321,7 +327,7 @@ NSString *const HistoryTableViewCellViewDidBeginScrolingNotification = @"History
 
 -(void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:HistoryTableViewCellViewDidBeginScrolingNotification object:nil];
 }
 
 @end

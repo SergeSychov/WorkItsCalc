@@ -13,6 +13,10 @@
 		3524A6021F1EA67300699B20 /* DisplayScreenLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3524A6011F1EA67300699B20 /* DisplayScreenLabel.m */; };
 		352856781C3D29E100D6B4D2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856771C3D29E100D6B4D2 /* MapKit.framework */; };
 		3528567A1C3D29F800D6B4D2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */; };
+		35466C8E1FA7B3DA00F18F55 /* RecPhone72.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C8C1FA7B3D800F18F55 /* RecPhone72.png */; };
+		35466C931FAB7FEB00F18F55 /* RecPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C901FAB7FE900F18F55 /* RecPad.png */; };
+		35466C951FAB7FEB00F18F55 /* DelPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C921FAB7FEA00F18F55 /* DelPhone.png */; };
+		35466C971FAB809900F18F55 /* DelPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C961FAB809800F18F55 /* DelPad.png */; };
 		355142AB1B0BC8BE00471CCD /* ClearHistoryButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */; };
 		355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142AA1B0BC8BE00471CCD /* DesignButton.m */; };
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
@@ -139,6 +143,10 @@
 		3524A6011F1EA67300699B20 /* DisplayScreenLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayScreenLabel.m; sourceTree = "<group>"; };
 		352856771C3D29E100D6B4D2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		35466C8C1FA7B3D800F18F55 /* RecPhone72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = RecPhone72.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/RecPhone72.png"; sourceTree = "<group>"; };
+		35466C901FAB7FE900F18F55 /* RecPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = RecPad.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/RecPad.png"; sourceTree = "<group>"; };
+		35466C921FAB7FEA00F18F55 /* DelPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DelPhone.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/DelPhone.png"; sourceTree = "<group>"; };
+		35466C961FAB809800F18F55 /* DelPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DelPad.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/DelPad.png"; sourceTree = "<group>"; };
 		355142A71B0BC8BE00471CCD /* ClearHistoryButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClearHistoryButton.h; sourceTree = "<group>"; };
 		355142A81B0BC8BE00471CCD /* ClearHistoryButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClearHistoryButton.m; sourceTree = "<group>"; };
 		355142A91B0BC8BE00471CCD /* DesignButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignButton.h; sourceTree = "<group>"; };
@@ -588,6 +596,10 @@
 		5021BCBF18FDB066001749D4 /* Sourse */ = {
 			isa = PBXGroup;
 			children = (
+				35466C961FAB809800F18F55 /* DelPad.png */,
+				35466C921FAB7FEA00F18F55 /* DelPhone.png */,
+				35466C901FAB7FE900F18F55 /* RecPad.png */,
+				35466C8C1FA7B3D800F18F55 /* RecPhone72.png */,
 				50F312461A20DCEE002604FB /* ArchiveSizeView.h */,
 				50F312471A20DCEE002604FB /* ArchiveSizeView.m */,
 				5021BCC618FDB08B001749D4 /* blank.m4a */,
@@ -929,6 +941,7 @@
 			files = (
 				504750171B79346C001AD553 /* myTextureSych 3.png in Resources */,
 				5006BC8E193792210081F44E /* ACalcTryViewControllerTableAdditional.strings in Resources */,
+				35466C951FAB7FEB00F18F55 /* DelPhone.png in Resources */,
 				5021BCE318FDB08B001749D4 /* tap.caf in Resources */,
 				50FAC44F1BC1781F00442FEF /* photoGround.png in Resources */,
 				64206BCC1A28D8EF00647D46 /* ACalcTryViewControllerTableTwo.strings in Resources */,
@@ -939,12 +952,15 @@
 				5021BCE418FDB08B001749D4 /* error.caf in Resources */,
 				50142CF81ADC3B64006CB247 /* Launch Screen.xib in Resources */,
 				357DE42D1ADAF20C0065C256 /* Logo.png in Resources */,
+				35466C971FAB809900F18F55 /* DelPad.png in Resources */,
 				5021BC8D18FDAE3C001749D4 /* InfoPlist.strings in Resources */,
 				5080B953196477CB0004EEED /* tap2.caf in Resources */,
+				35466C931FAB7FEB00F18F55 /* RecPad.png in Resources */,
 				5080B9631965F0F90004EEED /* bluePanUnselected2.png in Resources */,
 				5080B96B1965F0F90004EEED /* redPanUnselected2.png in Resources */,
 				5080B96C1965F0F90004EEED /* redPanSelected2.png in Resources */,
 				5021BCE118FDB08B001749D4 /* blank.m4a in Resources */,
+				35466C8E1FA7B3DA00F18F55 /* RecPhone72.png in Resources */,
 				5021BC9618FDAE3C001749D4 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

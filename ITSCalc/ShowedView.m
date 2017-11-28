@@ -217,6 +217,7 @@
     CGSize neededSize = CGSizeMake(self.bounds.size.width - STRING_INDENT - 20,1000);
     CGRect neededRect = [self.count boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                context:drawContext];
+    
     neededRect.origin.y = self.bounds.size.height - RES_RECT_HEIGHT - 20 - neededRect.size.height;
     neededRect.origin.x = STRING_INDENT;
     

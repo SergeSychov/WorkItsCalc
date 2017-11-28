@@ -70,7 +70,7 @@
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812.)
+#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
 //important
@@ -378,9 +378,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(void) setCallShowController:(BOOL)callShowController
 {
     _callShowController = callShowController;
-    if(_callShowController){
+    /*if(_callShowController){
         [self showShowedView];
-    }
+    }*/
 }
 -(void) setPhotoBackGround:(BOOL)isPhoto
 {
@@ -886,110 +886,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     return [outputButtonProgram copy];
     
-}
-
-- (IBAction)pressedSelectedButton:(UIButton *)sender
-{
-    if(self.selectedRow){
-        [self cellDidSelectRecount:self.selectedRow];
-    }
-}
-
--(void)cellDidSelectRecount:(HistroryTableViewCell*) cell
-{
-    
-    NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
-    if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
-        
-        History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
-        
-        if([programFromHistory lastObject])[programFromHistory removeLastObject];
-
-
-        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-        NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
-       
-
-        id top = [programFromHistory lastObject];
-        //remove result from pprogramm array!
-        [programFromHistory removeLastObject];
-        NSMutableArray *argArrayCopy;
-        if(top){
-           argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
-        }
-        
-        NSLog(@"Argu %@", argArrayCopy);
-
-        
-        NSMutableArray *programCopy = [[NSMutableArray alloc] init];
-        top = [programFromHistory lastObject];
-        if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        NSLog(@"program %@", programCopy);
-
-        ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
-        
-        self.brain = newBrain;
-        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
-        self.isProgramInProcess = NO;
-        self.isStronglyArgu = YES;
-        self.userIsInTheMidleOfEnteringNumber = NO;
-        [self showStringThrouhgmanagerAtEqualPress];
-        
-        [self discardChanging];
-        
-        
-        if([ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]){
-            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
-            [self.currensies askResultForCurrensiesArray:[ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]];
-        }
-    }
-}
-
--(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
-    //NSLog(@"Curr array after request: %@", currencies);
-    NSArray *deepProgram = [self.brain.deepProgram copy];
-    NSArray *deepArgu = [self.brain.deepArgu copy];
-    NSArray *testArray = [[deepProgram lastObject] copy];
-    if(([testArray count]>0) || ([deepArgu count]>0)){
-        
-        NSMutableArray * muttableOutputArray = [[NSMutableArray alloc] init];
-        [muttableOutputArray addObject:deepProgram];
-        [muttableOutputArray addObject:deepArgu];
-        
-        if([ACalcBrain chekForCurrensiesProgramm:[muttableOutputArray copy]]){
-
-            muttableOutputArray =  [[ACalcBrain programm:[muttableOutputArray copy] withReplaceWithCurrencies:currencies
-                                    ] mutableCopy];
-        }
-        
-
-        id top = [muttableOutputArray lastObject];
-        //remove result from pprogramm array!
-        [muttableOutputArray removeLastObject];
-        NSMutableArray *argArrayCopy;
-        if(top){
-            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
-        }
-        
-        
-        NSMutableArray *programCopy = [[NSMutableArray alloc] init];
-        top = [muttableOutputArray lastObject];
-        if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        //NSLog(@"after programCopy %@:",programCopy );
-        ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
-        
-        self.brain = newBrain;
-
-        
-        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
-        self.isProgramInProcess = NO;
-        self.isStronglyArgu = YES;
-        self.userIsInTheMidleOfEnteringNumber = NO;
-        [self showStringThrouhgmanagerAtEqualPress];
-        
-        
-    }
 }
 
 #pragma mark Button taped Action
@@ -1691,6 +1587,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         NSArray *new = [[NSArray alloc] init];
         self.lastRowDataArray = new;
         [self lastRowUpdate];
+    } else {
+        [self selectLastRowInHistory];
     }
 
 
@@ -1743,7 +1641,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
     if(is){
         self.displayTopConstrain.constant = 0;
-        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;
+        /*self.sviperBottomConstrain.constant = (self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2+self.calcScreenHeightConstrain.constant/10);*/
+        self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
+
+        NSLog(@"calcScreenHeightConstrain:%f",self.calcScreenHeightConstrain.constant );
+        NSLog(@"sviperBottomConstrain:%f",self.sviperBottomConstrain.constant );
         [UIView animateWithDuration:.6
                               delay:0
              usingSpringWithDamping:0.8
@@ -1774,7 +1676,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
        
         self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
-        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/20.;
+        self.sviperBottomConstrain.constant = -self.calcScreenHeightConstrain.constant*14./20.;
         [self.buttonsCollection reloadData];
         
         [UIView animateWithDuration:.6
@@ -1842,7 +1744,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 {
     if(gesture.state == UIGestureRecognizerStateBegan)
     {
-        [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
+        /*[[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];*/
         if(!self.isButtonsCollectionUnderChanging){
             velocitySviperUnderChangin = CGPointZero;
             self.isButtonsCollectionUnderChanging = YES;//launch changes constrains with animation
@@ -1958,9 +1860,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 -(void) discardChanging
 {
     
-    self.buttonsCollection.scrollEnabled = NO;
+    //self.buttonsCollection.scrollEnabled = NO;
     //if there is buttonAsSubview in buttonCollection
     if(buttonsAsSubView){
+        self.buttonsCollection.scrollEnabled = NO;
         CGRect subFrame = subCell.frame;
         [UIView animateWithDuration:0.1
                          animations:^{
@@ -1974,6 +1877,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              buttonsAsSubView = nil;
                              NSArray *array = [NSArray arrayWithObject:[self.buttonsCollection indexPathForCell:subCell]];
                              [self.buttonsCollection reloadItemsAtIndexPaths:array];
+                             self.buttonsCollection.scrollEnabled = YES;
                          }];
     }
 
@@ -1988,14 +1892,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
+    /*[[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];*/
 
     //CGRect dynamicRect = self.dynamicContainer.frame;
     //dynamicRect.size.height = 2*self.mainContainerView.bounds.size.height - self.histroryTableViewHeight - self.labelViewHeight;
     
     //initial origin
     //dynamicRect.origin.y = self.histroryTableViewHeight + self.labelViewHeight - self.mainContainerView.bounds.size.height;
-    
+    /*
     CGRect buttonsCollectionViewBounds = self.mainContainerView.bounds;
     buttonsCollectionViewBounds.size.height = self.mainContainerView.bounds.size.height - self.histroryTableViewHeight;
     buttonsCollectionViewBounds.origin.y = self.historyTable.bounds.size.height;
@@ -2007,7 +1911,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //IMPORTANT
                          //delete here
                         // [self.dynamicContainer setFrame:dynamicRect];
-                         /*
+     
                          if(self.isIAdBannerOnScreen){
                              NSInteger bannerHeight;
                              if(IS_IPAD){
@@ -2020,7 +1924,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                              [self.iAdBanner setFrame:self.bannerContainerView.bounds];
 
                          }
-                         */
+     
                         //[self.viewforCurrencyRecognizer setFrame:buttonsCollectionViewBounds];
                          //[self.buttonsCollection setFrame:self.viewforCurrencyRecognizer.bounds];
 
@@ -2068,26 +1972,34 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
                          
                          
-                     }];
+                     }]; */
+    //[self.historyTable setContentOffset:CGPointMake(self.historyTable.contentOffset.x, historyTableBottomOffset - self.historyTable.bounds.size.height)];
+    self.isHistoryShowed = NO;
+    [self finisDraggingUpWithVelocity:CGPointZero];
+    [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
+    /*
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
     } else {
-    }
+    }*/
+    
     
     if([self.historyTable numberOfRowsInSection:0] > 1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         
-        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:YES scrollPosition:UITableViewScrollPositionBottom];
+        [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionBottom];
     }
 
 }
 
+/*
 - (IBAction)tapFixButton:(UIButton*)sender
 {
     if(!self.animationTimer.isValid){
         [self discardChanging];
     }
 }
+*/
 #pragma mark DRAGGER HISTORY
 //IMPORTANT
 //    [self moveHistoryTableContentToRightPosition];
@@ -2233,6 +2145,8 @@ CGFloat historyTableBottomOffset;
         }
 
     
+        NSLog(@"sviperBottomConstrain: %f", self.sviperBottomConstrain.constant);
+        NSLog(@"calcScreenHeight: %f", self.displayContainer.bounds.size.height);
 
         
     } else {
@@ -2324,6 +2238,7 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
           initialSpringVelocity: -velocity.y/100 //velocitySviperUnderChangin.y
                         options:UIViewAnimationOptionBeginFromCurrentState animations:^{
                             [self.view layoutIfNeeded];
+                            [self.buttonsCollection reloadData];
                             [self.historyTable setContentOffset:CGPointMake(self.historyTable.contentOffset.x, historyTableBottomOffset - self.historyTable.bounds.size.height)];
                             //[self moveHistoryTableContentToRightPosition];
                             
@@ -2340,6 +2255,10 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 
                         } completion:^(BOOL finished) {
                             self.isCalcShowed = YES;
+                            //[self.buttonsCollection reloadData];
+                            //NSLog(@"buttoncollection offset: %f", self.buttonsCollection.contentOffset.y);
+                            //[self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:NO];
+                            
                             //[self.historyTable reloadData];
                             //[self.historyTable selectRowAtIndexPath:selectedRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
                             
@@ -2799,134 +2718,6 @@ static BOOL moveIsAvailable;
 #define MOVE_TO_DISABLE 5
 #define RELOAD 0
 
-#pragma mark BUTTONS SIZE CHANGE
-#define BUTTON_SIDES_RATIO_IPAD 1.8
-#define BUTTON_SIDES_RATIO_IPHONE 1.4
-#define INSENT_BUTTONS_PART 9. //insent first row
--(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
-{
-    _isBigSizeButtons = isBigSizeButtons;
-    //reset buttons size only when core data available
-    //as exemple don't set in view didload
-    if(self.buttonManagedObjectContext){
-        //  [self setUpMainButtonsStartWithPosition];
-        //  [self makeTwoArrays];
-        //  [self.buttonsCollection reloadData];
-        //[self.buttonsStore renewArraysAccordingNewButtonsSize];
-        [self newButtonsSize];
-        
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
-        //NSLog(@"buttonsCollectionHeight %f - ", self.buttonsCollection.bounds.size.height);
-        if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
-            buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
-            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
-            //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
-            [self newButtonsSize];
-            screenHeight = self.calcScreenHeightConstrain.constant;
-            [self updateHistoryTableArraysAndGoBottom:NO];
-            //[self.historyTable reloadData];
-            
-        } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
-            //screenHeight = self.calcScreenHeightConstrain.constant;
-            //need for iPad if changed screen height without changing buttonCollection width
-            [self newButtonsSize];
-            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
-            //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
-            screenHeight = self.calcScreenHeightConstrain.constant;
-        }
-        [self.designObj changeClassSize];
-        //[self.historyTable reloadData];
-    }
-}
-
--(void)newButtonsSize
-{
-    //find the minimum side for small and big button
-    CGFloat buttonsRatio;
-    if(IS_IPAD){
-        buttonsRatio=BUTTON_SIDES_RATIO_IPAD;
-    }else {
-        buttonsRatio=BUTTON_SIDES_RATIO_IPHONE;
-    }
-    
-    //qantity for big and small button
-    NSInteger xQantity;
-    NSInteger yQantity;
-    if(self.isBigSizeButtons) {
-        xQantity = 4;
-        yQantity = 6;
-    }else {
-        xQantity = 5;
-        yQantity = 7;
-    }
-    
-    //find min side
-
-    CGFloat xFindSide = self.buttonsCollection.bounds.size.width/xQantity;
-    
-    
-    //count max button collection heigth
-    //independ of how histroy showed
-    CGFloat buttCollectionHeight;
-    if(IS_IPAD){
-        buttCollectionHeight =  self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
-    } else {
-        buttCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
-    }
-    CGFloat yFindSide = buttCollectionHeight/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height)/yQantity;
-    
-    //NSLog(@"buttCollectionHeight: %f, real: %f",buttCollectionHeight, self.buttonsCollectionView.bounds.size.height);
-    
-    //define wich side will be
-    if(xFindSide<yFindSide*buttonsRatio){
-        
-        buttonsWidth = self.buttonsCollection.bounds.size.width/xQantity;
-        buttonsIntens = 0;
-        
-        //find buttonsHeight
-        yQantity = (NSInteger) round((buttCollectionHeight- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));//round((buttCollectionHeight-self.displayContainer.bounds.size.height- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));
-        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
-        
-    } else {
-        
-        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
-        buttonsIntens = 0;
-        
-        //find buttonsHeight
-        xQantity = (NSInteger) round(self.buttonsCollection.bounds.size.width/(yFindSide*buttonsRatio));
-        buttonsWidth = (self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity;
-    }
-    
-    //renew buttons array
-    [self.buttonsStore renewArraysAccordingNewButtonsSize];
-    [self.buttonsCollection reloadData];
-    
-    //renew buttonsCollectionLayout
-    UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
-    
-    flow.itemSize = CGSizeMake(buttonsWidth, buttonsHeight);
-    flow.minimumInteritemSpacing = buttonsIntens;
-    flow.minimumLineSpacing = buttonsIntens;
-    
-    UIEdgeInsets insets;
-    insets.top = INSENT_BUTTONS_PART+ buttonsIntens;//self.displayContainer.bounds.size.height+INSENT_BUTTONS_PART+ buttonsIntens;
-    insets.bottom = buttonsIntens;
-    insets.left = buttonsIntens;
-    insets.right = buttonsIntens;
-    flow.sectionInset = insets;
-    
-    buttonsFlowLayout = flow;
-    [self.buttonsCollection setCollectionViewLayout:buttonsFlowLayout animated:YES];
-
-    
-
-}
-
 #pragma mark - MOVE BUTTONS Methods
 
 #pragma mark BUTTONS DELEGATE
@@ -3104,8 +2895,9 @@ static BOOL moveIsAvailable;
     ((NewButtonsCollectionViewCell *)cell).delegate = (ButtonsCollectionView*)collectionView;
     ((NewButtonsCollectionViewCell *)cell).isIpadPortraitView = self.willBePortraitRotated;
     ((NewButtonsCollectionViewCell *)cell).designObj = self.designObj;
-    [((NewButtonsCollectionViewCell *)cell)removeFromSuperview];
-    [collectionView insertSubview:((NewButtonsCollectionViewCell *)cell) atIndex:indexPath.item];
+    //WHAT IS THIS??? BELOW
+    //[((NewButtonsCollectionViewCell *)cell)removeFromSuperview];
+    //[collectionView insertSubview:((NewButtonsCollectionViewCell *)cell) atIndex:indexPath.item];
     
     if([cell isKindOfClass:[NewButtonsCollectionViewCell class]]){
         NSInteger item = indexPath.item;
@@ -3318,9 +3110,10 @@ NSIndexPath *lastVisibleCellPatch;
     } else {
         [self.historyTable setContentInset:UIEdgeInsetsMake(0,0, 0, 0)];
         //[self.historyTable setContentOffset:CGPointMake(0, self.historyTable.contentSize.height-self.historyTable.frame.size.height)];
+        
         [self.historyTable setContentOffset:CGPointMake(0, self.historyTable.contentSize.height-self.historyTable.frame.size.height) animated:YES];
     }
- 
+ /*
     if([self.cellHeights count] >=1){
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]-1  inSection:0];
  
@@ -3329,7 +3122,8 @@ NSIndexPath *lastVisibleCellPatch;
         //[self.historyTable scrollRectToVisible:[self.historyTable cellForRowAtIndexPath:lastRowPatch].frame animated:YES];
         
         //[self.historyTable scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionBottom animated:NO];
- }
+    }
+    */
 
  
 }
@@ -3341,7 +3135,7 @@ NSIndexPath *lastVisibleCellPatch;
     if(self.historyTable && ([self.cellHeights count] >= 1)){
         
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
-        NSLog(@"selectLastRowInHistory lastRowPatch: %lu", lastRowPatch.row);
+        //NSLog(@"selectLastRowInHistory lastRowPatch: %lu", lastRowPatch.row);
         
         //lastVisibleCellPatch = lastRowPatch;
         //selectedRowPatch = lastRowPatch;
@@ -3424,7 +3218,8 @@ NSIndexPath *lastVisibleCellPatch;
 
 */
 
-#define MIN_CELL_HEIGHT 60.f
+#define MIN_CELL_HEIGHT_COPACT 60.f
+#define MIN_CELL_HEIGHT_REGULAR 90.f
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -3435,7 +3230,7 @@ NSIndexPath *lastVisibleCellPatch;
         NSAttributedString* mainLabel =  [self getAttributedStringFromArray:self.lastRowDataArray];
         NSAttributedString* infoLabel = [[NSAttributedString alloc] initWithString:@" "];
         
-        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel];
+        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass];
     } else {
         retHeight =  [[self.cellHeights objectAtIndex:indexPath.row] floatValue];
     }
@@ -3474,7 +3269,7 @@ NSIndexPath *lastVisibleCellPatch;
     
     if ([self.cellHeights count] > 0) {
         rows = [self.cellHeights count] +1;
-        //self.noticeButton.enabled = YES;
+        self.noticeButton.enabled = YES;
     }
     //NSLog(@"numberOfRowsInSection rowsNumber:%ld", (long)rows);
 
@@ -3498,7 +3293,8 @@ NSIndexPath *lastVisibleCellPatch;
     //NSLog(@"CALL cellForRowAtIndexPath");
     
     if([cell isKindOfClass:[HistroryTableViewCell class]]){
-
+        ((HistroryTableViewCell*)cell).design = self.designObj;
+        ((HistroryTableViewCell*)cell).delegate = self;
 
         if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
             ((HistroryTableViewCell*)cell).mainProgrammLabel.attributedText = [self getAttributedStringFromArray:self.lastRowDataArray];
@@ -3580,48 +3376,101 @@ NSIndexPath *lastVisibleCellPatch;
 }
 
 #define EDIT ROW
+
+#define NO_DEAL_CELL 0
+#define DELETE_CELL 1
+#define RECOUNT_CELL 2
+
+NSInteger dealWithCell;
+
 -(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+   /* [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0]
+                                   animated:YES
+                             scrollPosition:UITableViewScrollPositionBottom];*/
     if(indexPath.row == [tableView numberOfRowsInSection: 0] - 1){
         return NO;
     } else {
         return YES;
     }
 }
-/*
+
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+
 }
 
--(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(!indexPath ||(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1) ){
+        self.recountButton.enabled = NO;
+        self.deleteButton.enabled = NO;
+    }else {
+        self.recountButton.enabled = YES;
+        self.deleteButton.enabled = YES;
+    }
+    //}
+    /*
+     if(!self.isTestViewOnScreen){
+     [self showCount];
+     }
+     if(![self.presentedViewController isKindOfClass:[ThirdController class]] && ![self.presentedViewController isKindOfClass:[SecondViewController class]]){
+     [self showCount];
+     }
+     
+     */
     
-    UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
-                                    {
-                                        // Delete something here
-                                        NSLog(@"Delete action");
-                                    }];
-    delete.backgroundColor = [UIColor redColor];
-    
-    UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" More " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
-                                  {
-                                      NSLog(@"More action");
-                                  }];
-    more.backgroundColor = [UIColor colorWithRed:0.188 green:0.514 blue:0.984 alpha:1];
-    
-    return @[delete, more]; //array with all the buttons you want. 1,2,3, etc...
 }
+-(void) tableView:(UITableView *)tableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if(dealWithCell == RECOUNT_CELL){
+        [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1  inSection:0]
+                                       animated:NO
+                                 scrollPosition:UITableViewScrollPositionNone];
+    } else if (dealWithCell == DELETE_CELL){
+        NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
+        [self.historyTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+          /*      [self.historyTable setContentOffset:CGPointMake(self.historyTable.contentOffset.x, historyTableBottomOffset - self.historyTable.bounds.size.height)];
+        */
+    }
+    /*NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
+     [self.historyTable selectRowAtIndexPath:newPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
+     */
+    dealWithCell = NO_DEAL_CELL;
+    //NSLog(@"didEndEditingRowAtIndexPath");
+}
+
 
 -(UISwipeActionsConfiguration*)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (@available(iOS 11.0, *)) {
-        UIContextualAction *editAction = [UIContextualAction contextualActionWithStyle:UIControlStateNormal title:@"Edit" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-            NSLog(@"Do editing");
-            completionHandler(YES);
-        }];
-        editAction.image = [UIImage imageNamed:@"MyEditImage"];
-        editAction.backgroundColor = [UIColor blueColor];
-        return [UISwipeActionsConfiguration configurationWithActions:@[editAction]];
+    historyTableBottomOffset = self.historyTable.contentOffset.y + self.historyTable.bounds.size.height;
+    
+    UIContextualAction *delAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:nil handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+        //IMPORTANT way to bug
+        NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
+        [self.historyTable selectRowAtIndexPath:newPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
+        //--------------------------
+        dealWithCell = DELETE_CELL;
+        [self cellDidSelectDelete:indexPath];
+        completionHandler(YES);
+       
+    }];
 
+    delAction.image = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact? [UIImage imageNamed:@"DelPhone"]:[UIImage imageNamed:@"DelPad"] ;
+    delAction.backgroundColor = self.designObj.deleteButtonBackgroundColor;
+    
+    UIContextualAction *editAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:@"" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+        dealWithCell = RECOUNT_CELL;
+        [self cellDidSelectRecount:indexPath];
+
+        completionHandler(YES);
+    }];
+
+    editAction.image = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact? [UIImage imageNamed:@"RecPhone72"]:[UIImage imageNamed:@"RecPad"] ;
+
+    editAction.backgroundColor = self.designObj.moreButtonBackgroundColor;
+
+    UISwipeActionsConfiguration *swipeConfiguration = [UISwipeActionsConfiguration configurationWithActions:@[delAction,editAction]];
+    swipeConfiguration.performsFirstActionWithFullSwipe = YES;
+    return swipeConfiguration;
 }
-    */
+
 //HERE
 /*
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -3978,7 +3827,7 @@ NSIndexPath *lastVisibleCellPatch;
 }
 
 #pragma mark HEIGHT OF CELL
--(CGFloat)getCellHeightFromMain:(NSAttributedString*)mainStr and:(NSAttributedString*)infStr{
+-(CGFloat)getCellHeightFromMain:(NSAttributedString*)mainStr and:(NSAttributedString*)infStr forHorizontal:(UIUserInterfaceSizeClass)size{
     CGFloat needHeight;
     
     CGFloat needWidth = self.mainContainerWidth.constant - 4;
@@ -3990,9 +3839,9 @@ NSIndexPath *lastVisibleCellPatch;
     CGRect needMainRect = [mainStr boundingRectWithSize:needSize options:NSStringDrawingUsesLineFragmentOrigin
                                                   context:drawContext];
     needHeight = needInfoRect.size.height+needMainRect.size.height+20.;
-    
-    if(needHeight < MIN_CELL_HEIGHT){
-        return MIN_CELL_HEIGHT;
+    CGFloat setedMinHeight = size == UIUserInterfaceSizeClassCompact?MIN_CELL_HEIGHT_COPACT:MIN_CELL_HEIGHT_REGULAR;
+    if(needHeight < setedMinHeight){
+        return setedMinHeight;
     } else {
         return needHeight;
     }
@@ -4029,7 +3878,7 @@ NSIndexPath *lastVisibleCellPatch;
 
 
 #pragma mark - HistoryCellDelegate Methods
-
+/*
 - (IBAction)historyTableLeftSwipeGesturerecognizer:(UIPanGestureRecognizer *)sender
 {
     
@@ -4064,28 +3913,135 @@ NSIndexPath *lastVisibleCellPatch;
         [self.historyTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
     }
 }
+*/
 
-- (IBAction)pressedDeleteButton:(UIButton *)sender
+
+- (IBAction)pressedSelectedButton:(UIButton *)sender
 {
-    if(self.selectedRow){
-        [self cellDidSelectDelete:self.selectedRow];
+    if([self.historyTable indexPathForSelectedRow]){
+        [self cellDidSelectRecount:[self.historyTable indexPathForSelectedRow]];
     }
 }
 
--(void)cellDidSelectDelete:(HistroryTableViewCell *)cell
+-(void)cellDidSelectRecount:(NSIndexPath*)selectedCellIndex
+{
+    
+   // NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
+    if(selectedCellIndex.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+        
+        History *story = [self.fetchedResultsController objectAtIndexPath:selectedCellIndex];
+        NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
+        
+        if([programFromHistory lastObject])[programFromHistory removeLastObject];
+        
+        
+        //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+        NSArray* copyProgrammFroCurrensiesCheck = [programFromHistory copy];
+        
+        
+        id top = [programFromHistory lastObject];
+        //remove result from pprogramm array!
+        [programFromHistory removeLastObject];
+        NSMutableArray *argArrayCopy;
+        if(top){
+            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
+        }
+        
+        NSLog(@"Argu %@", argArrayCopy);
+        
+        
+        NSMutableArray *programCopy = [[NSMutableArray alloc] init];
+        top = [programFromHistory lastObject];
+        if(top) programCopy = [ACalcBrain deepArrayCopy:top];
+        NSLog(@"program %@", programCopy);
+        
+        ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
+        
+        self.brain = newBrain;
+        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+        self.isProgramInProcess = NO;
+        self.isStronglyArgu = YES;
+        self.userIsInTheMidleOfEnteringNumber = NO;
+        [self showStringThrouhgmanagerAtEqualPress];
+        [self discardChanging];
+        
+        
+        if([ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]){
+            //if there are currencies in count - asck  currencies controller to make request for particukar currencies pair
+            [self.currensies askResultForCurrensiesArray:[ACalcBrain chekForCurrensiesProgramm:copyProgrammFroCurrensiesCheck]];
+        }
+    }
+}
+
+-(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
+    //NSLog(@"Curr array after request: %@", currencies);
+    NSArray *deepProgram = [self.brain.deepProgram copy];
+    NSArray *deepArgu = [self.brain.deepArgu copy];
+    NSArray *testArray = [[deepProgram lastObject] copy];
+    if(([testArray count]>0) || ([deepArgu count]>0)){
+        
+        NSMutableArray * muttableOutputArray = [[NSMutableArray alloc] init];
+        [muttableOutputArray addObject:deepProgram];
+        [muttableOutputArray addObject:deepArgu];
+        
+        if([ACalcBrain chekForCurrensiesProgramm:[muttableOutputArray copy]]){
+            
+            muttableOutputArray =  [[ACalcBrain programm:[muttableOutputArray copy] withReplaceWithCurrencies:currencies
+                                     ] mutableCopy];
+        }
+        
+        
+        id top = [muttableOutputArray lastObject];
+        //remove result from pprogramm array!
+        [muttableOutputArray removeLastObject];
+        NSMutableArray *argArrayCopy;
+        if(top){
+            argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
+        }
+        
+        
+        NSMutableArray *programCopy = [[NSMutableArray alloc] init];
+        top = [muttableOutputArray lastObject];
+        if(top) programCopy = [ACalcBrain deepArrayCopy:top];
+        //NSLog(@"after programCopy %@:",programCopy );
+        ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
+        
+        self.brain = newBrain;
+        
+        
+        [self.mainLabel showString:[self.displayRam setResult:[NSNumber numberWithDouble:[self.brain count]]]];
+        self.isProgramInProcess = NO;
+        self.isStronglyArgu = YES;
+        self.userIsInTheMidleOfEnteringNumber = NO;
+        [self showStringThrouhgmanagerAtEqualPress];
+        
+        
+    }
+}
+
+- (IBAction)pressedDeleteButton:(UIButton *)sender
+{
+    if([self.historyTable indexPathForSelectedRow]){
+        [self cellDidSelectDelete:[self.historyTable indexPathForSelectedRow]];
+    }
+}
+
+-(void)cellDidSelectDelete:(NSIndexPath*)cellIndexPatch
 {
     //self.historyTable.isNeedToSetOffsetToButton = NO;
-    NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
+   // NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
     
-    if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
-        History *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    if(cellIndexPatch.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+        History *story = [self.fetchedResultsController objectAtIndexPath:cellIndexPatch];
         [self.managedObjectContext deleteObject:story];
+        
+        /*
         NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         if(lastRowPatch){
             [self.historyTable selectRowAtIndexPath:lastRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
         } else {
             [self setSelectedRow:nil];
-        }
+        }*/
     }
 }
 
@@ -4095,37 +4051,37 @@ NSIndexPath *lastVisibleCellPatch;
    
     //NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
     //NSLog(@"setSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
-    self.selectedRow = cell;
+    //self.selectedRow = cell;
     
-    /*
+    
     NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
     
-    NSIndexPath *previousSelectedIndexPatch = [self.historyTable indexPathForCell:_selectedRow];
-    NSIndexPath *nowSelectedIndexPatch = [self.historyTable indexPathForSelectedRow];
+    //NSIndexPath *previousSelectedIndexPatch = [self.historyTable indexPathForCell:_selectedRow];
+   // NSIndexPath *nowSelectedIndexPatch = [self.historyTable indexPathForSelectedRow];
     
-    if(previousSelectedIndexPatch.row != nowSelectedIndexPatch.row){
+    //if(previousSelectedIndexPatch.row != nowSelectedIndexPatch.row){
         
         //self.selectedRow = cell;
-        if(!indexPath){
+        if(!indexPath ||(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1) ){
             self.recountButton.enabled = NO;
             self.deleteButton.enabled = NO;
-        }else if(indexPath.row != [self.historyTable numberOfRowsInSection: 0] - 1){
+        }else {
             self.recountButton.enabled = YES;
             self.deleteButton.enabled = YES;
-        } else {
-            self.recountButton.enabled = NO;
-            self.deleteButton.enabled = NO;
-            
         }
-    }
+            //}
+    /*
     if(!self.isTestViewOnScreen){
         [self showCount];
     }
+     if(![self.presentedViewController isKindOfClass:[ThirdController class]] && ![self.presentedViewController isKindOfClass:[SecondViewController class]]){
+     [self showCount];
+     }
 
-*/
+     */
 }
 
-
+/*
 -(void) setSelectedRow:(HistroryTableViewCell *)selectedRow
 {
     NSIndexPath *indexPath = [self.historyTable indexPathForCell:selectedRow];
@@ -4165,6 +4121,7 @@ NSIndexPath *lastVisibleCellPatch;
         [self showCount];
     }
 }
+*/
 #pragma mark MANAGED CONTEXT
 
 -(void) setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
@@ -4282,6 +4239,8 @@ NSIndexPath *lastVisibleCellPatch;
 #pragma mark SET HISTORY ARRAYS
 
 -(void) updateHistoryTableArraysAndGoBottom:(BOOL) toBottom{
+    
+    UIUserInterfaceSizeClass horisontalSize = self.view.traitCollection.horizontalSizeClass;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSArray * fetchedObjects = self.fetchedResultsController.fetchedObjects;
         
@@ -4300,7 +4259,7 @@ NSIndexPath *lastVisibleCellPatch;
                 //2. get inf str
                 infStr = [self getAttrInfStringFromStory:story];
                 //3. calculate need cell Heigh
-                cellHeight = [self getCellHeightFromMain:mainStr and:infStr];
+                cellHeight = [self getCellHeightFromMain:mainStr and:infStr forHorizontal:horisontalSize];
                 
                 //add to arrays
                 [mainHistoryAttributedStrings addObject:mainStr];
@@ -4502,7 +4461,7 @@ BOOL isNewTableRow;
             //2. get inf str
             NSAttributedString* infStr = [self getAttrInfStringFromStory:storyObj];
             //3. calculate need cell Heigh
-            CGFloat cellHeight = [self getCellHeightFromMain:mainStr and:infStr];
+            CGFloat cellHeight = [self getCellHeightFromMain:mainStr and:infStr forHorizontal:self.view.traitCollection.horizontalSizeClass];
             
             //add to arrays
             [mainHistoryAttributedStrings addObject:mainStr];
@@ -4541,6 +4500,13 @@ BOOL isNewTableRow;
             self.cellHeights = [heightsHistoryCells copy];
             
             [self.historyTable deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            
+            //IMPORTANT way to bug
+            NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
+            [self.historyTable selectRowAtIndexPath:newPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
+            //--------------------------
+            
+            //[self moveHistoryTableContentToRightPosition];
             
             //[mutSet addIndex:indexPath.row];
             //self.deletedIndexesSet = [mutSet copy];
@@ -4717,6 +4683,7 @@ BOOL isNewTableRow;
 - (IBAction)tappedRealNoticeButton:(UIButton *)sender
 {
     self.callShowController = YES;
+    [self showSowedViewController];
 }
 
 //tapped at share button in table condition
@@ -5258,7 +5225,7 @@ BOOL isNewTableRow;
             if (success){
                 [self documentIsReady: document];
             } else {
-              //  NSLog(@"Not succes with open");
+                NSLog(@"Not succes with open");
             }
         }];
     } else {
@@ -5267,7 +5234,7 @@ BOOL isNewTableRow;
               if (success) {
                   [self documentIsReady: document];
               } else {
-               //   NSLog(@"Not succes with open");
+                 NSLog(@"Created doc not succes with open");
               }
           }];
     }
@@ -5290,11 +5257,14 @@ BOOL isNewTableRow;
     document.persistentStoreOptions = options;
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
+        
         [document openWithCompletionHandler:^(BOOL success) {
             if (success) {
               [self documentIsReady: document];
                 [self setStoreNotifications];
 
+            } else {
+                NSLog(@"file exist but not open");
             }
         }];
     } else {
@@ -5667,6 +5637,7 @@ BOOL isNewTableRow;
             
             
             if(needToShowShowedController){
+                self.callShowController = YES;
                 [self showSowedViewController];
             }
             
@@ -5676,6 +5647,7 @@ BOOL isNewTableRow;
                 [self.view setFrame:[UIScreen mainScreen].bounds];
                 if(needToDissmisShowedViewcontroller){
                     [self.showedController dismis];
+                    self.callShowController = NO;
                 }
                 
             }
@@ -5695,6 +5667,12 @@ BOOL isNewTableRow;
     lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:size];
+    } else {
+        if(self.showedController){
+        NSLog(@"viewWillTransitionToSize ShowedController iPad");
+        self.showedController.containerWidthConstrain.constant = size.width;
+        self.showedController.containerHeightConstrain.constant = size.height;
+        }
     }
     //NSLog(@"viewWillTransitionToSize");
 }
@@ -5703,27 +5681,69 @@ BOOL isNewTableRow;
 CGFloat maxButtonsCollectionHeight;
 -(void)viewDidLayoutSubviews{
     //NSLog(@"viewDidLayoutSubviews");
+    //NSLog(@"Display Top before: %f", self.displayTopConstrain.constant);
     
     CGSize viewSize = self.view.bounds.size;
     if(!IS_IPAD){
+        //UIEdgeInsets insets = UIEdgeInsetsZero;
+        //insets.bottom = 0.;//-34.;
+        //self.additionalSafeAreaInsets = insets;
+        //self.view.insetsLayoutMarginsFromSafeArea = YES;
+        
         
         //for iphone alwais short size is width (as nonrotated)
-        self.mainContainerWidth.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
-        self.mainContainerHeight.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
-        //NSLog(@"mainContainerHeight %f",self.mainContainerHeight.constant);
+        if(viewSize.width < viewSize.height){
+            self.mainContainerWidth.constant = viewSize.width;
+            self.mainContainerHeight.constant = viewSize.height;
+            //change safe area for iPhoneX
+            if(IS_X){
+                UIEdgeInsets insets = UIEdgeInsetsZero;
+                insets.bottom = -34.;
+                insets.top = -44.;
+                self.additionalSafeAreaInsets = insets;
+            }
+            
+            if(self.showedController){
+                //CGFloat constrConst = viewSize.height- viewSize.width;
+                self.showedController.containerWidthConstrain.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
+                self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
+                NSLog(@"ViewDidLayout ShowedController");
+            }
+        } else {
+            self.mainContainerWidth.constant = viewSize.height;
+            self.mainContainerHeight.constant = viewSize.width;
+            //change safe area for iPhoneX
+            if(IS_X){
+                UIEdgeInsets insets = UIEdgeInsetsZero;
+                insets.bottom = -21.;
+                insets.top = 0.;
+                insets.left = -44.;
+                insets.right = -44.;
+                self.additionalSafeAreaInsets = insets;
+            }
+            if(self.showedController){
+                NSLog(@"ViewDidLayout ShowedController");
+                self.showedController.containerWidthConstrain.constant =viewSize.width < viewSize.height? viewSize.height: viewSize.width;
+                self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
+            }
+        }
+        
+        /*
         if(self.showedController){
             self.showedController.containerWidthConstrain.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
             self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
-        }
+        }*/
         
         //set calc screen height
         self.calcScreenHeightConstrain.constant = self.mainContainerWidth.constant*IPHONE_SCREEN_VS_WIDTH_RATIO;
         //if history table whole showed
         //how history showed can change from 1 to 0
         // need detect whole way
+        
         if(IS_X){//if iPhoneX
             maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_X_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
         } else {
+            
             maxButtonsCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
         }
         
@@ -5744,7 +5764,11 @@ CGFloat maxButtonsCollectionHeight;
             self.calcScreenHeightConstrain.constant = minSide*IPAD_SCREEN_VS_WIDTH_RATIO;
         }
         
-        
+        if(self.showedController){
+            NSLog(@"ViewDidLayout ShowedController iPad");
+            self.showedController.containerWidthConstrain.constant = viewSize.width;
+            self.showedController.containerHeightConstrain.constant = viewSize.height;
+        }
         //if history table whole showed
         //how history showed can change from 1 to 0
         // need detect whole way
@@ -5755,10 +5779,17 @@ CGFloat maxButtonsCollectionHeight;
     
     //history table height
     if(self.isButtonsCollectionUnderChanging){
-        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;
+        //NSLog(@"sviperBottomConstrain before:%f",self.sviperBottomConstrain.constant );
+        //NSLog(@"historyTableSviper hright:%f",self.historyTableSviper.frame.size.height );
+        /*self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;*/
+        self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
+
+        //NSLog(@"sviperBottomConstrain after:%f",self.sviperBottomConstrain.constant );
+        
     } else {
         if(self.isCalcShowed){
             self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+            
             //[self changeHowHistoryShowed:0];
             
         } else if(self.isHistoryShowed){
@@ -5769,7 +5800,7 @@ CGFloat maxButtonsCollectionHeight;
             [self changeHowHistoryShowed:((self.displayTopConstrain.constant+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight];
         }
         
-        self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/10.;
+        self.sviperBottomConstrain.constant = -self.calcScreenHeightConstrain.constant*14./20.;
     }
     //screen buttons according interfase size
     if(self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
@@ -5781,7 +5812,139 @@ CGFloat maxButtonsCollectionHeight;
     }
 }
 
+#pragma mark BUTTONS SIZE CHANGE
+#define BUTTON_SIDES_RATIO_IPAD 1.8
+#define BUTTON_SIDES_RATIO_IPHONE 1.4
+#define INSENT_BUTTONS_PART 9. //insent first row
+-(void) setIsBigSizeButtons:(BOOL)isBigSizeButtons
+{
+    _isBigSizeButtons = isBigSizeButtons;
+    //reset buttons size only when core data available
+    //as exemple don't set in view didload
+    if(self.buttonManagedObjectContext){
+        //  [self setUpMainButtonsStartWithPosition];
+        //  [self makeTwoArrays];
+        //  [self.buttonsCollection reloadData];
+        //[self.buttonsStore renewArraysAccordingNewButtonsSize];
+        [self newButtonsSize];
+        
+    }
+}
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if(IS_IPAD){
+       /* if(self.showedController){
+            NSLog(@"observeValueForKeyPath ShowedController iPad");
+            self.showedController.containerWidthConstrain.constant = self.view.bounds.size.width;
+            self.showedController.containerHeightConstrain.constant = self.view.bounds.size.height;
+        }*/
+
+    }
+    
+    if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
+        //NSLog(@"buttonsCollectionHeight %f - ", self.buttonsCollection.bounds.size.height);
+        if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
+            buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
+            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+            [self newButtonsSize];
+            screenHeight = self.calcScreenHeightConstrain.constant;
+            [self updateHistoryTableArraysAndGoBottom:NO];
+            [self.historyTable reloadData];
+            
+        } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
+            //screenHeight = self.calcScreenHeightConstrain.constant;
+            //need for iPad if changed screen height without changing buttonCollection width
+            [self newButtonsSize];
+            lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+            //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+            screenHeight = self.calcScreenHeightConstrain.constant;
+        }
+        [self.designObj changeClassSize];
+        //[self.historyTable reloadData];
+    }
+}
+
+-(void)newButtonsSize
+{
+    //find the minimum side for small and big button
+    CGFloat buttonsRatio;
+    if(IS_IPAD){
+        buttonsRatio=BUTTON_SIDES_RATIO_IPAD;
+    }else {
+        buttonsRatio=BUTTON_SIDES_RATIO_IPHONE;
+    }
+    
+    //qantity for big and small button
+    NSInteger xQantity;
+    NSInteger yQantity;
+    if(self.isBigSizeButtons) {
+        xQantity = 4;
+        yQantity = 6;
+    }else {
+        xQantity = 5;
+        yQantity = 7;
+    }
+    
+    //find min side
+    
+    CGFloat xFindSide = self.buttonsCollection.bounds.size.width/xQantity;
+    
+    
+    //count max button collection heigth
+    //independ of how histroy showed
+    CGFloat buttCollectionHeight;
+    if(IS_IPAD){
+        buttCollectionHeight =  self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+    } else {
+        buttCollectionHeight = self.mainContainerWidth.constant*IPHONE_RATIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+    }
+    CGFloat yFindSide = buttCollectionHeight/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height)/yQantity;
+    
+    //NSLog(@"buttCollectionHeight: %f, real: %f",buttCollectionHeight, self.buttonsCollectionView.bounds.size.height);
+    
+    //define wich side will be
+    if(xFindSide<yFindSide*buttonsRatio){
+        
+        buttonsWidth = self.buttonsCollection.bounds.size.width/xQantity;
+        buttonsIntens = 0;
+        
+        //find buttonsHeight
+        yQantity = (NSInteger) round((buttCollectionHeight- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));//round((buttCollectionHeight-self.displayContainer.bounds.size.height- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
+        
+    } else {
+        
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
+        buttonsIntens = 0;
+        
+        //find buttonsHeight
+        xQantity = (NSInteger) round(self.buttonsCollection.bounds.size.width/(yFindSide*buttonsRatio));
+        buttonsWidth = (self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity;
+    }
+    
+    //renew buttons array
+    [self.buttonsStore renewArraysAccordingNewButtonsSize];
+    [self.buttonsCollection reloadData];
+    
+    //renew buttonsCollectionLayout
+    UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
+    
+    flow.itemSize = CGSizeMake(buttonsWidth, buttonsHeight);
+    flow.minimumInteritemSpacing = buttonsIntens;
+    flow.minimumLineSpacing = buttonsIntens;
+    
+    UIEdgeInsets insets;
+    insets.top = INSENT_BUTTONS_PART+ buttonsIntens;//self.displayContainer.bounds.size.height+INSENT_BUTTONS_PART+ buttonsIntens;
+    insets.bottom = buttonsIntens;
+    insets.left = buttonsIntens;
+    insets.right = buttonsIntens;
+    flow.sectionInset = insets;
+    
+    buttonsFlowLayout = flow;
+    [self.buttonsCollection setCollectionViewLayout:buttonsFlowLayout animated:YES];
+}
 
 #pragma mark updateKVStoreItems
 
@@ -5968,7 +6131,7 @@ CGFloat maxButtonsCollectionHeight;
         //[self.buttonsStore resaveCoreButtons];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];
+   /* [[NSNotificationCenter defaultCenter] postNotificationName: @"HistoryTableViewCellViewDidBeginScrolingNotification" object:self.historyTable];*/
     
     //importand why i've made it
    // [self discardChanging];
@@ -6034,7 +6197,9 @@ CGFloat maxButtonsCollectionHeight;
     //NSDate* appearDate = [NSDate date];
     NSLog(@"Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     
-    
+    if(!IS_IPAD){
+        [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
+    }
     
 }
 
@@ -6189,7 +6354,7 @@ sourceController:(UIViewController *)source
 }
 
 #pragma mark SHOW VIEW CONTROLLER
-
+/*
 -(void) showShowedView
 {
     //NSLog(@"ATTR str fro show: %@", self.strAtrrForShow.string);
@@ -6226,7 +6391,9 @@ sourceController:(UIViewController *)source
     
     [self presentViewController:self.showedController animated:YES completion:nil];
 }
+*/
 #pragma mark PREAPERE STRINGS
+/*
 -(void) showCount
 {
     //important AT START ITS CALL 4 times IMPOSIBLE //end every time ITS CALLED TWICE, at = CALL THREE TIMES
@@ -6329,13 +6496,13 @@ sourceController:(UIViewController *)source
             countAtrStr = [[self resizeAttrString:[countAtrStr copy] withKoeff:koeff] mutableCopy];
             neededRect = [countAtrStr boundingRectWithSize:neededSize options:NSStringDrawingUsesLineFragmentOrigin
                                                    context:drawContext];
-            /*
+ 
             NSLog(@"in Loop needRect: %f,%f,%f,%f",
                   neededRect.origin.x,
                   neededRect.origin.y,
                   neededRect.size.width,
                   neededRect.size.height);
-            */
+ 
         }
         
         //set result string
@@ -6382,7 +6549,7 @@ sourceController:(UIViewController *)source
     
 
 }
-
+*/
 //helped function for set need font
 -(UIFont*) setFontWithSize:(CGFloat) size
 {
@@ -6405,7 +6572,7 @@ sourceController:(UIViewController *)source
     return  font;
 }
 
-
+/*
 -(NSAttributedString*) resizeAttrString:(NSAttributedString*)inputStr withKoeff:(CGFloat)k;
 {
     NSMutableAttributedString* resultString = [inputStr mutableCopy];
@@ -6431,7 +6598,7 @@ sourceController:(UIViewController *)source
     
     return [resultString copy];
 }
-
+*/
 
 #pragma mark MORE CONTROLLERS
 //Important test
@@ -6899,6 +7066,21 @@ sourceController:(UIViewController *)source
         ShowedViewController *showedVC = [storyBoard instantiateViewControllerWithIdentifier:@"ShowedViewController"];
         showedVC.transitioningDelegate = self;
         showedVC.wasOrient = [UIDevice currentDevice].orientation;
+        //set string for showed view
+        //1. find selected string patch
+        NSIndexPath *selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+        NSAttributedString *expression = [[NSAttributedString alloc] initWithString:@"?"];
+        NSAttributedString *result = [[NSAttributedString alloc] initWithString:@"?"];
+        if(selectedRowPatch){
+            if(selectedRowPatch.row == [self.historyTable numberOfRowsInSection: 0] - 1){
+                expression = [self getAttributedStringFromArray:self.lastRowDataArray];
+            } else {
+                expression = [self.mainAttributedStrings objectAtIndex:selectedRowPatch.row];
+            }
+
+        }
+        [showedVC setNeedStringsForShow:expression
+                                 andRes:result];
         self.showedController = showedVC;
         [self presentViewController:showedVC animated:YES completion:nil];
         

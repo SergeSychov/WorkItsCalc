@@ -7,6 +7,7 @@
 //
 
 #import "ShowedViewController.h"
+#import "AtrStrStore.h"
 #import "ShowedView.h"
 #import "CalcButton.h"
 #import "ShareButton.h"
@@ -22,7 +23,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @interface ShowedViewController()
 
+@property (weak, nonatomic) IBOutlet UILabel *expressionLabel;
+@property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 
+@property (strong) NSAttributedString* expressionString;
+@property (strong) NSAttributedString* resultString;
 
 @property (nonatomic,weak) UIButton *redPanButton;
 @property (nonatomic,weak) UIButton *bluePanButton;
@@ -37,13 +42,15 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @implementation ShowedViewController
 
 //set this property to allow tap botton buttons in buttonsCollectionView
+/*
 -(BOOL) prefersStatusBarHidden
 {
     return YES;
 }
-
+*/
 
 #pragma mark LAZY INITIALIZATION
+/*
 -(NSAttributedString*)attrStrForLabel
 {
     if(!_attrStrForLabel){
@@ -59,17 +66,28 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
     return _resStringforShow;
 }
+*/
+
 
 -(void) setNeedStringsForShow:(NSAttributedString *)count andRes:(NSAttributedString *)res
 {
-    self.attrStrForLabel = count;
-    self.resStringforShow = res;
+    /*
+    CGSize expFontSize = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?CGSizeMake(0, 40.):CGSizeMake(0, 60.);
+    CGSize resFontSize = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?CGSizeMake(0, 60):CGSizeMake(0, 80);
+     */
+    _expressionString = count;//[AtrStrStore changeFontSizeFrom:count toSize:CGSizeMake(0, 40.)];
+    _resultString = res;//[AtrStrStore changeFontSizeFrom:res toSize:CGSizeMake(0, 60.)];
+
+    /*
     if(self.showedView){
        [self.showedView setShowedViewWithCountedStr:count resultStr:res andBluePan:YES];
     }
+     */
 }
 
+
 #pragma mark ACTION
+/*
 -(void) redPanButtonTapped:(id)sender
 {
     self.showedView.isBluePanOrRed = NO;
@@ -103,7 +121,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:img, /*strToShare, */nil];
+    NSArray *activityItems = [[NSArray alloc] initWithObjects:img, nil];//strToShare
     
     UIActivityViewController *activity = [[UIActivityViewController alloc]
                                           initWithActivityItems:activityItems
@@ -129,8 +147,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 {
         self.cleanButton.enabled = YES;
 }
+*/
 
 #pragma mark SUBVIEWS LOAD
+
+/*
 -(void) setHeightOfElementAccordingToScreenIPhone
 {
     CGRect buttonsRect = CGRectMake(0, 0, 60, 60);
@@ -275,7 +296,9 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
     }
 }
+*/
 
+/*
 -(void) viewWillAppear:(BOOL)animated
 {
     if(IS_IPAD){
@@ -301,21 +324,78 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     }
 }
 
+-(void)viewDidLayoutSubviews{
+    self.expressionLabel.adjustsFontSizeToFitWidth=YES;
+    self.expressionLabel.minimumScaleFactor=0.2;
+}
+ */
+-(void)prepareStringsforLables{
+    NSDictionary *dict1 = [self.expressionString attributesAtIndex:0 effectiveRange:NULL];
+    UIFont *fontT1 = [dict1 valueForKey: NSFontAttributeName];
+    
+    NSLog(@"Exp string size: %f", [fontT1 pointSize]);
+    
+    if(self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact){
+        NSLog(@"Compact");
+    } else if (self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular){
+        NSLog(@"Regular");
+    } else {
+        NSLog(@"Unnown");
+
+    }
+    CGFloat expFontPoint = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?40.:60.;
+    CGFloat resFontPoint = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?60.: 80.;
+    self.expressionString = [AtrStrStore resizeAttrString:self.expressionString toPointSize:expFontPoint];
+    NSDictionary *dict = [self.expressionString attributesAtIndex:0 effectiveRange:NULL];
+    UIFont *fontT = [dict valueForKey: NSFontAttributeName];
+    
+    NSLog(@"Exp string size: %f", [fontT pointSize]);
+    //self.resultString = [AtrStrStore resizeAttrString:self.resultString toPointSize:resFontPoint];
+    /*
+    self.expressionString = [AtrStrStore changeFontSizeFrom:self.expressionString toSize:expFontSize];
+     self.resultString = [AtrStrStore changeFontSizeFrom:self.resultString toSize:resFontSize];
+     */
+    
+}
 -(void) viewDidLoad
 {
     [super viewDidLoad];
+    
+    //[self prepareStringsforLables];
+    
+
+   // self.expressionLabel.adjustsFontSizeToFitWidth=YES;
+    //self.expressionLabel.minimumScaleFactor=0.2;
+        self.expressionLabel.attributedText = self.expressionString;
+    //[self.expressionLabel setTextColor:[UIColor darkTextColor]];
+    //[self.expressionLabel setTextAlignment:NSTextAlignmentLeft];
+    
+    //self.resultLabel.attributedText = self.resultString;
+    
+    NSLog(@"showedController viewDidLoad restext: %@", [self.resultLabel.attributedText  string]);
+    //[self.resultLabel setTextColor:[UIColor darkTextColor]];
+    //[self.resultLabel setTextAlignment:NSTextAlignmentRight];
+
+    /*
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(DurtyBezierView) name:@"BezierViewIsDirtyNotification" object:nil];
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
+    */
     
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+/*
 -(void)appWillGoToBackground:(NSNotification *)note{
    // self.transitioningDelegate = self;
     [self dismis];
 
 }
+*/
 
 @end

@@ -14,7 +14,7 @@
 @interface ThirdController() <UIViewControllerTransitioningDelegate>
 
 @property (strong) BackTransition* transition;
-@property (weak,nonatomic) UILabel *label;
+//@property (weak,nonatomic) UILabel *label;
 
 @end
 
@@ -57,6 +57,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 -(void)viewDidLoad{
     [super viewDidLoad];
+    /*
     self.wasOrient = [UIDevice currentDevice].orientation;
 
     
@@ -68,6 +69,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     
     [self setNeedViews];
     [self viewDidLayoutSubviewsWithRect:self.cView.bounds];
+    */
 }
 
 @end
