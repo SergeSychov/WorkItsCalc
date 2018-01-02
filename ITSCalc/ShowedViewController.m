@@ -7,14 +7,15 @@
 //
 
 #import "ShowedViewController.h"
+#import "DesignObject.h"
 #import "AtrStrStore.h"
 #import "ShowedView.h"
 #import "CalcButton.h"
 #import "ShareButton.h"
 #import "CleanButton.h"
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
+//#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+//#define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 
 #define INDENT 20.0f
 
@@ -23,19 +24,19 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @interface ShowedViewController()
 
-@property (weak, nonatomic) IBOutlet UILabel *expressionLabel;
-@property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 
 @property (strong) NSAttributedString* expressionString;
 @property (strong) NSAttributedString* resultString;
+@property (strong) NSAttributedString* descrString;
 
-@property (nonatomic,weak) UIButton *redPanButton;
-@property (nonatomic,weak) UIButton *bluePanButton;
-@property (nonatomic,weak) CalcButton *calcButton;
-@property (nonatomic,weak) ShareButton *shareButton;
-@property (nonatomic,weak) CleanButton *cleanButton;
+@property (weak, nonatomic) IBOutlet UIButton *redPanButton;
+@property (weak, nonatomic) IBOutlet UIButton *bluePanButton;
+@property (weak, nonatomic) IBOutlet CalcButton *calcButton;
+@property (weak, nonatomic) IBOutlet ShareButton *shareButton;
 
-@property (nonatomic,weak) ShowedView *showedView;
+@property (weak, nonatomic) IBOutlet CleanButton *cleanButton;
+@property (weak, nonatomic) IBOutlet ShowedView *showedView;
+
 
 @end
 
@@ -67,55 +68,138 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     return _resStringforShow;
 }
 */
+static BOOL isCompactClassSize;
 
-
--(void) setNeedStringsForShow:(NSAttributedString *)count andRes:(NSAttributedString *)res
-{
-    /*
-    CGSize expFontSize = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?CGSizeMake(0, 40.):CGSizeMake(0, 60.);
-    CGSize resFontSize = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?CGSizeMake(0, 60):CGSizeMake(0, 80);
-     */
-    _expressionString = count;//[AtrStrStore changeFontSizeFrom:count toSize:CGSizeMake(0, 40.)];
-    _resultString = res;//[AtrStrStore changeFontSizeFrom:res toSize:CGSizeMake(0, 60.)];
-
-    /*
-    if(self.showedView){
-       [self.showedView setShowedViewWithCountedStr:count resultStr:res andBluePan:YES];
+-(void) willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    if((newCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact)|| (newCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact)){
+        isCompactClassSize = YES;
+    } else {
+        isCompactClassSize = NO;
     }
-     */
+}
+
+-(void)viewDidLayoutSubviews{
+    
+    if((self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact)|| (self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact)){
+        isCompactClassSize = YES;
+    } else {
+        isCompactClassSize = NO;
+    }
+}
+
+
+-(void)setNeedStrings:(NSAttributedString *)descr :(NSAttributedString *)count andRes:(NSAttributedString *)res{
+    NSMutableAttributedString *mutStr = [descr mutableCopy];
+    
+    //NSLog(@"inf attr %@",self.design.attributesInfo );
+
+    [mutStr beginEditing];
+    if([mutStr length]>0 && self.design.attributesInfo){
+    [mutStr addAttributes:self.design.attributesInfo range:NSMakeRange(0, [descr length])];
+    }
+    [mutStr endEditing];
+    
+    //[mutStr setValuesForKeysWithDictionary:self.design.attributesInfo];
+    self.descrString = [mutStr copy];
+    
+    mutStr = [count mutableCopy];
+    [mutStr beginEditing];
+    //NSLog(@"Epl attr %@",self.design.attributesExpl );
+
+    if([mutStr length]>0 && self.design.attributesExpl){
+        [mutStr addAttributes:self.design.attributesExpl range:NSMakeRange(0, [count length])];
+    }
+    [mutStr endEditing];
+    //[mutStr setValuesForKeysWithDictionary:self.design.attributesInfo];
+    self.expressionString = [mutStr copy];
+    
+    mutStr = [res mutableCopy];
+    [mutStr beginEditing];
+    //NSLog(@"Res attr %@",self.design.attributesResult );
+    if([mutStr length]>0 && self.design.attributesResult){
+        [mutStr addAttributes:self.design.attributesResult range:NSMakeRange(0, [res length])];
+    }
+    [mutStr endEditing];
+
+    //[mutStr setValuesForKeysWithDictionary:self.design.attributesResult]; //
+    self.resultString = [mutStr copy];
+    //NSLog(@"res attr: %@", [self.resultString attributesAtIndex:0 effectiveRange:NULL]);
+}
+
+-(void)upDateStringsWithInfSize:(CGSize)infSize exprSize:(CGSize)exprSize resSize:(CGSize)resSize {
+    CGFloat infFontPoint;
+    CGFloat expFontPoint;
+    CGFloat resFontPoint;
+    if(isCompactClassSize ){
+        infFontPoint = 24.;
+        expFontPoint = 54.;
+        resFontPoint = 90.;
+    } else {
+        infFontPoint = 32.;
+        expFontPoint = 74.;
+        resFontPoint = 120.;
+    }
+    
+    //NSLog(@"resStr attr: %@", [self.resultString attributesAtIndex:0 effectiveRange:NULL]);
+    
+    self.descriptionLabel.attributedText = [AtrStrStore resizeAttrString:self.descrString
+                                   WithInitPointSize:infFontPoint
+                                      accordingBound:infSize
+                                            byHeight:YES];
+    self.expressionLabel.attributedText = [AtrStrStore resizeAttrString:self.expressionString
+                                                      WithInitPointSize:expFontPoint accordingBound:exprSize byHeight:YES];
+    self.resultLabel.attributedText = [AtrStrStore resizeAttrString:self.resultString
+                                                  WithInitPointSize:resFontPoint
+                                                     accordingBound:resSize
+                                                           byHeight:NO];
+    //NSLog(@"expressionLabel attr: %@", [self.expressionLabel.attributedText attributesAtIndex:0 effectiveRange:NULL]);
+    
+    //NSLog(@"res attr: %@", [self.resultLabel.attributedText attributesAtIndex:0 effectiveRange:NULL]);
+
+    [self.view setNeedsDisplay];
+
 }
 
 
 #pragma mark ACTION
-/*
--(void) redPanButtonTapped:(id)sender
-{
-    self.showedView.isBluePanOrRed = NO;
+
+- (IBAction)redPanButtonTapped:(id)sender {
+    //self.showedView.isBluePanOrRed = NO;
     [self.redPanButton setImage:[UIImage imageNamed:@"redPanSelected2.png"] forState:normal];
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanUnselected2.png"] forState:normal];
     
 }
 
--(void) bluePanButtonTapped:(id)sender
-
-{
-    self.showedView.isBluePanOrRed = YES;
+- (IBAction)bluePanButtonTapped:(id)sender {
+    //self.showedView.isBluePanOrRed = YES;
     //set new image for that button
     [self.redPanButton setImage:[UIImage imageNamed:@"redPanUnselected2.png"] forState:normal];
     [self.bluePanButton setImage:[UIImage imageNamed:@"bluePanSelected2.png"] forState:normal];
    
 }
 
--(void) cleanButtonTapped:(id)sender
-
-{
-    [self.showedView clearPaintedView];
+- (IBAction)cleanButtonTapped:(id)sender {
+    //[self.showedView clearPaintedView];
+    /*[UIView animateWithDuration:0.4
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         self.paintedView.alpha = 0.;
+                     } completion:^(BOOL finished) {
+                         [self.paintedView removeFromSuperview];
+                         BezierInterpView *paintedView = [[BezierInterpView alloc] initWithFrame:self.bounds];
+                         paintedView.backgroundColor = [UIColor clearColor];
+                         
+                         paintedView.isBlueColor = self.isBluePanOrRed;
+                         
+                         [self addSubview:paintedView];
+                         self.paintedView = paintedView;
+                         [self countRedLineSize];
+                     }];*/
     self.cleanButton.enabled = NO;
 }
 
--(void) shareButtonTapped:(id)sender
-
-{
+- (IBAction)shareButtonTapped:(id)sender {
     UIGraphicsBeginImageContextWithOptions(self.showedView.bounds.size, self.showedView.opaque, 0.0);
     [self.showedView.layer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
@@ -135,13 +219,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     [self presentViewController:activity animated:YES completion:nil];
 }
 
--(void) calcButtonTapped:(id)sender
-
-{
+- (IBAction)calcButtonTapped:(id)sender {
     [self dismis];
 }
 
-
+/*
 //recive selector for notification from beizerview (painted view)
 -(void) DurtyBezierView
 {
@@ -329,50 +411,36 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
     self.expressionLabel.minimumScaleFactor=0.2;
 }
  */
--(void)prepareStringsforLables{
-    NSDictionary *dict1 = [self.expressionString attributesAtIndex:0 effectiveRange:NULL];
-    UIFont *fontT1 = [dict1 valueForKey: NSFontAttributeName];
-    
-    NSLog(@"Exp string size: %f", [fontT1 pointSize]);
-    
-    if(self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact){
-        NSLog(@"Compact");
-    } else if (self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular){
-        NSLog(@"Regular");
-    } else {
-        NSLog(@"Unnown");
 
-    }
-    CGFloat expFontPoint = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?40.:60.;
-    CGFloat resFontPoint = self.view.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact?60.: 80.;
-    self.expressionString = [AtrStrStore resizeAttrString:self.expressionString toPointSize:expFontPoint];
-    NSDictionary *dict = [self.expressionString attributesAtIndex:0 effectiveRange:NULL];
-    UIFont *fontT = [dict valueForKey: NSFontAttributeName];
-    
-    NSLog(@"Exp string size: %f", [fontT pointSize]);
-    //self.resultString = [AtrStrStore resizeAttrString:self.resultString toPointSize:resFontPoint];
-    /*
-    self.expressionString = [AtrStrStore changeFontSizeFrom:self.expressionString toSize:expFontSize];
-     self.resultString = [AtrStrStore changeFontSizeFrom:self.resultString toSize:resFontSize];
-     */
-    
-}
+
 -(void) viewDidLoad
 {
     [super viewDidLoad];
-    
+    if(IS_X){
+        self.buttonsLeadingConstrain.constant = 64;
+        self.stackTrailingConstrain.constant = 64;
+        //UIEdgeInsets insets = UIEdgeInsetsZero;
+        //insets.bottom = 34.;
+        //insets.top = 44.;
+        //self.additionalSafeAreaInsets = insets;
+    }
+    if(IS_IPAD){
+        self.calcButton.hidden = NO;
+    } else {
+        self.calcButton.hidden = YES;
+    }
     //[self prepareStringsforLables];
     
 
    // self.expressionLabel.adjustsFontSizeToFitWidth=YES;
     //self.expressionLabel.minimumScaleFactor=0.2;
-        self.expressionLabel.attributedText = self.expressionString;
+     //   self.expressionLabel.attributedText = self.expressionString;
     //[self.expressionLabel setTextColor:[UIColor darkTextColor]];
     //[self.expressionLabel setTextAlignment:NSTextAlignmentLeft];
     
     //self.resultLabel.attributedText = self.resultString;
     
-    NSLog(@"showedController viewDidLoad restext: %@", [self.resultLabel.attributedText  string]);
+    //NSLog(@"showedController viewDidLoad restext: %@", [self.resultLabel.attributedText  string]);
     //[self.resultLabel setTextColor:[UIColor darkTextColor]];
     //[self.resultLabel setTextAlignment:NSTextAlignmentRight];
 
