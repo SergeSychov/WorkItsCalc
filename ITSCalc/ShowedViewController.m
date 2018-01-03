@@ -35,7 +35,7 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 @property (weak, nonatomic) IBOutlet ShareButton *shareButton;
 
 @property (weak, nonatomic) IBOutlet CleanButton *cleanButton;
-@property (weak, nonatomic) IBOutlet ShowedView *showedView;
+//@property (weak, nonatomic) IBOutlet ShowedView *showedView;
 
 
 @end
@@ -89,75 +89,59 @@ static BOOL isCompactClassSize;
 
 
 -(void)setNeedStrings:(NSAttributedString *)descr :(NSAttributedString *)count andRes:(NSAttributedString *)res{
-    NSMutableAttributedString *mutStr = [descr mutableCopy];
-    
-    //NSLog(@"inf attr %@",self.design.attributesInfo );
 
-    [mutStr beginEditing];
-    if([mutStr length]>0 && self.design.attributesInfo){
-    [mutStr addAttributes:self.design.attributesInfo range:NSMakeRange(0, [descr length])];
-    }
-    [mutStr endEditing];
-    
-    //[mutStr setValuesForKeysWithDictionary:self.design.attributesInfo];
-    self.descrString = [mutStr copy];
-    
-    mutStr = [count mutableCopy];
-    [mutStr beginEditing];
-    //NSLog(@"Epl attr %@",self.design.attributesExpl );
-
-    if([mutStr length]>0 && self.design.attributesExpl){
-        [mutStr addAttributes:self.design.attributesExpl range:NSMakeRange(0, [count length])];
-    }
-    [mutStr endEditing];
-    //[mutStr setValuesForKeysWithDictionary:self.design.attributesInfo];
-    self.expressionString = [mutStr copy];
-    
-    mutStr = [res mutableCopy];
-    [mutStr beginEditing];
-    //NSLog(@"Res attr %@",self.design.attributesResult );
-    if([mutStr length]>0 && self.design.attributesResult){
-        [mutStr addAttributes:self.design.attributesResult range:NSMakeRange(0, [res length])];
-    }
-    [mutStr endEditing];
-
-    //[mutStr setValuesForKeysWithDictionary:self.design.attributesResult]; //
-    self.resultString = [mutStr copy];
-    //NSLog(@"res attr: %@", [self.resultString attributesAtIndex:0 effectiveRange:NULL]);
+    self.descrString = descr;
+    self.expressionString = count;
+    self.resultString = res;
 }
 
+static BOOL isStringsBuzy;
+
 -(void)upDateStringsWithInfSize:(CGSize)infSize exprSize:(CGSize)exprSize resSize:(CGSize)resSize {
-    CGFloat infFontPoint;
-    CGFloat expFontPoint;
-    CGFloat resFontPoint;
-    if(isCompactClassSize ){
-        infFontPoint = 24.;
-        expFontPoint = 54.;
-        resFontPoint = 90.;
-    } else {
-        infFontPoint = 32.;
-        expFontPoint = 74.;
-        resFontPoint = 120.;
+    
+    if(!isStringsBuzy){
+        isStringsBuzy = YES;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        CGFloat infFontPoint;
+        CGFloat expFontPoint;
+        CGFloat resFontPoint;
+        if(isCompactClassSize ){
+            infFontPoint = 24.;
+            expFontPoint = 54.;
+            resFontPoint = 90.;
+        } else {
+            infFontPoint = 32.;
+            expFontPoint = 74.;
+            resFontPoint = 120.;
+        }
+        
+        self.descrString = [AtrStrStore resizeAttrString:self.descrString
+                              WithInitPointSize:infFontPoint
+                                 accordingBound:infSize
+                                       byHeight:YES];
+       
+
+        self.expressionString = [AtrStrStore resizeAttrString:self.expressionString
+                             WithInitPointSize:expFontPoint
+                                accordingBound:exprSize
+                                      byHeight:YES];
+        
+        self.resultString = [AtrStrStore resizeAttrString:self.resultString
+                             WithInitPointSize:resFontPoint
+                                accordingBound:resSize
+                                      byHeight:NO];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.descriptionLabel.attributedText = self.descrString;
+            self.expressionLabel.attributedText = self.expressionString;
+            self.resultLabel.attributedText = self.resultString;
+
+            [self.view setNeedsDisplay];
+            isStringsBuzy = NO;
+            NSLog(@"Finish");
+        });
+    });
     }
-    
-    //NSLog(@"resStr attr: %@", [self.resultString attributesAtIndex:0 effectiveRange:NULL]);
-    
-    self.descriptionLabel.attributedText = [AtrStrStore resizeAttrString:self.descrString
-                                   WithInitPointSize:infFontPoint
-                                      accordingBound:infSize
-                                            byHeight:YES];
-    self.expressionLabel.attributedText = [AtrStrStore resizeAttrString:self.expressionString
-                                                      WithInitPointSize:expFontPoint accordingBound:exprSize byHeight:YES];
-    self.resultLabel.attributedText = [AtrStrStore resizeAttrString:self.resultString
-                                                  WithInitPointSize:resFontPoint
-                                                     accordingBound:resSize
-                                                           byHeight:NO];
-    //NSLog(@"expressionLabel attr: %@", [self.expressionLabel.attributedText attributesAtIndex:0 effectiveRange:NULL]);
-    
-    //NSLog(@"res attr: %@", [self.resultLabel.attributedText attributesAtIndex:0 effectiveRange:NULL]);
-
-    [self.view setNeedsDisplay];
-
 }
 
 
@@ -200,8 +184,8 @@ static BOOL isCompactClassSize;
 }
 
 - (IBAction)shareButtonTapped:(id)sender {
-    UIGraphicsBeginImageContextWithOptions(self.showedView.bounds.size, self.showedView.opaque, 0.0);
-    [self.showedView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIGraphicsBeginImageContextWithOptions(self.containerView.bounds.size, self.containerView.opaque, 0.0);
+    [self.containerView.layer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
@@ -419,30 +403,15 @@ static BOOL isCompactClassSize;
     if(IS_X){
         self.buttonsLeadingConstrain.constant = 64;
         self.stackTrailingConstrain.constant = 64;
-        //UIEdgeInsets insets = UIEdgeInsetsZero;
-        //insets.bottom = 34.;
-        //insets.top = 44.;
-        //self.additionalSafeAreaInsets = insets;
     }
     if(IS_IPAD){
         self.calcButton.hidden = NO;
     } else {
         self.calcButton.hidden = YES;
     }
-    //[self prepareStringsforLables];
-    
+    [self.containerView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych1.png"]]];
+    isStringsBuzy = NO;
 
-   // self.expressionLabel.adjustsFontSizeToFitWidth=YES;
-    //self.expressionLabel.minimumScaleFactor=0.2;
-     //   self.expressionLabel.attributedText = self.expressionString;
-    //[self.expressionLabel setTextColor:[UIColor darkTextColor]];
-    //[self.expressionLabel setTextAlignment:NSTextAlignmentLeft];
-    
-    //self.resultLabel.attributedText = self.resultString;
-    
-    //NSLog(@"showedController viewDidLoad restext: %@", [self.resultLabel.attributedText  string]);
-    //[self.resultLabel setTextColor:[UIColor darkTextColor]];
-    //[self.resultLabel setTextAlignment:NSTextAlignmentRight];
 
     /*
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(DurtyBezierView) name:@"BezierViewIsDirtyNotification" object:nil];

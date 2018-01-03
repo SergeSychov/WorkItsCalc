@@ -7,7 +7,7 @@
 //
 
 #import "ShowedView.h"
-//#import "BezierInterpView.h"
+#import "BezierInterpView.h"
 
 #define RES_RECT_HEIGHT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 196.f : 96.f)
 #define STRING_INDENT ([[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 150.f : 90.f)
@@ -16,9 +16,9 @@
 @interface ShowedView()
 
 
-//@property (nonatomic, weak) BezierInterpView *paintedView;
-//@property (nonatomic, strong) NSAttributedString *count;
-//@property (nonatomic, strong) NSAttributedString *result;
+@property (nonatomic, weak) BezierInterpView *paintedView;
+@property (nonatomic, strong) NSAttributedString *count;
+@property (nonatomic, strong) NSAttributedString *result;
 
 @end
 

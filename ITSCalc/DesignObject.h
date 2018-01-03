@@ -36,7 +36,7 @@
 #define MULTIPLY_BUTTON_BY_TOUCH 2.
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-
+#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
 @class DesignObject;
 @protocol DesignStrDelegate <NSObject>
 -(UIUserInterfaceSizeClass)currentInterfaceClassSize;
@@ -77,6 +77,8 @@
 @property (nonatomic, readonly)UIColor *deleteButtonColor;
 @property (nonatomic, readonly)UIColor *deleteButtonBackgroundColor;
 
+
+
 //for buttons collection view
 @property (nonatomic, readonly) UIColor *mainColor;
 @property (nonatomic, readonly) UIColor *digitsColor;
@@ -100,6 +102,12 @@
 @property (readonly) UIColor* screenButtonShadowColor;
 @property (readonly) CGSize screenButtonShadowSize;
 @property (readonly) CGFloat screenButtonShadowBlur;
+
+//for showed view
+@property (nonatomic,readonly)NSDictionary* attributesInfo;
+@property (nonatomic,readonly)NSDictionary* attributesExpl;
+@property (nonatomic,readonly)NSDictionary* attributesResult;
+
 
 -(id)initWithDesignIndex:(NSInteger)designIndex forDelegator:(id)controller;
 -(UIColor*)textcolorButtonWithTitle:(NSString*)title;

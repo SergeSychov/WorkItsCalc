@@ -65,6 +65,15 @@
 @property (nonatomic) CGSize screenButtonShadowSizeIn;
 @property (nonatomic) CGFloat screenButtonShadowBlurIn;
 
+//for showed view
+@property (nonatomic,strong)NSDictionary* attributesInfoIn;
+@property (nonatomic,strong)NSDictionary* attributesExplIn;
+@property (nonatomic,strong)NSDictionary* attributesResultIn;
+@property (nonatomic,strong)UIColor* infoShowViewColor;
+@property (nonatomic,strong)UIColor* explShowViewColor;
+@property (nonatomic,strong)UIColor* resultShowViewColor;
+
+
 @end
 
 @implementation DesignObject
@@ -141,6 +150,11 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor blackColor];
+            self.explShowViewColor =[UIColor blackColor];
+            self.resultShowViewColor=[UIColor blackColor];
+            
             break;
             
         case DESIGN_PAPER:
@@ -203,6 +217,12 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
+            
             break;
             
         case DESIGN_COLOR_BLUE:
@@ -258,6 +278,12 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
+            
             break;
         case DESIGN_COLOR_GREEN:
             //for attr text
@@ -311,6 +337,12 @@
             self.screenButtonShadowColorIn = [UIColor clearColor];;
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
+            
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
             
             break;
         case DESIGN_COLOR_YELOW:
@@ -366,6 +398,12 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
+            
             break;
         case DESIGN_COLOR_PINK:
             //for attr text
@@ -419,6 +457,11 @@
             self.screenButtonShadowColorIn = [UIColor clearColor];;
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
+            
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
             
             break;
         case DESIGN_COLOR_GRAY:
@@ -474,6 +517,12 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
+            
             break;
         case DESIGN_PHOTO:
             //for attr text
@@ -527,6 +576,12 @@
             self.screenButtonShadowColorIn = [UIColor clearColor];;
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
+            
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
             
             break;
         default:
@@ -584,11 +639,20 @@
             self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
             self.screenButtonShadowBlurIn = 0;
             
+            //for showed view
+            self.infoShowViewColor =[UIColor lightTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor blackColor];
+
+            
             break;
     }
-             [self setAtrforHistoryTableInWith:self.colorForUnselectedText];
-            [self setAtrForLabelHistoryTableInWith:self.colorForUnselectedText];
-             [self setAtrforButtonsInWith:self.mainColorIn];
+    [self setAtrforHistoryTableInWith:self.colorForUnselectedText];
+    [self setAtrForLabelHistoryTableInWith:self.colorForUnselectedText];
+    [self setAtrforButtonsInWith:self.mainColorIn];
+    [self setAttributesInfoInWith:self.infoShowViewColor];
+    [self setAttributesExplInWith:self.explShowViewColor];
+    [self setAttributesResultInWith:self.resultShowViewColor];
     
 }
 
@@ -656,6 +720,39 @@
         style.alignment = NSTextAlignmentRight;
     }
     self.atrforButtonsIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,texColor, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
+}
+-(void)setAttributesInfoInWith:(UIColor*)color{
+    //change font size
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    style.alignment = NSTextAlignmentLeft;
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+
+    self.attributesInfoIn = [[NSDictionary alloc] initWithObjectsAndKeys:
+                             [style copy], NSParagraphStyleAttributeName,
+                             color,NSForegroundColorAttributeName,
+                             NSTextEffectLetterpressStyle,NSTextEffectAttributeName, nil];
+}
+
+-(void) setAttributesExplInWith:(UIColor*)color{
+    //change font size
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    style.alignment = NSTextAlignmentLeft;
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    self.attributesExplIn = [[NSDictionary alloc] initWithObjectsAndKeys:
+                             [style copy], NSParagraphStyleAttributeName,
+                             color, NSForegroundColorAttributeName,
+                             NSTextEffectLetterpressStyle,NSTextEffectAttributeName, nil];
+}
+
+-(void)setAttributesResultInWith:(UIColor*)color{
+    //change font size
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    style.alignment = NSTextAlignmentRight;
+
+    self.attributesResultIn = [[NSDictionary alloc] initWithObjectsAndKeys:
+                               [style copy], NSParagraphStyleAttributeName,
+                               color, NSForegroundColorAttributeName,
+                               NSTextEffectLetterpressStyle,NSTextEffectAttributeName, nil];
 }
 
 -(void) changeClassSize{
@@ -816,6 +913,16 @@
 }
 -(CGFloat)screenButtonShadowBlur{
     return self.screenButtonShadowBlurIn;
+}
+
+-(NSDictionary*)attributesInfo{
+    return self.attributesInfoIn;
+}
+-(NSDictionary*)attributesExpl{
+    return self.attributesExplIn;
+}
+-(NSDictionary*)attributesResult{
+    return self.attributesResultIn;
 }
 
 //IMPORTANT may be it's need be deletted

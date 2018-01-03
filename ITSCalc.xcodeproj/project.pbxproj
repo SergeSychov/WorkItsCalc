@@ -13,6 +13,7 @@
 		3524A6021F1EA67300699B20 /* DisplayScreenLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3524A6011F1EA67300699B20 /* DisplayScreenLabel.m */; };
 		352856781C3D29E100D6B4D2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856771C3D29E100D6B4D2 /* MapKit.framework */; };
 		3528567A1C3D29F800D6B4D2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */; };
+		35409BE51FF544B000AC4CA0 /* myTextureSych1.png in Resources */ = {isa = PBXBuildFile; fileRef = 35409BE41FF544AF00AC4CA0 /* myTextureSych1.png */; };
 		35466C8E1FA7B3DA00F18F55 /* RecPhone72.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C8C1FA7B3D800F18F55 /* RecPhone72.png */; };
 		35466C931FAB7FEB00F18F55 /* RecPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C901FAB7FE900F18F55 /* RecPad.png */; };
 		35466C951FAB7FEB00F18F55 /* DelPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 35466C921FAB7FEA00F18F55 /* DelPhone.png */; };
@@ -143,6 +144,7 @@
 		3524A6011F1EA67300699B20 /* DisplayScreenLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayScreenLabel.m; sourceTree = "<group>"; };
 		352856771C3D29E100D6B4D2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		352856791C3D29F800D6B4D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		35409BE41FF544AF00AC4CA0 /* myTextureSych1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myTextureSych1.png; sourceTree = "<group>"; };
 		35466C8C1FA7B3D800F18F55 /* RecPhone72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = RecPhone72.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/RecPhone72.png"; sourceTree = "<group>"; };
 		35466C901FAB7FE900F18F55 /* RecPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = RecPad.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/RecPad.png"; sourceTree = "<group>"; };
 		35466C921FAB7FEA00F18F55 /* DelPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DelPhone.png; path = "../../../4R6749AYRE~com~pixelmatorteam~pixelmator/Documents/DelPhone.png"; sourceTree = "<group>"; };
@@ -633,6 +635,7 @@
 				504EA8A51A17C6E000E225F7 /* iPads */,
 				50C3C4C41B981049005A6854 /* MarkView.h */,
 				50C3C4C51B981049005A6854 /* MarkView.m */,
+				35409BE41FF544AF00AC4CA0 /* myTextureSych1.png */,
 				504750161B79346C001AD553 /* myTextureSych 3.png */,
 				50F3124C1A220621002604FB /* NoticeButton.h */,
 				50F3124D1A220621002604FB /* NoticeButton.m */,
@@ -951,6 +954,7 @@
 				5021BC9B18FDAE3C001749D4 /* Images.xcassets in Resources */,
 				5021BCE418FDB08B001749D4 /* error.caf in Resources */,
 				50142CF81ADC3B64006CB247 /* Launch Screen.xib in Resources */,
+				35409BE51FF544B000AC4CA0 /* myTextureSych1.png in Resources */,
 				357DE42D1ADAF20C0065C256 /* Logo.png in Resources */,
 				35466C971FAB809900F18F55 /* DelPad.png in Resources */,
 				5021BC8D18FDAE3C001749D4 /* InfoPlist.strings in Resources */,
@@ -1256,7 +1260,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1338,7 +1342,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ITSCalc/ITSCalc-Prefix.pch";
 				INFOPLIST_FILE = "ITSCalc/ITSCalc-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sychov.ItsCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

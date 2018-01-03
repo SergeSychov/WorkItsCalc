@@ -587,10 +587,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9QT-ne-fhW">
                                 <rect key="frame" x="-34.5" y="-19.5" width="736" height="414"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XFu-CM-ez0" customClass="ShowedView">
-                                        <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="0up-cJ-T6U" userLabel="ButtonStack View">
                                         <rect key="frame" x="20" y="17" width="60" height="380"/>
                                         <subviews>
@@ -653,6 +649,7 @@
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UpN-dc-am8">
                                                 <rect key="frame" x="0.0" y="0.0" width="616" height="60"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="80" id="B91-ab-5ST">
                                                         <variation key="heightClass=compact" constant="60"/>
@@ -670,6 +667,7 @@
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fKl-Zv-aef">
                                                 <rect key="frame" x="0.0" y="60" width="616" height="234"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="EXPRESSION">
                                                         <attributes>
@@ -682,6 +680,7 @@
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6fW-uV-oN3">
                                                 <rect key="frame" x="0.0" y="294" width="616" height="80"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="80" id="etb-RJ-LLz">
                                                         <variation key="heightClass=regular-widthClass=regular" constant="120"/>
@@ -706,15 +705,11 @@
                                 <constraints>
                                     <constraint firstItem="0up-cJ-T6U" firstAttribute="leading" secondItem="9QT-ne-fhW" secondAttribute="leading" constant="20" id="0Sk-56-Zqn"/>
                                     <constraint firstAttribute="height" constant="414" id="2fe-yg-x97"/>
-                                    <constraint firstItem="XFu-CM-ez0" firstAttribute="leading" secondItem="9QT-ne-fhW" secondAttribute="leading" id="4oD-J3-bmC"/>
                                     <constraint firstAttribute="trailing" secondItem="aDd-xa-C38" secondAttribute="trailing" constant="20" id="8b7-4f-3hd"/>
-                                    <constraint firstAttribute="trailing" secondItem="XFu-CM-ez0" secondAttribute="trailing" id="CBQ-8s-t6M"/>
-                                    <constraint firstItem="XFu-CM-ez0" firstAttribute="top" secondItem="9QT-ne-fhW" secondAttribute="top" id="CZM-gI-BEa"/>
                                     <constraint firstItem="0up-cJ-T6U" firstAttribute="centerY" secondItem="9QT-ne-fhW" secondAttribute="centerY" id="VoD-a0-MX0"/>
                                     <constraint firstItem="aDd-xa-C38" firstAttribute="top" secondItem="9QT-ne-fhW" secondAttribute="top" constant="20" id="dAb-NI-4fG"/>
                                     <constraint firstAttribute="width" constant="736" id="f4C-WD-huP"/>
                                     <constraint firstAttribute="bottom" secondItem="aDd-xa-C38" secondAttribute="bottom" constant="20" id="pIj-Qp-8Cq"/>
-                                    <constraint firstAttribute="bottom" secondItem="XFu-CM-ez0" secondAttribute="bottom" id="tRU-RI-ZKn"/>
                                     <constraint firstItem="aDd-xa-C38" firstAttribute="leading" secondItem="0up-cJ-T6U" secondAttribute="trailing" constant="20" id="xND-Tn-Bbx"/>
                                 </constraints>
                             </view>
@@ -741,7 +736,6 @@
                         <outlet property="resultHeightConstrain" destination="etb-RJ-LLz" id="pS9-uR-zC4"/>
                         <outlet property="resultLabel" destination="6fW-uV-oN3" id="muh-aE-uql"/>
                         <outlet property="shareButton" destination="oo4-80-7hk" id="UsV-N8-TbD"/>
-                        <outlet property="showedView" destination="XFu-CM-ez0" id="W8l-VT-jIJ"/>
                         <outlet property="stackBottomConstrain" destination="pIj-Qp-8Cq" id="Eas-Nx-A81"/>
                         <outlet property="stackLeadingConstrain" destination="xND-Tn-Bbx" id="gw1-eL-XIa"/>
                         <outlet property="stackTopConstrain" destination="dAb-NI-4fG" id="jzl-Wp-IE3"/>
