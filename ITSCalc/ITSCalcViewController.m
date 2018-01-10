@@ -69,8 +69,8 @@
 #define Y_OFFSET 2.0f
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
+//#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+//#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define TIMES_TO_LIMIT_IAD_BANNER 3
 //important
@@ -117,7 +117,7 @@
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate, UIContentContainer>
 
 
 //outlets
@@ -1085,6 +1085,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.userIsInTheMidleOfEnteringNumber = YES;
             }
             
+            //for update string for show view
+            NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
+            [self getStringsForShowedControllerForCell:lastRow];
+
+            
         } else if([title isEqualToString:[self point]]){
             if(self.userIsInTheMidleOfEnteringNumber){
                 
@@ -1600,6 +1605,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 -(void) push
 {
+    [self pushWithBrain:self.brain];
+    /*
     id result = [self.displayRam getResult];
     
     if([result isKindOfClass:[NSDictionary class]]){
@@ -1627,7 +1634,38 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     } else {
         [self.brain pushOperand:result];
     }
+    */
+}
+
+-(void)pushWithBrain:(ACalcBrain*)brain{
+    id result = [self.displayRam getResult];
     
+    if([result isKindOfClass:[NSDictionary class]]){
+        NSString *key = [[result allKeys]firstObject];
+        id prog = [result objectForKey:key];
+        if([prog isKindOfClass:[NSNumber class]]){
+            
+        } else if([prog isKindOfClass:[NSArray class]]){
+            if([prog containsObject:@"°"]){
+                NSMutableArray *copyGradArray = [prog mutableCopy];
+                [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
+                result = [[NSDictionary alloc] initWithObjectsAndKeys:[copyGradArray copy], key, nil];
+            }
+        }
+        [brain pushOperand:result];
+        
+    } else if(self.displayRam.isGradValue){
+        if([result isKindOfClass:[NSArray class]]){
+            NSMutableArray *copyGradArray = [result mutableCopy];
+            [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
+            [brain pushOperand:[copyGradArray copy]];
+        } else {
+            
+        }
+    } else {
+        [brain pushOperand:result];
+        
+    }
 }
 
 
@@ -3440,10 +3478,12 @@ NSInteger dealWithCell;
 
 -(UISwipeActionsConfiguration*)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
     historyTableBottomOffset = self.historyTable.contentOffset.y + self.historyTable.bounds.size.height;
+    [self.historyTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     
     UIContextualAction *delAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:nil handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
         //IMPORTANT way to bug
-        NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
+        NSIndexPath *newPatch = [NSIndexPath indexPathForRow:indexPath.row +1 inSection:indexPath.section];
+        
         [self.historyTable selectRowAtIndexPath:newPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
         //--------------------------
         dealWithCell = DELETE_CELL;
@@ -3703,8 +3743,8 @@ NSInteger dealWithCell;
                 [numberFormatter setMaximumFractionDigits:(9 - (int)intPart)];
             }
             
-            resultString = [numberFormatter stringFromNumber:result];
-            resultString = [@" = " stringByAppendingString:resultString];
+            //resultString = [numberFormatter stringFromNumber:result];
+            resultString = [@" = " stringByAppendingString:[numberFormatter stringFromNumber:result]];
         } else if (result && [result isKindOfClass:[NSString class]]){
             resultString = result;
         }
@@ -3781,7 +3821,7 @@ NSInteger dealWithCell;
 
 -(NSAttributedString*)getAttrInfStringFromProg:(NSArray*)prog and:(NSDate*)date{
     
-    NSMutableAttributedString *wholeInfo = [[NSMutableAttributedString alloc] initWithString:@" " attributes:self.designObj.atrForLabelHistoryTable];
+    NSMutableAttributedString *wholeInfo = [[NSMutableAttributedString alloc] initWithString:@"" attributes:self.designObj.atrForLabelHistoryTable];
     NSAttributedString* spaceMark = [[NSAttributedString alloc] initWithString:@" "];//IMPORTANT Check if it need to set attributes
     
     //get date
@@ -3794,9 +3834,9 @@ NSInteger dealWithCell;
                                       attributes:self.designObj.atrForLabelHistoryTable];
         [wholeInfo insertAttributedString:dateString atIndex:0];
         [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
-    } else {
+    } /*else {
         [wholeInfo insertAttributedString:spaceMark atIndex:[wholeInfo length]];
-    }
+    }*/
     
     //get currensies part
     NSAttributedString* exchangeCurrencyString = [ACalcBrain stringCurrensiesInProgram:prog
@@ -4049,12 +4089,12 @@ NSInteger dealWithCell;
 -(void) cellDidSelect:(HistroryTableViewCell *)cell
 {
    
-    //NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
-    //NSLog(@"setSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
+    NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
+    NSLog(@"setSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
     //self.selectedRow = cell;
     
     
-    NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
+    //NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
     
     //NSIndexPath *previousSelectedIndexPatch = [self.historyTable indexPathForCell:_selectedRow];
    // NSIndexPath *nowSelectedIndexPatch = [self.historyTable indexPathForSelectedRow];
@@ -4069,6 +4109,8 @@ NSInteger dealWithCell;
             self.recountButton.enabled = YES;
             self.deleteButton.enabled = YES;
         }
+    
+    [self getStringsForShowedControllerForCell: indexPath];
             //}
     /*
     if(!self.isTestViewOnScreen){
@@ -5598,6 +5640,7 @@ BOOL isNewTableRow;
                     break;
             }
         }
+       // [self callChanginShowedViewFrom:@"rotateIPhoneAsNonRotateWithSize"];
         
     }
     CGFloat angleMainTransform;
@@ -5663,20 +5706,127 @@ BOOL isNewTableRow;
     }
 }
 
+
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:size];
     } else {
         if(self.showedController){
-        NSLog(@"viewWillTransitionToSize ShowedController iPad");
-        self.showedController.containerWidthConstrain.constant = size.width;
-        self.showedController.containerHeightConstrain.constant = size.height;
+            //[self.view setFrame:CGRectMake(0, 0, size.width, size.height)];
+            self.showedController.containerWidthConstrain.constant = size.width;
+            self.showedController.containerHeightConstrain.constant = size.height;
+            
+            CGSize newContSize = CGSizeMake(self.showedController.containerWidthConstrain.constant, self.showedController.containerHeightConstrain.constant);
+            [self callChanginShowedViewWithSize:newContSize From:@"viewWillTransitionToSize"];
+            //[self updateViewConstraints];
+            //[self.view layoutIfNeeded];
+            //-------------------------------------------
+            self.mainContainerWidth.constant = size.width;
+            self.mainContainerHeight.constant = size.height;
+            //set calc screen height
+            CGFloat minSide = self.mainContainerWidth.constant < self.mainContainerHeight.constant? self.mainContainerWidth.constant : self.mainContainerHeight.constant;
+            
+            //
+            if(minSide*IPAD_SCREEN_VS_WIDTH_RATIO/self.mainContainerHeight.constant < 0.09){
+                //if so narrow screen - fix it
+                self.calcScreenHeightConstrain.constant = self.mainContainerHeight.constant*0.09;
+            } else {
+                self.calcScreenHeightConstrain.constant = minSide*IPAD_SCREEN_VS_WIDTH_RATIO;
+            }
+            
+            maxButtonsCollectionHeight = self.mainContainerHeight.constant/IPAD_RAIO_BUTTONS_VIEW - self.calcScreenHeightConstrain.constant;
+            if(self.isButtonsCollectionUnderChanging){
+                //NSLog(@"sviperBottomConstrain before:%f",self.sviperBottomConstrain.constant );
+                //NSLog(@"historyTableSviper hright:%f",self.historyTableSviper.frame.size.height );
+                /*self.sviperBottomConstrain.constant = self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2-self.calcScreenHeightConstrain.constant/10;*/
+                self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
+                
+                //NSLog(@"sviperBottomConstrain after:%f",self.sviperBottomConstrain.constant );
+                
+            } else {
+                if(self.isCalcShowed){
+                    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant - maxButtonsCollectionHeight;
+                    
+                    //[self changeHowHistoryShowed:0];
+                    
+                } else if(self.isHistoryShowed){
+                    self.displayTopConstrain.constant = self.mainContainerHeight.constant - self.calcScreenHeightConstrain.constant;
+                    //[self changeHowHistoryShowed:1];
+                } else {
+                    
+                    [self changeHowHistoryShowed:((self.displayTopConstrain.constant+self.displayContainer.frame.size.height)-(self.mainContainerHeight.constant-maxButtonsCollectionHeight))/maxButtonsCollectionHeight];
+                }
+                
+                self.sviperBottomConstrain.constant = -self.calcScreenHeightConstrain.constant*14./20.;
+            }
+            
+            [self.view setFrame:CGRectMake(0, 0, size.width, size.height)];
+            //screen buttons according interfase size
+            if(self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
+                self.noticeButton.hidden = YES;
+            } else {
+                if(IS_IPAD && self.shareButton.hidden == NO){
+                    self.noticeButton.hidden = NO;
+                }
+            }
         }
     }
     //NSLog(@"viewWillTransitionToSize");
 }
+
+//test Function
+-(void) callChanginShowedViewWithSize:(CGSize)size From:(NSString*)funcName{
+   // NSLog(@"Call from %@ \n expLabel width: %f, height: %f", funcName, self.showedController.expressionLabel.bounds.size.width,self.showedController.expressionLabel.bounds.size.height);
+    //CGRect containerFrame = self.showedController.containerView.frame;
+    
+    //perfect works for iphone expressions label
+    
+    //for expression label frame
+    CGRect testViewFrame;
+    testViewFrame.origin.x = self.showedController.stackLeadingConstrain.constant+self.showedController.buttonsLeadingConstrain.constant+self.showedController.buttonsWidthConstrain.constant+5;//+labelFrame.origin.x-10.;
+    testViewFrame.origin.y = self.showedController.stackTopConstrain.constant+self.showedController.descrLabelHeightConstrain.constant+5;// + labelFrame.origin.y-10.;
+    testViewFrame.size.width =size.width-self.showedController.stackLeadingConstrain.constant-self.showedController.stackTrailingConstrain.constant-self.showedController.buttonsLeadingConstrain.constant-
+        self.showedController.buttonsWidthConstrain.constant - 10;
+    testViewFrame.size.height =size.height-self.showedController.stackTopConstrain.constant-self.showedController.stackBottomConstrain.constant-self.showedController.descrLabelHeightConstrain.constant- self.showedController.resultHeightConstrain.constant - 10;
+    CGSize expresionLabelSize = testViewFrame.size;
+    
+   // [self.showedController.testView setFrame:testViewFrame];
+
+    //-----------------------------------------------------------------------
+    //change for result label
+    testViewFrame.origin.y = size.height -self.showedController.stackBottomConstrain.constant-self.showedController.resultHeightConstrain.constant+5;// + labelFrame.origin.y-10.;
+    testViewFrame.size.height =self.showedController.resultHeightConstrain.constant-10;
+    
+    CGSize resultLabelSize = testViewFrame.size;
+    
+    //change for descr label
+    testViewFrame.origin.y = self.showedController.stackTopConstrain.constant+5;
+    testViewFrame.size.height =self.showedController.descrLabelHeightConstrain.constant-10;
+    CGSize descrLablelSize = testViewFrame.size;
+
+    [self.showedController upDateStringsWithInfSize:descrLablelSize
+                                           exprSize:expresionLabelSize
+                                            resSize:resultLabelSize];
+    //[self.showedController.testView setFrame:testViewFrame];
+}
 #pragma mark VIEW LAYOUT
+/*
+-(void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection{
+    [super traitCollectionDidChange:previousTraitCollection];
+    NSLog(@"TraitCollectionDidChange");
+}
+-(void) willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    NSLog(@"willTransitionToTraitCollection");
+    if(self.showedController){
+    if(newCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact){
+        self.showedController.resultHeightConstrain.constant = 80;
+    } else if (newCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular){
+        self.showedController.resultHeightConstrain.constant = 120;
+    }
+    }
+}
+*/
 //CGFloat minButtonsCollectionHeight;
 CGFloat maxButtonsCollectionHeight;
 -(void)viewDidLayoutSubviews{
@@ -5684,6 +5834,10 @@ CGFloat maxButtonsCollectionHeight;
     //NSLog(@"Display Top before: %f", self.displayTopConstrain.constant);
     
     CGSize viewSize = self.view.bounds.size;
+    CGSize windowSize = self.view.window.bounds.size;
+    if(viewSize.width != windowSize.width){
+        [self.view setFrame:self.view.window.bounds];
+    }
     if(!IS_IPAD){
         //UIEdgeInsets insets = UIEdgeInsetsZero;
         //insets.bottom = 0.;//-34.;
@@ -5703,28 +5857,45 @@ CGFloat maxButtonsCollectionHeight;
                 self.additionalSafeAreaInsets = insets;
             }
             
-            if(self.showedController){
+            /*if(self.showedController){
+                //[self callChanginShowedViewFrom:@"viewDidLayoutSubviews iPhone"];
+
                 //CGFloat constrConst = viewSize.height- viewSize.width;
                 self.showedController.containerWidthConstrain.constant = viewSize.width < viewSize.height? viewSize.height: viewSize.width;
                 self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
-                NSLog(@"ViewDidLayout ShowedController");
-            }
+                CGSize newContSize = CGSizeMake(self.showedController.containerWidthConstrain.constant, self.showedController.containerHeightConstrain.constant);
+                [self callChanginShowedViewWithSize:newContSize From:@"viewDidLayoutSubviews iPhone"];
+            }*/
         } else {
             self.mainContainerWidth.constant = viewSize.height;
             self.mainContainerHeight.constant = viewSize.width;
             //change safe area for iPhoneX
             if(IS_X){
-                UIEdgeInsets insets = UIEdgeInsetsZero;
-                insets.bottom = -21.;
-                insets.top = 0.;
-                insets.left = -44.;
-                insets.right = -44.;
-                self.additionalSafeAreaInsets = insets;
+                if(self.showedController){
+                    UIEdgeInsets insets = UIEdgeInsetsZero;
+                    insets.bottom = 0.;
+                    insets.top = 0.;
+                    insets.left = 44.;
+                    insets.right = 44.;
+                    self.showedController.additionalSafeAreaInsets = insets;
+                    
+                } else {
+                    UIEdgeInsets insets = UIEdgeInsetsZero;
+                    insets.bottom = -21.;
+                    insets.top = 0.;
+                    insets.left = -44.;
+                    insets.right = -44.;
+                    self.additionalSafeAreaInsets = insets;
+                }
             }
             if(self.showedController){
-                NSLog(@"ViewDidLayout ShowedController");
+                
                 self.showedController.containerWidthConstrain.constant =viewSize.width < viewSize.height? viewSize.height: viewSize.width;
                 self.showedController.containerHeightConstrain.constant = viewSize.width < viewSize.height? viewSize.width: viewSize.height;
+                CGSize newContSize = CGSizeMake(self.showedController.containerWidthConstrain.constant, self.showedController.containerHeightConstrain.constant);
+                [self callChanginShowedViewWithSize:newContSize From:@"viewDidLayoutSubviews iPhone"];
+                
+                
             }
         }
         
@@ -5750,8 +5921,8 @@ CGFloat maxButtonsCollectionHeight;
         
     } else {
         
-        self.mainContainerWidth.constant = viewSize.width;
-        self.mainContainerHeight.constant = viewSize.height;
+        self.mainContainerWidth.constant = windowSize.width;
+        self.mainContainerHeight.constant = windowSize.height;
         
         //set calc screen height
         CGFloat minSide = self.mainContainerWidth.constant < self.mainContainerHeight.constant? self.mainContainerWidth.constant : self.mainContainerHeight.constant;
@@ -5765,9 +5936,12 @@ CGFloat maxButtonsCollectionHeight;
         }
         
         if(self.showedController){
-            NSLog(@"ViewDidLayout ShowedController iPad");
+
             self.showedController.containerWidthConstrain.constant = viewSize.width;
             self.showedController.containerHeightConstrain.constant = viewSize.height;
+            
+            CGSize newContSize = CGSizeMake(self.showedController.containerWidthConstrain.constant, self.showedController.containerHeightConstrain.constant);
+            [self callChanginShowedViewWithSize:newContSize From:@"viewDidLayoutSubviews iPad"];
         }
         //if history table whole showed
         //how history showed can change from 1 to 0
@@ -5833,8 +6007,13 @@ CGFloat maxButtonsCollectionHeight;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    
     if(IS_IPAD){
-       /* if(self.showedController){
+        /*
+        CGSize newContSize = CGSizeMake(self.showedController.containerWidthConstrain.constant, self.showedController.containerHeightConstrain.constant);
+        [self callChanginShowedViewWithSize:newContSize From:@"observeValueForKeyPath iPad"];
+        
+       if(self.showedController){
             NSLog(@"observeValueForKeyPath ShowedController iPad");
             self.showedController.containerWidthConstrain.constant = self.view.bounds.size.width;
             self.showedController.containerHeightConstrain.constant = self.view.bounds.size.height;
@@ -6088,11 +6267,12 @@ CGFloat maxButtonsCollectionHeight;
         NSLog(@"Button %@ position %@",btn.nameButton, btn.position);
     }
     */
-    
+    if(!self.showedController){
     //[self.buttonManagedObjectContext save:&error];
     [self.buttonManagedObjectContext save: &error];
      [self.doc updateChangeCount:UIDocumentChangeDone];
     [self discardChanging];
+    }
 
 
 }
@@ -6190,7 +6370,10 @@ CGFloat maxButtonsCollectionHeight;
     }
 
     
-    [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0] animated:NO scrollPosition:UITableViewScrollPositionBottom];
+    /* exlude it because select last cell when returns from showed view
+     I don't want it
+     
+     [self.historyTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0] animated:NO scrollPosition:UITableViewScrollPositionBottom];*/
     
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
@@ -7060,32 +7243,174 @@ sourceController:(UIViewController *)source
 
 
 #pragma SHOW CONTROLLER TRANSITION
+static NSAttributedString* infoStrForShowcontroller;
+static NSAttributedString* mainStrForShowcontroller;
+static NSAttributedString* resultStrForShowcontroller;
+
 -(void) showSowedViewController{
+    
     if(!self.showedController){
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ShowedViewController *showedVC = [storyBoard instantiateViewControllerWithIdentifier:@"ShowedViewController"];
-        showedVC.transitioningDelegate = self;
-        showedVC.wasOrient = [UIDevice currentDevice].orientation;
+        self.showedController = showedVC;
+        self.showedController.transitioningDelegate = self;
+        self.showedController.design = self.designObj;
+        self.showedController.wasOrient = [UIDevice currentDevice].orientation;
         //set string for showed view
+        //0. set empty strings
+        NSAttributedString *info = [[NSAttributedString alloc] initWithString:@""];
+    NSAttributedString *expression = [[NSAttributedString alloc] initWithString:@" "];
+    NSAttributedString *result = [[NSAttributedString alloc] initWithString:@" "];
+
         //1. find selected string patch
-        NSIndexPath *selectedRowPatch = [self.historyTable indexPathForSelectedRow];
-        NSAttributedString *expression = [[NSAttributedString alloc] initWithString:@"?"];
-        NSAttributedString *result = [[NSAttributedString alloc] initWithString:@"?"];
-        if(selectedRowPatch){
-            if(selectedRowPatch.row == [self.historyTable numberOfRowsInSection: 0] - 1){
-                expression = [self getAttributedStringFromArray:self.lastRowDataArray];
-            } else {
-                expression = [self.mainAttributedStrings objectAtIndex:selectedRowPatch.row];
+
+         if([self.historyTable numberOfRowsInSection: 0] >0){
+             [self.showedController setNeedStrings:infoStrForShowcontroller
+                                                  expStr:mainStrForShowcontroller
+                                            andRes:resultStrForShowcontroller];
+         } else {
+            [self.showedController setNeedStrings:info
+                                            expStr:expression
+                                           andRes:result];
+         }
+
+
+        [self presentViewController:self.showedController animated:YES completion:nil];
+    }
+
+}
+
+#pragma mark PREAPERE STRINGS SHOWING CONTROLLER
+-(void)getStringsForShowedControllerForCell:(NSIndexPath*)patch{
+    
+    NSInteger numberOfRowsInSection = [self.historyTable numberOfRowsInSection: 0];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableAttributedString* info;
+        NSMutableAttributedString* main;
+        NSMutableAttributedString* result;
+    
+        NSIndexPath* selPatch = patch;
+        if(!patch) {
+            selPatch = [NSIndexPath indexPathForRow:numberOfRowsInSection-1  inSection:0];
+        }
+
+        ACalcBrain *copyBrain;
+        NSArray *copyProg;
+        NSArray *copyArgu;
+        int copyOpenBractets;
+        BOOL copyIsArguStrongly;
+        NSArray *copyProgForInf;
+    
+        if(selPatch.row == numberOfRowsInSection - 1){
+            //get last argument from screen
+            copyProg = [ACalcBrain deepArrayCopy:self.brain.programStacks];
+            copyArgu = [ACalcBrain deepArrayCopy:self.brain.argu];
+            copyOpenBractets = self.brain.openBracets;
+            copyIsArguStrongly = self.brain.isStronglyArgu;
+        
+            copyBrain = [ACalcBrain initWithProgram:copyProg
+                                           withArgu:copyArgu
+                                    withOpenBracets:copyOpenBractets
+                                  andIsStrongluArgu:copyIsArguStrongly];
+        
+            if(self.userIsInTheMidleOfEnteringNumber){
+                [self pushWithBrain:copyBrain];
+                copyBrain.isStronglyArgu = YES;
+            } else if (self.isResultFromMemory){
+                [self pushWithBrain:copyBrain];
+                copyBrain.isStronglyArgu = YES;
             }
 
-        }
-        [showedVC setNeedStringsForShow:expression
-                                 andRes:result];
-        self.showedController = showedVC;
-        [self presentViewController:showedVC animated:YES completion:nil];
+            copyProgForInf = self.lastRowDataArray;
+        } else {
+            History *story = [self.fetchedResultsController objectAtIndexPath:selPatch];
+            NSMutableArray *programFromHistory = [[NSKeyedUnarchiver unarchiveObjectWithData:story.program] mutableCopy];
+            copyProgForInf = [programFromHistory copy];
         
-    }
+            if([programFromHistory lastObject])[programFromHistory removeLastObject];
+            id top = [programFromHistory lastObject];
+            //remove result from pprogramm array!
+            [programFromHistory removeLastObject];
+            if(top){
+                copyArgu = [ACalcBrain deepArrayCopy:top];
+            }
+            top = [programFromHistory lastObject];
+            if(top) copyProg = [ACalcBrain deepArrayCopy:top];
+            copyOpenBractets = 0;
+            copyIsArguStrongly = YES;
+        
+            copyBrain = [ACalcBrain initWithProgram:copyProg
+                                           withArgu:copyArgu
+                                    withOpenBracets:copyOpenBractets
+                                  andIsStrongluArgu:copyIsArguStrongly];
+        }
+        //1. find description string
+        if(!copyBrain.isStronglyArgu){
+            [copyBrain deleteLastElement];
+        }
+        while(copyBrain.isOpenBracets){
+            [copyBrain count];
+            [copyBrain insertBracket:NO];
+        }
+    
+        NSMutableArray * muttableLastProgArray = [[NSMutableArray alloc] initWithObjects:[copyBrain.deepProgram copy],[copyBrain.deepArgu copy],@" =",nil];
+    
+        main = [[self getAttributedStringFromArray:[muttableLastProgArray copy]] mutableCopy];
+        info = [[self getAttrInfStringFromProg:copyProgForInf and:nil] mutableCopy];
+    
+        //3 get result
+        NSNumber* resultNumber = [NSNumber numberWithDouble:[copyBrain count]];
+        if(resultNumber){
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setExponentSymbol:@"e"];
+            [numberFormatter setZeroSymbol:@"0"];
+            if (fabs([resultNumber doubleValue])>9e9 || fabs([resultNumber doubleValue])<9e-9) {
+                [numberFormatter setNumberStyle:NSNumberFormatterScientificStyle];
+                [numberFormatter setMaximumFractionDigits:7];
+            }else{
+                [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+                double intPartLenght = log10(fabs([resultNumber doubleValue]));
+                double intPart;//fractPart,
+                modf(intPartLenght, &intPart);// fractPart =
+                if(intPart <0) intPart = 0;
+                [numberFormatter setMaximumFractionDigits:(9 - (int)intPart)];
+            }
+            result = [[[NSAttributedString alloc] initWithString:[numberFormatter stringFromNumber:resultNumber] attributes:self.designObj.atrforHistoryTable] mutableCopy];
+        }
+        
+        //NSLog(@"inf attr %@",self.design.attributesInfo );
+        
+        [info beginEditing];
+        if([info length]>0 && self.designObj.attributesInfo){
+            [info addAttributes:self.designObj.attributesInfo range:NSMakeRange(0, [info length])];
+        }
+        [info endEditing];
+
+        [main beginEditing];
+        //NSLog(@"Epl attr %@",self.design.attributesExpl );
+        
+        if([main length]>0 && self.designObj.attributesExpl){
+            [main addAttributes:self.designObj.attributesExpl range:NSMakeRange(0, [main length])];
+        }
+        [main endEditing];
+
+        [result beginEditing];
+        //NSLog(@"Res attr %@",self.design.attributesResult );
+        if([result length]>0 && self.designObj.attributesResult){
+            [result addAttributes:self.designObj.attributesResult range:NSMakeRange(0, [result length])];
+        }
+        [result endEditing];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            infoStrForShowcontroller = [info copy];
+            mainStrForShowcontroller = [main copy];
+            resultStrForShowcontroller = [result copy];
+        
+        });
+    });
 }
+
 /*
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {

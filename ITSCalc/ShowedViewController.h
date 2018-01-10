@@ -18,6 +18,8 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stackLeadingConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stackTrailingConstrain;
 
+@property (weak, nonatomic) IBOutlet UIView *viewForRenderImage;
+
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stackTopConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stackBottomConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *buttonsWidthConstrain;
@@ -34,12 +36,10 @@
 
 @property (nonatomic) UIDeviceOrientation wasOrient;
 
-@property (nonatomic) BOOL isBluePanOrRed;
-@property (nonatomic) BOOL isDurty;
-//@property (nonatomic,strong) NSAttributedString *attrStrForLabel;
-//@property (nonatomic,strong) NSAttributedString *resStringforShow;
 
--(void) setNeedStrings:(NSAttributedString*)descr:(NSAttributedString*)count andRes:(NSAttributedString*)res;
+
+-(void) setNeedStrings:(NSAttributedString*)descr expStr:(NSAttributedString*)count andRes:(NSAttributedString*)res;
+ 
 -(void)upDateStringsWithInfSize:(CGSize)infSize exprSize:(CGSize)exprSize resSize:(CGSize)resSize;
 
 

@@ -10,7 +10,7 @@
 
 @interface BezierInterpView()
 
-@property (nonatomic, strong) CAShapeLayer *line;
+@property (nonatomic, weak) CAShapeLayer *line;
 
 @end
 
@@ -55,7 +55,18 @@
 
 }
 
+#pragma mark CLEAR
+-(void)clearPatch{
+    NSArray *subLayers =[self.layer sublayers];
+    while ([self.layer sublayers]) {
+        [subLayers[0] removeFromSuperlayer];
+    }
 
+    //self.line = nil;
+}
+
+
+#pragma mark TOUCH
 -(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CAShapeLayer *line = [[CAShapeLayer alloc] init];

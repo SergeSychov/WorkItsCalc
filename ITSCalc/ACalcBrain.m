@@ -10,7 +10,7 @@
 #import "math.h"
 
 @interface ACalcBrain()
-@property (nonatomic, strong) NSArray *programStacks;
+//@property (nonatomic, strong) NSArray *programStacks;
 @property (nonatomic, strong) NSArray *arguStack;
 @property (nonatomic, strong) NSDictionary *variableValue;
 @property (nonatomic) int numberOfOpenBrackets;
@@ -80,12 +80,12 @@
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu
 {
     //add from this
-    static ACalcBrain *newBrain = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        newBrain = [[ACalcBrain alloc] init];
+    //static ACalcBrain *newBrain = nil;
+    //static dispatch_once_t onceToken;
+    //dispatch_once(&onceToken, ^{
+     ACalcBrain *newBrain = [[ACalcBrain alloc] init];
         // Do any other initialisation stuff here
-    });
+    //});
     //to this
    // ACalcBrain *newBrain = [[ACalcBrain alloc ] init];
     
@@ -365,9 +365,12 @@
     } else {
         
         if([copyArgu count] > 0) [copyArgu removeAllObjects];
-        
+        /* WAS
         id topOfProgStack = [copyPogram.lastObject lastObject];
         if(topOfProgStack){
+         */
+        id topOfProgStack = [copyPogram lastObject];
+        if(topOfProgStack && [topOfProgStack isKindOfClass:[NSArray class]]&&([copyPogram count] >0) ){
             [copyPogram.lastObject removeLastObject];
             
             //chek next object and if its not operation set it as argu
@@ -779,7 +782,9 @@
     
     NSMutableArray *newSubStackBackward = [[NSMutableArray alloc] init];
     NSMutableArray *newSubStack = [[NSMutableArray alloc] init];
-    NSMutableArray *copyCurrentStack = [self.program mutableCopy];
+    //was
+    //NSMutableArray *copyCurrentStack = [self.program mutableCopy];
+    NSMutableArray *copyCurrentStack = [[ACalcBrain deepArrayCopy:self.program] mutableCopy];
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     
     id lastObject = [copyCurrentStack lastObject];

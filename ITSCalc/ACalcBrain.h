@@ -31,6 +31,7 @@
 -(NSArray*) arrayToSaveBrain;
 
 //program is alweys guaranty to be a Property list
+@property (nonatomic, strong) NSArray *programStacks;
 @property (readonly) id program;
 @property (readonly) id argu;
 @property (readonly) id wholeProgram;

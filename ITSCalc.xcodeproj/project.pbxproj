@@ -60,7 +60,6 @@
 		5021BD0418FDB0C8001749D4 /* History.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BCFF18FDB0C8001749D4 /* History.m */; };
 		5021BD0A18FDB11E001749D4 /* HistoryTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD0718FDB11E001749D4 /* HistoryTableView.m */; };
 		5021BD0B18FDB11E001749D4 /* ButtonsCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD0918FDB11E001749D4 /* ButtonsCollectionView.m */; };
-		5021BD0F18FDB146001749D4 /* ShowedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD0E18FDB146001749D4 /* ShowedView.m */; };
 		5021BD1618FDB1E6001749D4 /* HistoryTableSviper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD1118FDB1E6001749D4 /* HistoryTableSviper.m */; };
 		5021BD1718FDB1E6001749D4 /* DisplayRam.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD1318FDB1E6001749D4 /* DisplayRam.m */; };
 		5021BD1F18FDB242001749D4 /* ButtonObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 5021BD1C18FDB242001749D4 /* ButtonObject.m */; };
@@ -240,8 +239,6 @@
 		5021BD0718FDB11E001749D4 /* HistoryTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryTableView.m; sourceTree = "<group>"; };
 		5021BD0818FDB11E001749D4 /* ButtonsCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonsCollectionView.h; sourceTree = "<group>"; };
 		5021BD0918FDB11E001749D4 /* ButtonsCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonsCollectionView.m; sourceTree = "<group>"; };
-		5021BD0D18FDB146001749D4 /* ShowedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowedView.h; sourceTree = "<group>"; };
-		5021BD0E18FDB146001749D4 /* ShowedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowedView.m; sourceTree = "<group>"; };
 		5021BD1018FDB1E6001749D4 /* HistoryTableSviper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryTableSviper.h; sourceTree = "<group>"; };
 		5021BD1118FDB1E6001749D4 /* HistoryTableSviper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryTableSviper.m; sourceTree = "<group>"; };
 		5021BD1218FDB1E6001749D4 /* DisplayRam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplayRam.h; sourceTree = "<group>"; };
@@ -806,8 +803,6 @@
 			children = (
 				50A666941B16FFE3005ABB39 /* ShowedViewController.h */,
 				50A666951B16FFE3005ABB39 /* ShowedViewController.m */,
-				5021BD0D18FDB146001749D4 /* ShowedView.h */,
-				5021BD0E18FDB146001749D4 /* ShowedView.m */,
 				50FD96D619478E5100ADCF9A /* BezierInterpView.h */,
 				50FD96D719478E5100ADCF9A /* BezierInterpView.m */,
 			);
@@ -995,7 +990,6 @@
 				50A7D7001BAC33B900ABCB0C /* Clr.m in Sources */,
 				50F312541A2222F7002604FB /* DownButton.m in Sources */,
 				5021BC9918FDAE3C001749D4 /* ITSCalcViewController.m in Sources */,
-				5021BD0F18FDB146001749D4 /* ShowedView.m in Sources */,
 				5061850C1BB6AB9C005F209A /* GradientView.m in Sources */,
 				50F312511A221D78002604FB /* DelButton.m in Sources */,
 				50DF89251B2E0EA200DF6D06 /* SettingsViewController.m in Sources */,

@@ -34,7 +34,11 @@
 
 -(NSDictionary*)mainAttributes;
 -(NSAttributedString*)atrStrForButtonsFrom:(NSAttributedString*)inStr;
-+(NSAttributedString*)changeFontSizeFrom:(NSAttributedString*)inStr toSize:(CGSize)size;
 -(NSString *) point;
++(CGFloat) pointSizeOfAtrString:(NSAttributedString*)atrStr;
++(NSAttributedString*)resizeAttrString:(NSAttributedString*)inputStr withKoeff:(CGFloat)k;
++(NSAttributedString*)resizeAttrString:(NSAttributedString *)inputStr toPointSize:(CGFloat)pointSize;
++(NSAttributedString*)resizeAttrString:(NSAttributedString*)inputStr accordingBound:(CGSize)boundSize;
++(NSAttributedString*)resizeAttrString:(NSAttributedString*)inputStr WithInitPointSize:(CGFloat)pointSize accordingBound:(CGSize)boundSize byHeight:(BOOL)isForHeight;
 
 @end

@@ -14,4 +14,6 @@
 @property (nonatomic) BOOL isBlueColor;
 @property (nonatomic) CGFloat lineWidth;
 
+-(void)clearPatch;
+
 @end
