@@ -22,13 +22,13 @@
 
 //#import "LineView.h"
 
-#import "TestButtonBackGroundView.h"
+//#import "TestButtonBackGroundView.h"
 #import "designButtonView.h"
 #import "PlusButton.h"
-#import "CLr.h"
-#import "RoundedGroundView.h"
+//#import "CLr.h"
+//#import "RoundedGroundView.h"
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+//#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 #define INDENT 20.0f
 
@@ -40,54 +40,63 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 
 @property (nonatomic, strong) SKProduct *product;
 @property (nonatomic,strong) SKProductsRequest *request;
-@property (nonatomic,weak) CalcButton *calcButton;
+
+
+
+//@property (nonatomic,weak) CalcButton *calcButton;
 
 //transition
 @property (weak,nonatomic) Transition* rightTransition;
 @property (weak,nonatomic) DesignViewController *designViewController;
 
 //copied from main controller
-@property (weak, nonatomic) UILabel *buttonSwitcherLabel;
-@property (weak, nonatomic) UIView *smallButtonView;
-@property (weak,nonatomic) newButtonView *smalButtonLook;
-@property (weak, nonatomic) UIView *bigbuttonView;
-@property (weak,nonatomic) newButtonView *bigButtonLook;
-@property (weak, nonatomic) UISwitch *isBigSizeSwitcher;
+//@property (weak, nonatomic) UILabel *buttonSwitcherLabel;
+//@property (weak, nonatomic) UILabel *soundSwitcherLabel;
+//@property (weak, nonatomic) UILabel *archiveSwitcherLabel;
+//@property (weak,nonatomic) UILabel *changeDesignButtonLabel;
+//@property (weak,nonatomic) UILabel* clearHistoryButtonLabel;
+@property (weak, nonatomic) IBOutlet newButtonView *smallButtonView;
+@property (weak, nonatomic) IBOutlet newButtonView *bigButtonView;
+@property (weak, nonatomic) IBOutlet UISwitch *isBigSizeSwitcher;
 
-@property (weak, nonatomic) UILabel *soundSwitcherLabel;
-@property (weak, nonatomic) UISwitch *soundSwitcher;
-@property (weak, nonatomic) SoundView *soundOff;
-@property (weak, nonatomic) SoundView *soundOn;
+@property (weak, nonatomic) IBOutlet SoundView *soundOff;
+@property (weak, nonatomic) IBOutlet SoundView *soundOn;
+@property (weak, nonatomic) IBOutlet UISwitch *soundSwitcher;
 
-@property (weak, nonatomic) UILabel *archiveSwitcherLabel;
-@property (weak, nonatomic) UISwitch *isBigDataBaseSwitcher;
-@property (weak, nonatomic) ArchiveSizeView *archsizeViewSmall;
-@property (weak, nonatomic) ArchiveSizeView *archivesizeBigView;
+@property (weak, nonatomic) IBOutlet ArchiveSizeView *archsizeViewSmall;
+@property (weak, nonatomic) IBOutlet ArchiveSizeView *archivesizeBigView;
+@property (weak, nonatomic) IBOutlet UISwitch *isBigDataBaseSwitcher;
 
-@property (weak, nonatomic) CloudView *cloudOnView;
-@property (weak, nonatomic) CloudView *cloudOffView;
-@property (weak, nonatomic) UILabel *iCloudSwitcherName;
-@property (weak, nonatomic) UISwitch *isiCloudUseSwitcher;
+@property (weak, nonatomic) IBOutlet CloudView *cloudOffView;
+@property (weak, nonatomic) IBOutlet CloudView *cloudOnView;
+@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
+
+@property (weak, nonatomic) IBOutlet DesignButton *changeDesignButton;
+@property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
+@property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
+@property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
+
+@property (weak, nonatomic) IBOutlet CalcButton *calcButton;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewConstrain;
+
+@property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
 
 @property (nonatomic) BOOL fristLunchWithicloudAvailable;
-//need to set iClouds images whole & empty
 
-@property (weak,nonatomic) UILabel *changeDesignButtonLabel;
-@property (weak, nonatomic) DesignButton *changeDesignButton;
-@property (weak,nonatomic) DesignViewFromButton *designViewFromButton;
-
-@property (weak,nonatomic) UILabel* clearHistoryButtonLabel;
-@property (weak, nonatomic) ClearHistoryButton *clearHistoryButton;
-
-@property (weak, nonatomic) UIButton *keyboardDefaultButton;
+//@property (weak,nonatomic) DesignViewFromButton *designViewFromButton;
 
 
-@property (weak, nonatomic) UIButton *buyAdditionsButton;
+
+
+//@property (weak, nonatomic) UIButton *buyAdditionsButton;
 //add spin activity to show process of purchaising
-@property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
+
 //end copied from main controller
 
 //FOR IAPD SET DESIGN CHOOSING
+/*
 @property (nonatomic,weak) UILabel* chooseDesignLabel;
 
 @property (nonatomic,weak) UIView *classicPartView;
@@ -111,6 +120,7 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic,weak) designButtonView *photoButtonView;
 @property (nonatomic,weak) TestButtonBackGroundView *photButton;
 @property (nonatomic,weak) PlusButton *addNewPhotoButton; //"+"
+*/
 
 
 @end
@@ -134,101 +144,8 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
             
             //self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
             [self.view setNeedsDisplay];
-            
         }
         //NSLog(@"recived wrong notification");
-    }
-}
-#define ALERT_MESSAGE_CHOOSE_NEW_PHOTO NSLocalizedStringFromTable(@"ALERT_MESSAGE_CHOOSE_NEW_PHOTO",@"ACalcTryViewControllerTableNew", @"Выберите фотографию из Вашего фотоархива")
-#define TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK NSLocalizedStringFromTable(@"TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK",@"ACalcTryViewControllerTableNew", @"Ok")
-#pragma mark SET NEW DESIGN
-
--(void)sendNoteChangeDesign:(NSInteger)design
-{
-    //self.design = design;
-    NSNumber *message = [NSNumber numberWithInteger:design];
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"ChangedDesign",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingReciveChangedNotification object:nil userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-}
--(void)trySetDesign:(NSInteger)design
-{
-    if(self.designObj.designNumber != design){
-        if(design == DESIGN_PHOTO){
-            //check is there user photo in store
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
-            NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                             inDomains:NSUserDomainMask] lastObject];
-            NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-            
-            if ([fileManager fileExistsAtPath:[storeURL path]]) {
-                
-                [self sendNoteChangeDesign:design];
-                
-            } else {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@""
-                                                                               message:ALERT_MESSAGE_CHOOSE_NEW_PHOTO
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                                      handler:^(UIAlertAction * action) {[self choosePhoto];}];
-                
-                [alert addAction:defaultAction];
-                [self presentViewController:alert animated:YES completion:nil];
-                
-            }
-            //if send user to photo library throug message
-        } else {
-            if (design == DESIGN_COLOR_BLUE){
-                [self setNewBackgroundImageForColor:[Clr blueGround]];
-            }else if (design == DESIGN_COLOR_GRAY){
-                [self setNewBackgroundImageForColor:[Clr grayGround]];
-            }else if (design == DESIGN_COLOR_GREEN){
-                [self setNewBackgroundImageForColor:[Clr greenGround]];
-            }else if (design == DESIGN_COLOR_PINK){
-                [self setNewBackgroundImageForColor:[Clr pinkGround]];
-            }else if (design == DESIGN_COLOR_YELOW){
-                [self setNewBackgroundImageForColor:[Clr yellowGround]];
-            }
-            [self sendNoteChangeDesign:design];
-        }
-    }
-}
-
--(void) setNewBackgroundImageForColor:(UIColor*)color
-{
-    UIImage *createdImage = [RoundedGroundView getImageForRect:CGRectInset(self.view.bounds, -40, -40) withColor:color];
-    NSData *newImageData = UIImagePNGRepresentation(createdImage);
-    
-    //save image
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString* documentName = @"PaintedPicture";//@"MyDocument.sqlite"
-    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-    NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-    
-    if ([fileManager fileExistsAtPath:[storeURL path]]) {
-        if([fileManager isDeletableFileAtPath:[storeURL path]]){
-            NSError *error;
-            BOOL delSucces = [fileManager removeItemAtPath:[storeURL path] error:&error];
-            if(delSucces){
-                NSLog(@"File exist and deleted");
-                if([newImageData writeToURL:storeURL atomically:YES]){
-                    NSLog(@"File replace succesefuly");
-                } else {
-                    NSLog(@"But not replace");
-                }
-            } else {
-                NSLog(@"File exist but not deleted");
-            }
-        }
-    } else {
-        NSLog(@"File not finded");
-        if([newImageData writeToURL:storeURL atomically:YES]){
-            NSLog(@"File created succesefuly");
-        } else {
-            NSLog(@"But not created");
-        }
     }
 }
 
@@ -270,11 +187,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     
 }
 
--(void) calcButtonTapped:(id)sender
 
-{
-    [self dismis];
-}
 
 #pragma mark ROTATION
 -(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -286,7 +199,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 -(void)willRotatetoSize:(CGSize)size
 {
     CGRect rct = CGRectMake(0,0,size.width,size.height);
-    [self setCViewAccordingFrameRect:rct];
+     [self setLayOutOfSettingsView:rct];
 }
 
 #define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
@@ -336,8 +249,10 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #pragma mark BUTTON ACTION
 
 
--(void)pressedClearHistoryButton:(id)sender
-{
+- (IBAction)calcButtonTapped:(id)sender {
+    [self dismis];
+}
+- (IBAction)pressedClearHistoryButton:(UIButton *)sender {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TITLE_CLEAR_HISTORY_BUTTON
                                                     message:ALERT_MESSAGE_CLEAR_HOSTORY//@"delete history. all results will be lost"
                                                    delegate:self
@@ -346,13 +261,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [alert show];
 }
 
--(void)pressedDesignButton:(id)sender
-{
-    [self showDesignViewcontroller];
+- (IBAction)pressedDesignButton:(DesignButton *)sender {
+     [self showDesignViewcontroller];
 }
 
--(void) pressedKeyboardDefaultButton:(id)sender
-{
+- (IBAction)pressedKeyboardDefaultButton:(UIButton *)sender {
     UIAlertView *alert;
     alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
                                        message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
@@ -362,8 +275,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     
     [alert show];
 }
--(void) pressedBuyAdditionsButton:(id)sender
-{
+- (IBAction)pressedBuyAdditionsButton:(UIButton *)sender {
     UIAlertView *alert;
     
     alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
@@ -380,8 +292,8 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
-- (void)isBigSizeButtonSwitch:(UISwitch *)sender
-{
+
+- (IBAction)isBigSizeButtonSwitch:(UISwitch*)sender {
     self.isBigSizeButtons = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isBigSizeButtons",nil];
@@ -389,17 +301,15 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
-- (void)isSoundSwitch:(UISwitch *)sender
-{
+
+- (IBAction)isSoundSwitch:(UISwitch*)sender {
     self.isSoundOn = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isSoundOn",nil];
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
-
-- (void)switchIsBigDataBase:(UISwitch *)sender
-{
+- (IBAction)switchIsBigDataBase:(UISwitch *)sender {
     self.isBigDataBase = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isBigDataBase", nil];
@@ -407,107 +317,12 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
-- (void)isiCloudSwitch:(UISwitch *)sender
-{
+- (IBAction)isiCloudSwitch:(UISwitch *)sender {
     self.isiCloudInUse = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isiCloudInUse", nil];
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
-}
-#pragma mark UIImagePickerControllerDelegate
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    [self.photo setImage:[info valueForKey:UIImagePickerControllerOriginalImage]];
-    UIImage *imageFromLibrary = [info valueForKey:UIImagePickerControllerOriginalImage];
-    NSData *newImageData = UIImagePNGRepresentation(imageFromLibrary);
-    
-    //save image
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
-    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-    NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-    
-    BOOL succes = NO;
-    
-    if ([fileManager fileExistsAtPath:[storeURL path]]) {
-        if([fileManager isDeletableFileAtPath:[storeURL path]]){
-            NSError *error;
-            BOOL delSucces = [fileManager removeItemAtPath:[storeURL path] error:&error];
-            if(delSucces){
-                NSLog(@"File exist and deleted");
-                if([newImageData writeToURL:storeURL atomically:YES]){
-                    NSLog(@"File replace succesefuly");
-                    succes = YES;
-                } else {
-                    NSLog(@"But not replace");
-                }
-            } else {
-                NSLog(@"File exist but not deleted");
-            }
-        }
-    } else {
-        NSLog(@"File not finded");
-        if([newImageData writeToURL:storeURL atomically:YES]){
-            NSLog(@"File created succesefuly");
-            succes = YES;
-        } else {
-            NSLog(@"But not created");
-        }
-    }
-    
-    
-    [picker dismissViewControllerAnimated:YES completion:^{
-        if(succes) [self sendNoteChangeDesign:DESIGN_PHOTO];
-        
-    }];
-}
-
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [picker dismissViewControllerAnimated:YES completion:^{ }];
-}
-
-
--(void) choosePhoto
-{
-    UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-    imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    imagePickerController.delegate = self;
-    [self presentViewController:imagePickerController animated:YES completion:nil];
-}
-
--(void)chooseNewPhoto:(id)sender
-{
-    [self choosePhoto];
-}
-
-#pragma mark CHOSE NEW DESIGN
--(void) chooseButtonTapped:(id)sender
-{
-    NSInteger design = 0;
-    id senderView = nil;
-    if([sender isKindOfClass:[UITapGestureRecognizer class]]){
-        senderView = ((UITapGestureRecognizer*)sender).view;
-    }
-    
-    if(senderView){
-        if([senderView isKindOfClass:[TestButtonBackGroundView class]]){
-            design = ((TestButtonBackGroundView*)senderView).designIndex;
-        } else if ([senderView isKindOfClass:[designButtonView class]]){
-            design = ((designButtonView*)senderView).designIndex;
-        } else if([senderView isKindOfClass:[UIView class]]){
-            design = ((UIView*)senderView).tag;
-        }
-    }
-    
-    
-    [self trySetDesign:design];
-    
-    
-    
 }
 
 #pragma mark OVERRIDE ABSTRACT FUNCTION
@@ -525,135 +340,64 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
 -(void)setNeedViews
 {
-    
-    CalcButton *calcButton = [CalcButton buttonWithType:UIButtonTypeSystem];
-    [calcButton addTarget:self action:@selector(calcButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [calcButton setTintColor:[UIColor whiteColor]];
-    
-    [self.cView addSubview:calcButton];
-    self.calcButton = calcButton;
+    self.backGroundView.backgroundColor = self.cView.backgroundColor;
+
+    [self.calcButton setTintColor:[UIColor whiteColor]];
     
     //SIZE BUTTON
-    struct Color clr;
-    clr.r = 0.95;//0.26;
-    clr.g = 0.95;//0.57;
-    clr.b = 0.95;//0.70;
-    clr.a = 1.0;
+    [self.isBigSizeSwitcher setOn:self.isBigSizeButtons];
+    self.isBigSizeSwitcher.onTintColor = [UIColor whiteColor];
+
+    self.smallButtonView.title = @"=";
+    self.smallButtonView.buttonColor = [UIColor whiteColor];
     
-    UISwitch *isBigSizeSwitcher = [[UISwitch alloc] init];
-    [isBigSizeSwitcher setOn:self.isBigSizeButtons];
-    [isBigSizeSwitcher addTarget:self action:@selector(isBigSizeButtonSwitch:) forControlEvents:UIControlEventValueChanged];
-    isBigSizeSwitcher.onTintColor = [UIColor whiteColor];
-    [self.cView addSubview:isBigSizeSwitcher];
-    self.isBigSizeSwitcher = isBigSizeSwitcher;
-    
-    UIView *smallButtonView = [[UIView alloc] init];
-    
-    [self.cView addSubview:smallButtonView];
-    self.smallButtonView = smallButtonView;
-    
-    newButtonView *smalButtonLook = [[newButtonView alloc] init];
-    smalButtonLook.title = @"=";
-    smalButtonLook.buttonColor = [UIColor whiteColor];
-    [self.smallButtonView addSubview:smalButtonLook];
-    self.smalButtonLook = smalButtonLook;
-    
-    UIView *bigbuttonView = [[UIView alloc] init];
-    [self.cView addSubview:bigbuttonView];
-    self.bigbuttonView = bigbuttonView;
-    
-    newButtonView *bigButtonLook = [[newButtonView alloc] init];
-    bigButtonLook.title = @"=";
-    bigButtonLook.buttonColor = [UIColor whiteColor];
-    [self.bigbuttonView addSubview:bigButtonLook];
-    self.bigButtonLook = bigButtonLook;
-    
+    self.bigButtonView.title = @"=";
+    self.bigButtonView.buttonColor = [UIColor whiteColor];
     
     //SOUND SWITCH
-    UISwitch *soundSwitcher = [[UISwitch alloc] init];
-    [soundSwitcher setOn:self.isSoundOn];
-    [soundSwitcher addTarget:self action:@selector(isSoundSwitch:) forControlEvents:UIControlEventValueChanged];
-    soundSwitcher.onTintColor = [UIColor whiteColor];
-    
-    [self.cView addSubview:soundSwitcher];
-    self.soundSwitcher = soundSwitcher;
-    
-    SoundView *soundOff = [[SoundView alloc] init];
-    soundOff.on = NO;
-    soundOff.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:soundOff];
-    self.soundOff = soundOff;
-    
-    SoundView *soundOn = [[SoundView alloc] init];
-    soundOn.on = YES;
-    soundOn.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:soundOn];
-    self.soundOn = soundOn;
-    
-    
+    [self.soundSwitcher setOn:self.isSoundOn];
+    self.soundSwitcher.onTintColor = [UIColor whiteColor];
+
+    self.soundOff.on = NO;
+    self.soundOff.backgroundColor = [UIColor clearColor];
+
+    self.soundOn.on = YES;
+    self.soundOn.backgroundColor = [UIColor clearColor];
+   
     //ARCHIVE SIZE
-    
-    UISwitch *isBigDataBaseSwitcher = [[UISwitch alloc] init];
-    [isBigDataBaseSwitcher setOn:self.isBigDataBase];
-    [isBigDataBaseSwitcher addTarget:self action:@selector(switchIsBigDataBase:) forControlEvents:UIControlEventValueChanged];
-    isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
-    
-    [self.cView addSubview:isBigDataBaseSwitcher];
-    self.isBigDataBaseSwitcher = isBigDataBaseSwitcher;
-    
-    ArchiveSizeView *archsizeViewSmall = [[ArchiveSizeView alloc] init];
-    archsizeViewSmall.isBig=NO;
-    archsizeViewSmall.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:archsizeViewSmall];
-    self.archsizeViewSmall = archsizeViewSmall;
-    
-    ArchiveSizeView *archivesizeBigView = [[ArchiveSizeView alloc] init];
-    archivesizeBigView.isBig=YES;
-    archivesizeBigView.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:archivesizeBigView];
-    self.archivesizeBigView = archivesizeBigView;
-    
+    [self.isBigDataBaseSwitcher setOn:self.isBigDataBase];
+    self.isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
+
+    self.archsizeViewSmall.isBig=NO;
+    self.archsizeViewSmall.backgroundColor = [UIColor clearColor];
+
+    self.archivesizeBigView.isBig=YES;
+    self.archivesizeBigView.backgroundColor = [UIColor clearColor];
     
     //iCloud use
-    UISwitch *isiCloudUseSwitcher = [[UISwitch alloc] init];
-    [isiCloudUseSwitcher setOn:self.isiCloudInUse];
-    isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
-    [isiCloudUseSwitcher addTarget:self action:@selector(isiCloudSwitch:) forControlEvents:UIControlEventValueChanged];
-    isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
-    
-    [self.cView addSubview:isiCloudUseSwitcher];
-    self.isiCloudUseSwitcher = isiCloudUseSwitcher;
-    
-    CloudView *cloudOnView = [[CloudView alloc]init];
-    cloudOnView.on = YES;
-    cloudOnView.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:cloudOnView];
-    self.cloudOnView = cloudOnView;
-    
-    CloudView *cloudOffView = [[CloudView alloc]init];
-    cloudOffView.on = NO;
-    cloudOffView.backgroundColor = [UIColor clearColor];
-    [self.cView addSubview:cloudOffView];
-    self.cloudOffView = cloudOffView;
-    
-    
+    [self.isiCloudUseSwitcher setOn:self.isiCloudInUse];
+    self.isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
+    self.isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
+
+    self.cloudOnView.on = YES;
+    self.cloudOnView.backgroundColor = [UIColor clearColor];
+
+    self.cloudOffView.on = NO;
+    self.cloudOffView.backgroundColor = [UIColor clearColor];
     //CLEAR HISTORY
-    
-    ClearHistoryButton *clearHistoryButton = [[ClearHistoryButton alloc]init];
-    [clearHistoryButton addTarget:self action:@selector(pressedClearHistoryButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self.cView addSubview:clearHistoryButton];
-    self.clearHistoryButton = clearHistoryButton;
+
+    self.clearHistoryButton.normalColor = [UIColor whiteColor];
     
     
     
     //CHANGE DESIGN BUTTON
-    if((self.wasPurshaised) || (self.isTrialPeriod)){
-        if(!IS_IPAD){
-            DesignButton *changeDesignButton = [[DesignButton alloc]init];
-            //fro iPad its only pictures
-            [changeDesignButton addTarget:self action:@selector(pressedDesignButton:) forControlEvents:UIControlEventTouchUpInside];
-            [self.cView addSubview:changeDesignButton];
-            self.changeDesignButton = changeDesignButton;
+    //if((self.wasPurshaised) || (self.isTrialPeriod)){
+    //    if(!IS_IPAD){
+    
+    //fro iPad its only pictures
+    self.changeDesignButton.storkeColor = [UIColor whiteColor];
+    self.changeDesignButton.fillColor = self.cView.backgroundColor;
+    /*
         } else {
             DesignViewFromButton *designViewFromButton = [[DesignViewFromButton alloc]init];
             designViewFromButton.backgroundColor = [UIColor clearColor];
@@ -661,260 +405,40 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             [self.cView addSubview:designViewFromButton];
             self.designViewFromButton = designViewFromButton;
         }
+     */
         
         //set KEYBOARD DEFAULT BUTTON
-        UIButton *keyboardDefaultButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [keyboardDefaultButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        keyboardDefaultButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
-        keyboardDefaultButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        keyboardDefaultButton.titleLabel.numberOfLines = 0;
-        keyboardDefaultButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-        keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-        [keyboardDefaultButton addTarget:self action:@selector(pressedKeyboardDefaultButton:) forControlEvents:UIControlEventTouchUpInside];
-        [self.cView addSubview:keyboardDefaultButton];
-        self.keyboardDefaultButton = keyboardDefaultButton;
-        
-        if(IS_IPAD){
-            UILabel *chooseDesignLabel = [[UILabel alloc] init];
-            chooseDesignLabel.text = @"Выберите подходящий дизайн";
-            chooseDesignLabel.textAlignment = NSTextAlignmentCenter;
-            chooseDesignLabel.numberOfLines = 0;
-            chooseDesignLabel.textColor = [UIColor whiteColor];
-            
-            chooseDesignLabel.font = [UIFont systemFontOfSize:18];
-            
-            chooseDesignLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-            chooseDesignLabel.adjustsFontSizeToFitWidth = YES;
-            [self.cView addSubview:chooseDesignLabel];
-            self.chooseDesignLabel = chooseDesignLabel;
-            
-            
-            UIView *classicPartView = [[UIView alloc] init];
-            classicPartView.backgroundColor = [UIColor blackColor];
-            //classicPartView.layer.masksToBounds = YES;
-            
-            [self.cView addSubview:classicPartView];
-            self.classicPartView = classicPartView;
-            //need to set button classic button
-            designButtonView *classicButtonView= [[designButtonView alloc] init];
-            classicButtonView.backgroundColor = [UIColor clearColor];
-            
-            [self.classicPartView addSubview:classicButtonView];
-            self.classicButtonView = classicButtonView;
-            
-            TestButtonBackGroundView *classicButton = [[TestButtonBackGroundView alloc]init];
-            classicButton.designIndex = DESIGN_CLASSIC;
-            classicButton.isChoosed = NO;
-            [self.classicPartView addSubview:classicButton];
-            self.classicButton = classicButton;
-            
-            
-            UIView *paperPartView = [[UIView alloc] init];
-            paperPartView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            //paperPartView.layer.masksToBounds = YES;
-            [self.cView addSubview:paperPartView];
-            self.paperPartView = paperPartView;
-            designButtonView *paperButtonView= [[designButtonView alloc] init];
-            paperButtonView.backgroundColor = [UIColor clearColor];
-            [self.paperPartView addSubview:paperButtonView];
-            self.paperButtonView = paperButtonView;
-            
-            TestButtonBackGroundView *paperButton = [[TestButtonBackGroundView alloc]init];
-            paperButton.designIndex = DESIGN_PAPER;
-            paperButton.isChoosed = NO;
-            [self.paperPartView addSubview:paperButton];
-            self.paperButton = paperButton;
-            
-            
-            //need to set button classic button
-            designButtonView *colorButtonView= [[designButtonView alloc] init];
-            
-            //IMPORTANT need to be according design
-            colorButtonView.designIndex = DESIGN_COLOR_BLUE;
-            colorButtonView.backgroundColor = [UIColor clearColor];
-            [self.cView addSubview:colorButtonView];
-            self.colorButtonView = colorButtonView;
-            
-            //blue
-            TestButtonBackGroundView *clolorBlueButton = [[TestButtonBackGroundView alloc]init];
-            clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
-            clolorBlueButton.isChoosed = NO;
-            [self.cView addSubview:clolorBlueButton];
-            self.clolorBlueButton = clolorBlueButton;
-            
-            //pink
-            TestButtonBackGroundView *colorPinkButton = [[TestButtonBackGroundView alloc]init];
-            colorPinkButton.designIndex = DESIGN_COLOR_PINK;
-            colorPinkButton.isChoosed = NO;
-            [self.cView addSubview:colorPinkButton];
-            self.colorPinkButton = colorPinkButton;
-            
-            //green
-            TestButtonBackGroundView *colorGreenButton = [[TestButtonBackGroundView alloc]init];
-            colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
-            colorGreenButton.isChoosed = NO;
-            [self.cView addSubview:colorGreenButton];
-            self.colorGreenButton = colorGreenButton;
-            
-            //yelow
-            TestButtonBackGroundView *colorYelowButton = [[TestButtonBackGroundView alloc]init];
-            
-            
-            colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
-            colorYelowButton.isChoosed = NO;
-            [self.cView addSubview:colorYelowButton];
-            self.colorYelowButton = colorYelowButton;
-            
-            //black
-            TestButtonBackGroundView *colorBlackButton = [[TestButtonBackGroundView alloc]init];
-            
-            
-            colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
-            colorBlackButton.isChoosed = NO;
-            [self.cView addSubview:colorBlackButton];
-            self.colorBlackButton = colorBlackButton;
-            
-            UIView *photoPartView = [[UIView alloc] init];
-            
-            photoPartView.clipsToBounds = YES;
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
-            NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                             inDomains:NSUserDomainMask] lastObject];
-            NSURL *storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-            UIImage *imageForPhotoPart;
-            
-            if ([fileManager fileExistsAtPath:[storeURL path]]) {
-                if([fileManager isDeletableFileAtPath:[storeURL path]]){
-                    imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
-                } else {
-                    imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
-                }
-            } else {
-                imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
-                
-            }
-            
-            UIImageView *photo = [[UIImageView alloc] initWithImage:imageForPhotoPart];
-            photo.contentMode = UIViewContentModeScaleAspectFill;
-            photo.backgroundColor = self.cView.backgroundColor;
-            photo.clipsToBounds = YES;
-            self.photo = photo;
-            
-            [photoPartView addSubview:photo];
-            
-            [self.cView addSubview:photoPartView];
-            self.photoPartView = photoPartView;
-            
-            TestButtonBackGroundView *photButton = [[TestButtonBackGroundView alloc]init];
-            photButton.designIndex = DESIGN_PHOTO;
-            photButton.isChoosed = NO;
-            [self.photoPartView addSubview:photButton];
-            self.photButton = photButton;
-            
-            //need to set button classic button
-            designButtonView *photoButtonView= [[designButtonView alloc] init];
-            photoButtonView.backgroundColor = [UIColor clearColor];
-            [self.photoPartView addSubview:photoButtonView];
-            self.photoButtonView = photoButtonView;
-            
-            PlusButton *addNewPhotoButton = [[PlusButton alloc] init];
-            [addNewPhotoButton addTarget:self action:@selector(chooseNewPhoto:) forControlEvents:UIControlEventTouchUpInside];
-            self.addNewPhotoButton = addNewPhotoButton;
-            [self.cView addSubview:addNewPhotoButton];
-            
-            switch (self.designObj.designNumber) {
-                case DESIGN_CLASSIC:
-                    self.classicButton.isChoosed = YES;
-                    break;
-                case DESIGN_PAPER:
-                    self.paperButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_BLUE:
-                    self.clolorBlueButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_GREEN:
-                    self.colorGreenButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_PINK:
-                    self.colorPinkButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_YELOW:
-                    self.colorYelowButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_GRAY:
-                    self.colorBlackButton.isChoosed = YES;
-                    break;
-                case DESIGN_PHOTO:
-                    self.photButton.isChoosed = YES;
-                    break;
-                default:
-                    break;
-            }
-            
-            UITapGestureRecognizer *tapOnView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView4 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView5 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView6 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView7 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView8 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView9 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView10 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView11 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView12 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            UITapGestureRecognizer *tapOnView13 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseButtonTapped:)];
-            
-            [self.classicPartView addGestureRecognizer:tapOnView];
-            [self.classicButton addGestureRecognizer:tapOnView1];
-            [self.classicButtonView addGestureRecognizer:tapOnView2];
-            
-            [self.paperPartView addGestureRecognizer:tapOnView3];
-            [self.paperButtonView addGestureRecognizer:tapOnView4];
-            [self.paperButton addGestureRecognizer:tapOnView5];
-            
-            [self.clolorBlueButton addGestureRecognizer:tapOnView6];
-            [self.colorPinkButton addGestureRecognizer:tapOnView7];
-            [self.colorGreenButton addGestureRecognizer:tapOnView8];
-            [self.colorYelowButton addGestureRecognizer:tapOnView9];
-            [self.colorBlackButton addGestureRecognizer:tapOnView10];
-            
-            [self.photoPartView addGestureRecognizer:tapOnView11];
-            [self.photoButtonView addGestureRecognizer:tapOnView12];
-            [self.photButton addGestureRecognizer:tapOnView13];
-        }
-    }
-    
+
+        [self.keyboardDefaultButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        self.keyboardDefaultButton.titleLabel.numberOfLines = 0;
+        //keyboardDefaultButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+        //keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
+
     
     
     //set BUY ADDITIONS BUTTON
     if(!self.wasPurshaised){
         
-        UIButton *buyAdditionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [buyAdditionsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        buyAdditionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
-        buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        buyAdditionsButton.titleLabel.numberOfLines = 0;
-        buyAdditionsButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-        buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-        [buyAdditionsButton addTarget:self action:@selector(pressedBuyAdditionsButton:) forControlEvents:UIControlEventTouchUpInside];
+        //UIButton *buyAdditionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        //[buyAdditionsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+       // buyAdditionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
+        self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        self.buyAdditionsButton.titleLabel.numberOfLines = 0;
+        //self.buyAdditionsButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+        //self.buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
         
-        buyAdditionsButton.enabled = NO;
-        [buyAdditionsButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-        
-        [self.cView addSubview:buyAdditionsButton];
-        self.buyAdditionsButton = buyAdditionsButton;
+        self.buyAdditionsButton.enabled = NO;
+        [self.buyAdditionsButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+
         
         
         //setProcessSpiner
         
         UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
         [processSpinner startAnimating];
-        [self.cView addSubview:processSpinner];
+        [self.buyAdditionsButton addSubview:processSpinner];
         self.processSpinner = processSpinner;
         
         
@@ -939,7 +463,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         
     }
     
-    if(IS_IPAD){
+    /*if(IS_IPAD){
         UILabel *soundSwitcherLabel = [[UILabel alloc]init];
         soundSwitcherLabel.text = NAME_SOUND_SWITCH;
         soundSwitcherLabel.textAlignment = NSTextAlignmentCenter;
@@ -990,7 +514,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             [self.cView addSubview:changeDesignButtonLabel];
             self.changeDesignButtonLabel = changeDesignButtonLabel;
         }
-    }
+    }*/
     
 }
 
@@ -998,360 +522,18 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
 -(void) setLayOutOfSettingsView:(CGRect)rect
 {
-    
-    CGFloat mainHeight = rect.size.height;
-    CGFloat mainWidth = rect.size.width;
-    
-    CGFloat x = INDENT+rect.origin.x;
-    CGFloat y = rect.origin.y;
-    
-    
     if(IS_IPAD){
-        //devide height on ten parts
-        //one part is
-        CGFloat measure = mainHeight/9;
-        //determine center of seetings line accordindg condition
-        CGFloat centeSettingsLine;//center settings line
-        CGFloat centerDesignLine;//set center for design views
-        if((self.wasPurshaised) || (self.isTrialPeriod)){
-            centeSettingsLine =x+mainWidth/4;
-            centerDesignLine = x + 3*mainWidth/4;//center of design line
-        } else {
-            centeSettingsLine =x+mainWidth/2;
-            centerDesignLine =x+mainWidth/2;
-        }
-        
-        //icons size
-        CGFloat viewSide =rect.size.height/13 ;
-        CGRect rectForView = CGRectMake(0, 0, viewSide, viewSide);
-        //determine center layout for each settings property
-        //switcher; one picture; second picture; label
-        //y center switcher; one picture; second picture;
-        CGFloat yCenter = y + measure/2; //+quantity measures
-        CGFloat yCenterDesignView = yCenter - measure/10;
-        CGFloat yLabelCenter = y+(measure/2 - viewSide/2.5)/2; //+quantity measures
-        
-        //determine x centers for one and second pictures
-        CGFloat part = (mainWidth-2*INDENT) /3; //whole line size
-        
-        CGFloat firstLinePicture = centeSettingsLine - part/3;
-        CGFloat secondLinePicture = centeSettingsLine + part/3;
-        
-        
-        //SIZE BUTTON SWITCHER LINE
-        [self.smallButtonView setBounds:CGRectMake(0, 0, viewSide/1.4, (viewSide/1.4)*0.7)];
-        [self.smallButtonView setCenter:CGPointMake(firstLinePicture,yCenter+ measure)];
-        
-        [self.bigbuttonView setBounds:CGRectMake(0, 0, viewSide/1.1, (viewSide/1.1)*0.7)];
-        [self.bigbuttonView setCenter:CGPointMake(secondLinePicture,yCenter+ measure)];
-        
-        [self.isBigSizeSwitcher setCenter:CGPointMake(centeSettingsLine,yCenter+ measure)];
-        
-        [self.buttonSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.buttonSwitcherLabel setCenter:CGPointMake(centeSettingsLine, yLabelCenter+measure)];
-        
-        
-        //SOUND SWITCHER LINE
-        [self.soundOff setBounds:rectForView];
-        [self.soundOff setCenter:CGPointMake(firstLinePicture,yCenter+ 2*measure)];
-        
-        [self.soundOn setBounds:rectForView];
-        [self.soundOn setCenter:CGPointMake(secondLinePicture,yCenter+ 2*measure)];
-        
-        [self.soundSwitcher setCenter:CGPointMake(centeSettingsLine, yCenter+ 2*measure)];
-        
-        [self.soundSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.soundSwitcherLabel setCenter:CGPointMake(centeSettingsLine,yLabelCenter+ 2*measure)];
-        
-        
-        
-        //ARCHIVE SIZE SWITHER
-        [self.archsizeViewSmall setBounds:rectForView];
-        [self.archsizeViewSmall setCenter:CGPointMake(firstLinePicture,yCenter+ 3*measure)];
-        
-        [self.archivesizeBigView setBounds:rectForView];
-        [self.archivesizeBigView setCenter:CGPointMake(secondLinePicture,yCenter+ 3*measure)];
-        [self.isBigDataBaseSwitcher setCenter:CGPointMake(centeSettingsLine,yCenter+ 3*measure)];
-        
-        [self.archiveSwitcherLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.archiveSwitcherLabel setCenter:CGPointMake(centeSettingsLine,yLabelCenter+ 3*measure)];
-        
-        
-        //iCLOUD USE SWITCHER
-        [self.cloudOffView setBounds:rectForView];
-        [self.cloudOffView setCenter:CGPointMake(firstLinePicture,yCenter+ 4*measure)];
-        
-        [self.cloudOnView setBounds:rectForView];
-        [self.cloudOnView setCenter:CGPointMake(secondLinePicture,yCenter+ 4*measure)];
-        [self.isiCloudUseSwitcher setCenter:CGPointMake(centeSettingsLine,yCenter+ 4*measure)];
-        
-        [self.iCloudSwitcherName setBounds:CGRectMake(0,0, 250, 20)];
-        [self.iCloudSwitcherName setCenter:CGPointMake(centeSettingsLine,yLabelCenter+ 4*measure)];
-        
-        
-        //CLEAR HISTROY BUTTON
-        [self.clearHistoryButton setBounds:CGRectMake(0, 0, rectForView.size.width/1.2, rectForView.size.height/1.2)];
-        [self.clearHistoryButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 5*measure)];
-        [self.clearHistoryButtonLabel setBounds:CGRectMake(0,0, 250, 20)];
-        [self.clearHistoryButtonLabel setCenter:CGPointMake(centeSettingsLine,yLabelCenter+5*measure)];
-        
-        
-        CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 4*INDENT)/3, measure-2*INDENT);
-        
+   
         //BUY ANDDEFAULT KEYBOARD BUTTONS
         if((self.wasPurshaised) || (self.isTrialPeriod)){
-            [self.keyboardDefaultButton setBounds:buttonsBounds];
-            [self.keyboardDefaultButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 6*measure)];
             
-            if(!self.wasPurshaised){
-                [self.buyAdditionsButton setBounds:buttonsBounds];
-                [self.buyAdditionsButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 7*measure)];
-                
-                [self.processSpinner setCenter:CGPointMake(centeSettingsLine,yCenter+ 7*measure)];
-            }
-            
-            CGFloat onePart;
-            CGFloat origHeight;
-            //nex two parts need be in setLayout in case of redrawing views
-            self.classicButton.designIndex = DESIGN_CLASSIC;
-            self.classicButtonView.designIndex = DESIGN_CLASSIC;
-            self.classicPartView.tag = DESIGN_CLASSIC;
-            
-            self.paperButton.designIndex = DESIGN_PAPER;
-            self.paperButtonView.designIndex = DESIGN_PAPER;
-            self.paperPartView.tag = DESIGN_PAPER;
-            
-            self.colorButtonView.designIndex = DESIGN_COLOR_BLUE;
-            self.clolorBlueButton.designIndex = DESIGN_COLOR_BLUE;
-            self.colorPinkButton.designIndex = DESIGN_COLOR_PINK;
-            self.colorGreenButton.designIndex = DESIGN_COLOR_GREEN;
-            self.colorYelowButton.designIndex = DESIGN_COLOR_YELOW;
-            self.colorBlackButton.designIndex = DESIGN_COLOR_GRAY;
-            
-            self.photoPartView.tag = DESIGN_PHOTO;
-            self.photoButtonView.designIndex = DESIGN_PHOTO;
-            self.photButton.designIndex = DESIGN_PHOTO;
-            
-            switch (self.designObj.designNumber) {
-                case DESIGN_CLASSIC:
-                    self.classicButton.isChoosed = YES;
-                    break;
-                case DESIGN_PAPER:
-                    self.paperButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_BLUE:
-                    self.clolorBlueButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_GREEN:
-                    self.colorGreenButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_PINK:
-                    self.colorPinkButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_YELOW:
-                    self.colorYelowButton.isChoosed = YES;
-                    break;
-                case DESIGN_COLOR_GRAY:
-                    self.colorBlackButton.isChoosed = YES;
-                case DESIGN_PHOTO:
-                    self.photButton.isChoosed = YES;
-                    break;
-                default:
-                    break;
-            }
-            
-            
-            CGRect rctForDesignView = CGRectMake(0, 0, (mainWidth/3)*1.3, measure*0.8);
-            
-            CGFloat markSide =rect.size.width > rect.size.height? rect.size.height/13: rect.size.width/13 ;
-            
-            CGRect rctForMark = CGRectMake(0, 0, markSide, markSide);
-            
-            CGRect rctForButtonView = CGRectMake(0,0, rctForDesignView.size.width/2, markSide*1.2);
-            
-            [self.designViewFromButton setFrame:rctForMark];
-            [self.designViewFromButton setCenter:CGPointMake(centerDesignLine - rctForDesignView.size.width/2 + rctForButtonView.size.width/3.5, yCenterDesignView+measure)];
-            
-            [self.chooseDesignLabel setFrame:CGRectMake(0, 0, rctForDesignView.size.width/2+rctForButtonView.size.width/2, rctForButtonView.size.height) ];
-            CGFloat deltaCenter = (rctForDesignView.size.width/2+rctForButtonView.size.width/2)/2- rctForButtonView.size.width/2;
-            [self.chooseDesignLabel setCenter:CGPointMake(centerDesignLine + deltaCenter,
-                                                          yCenterDesignView+measure)];
-            
-            
-            [self.classicPartView setFrame:rctForDesignView];
-            [self.classicPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 2*measure)];
-            self.classicPartView.layer.cornerRadius = rctForDesignView.size.height/6;
-            self.classicPartView.layer.masksToBounds = YES;
-            
-            [self.classicButton setFrame:rctForMark];
-            [self.classicButton setCenter:CGPointMake(rctForButtonView.size.width/3.5, rctForDesignView.size.height/2)];
-            [self.classicButtonView setFrame:rctForButtonView];
-            [self.classicButtonView setCenter:CGPointMake(rctForDesignView.size.width/2, rctForDesignView.size.height/2)];
-            
-            
-            [self.paperPartView setFrame:rctForDesignView];
-            [self.paperPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 3*measure)];
-            self.paperPartView.layer.cornerRadius = rctForDesignView.size.height/6;
-            self.paperPartView.layer.masksToBounds = YES;
-            
-            [self.paperButton setFrame:rctForMark];
-            [self.paperButton setCenter:CGPointMake(rctForButtonView.size.width/3.5, rctForDesignView.size.height/2)];
-            [self.paperButtonView setFrame:rctForButtonView];
-            [self.paperButtonView setCenter:CGPointMake(self.paperPartView.bounds.size.width/2,self.paperPartView.bounds.size.height/2) ];
-            
-            [self.colorButtonView setFrame:rctForButtonView];
-            [self.colorButtonView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 4*measure)];
-            
-            
-            [self.clolorBlueButton setFrame:rctForMark];
-            [self.clolorBlueButton setCenter:CGPointMake(centerDesignLine - rctForDesignView.size.width/2 + rctForButtonView.size.width/3.5, yCenterDesignView+5*measure)];
-            
-            CGFloat midleBetwinBlueAndGreen =  (rctForDesignView.size.width/2 - rctForButtonView.size.width/3.5)/2;
-            [self.colorPinkButton setFrame:rctForMark];
-            [self.colorPinkButton setCenter:CGPointMake(centerDesignLine - midleBetwinBlueAndGreen, yCenterDesignView+5*measure)];
-            [self.colorGreenButton setFrame:rctForMark];
-            [self.colorGreenButton setCenter:CGPointMake(centerDesignLine, yCenterDesignView+5*measure)];
-            [self.colorYelowButton setFrame:rctForMark];
-            [self.colorYelowButton setCenter:CGPointMake(centerDesignLine + midleBetwinBlueAndGreen, yCenterDesignView+5*measure)];
-            [self.colorBlackButton setFrame:rctForMark];
-            [self.colorBlackButton setCenter:CGPointMake(centerDesignLine + rctForDesignView.size.width/2 - rctForButtonView.size.width/3.5,
-                                                         yCenterDesignView+5*measure)];
-            
-            
-            [self.photoPartView setFrame:CGRectMake(0,origHeight+5*onePart, self.cView.bounds.size.width, onePart)];
-            [self.photoPartView setFrame:rctForDesignView];
-            [self.photoPartView setCenter:CGPointMake(centerDesignLine, yCenterDesignView + 6*measure)];
-            self.photoPartView.layer.cornerRadius = rctForDesignView.size.height/6;
-            self.photoPartView.layer.masksToBounds = YES;
-            
-            [self.photo setFrame:self.photoPartView.bounds];
-            [self.photButton setFrame:rctForMark];
-            [self.photButton setCenter:CGPointMake(rctForButtonView.size.width/3.5, rctForDesignView.size.height/2)];
-            
-            [self.photoButtonView setFrame:rctForButtonView];
-            [self.photoButtonView setCenter:CGPointMake(self.photoPartView.bounds.size.width/2,self.photoPartView.bounds.size.height/2) ];
-            
-            
-            [self.addNewPhotoButton setFrame:rctForMark];
-            [self.addNewPhotoButton setCenter:CGPointMake(centerDesignLine + rctForDesignView.size.width/2 - rctForButtonView.size.width/3.5,
-                                                          yCenterDesignView+6*measure)];
-            
-            
-        } else {
-            
-            [self.buyAdditionsButton setBounds:buttonsBounds];
-            [self.buyAdditionsButton setCenter:CGPointMake(centeSettingsLine,yCenter+ 6*measure)];
-            
-            [self.processSpinner setCenter:CGPointMake(centeSettingsLine,yCenter+ 6*measure)];
         }
-        
-        //line five
-        [self.calcButton setBounds:rectForView];
-        [self.calcButton setCenter:CGPointMake(x +INDENT+viewSide/2, y+mainHeight-INDENT-viewSide/2)];
         
         
     } else { //if iPhone
         
-        NSInteger parts = 9;
-        if(self.wasPurshaised || (!self.isTrialPeriod)){
-            parts = 8;
-        }
-        CGFloat measure = (mainHeight)/ parts;
-        CGFloat xCenterLineOne = x+(mainWidth-2*INDENT)/4;
-        CGFloat xCenterLineTwo = x+(mainWidth-2*INDENT)/2;
-        CGFloat xCenterLineThree = x+3*(mainWidth-2*INDENT)/4;
-        
-        CGFloat viewSide = (self.view.bounds.size.height>self.view.bounds.size.width)? self.view.bounds.size.height/10 : self.view.bounds.size.width/10;
-        CGRect rectForView = CGRectMake(0, 0, viewSide, viewSide);
-        
-        //first line
-        [self.smallButtonView setBounds:CGRectMake(0, 0, viewSide/1.1, (viewSide/1.1)*0.7)];
-        [self.smallButtonView setCenter:CGPointMake(xCenterLineOne, y+measure)];
-        
-        [self.isBigSizeSwitcher setCenter:CGPointMake(xCenterLineTwo, y+measure)];
-        
-        [self.bigbuttonView setBounds:CGRectMake(0, 0, viewSide*1.2, (viewSide*1.2)*0.7)];
-        [self.bigbuttonView setCenter:CGPointMake(xCenterLineThree, y+measure)];
-        
-        
-        //second line
-        [self.soundOff setBounds:rectForView];
-        [self.soundOff setCenter:CGPointMake(xCenterLineOne, y+2*measure)];
-        
-        [self.soundSwitcher setCenter:CGPointMake(xCenterLineTwo, y+2*measure)];
-        
-        [self.soundOn setBounds:rectForView];
-        [self.soundOn setCenter:CGPointMake(xCenterLineThree, y+2*measure)];
-        
-        //line three
-        [self.archsizeViewSmall setBounds:rectForView];
-        [self.archsizeViewSmall setCenter:CGPointMake(xCenterLineOne, y+3*measure)];
-        
-        [self.isBigDataBaseSwitcher setCenter:CGPointMake(xCenterLineTwo, y+3*measure)];
-        
-        [self.archivesizeBigView setBounds:rectForView];
-        [self.archivesizeBigView setCenter:CGPointMake(xCenterLineThree, y+3*measure)];
-        
-        //line four
-        [self.cloudOffView setBounds:rectForView];
-        [self.cloudOffView setCenter:CGPointMake(xCenterLineOne, y+4*measure)];
-        
-        [self.isiCloudUseSwitcher setCenter:CGPointMake(xCenterLineTwo, y+4*measure)];
-        
-        [self.cloudOnView setBounds:rectForView];
-        [self.cloudOnView setCenter:CGPointMake(xCenterLineThree, y+4*measure)];
-        
-        //line five
-        if((!self.wasPurshaised) && (!self.isTrialPeriod)){
-            [self.clearHistoryButton setBounds:rectForView];
-            [self.clearHistoryButton setCenter:CGPointMake(xCenterLineTwo, y+5*measure)];
-        } else {
-            
-            [self.clearHistoryButton setBounds:rectForView];
-            [self.clearHistoryButton setCenter:CGPointMake(xCenterLineOne, y+5*measure)];
-            
-            [self.changeDesignButton setBounds:rectForView];
-            [self.changeDesignButton setCenter:CGPointMake(xCenterLineThree, y+5*measure)];
-        }
-        
-        
-        //line six
-        CGRect buttonsBounds = CGRectMake(0, 0, (rect.size.width - 2*INDENT), measure-1.5*INDENT);
-        if(!self.wasPurshaised){
-            [self.buyAdditionsButton setBounds:buttonsBounds];
-            [self.buyAdditionsButton setCenter:CGPointMake(xCenterLineTwo, y+6*measure)];
-            [self.processSpinner setCenter:self.buyAdditionsButton.center];
-        }
-        
-        
-        //line seven
-        if((self.wasPurshaised) || (self.isTrialPeriod)){
-            [self.keyboardDefaultButton setBounds:buttonsBounds];
-            [self.keyboardDefaultButton setCenter:CGPointMake(xCenterLineTwo, y+(parts-2)*measure)];
-        }
-        
-        
-        //line eight
-        [self.calcButton setBounds:rectForView];
-        [self.calcButton setCenter:CGPointMake(xCenterLineTwo, y+(parts-1)*measure)];
-        
     }
-    struct Color clr;
-    clr.r = 0.95;//0.26;
-    clr.g = 0.95;//0.57;
-    clr.b = 0.95;//0.70;
-    clr.a = 1.0;
-    
-    CGRect smalLook = self.smallButtonView.bounds;
-    smalLook.size.width = smalLook.size.width -4;
-    smalLook.size.height =smalLook.size.height-4;
-    [self.smalButtonLook setFrame:self.smallButtonView.bounds];
-    
-    self.bigbuttonView.backgroundColor = [UIColor clearColor];
-    CGRect bigLook = self.bigbuttonView.bounds;
-    bigLook.size.width =-4;
-    bigLook.size.height =-4;
-    [self.bigButtonLook setFrame:self.bigbuttonView.bounds];
+    //need to set spinner
 }
 
 
@@ -1362,67 +544,43 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     
 }
 
--(void) setCViewAccordingFrameRect:(CGRect)rctIn
-{
-    CGRect rct;
-    rct.size.width = rctIn.size.width/0.8;
-    rct.size.height = rctIn.size.height/0.8;
-    rct.origin.x = (rctIn.size.width - rct.size.width)/2;
-    rct.origin.y = (rctIn.size.height - rct.size.height)/2;
-    
-    
-    CGRect rect = rctIn;
-    rect.origin.x = -rct.origin.x;
-    rect.origin.y = -rct.origin.y;
-    
-    CGFloat angle = 0;
-    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
-    self.wasOrient = orient;
-    
-    if(!IS_IPAD){
-        CGFloat width = rct.size.width;
-        CGFloat height = rct.size.height;
-        
-        if(width > height){
-            
-            switch (orient) {
-                case UIDeviceOrientationLandscapeLeft:
-                    angle = -M_PI/2;
-                    break;
-                case UIDeviceOrientationLandscapeRight:
-                    angle = M_PI/2;
-                    
-                default:
-                    break;
-            }
-            rect.size.width = self.view.bounds.size.height;
-            rect.size.height = self.view.bounds.size.width;
-            rect.origin.x = -rct.origin.y;
-            rect.origin.y = -rct.origin.x;
-        }
-        
-        self.cView.center = self.view.center;
-        [self.cView setTransform:CGAffineTransformMakeRotation(angle)];
+-(void)viewDidLayoutSubviews{
+    CGSize viewSize = self.view.bounds.size;
+    CGSize windowSize = self.view.window.bounds.size;
+    if(viewSize.width != windowSize.width){
+        [self.view setFrame:self.view.window.bounds];
     }
-    [self.cView setFrame:rct];
-    
-    [self viewDidLayoutSubviewsWithRect:rect];
-    
+    if(!IS_IPAD){
+        if(viewSize.width < viewSize.height){
+            self.cViewWidthConstrain.constant = 0;
+            self.cViewHeigthConstrain.constant = 0;
+        } else {
+            self.cViewWidthConstrain.constant = -viewSize.width+viewSize.height;
+            self.cViewHeigthConstrain.constant = -viewSize.height+viewSize.width;
+;
+        }
+    }
+    if(self.processSpinner){
+        
+        [self.processSpinner setCenter:CGPointMake(self.buyAdditionsButton.bounds.size.width/2., self.buyAdditionsButton.bounds.size.height/2.)];
+    }
+    [self updateViewConstraints];
+    NSLog(@"viewDidLayoutSubviews settings VC");
 }
 
 
 -(void)viewDidLoad{
     [super viewDidLoad];
+    if(IS_X){
+        self.topViewConstrain.constant = 84;
+        self.bottomViewConstrain.constant = 64;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SettingReciveChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(goForegraund:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
-    
-    CGRect rct = self.view.bounds;
-    [self setCViewAccordingFrameRect:rct];
-    
-    
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
                                                    name:UIApplicationWillResignActiveNotification
@@ -1459,18 +617,28 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     
 }
 
+-(void)goForegraund:(NSNotification*)note{
+    NSLog(@"Go Foregraund");
+    if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
+        
+    } else {
+         [self dismis];
+    }
+}
+
 
 -(void)appWillGoToBackground:(NSNotification *)note{
     if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
         
     } else {
-        [self dismis];
+       // [self dismis];
     }
-    
+    NSLog(@"appWillGoToBackground");
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
     NSLog(@"setting view disapear");
+    //[self dismis];
 }
 
 #pragma mark IN-APP PURSHASE
@@ -1505,7 +673,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          
-                         [self setCViewAccordingFrameRect:rect];
+                         [self setLayOutOfSettingsView:rect];
                          
                      } completion:^(BOOL finished) {
                          [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
@@ -1576,6 +744,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     //stop and remove process spinner
     [self.processSpinner stopAnimating];
     [self.processSpinner removeFromSuperview];
+    [self.buyAdditionsButton setEnabled:NO];
     
 }
 

@@ -52,7 +52,7 @@
 #import "ShowedViewController.h"
 
 #import "AboutViewController.h"
-#import "SettingViewController.h"
+//#import "SettingViewController.h"
 #import "ClearHistoryButton.h"
 #import "DesignButton.h"
 
@@ -117,7 +117,7 @@
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate, UIContentContainer>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate, UIContentContainer,NSFilePresenter>
 
 
 //outlets
@@ -1889,11 +1889,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [self showSettingsViewcontroller];
 }
 
+/*
 - (IBAction)tapSettingsButton:(UIButton *)sender
 {
     [self showSettingsViewcontroller];
 
 }
+*/
 
 -(void) discardChanging
 {
@@ -4807,6 +4809,8 @@ BOOL isNewTableRow;
         self.buttonManagedObjectContext = buttonContext;
         self.managedObjectContext = document.managedObjectContext;
 
+    } else {
+        NSLog(@"Document state:%lu", (unsigned long)document.documentState);
     }
 }
 #pragma mark ICLOUD SETUP
@@ -5163,7 +5167,7 @@ BOOL isNewTableRow;
 {
     [self migrateToiCloudstorage:isiCloudInUse];
 }
-
+/*
 - (IBAction)isiCloudSwitch:(UISwitch *)sender
 {
     if(sender.isOn){
@@ -5172,7 +5176,7 @@ BOOL isNewTableRow;
         self.isiCloudInUse = NO;
     }
 }
-
+*/
 -(void) setIsiCloudInUse:(BOOL)isiCloudInUse
 {
     if(_isiCloudInUse != isiCloudInUse){
@@ -5270,7 +5274,9 @@ BOOL isNewTableRow;
                 NSLog(@"Not succes with open");
             }
         }];
+        NSLog(@"No document");
     } else {
+        NSLog(@"try to create document");
         [document saveToURL:self.localStoreUrl forSaveOperation:UIDocumentSaveForCreating
           completionHandler:^(BOOL success) {
               if (success) {
@@ -5299,8 +5305,8 @@ BOOL isNewTableRow;
     document.persistentStoreOptions = options;
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
-        
         [document openWithCompletionHandler:^(BOOL success) {
+            
             if (success) {
               [self documentIsReady: document];
                 [self setStoreNotifications];
@@ -5487,6 +5493,7 @@ BOOL isNewTableRow;
                                                selector:@selector(appWillGoToBackground:)
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
+    
 
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appDidEnterBackground)
@@ -5579,6 +5586,7 @@ BOOL isNewTableRow;
     self.callShowController = NO;
 
     self.isNeedToBeReloadedAfterDesignChanged = NO;
+    isNeedReloadAfterOtherController = NO;
     
     //
     [self.buttonsCollection addObserver:self forKeyPath:@"bounds" options:0 context:nil];
@@ -5599,12 +5607,53 @@ BOOL isNewTableRow;
 -(void)rotateIPhoneAsNonRotateWithSize:(CGSize)size{
     UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
     CGFloat angleShowedViewController = 0;
-    BOOL needToShowShowedController = NO;
-    BOOL needToDissmisShowedViewcontroller = NO;
+    CGFloat angleMainTransform;
     BOOL needStopAnimation = YES;
-    if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
+    if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
         
-        if(size.height > size.width){
+        
+        switch (orient) {
+            case UIDeviceOrientationPortraitUpsideDown:
+                angleMainTransform = M_PI/2;
+                break;
+            case UIDeviceOrientationPortrait:
+                angleMainTransform = 0;
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+                angleMainTransform = -M_PI/2;
+                break;
+            case UIDeviceOrientationLandscapeRight:
+                angleMainTransform = M_PI/2;
+                break;
+            default:
+                angleMainTransform = 0;
+                break;
+        }
+        
+        if(needStopAnimation){
+            [UIView setAnimationsEnabled:NO]; //turn off animation on time
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+            [self.settingsController.cView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+            
+            
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                [UIView setAnimationsEnabled:YES];
+            });
+        } else {
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+            [self.settingsController.cView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+        }
+        
+    }
+    //!!!!
+    //if presented third controller
+    //
+    else if([self.presentedViewController isKindOfClass:[ShowedViewController class]]){
+            BOOL needToDissmisShowedViewcontroller = NO;
+        if(size.height > size.width) {
+            needToDissmisShowedViewcontroller = YES;
             
             switch (self.showedController.wasOrient) {
                 case UIDeviceOrientationLandscapeLeft:
@@ -5621,8 +5670,6 @@ BOOL isNewTableRow;
                     needStopAnimation = NO;
                     break;
             }
-            needToDissmisShowedViewcontroller = YES;
-            
         } else {
             switch (self.showedController.wasOrient) {
                 case UIDeviceOrientationPortrait:
@@ -5641,67 +5688,87 @@ BOOL isNewTableRow;
             }
         }
        // [self callChanginShowedViewFrom:@"rotateIPhoneAsNonRotateWithSize"];
-        
-    }
-    CGFloat angleMainTransform;
-    
-    switch (orient) {
-        case UIDeviceOrientationPortraitUpsideDown:
-            angleMainTransform = M_PI/2;
-            break;
-        case UIDeviceOrientationPortrait:
-            angleMainTransform = 0;
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            angleMainTransform = -M_PI/2;
-            
-            needToShowShowedController = YES;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            angleMainTransform = M_PI/2;
-            needToShowShowedController = YES;
-            break;
-        default:
-            angleMainTransform = 0;
-            break;
-    }
-    
-    if(needStopAnimation){
-        [UIView setAnimationsEnabled:NO]; //turn off animation on time
-        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
-        if(self.showedController){
-            [self.showedController.containerView setTransform:CGAffineTransformMakeRotation(angleShowedViewController)];
+        switch (orient) {
+            case UIDeviceOrientationPortraitUpsideDown:
+                angleMainTransform = M_PI/2;
+                break;
+            case UIDeviceOrientationPortrait:
+                angleMainTransform = 0;
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+                angleMainTransform = -M_PI/2;
+                break;
+            case UIDeviceOrientationLandscapeRight:
+                angleMainTransform = M_PI/2;
+                break;
+            default:
+                angleMainTransform = 0;
+                break;
         }
-        
-        
-        int64_t delayInSeconds = 0.05;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        if(needStopAnimation){
+            [UIView setAnimationsEnabled:NO]; //turn off animation on time
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+                [self.showedController.containerView setTransform:CGAffineTransformMakeRotation(angleShowedViewController)];
             
-            
-            if(needToShowShowedController){
-                self.callShowController = YES;
-                [self showSowedViewController];
-            }
-            
-            if(self.showedController){
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 self.showedController.wasOrient = orient;
-                
                 [self.view setFrame:[UIScreen mainScreen].bounds];
                 if(needToDissmisShowedViewcontroller){
                     [self.showedController dismis];
                     self.callShowController = NO;
                 }
-                
-            }
-            [UIView setAnimationsEnabled:YES];
-        });
-    } else {
-        [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
-        
-        if(self.showedController){
+                [UIView setAnimationsEnabled:YES];
+            });
+        } else {
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
             [self.showedController.containerView setTransform:CGAffineTransformMakeRotation(angleShowedViewController)];
             self.showedController.wasOrient = orient;
+        }
+
+        
+        
+    } else {
+        
+        BOOL needToShowShowedController = NO;
+
+    
+        switch (orient) {
+            case UIDeviceOrientationPortraitUpsideDown:
+                angleMainTransform = M_PI/2;
+                break;
+            case UIDeviceOrientationPortrait:
+                angleMainTransform = 0;
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+                angleMainTransform = -M_PI/2;
+                needToShowShowedController = YES;
+                break;
+            case UIDeviceOrientationLandscapeRight:
+                angleMainTransform = M_PI/2;
+                needToShowShowedController = YES;
+                break;
+            default:
+                angleMainTransform = 0;
+                break;
+        }
+    
+        if(needStopAnimation){
+            [UIView setAnimationsEnabled:NO]; //turn off animation on time
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
+        
+            int64_t delayInSeconds = 0.05;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                if(needToShowShowedController){
+                    self.callShowController = YES;
+                    [self showSowedViewController];
+                }
+                [UIView setAnimationsEnabled:YES];
+            });
+        } else {
+            [self.mainContainerView setTransform:CGAffineTransformMakeRotation(angleMainTransform)];
         }
     }
 }
@@ -6020,8 +6087,14 @@ CGFloat maxButtonsCollectionHeight;
         }*/
 
     }
-    
+    //if(![self.presentedViewController isKindOfClass:[SecondViewController class]]){
     if (object == self.buttonsCollection && [keyPath isEqualToString:@"bounds"]) {
+        if([self.presentedViewController isKindOfClass:[SecondViewController class]]){
+            isNeedReloadAfterOtherController = YES;
+        } else {
+            [self upDateButtonsCollectionAfterChanginSize];
+        }
+        /*
         //NSLog(@"buttonsCollectionHeight %f - ", self.buttonsCollection.bounds.size.height);
         if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
             buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
@@ -6041,8 +6114,36 @@ CGFloat maxButtonsCollectionHeight;
             screenHeight = self.calcScreenHeightConstrain.constant;
         }
         [self.designObj changeClassSize];
+        */
+        
+        
         //[self.historyTable reloadData];
     }
+    //}
+}
+static BOOL isNeedReloadAfterOtherController;
+
+-(void)upDateButtonsCollectionAfterChanginSize{
+    if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
+        buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
+        lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+        //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+        [self newButtonsSize];
+        screenHeight = self.calcScreenHeightConstrain.constant;
+        [self updateHistoryTableArraysAndGoBottom:NO];
+        [self.historyTable reloadData];
+        
+    } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
+        //screenHeight = self.calcScreenHeightConstrain.constant;
+        //need for iPad if changed screen height without changing buttonCollection width
+        [self newButtonsSize];
+        lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
+        //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
+        screenHeight = self.calcScreenHeightConstrain.constant;
+    }
+    [self.designObj changeClassSize];
+    isNeedReloadAfterOtherController = NO;
+    
 }
 
 -(void)newButtonsSize
@@ -6274,7 +6375,6 @@ CGFloat maxButtonsCollectionHeight;
     [self discardChanging];
     }
 
-
 }
 
 //really enter to background
@@ -6326,6 +6426,7 @@ CGFloat maxButtonsCollectionHeight;
     [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
     [self setKeyValuesFromStorage];
     [defaults synchronize];
+    
 }
 
 -(void) appWillTerminate
@@ -6383,6 +6484,10 @@ CGFloat maxButtonsCollectionHeight;
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
     }
+    if(isNeedReloadAfterOtherController){
+        [self upDateButtonsCollectionAfterChanginSize];
+    }
+
     
 }
 
@@ -6506,27 +6611,31 @@ sourceController:(UIViewController *)source
 }
 -(void) showSettingsViewcontroller
 {
-    self.showControllerIsForward = NO;
-    self.callShowController = NO;
-    
-    SettingsViewController *settingsController = [[SettingsViewController alloc] init];
+    if(!self.settingsController){
+        self.showControllerIsForward = NO;
+        self.callShowController = NO;
+        
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        SettingsViewController *settingsVC = [storyBoard instantiateViewControllerWithIdentifier:@"SettingsViewController"];
+        self.settingsController = settingsVC;
+    }
+
     
     //set all properties
-    settingsController.designObj = self.designObj;
-    settingsController.isiCloudInUse = self.isiCloudInUse;;
-    settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
-    settingsController.isSoundOn = self.isSoundOn;
-    settingsController.isBigSizeButtons = self.isBigSizeButtons;
-    settingsController.isTrialPeriod = self.isTrialPeriod;
-    settingsController.wasPurshaised = self.wasPurshaised;
-    settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
-    settingsController.designObj = self.designObj;
+    self.settingsController.designObj = self.designObj;
+    self.settingsController.isiCloudInUse = self.isiCloudInUse;;
+    self.settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
+    self.settingsController.isSoundOn = self.isSoundOn;
+    self.settingsController.isBigSizeButtons = self.isBigSizeButtons;
+    self.settingsController.isTrialPeriod = self.isTrialPeriod;
+    self.settingsController.wasPurshaised = self.wasPurshaised;
+    self.settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
+    self.settingsController.designObj = self.designObj;
 
     //settingsController.isTrialPeriod = self.isTrialPeriod;
     //settingsController.wasPurshaised = self.wasPurshaised;
    // settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
 
-    self.settingsController = settingsController;
     self.settingsController.transitioningDelegate = self;
     //recive notification from other controllers
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:ReciveChangedNotification object:nil];

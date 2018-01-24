@@ -10,8 +10,7 @@
 
 @interface DesignButton();
 
-@property (nonatomic,strong) UIColor* storkeColor;
-@property (nonatomic,strong) UIColor *touchedColor;
+
 
 @end
 
@@ -116,7 +115,7 @@
     //context behaviors
     CGFloat linewidth = rect.size.width/45;
     CGContextSetLineWidth(context, linewidth);
-    UIColor *fillColor = self.superview.backgroundColor;
+    UIColor *fillColor = self.fillColor;
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetLineJoin(context, kCGLineJoinRound);
     

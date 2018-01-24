@@ -303,29 +303,39 @@
     UIBezierPath *drawRectPath;
     CGPathRef pathOfRect;
     CGFloat borderWidth;
+    
+    UIColor * strColor;
+    CGFloat borderVsRadius;
+    if(self.designObj){
+        strColor = self.buttonColor;
+        borderVsRadius = self.borderVSRadius;
+    } else {
+        strColor = [UIColor whiteColor];
+        borderVsRadius = BORDER_VS_RADIUS;
+    }
     if(IS_IPAD){
         self.radiusCorner = (self.frame.size.height-4)/ 3.5;
         
-        borderWidth = self.radiusCorner / self.borderVSRadius;//9.2;
+        borderWidth = self.radiusCorner / borderVsRadius;//9.2;
         if(self.fillButton){
-            CGContextSetFillColorWithColor(context, self.buttonColor.CGColor);
+            CGContextSetFillColorWithColor(context, strColor.CGColor);
             CGContextSetStrokeColorWithColor(context, [UIColor clearColor].CGColor);
         } else {
             CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
-            CGContextSetStrokeColorWithColor(context, self.buttonColor.CGColor);
+            CGContextSetStrokeColorWithColor(context, strColor.CGColor);
         }
         
         CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     } else {
 
         self.radiusCorner = (rect.size.height-4)/ 3.3;
-        borderWidth = self.radiusCorner / self.borderVSRadius;
+        borderWidth = self.radiusCorner / borderVsRadius;
         if(self.fillButton){
-            CGContextSetFillColorWithColor(context, self.buttonColor.CGColor);
+            CGContextSetFillColorWithColor(context, strColor.CGColor);
             CGContextSetStrokeColorWithColor(context, [UIColor clearColor].CGColor);
         } else {
             CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
-            CGContextSetStrokeColorWithColor(context, self.buttonColor.CGColor);
+            CGContextSetStrokeColorWithColor(context, strColor.CGColor);
         }
         
         CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);

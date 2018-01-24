@@ -11,7 +11,7 @@
 
 @interface SecondViewController : UIViewController
 @property (strong) BackTransition* transition;
-@property (weak,nonatomic) UIView* cView;
+//@property (weak,nonatomic) UIView* cView;
 @property (nonatomic) UIDeviceOrientation wasOrient;
 -(void)dismis;
 -(void) viewDidLayoutSubviewsWithRect:(CGRect)rect;

@@ -11,6 +11,14 @@
 
 @interface SettingsViewController : SecondViewController
 
+
+@property (weak, nonatomic) IBOutlet UIView *cView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewWidthConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewHeigthConstrain;
+//need for size controllers transition
+@property (weak, nonatomic) IBOutlet UIView *backGroundView;
+
+
 @property (nonatomic) BOOL isiCloudInUse;
 @property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
 @property (nonatomic) BOOL isBigDataBase; //size dataBase

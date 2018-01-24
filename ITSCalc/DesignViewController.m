@@ -33,6 +33,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 //#define DESIGN_PHOTO 4
 
 @interface DesignViewController() <UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design
+@property (nonatomic, weak) UIView *cView;
 
 @property (nonatomic,weak) CalcButton* calcButton;
 @property (nonatomic,weak) SettingButton *settingButton;

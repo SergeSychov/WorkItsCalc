@@ -22,7 +22,6 @@
 		355142AC1B0BC8BE00471CCD /* DesignButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 355142AA1B0BC8BE00471CCD /* DesignButton.m */; };
 		357DE42D1ADAF20C0065C256 /* Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 357DE42C1ADAF20C0065C256 /* Logo.png */; };
 		3580CC2E1F9EA3AC0035C20D /* TestView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3580CC2D1F9EA3AC0035C20D /* TestView.m */; };
-		35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */; };
 		35CD631E1F311DEF00F44FFE /* AtrStrStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CD631D1F311DEF00F44FFE /* AtrStrStore.m */; };
 		35EAE2AD1AD5A5D400F428BC /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */; };
 		35EF55381C46D55F007B4087 /* ButtonsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EF55371C46D55F007B4087 /* ButtonsStore.m */; };
@@ -155,8 +154,6 @@
 		357DE42C1ADAF20C0065C256 /* Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Logo.png; path = ../Logo.png; sourceTree = "<group>"; };
 		3580CC2C1F9EA3AB0035C20D /* TestView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestView.h; sourceTree = "<group>"; };
 		3580CC2D1F9EA3AC0035C20D /* TestView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestView.m; sourceTree = "<group>"; };
-		35CC27A01B0C6E4B00BB0A89 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
-		35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		35CD631C1F311DEF00F44FFE /* AtrStrStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtrStrStore.h; sourceTree = "<group>"; };
 		35CD631D1F311DEF00F44FFE /* AtrStrStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AtrStrStore.m; sourceTree = "<group>"; };
 		35EAE2AB1AD5A5D400F428BC /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AboutViewController.h; path = ../AboutViewController.h; sourceTree = "<group>"; };
@@ -755,8 +752,6 @@
 				35EAE2AC1AD5A5D400F428BC /* AboutViewController.m */,
 				505155FE1B01311400E2E042 /* AddViewController.h */,
 				505155FF1B01311400E2E042 /* AddViewController.m */,
-				35CC27A01B0C6E4B00BB0A89 /* SettingViewController.h */,
-				35CC27A11B0C6E4B00BB0A89 /* SettingViewController.m */,
 			);
 			name = AddtionviewController;
 			sourceTree = "<group>";
@@ -1033,7 +1028,6 @@
 				504EA8C51A1902A300E225F7 /* recBut.m in Sources */,
 				35EF55381C46D55F007B4087 /* ButtonsStore.m in Sources */,
 				5021BD0118FDB0C8001749D4 /* Buttons+Buttons_Maker.m in Sources */,
-				35CC27A21B0C6E4B00BB0A89 /* SettingViewController.m in Sources */,
 				64616FCC19BF53C7009DA6B2 /* TextEditController.m in Sources */,
 				50F312421A20BA19002604FB /* CloudView.m in Sources */,
 				5021BD1F18FDB242001749D4 /* ButtonObject.m in Sources */,

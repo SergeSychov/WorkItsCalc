@@ -16,15 +16,16 @@ NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 
 
 @interface SecondViewController() <UIViewControllerTransitioningDelegate>
-@property (weak, nonatomic) UIButton *changeButton;
-@property (weak, nonatomic) UIButton *goBackButton;
-@property (weak,nonatomic) UILabel *label;
+//@property (weak, nonatomic) UIButton *changeButton;
+//@property (weak, nonatomic) UIButton *goBackButton;
+//@property (weak,nonatomic) UILabel *label;
 
 @end
 @implementation SecondViewController
 #pragma mark LAZY INITIALISATION
 
 #pragma mark ACTION
+/*
 -(void) userPressedChangeButton:(id)sender
 {
     //NSLog(@"userPressedChangeButton");
@@ -37,6 +38,7 @@ NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 {
     [self dismis];
 }
+*/
 #pragma mark ROTATION
 
 #pragma mark TRANSITION DELEGATE
@@ -76,13 +78,14 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                   alpha:1.]];
     
     
-    
+    /*
     UIView *cView = [[UIView alloc] init];
     cView.center = self.view.center;
     
     [cView setBackgroundColor:self.view.backgroundColor];
     [self.view addSubview:cView];
     self.cView = cView;
+    */
     
     [self setNeedViews];
 }

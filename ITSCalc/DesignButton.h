@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface DesignButton : UIButton
-
+@property (nonatomic,strong) UIColor* storkeColor;
+@property (nonatomic,strong) UIColor* fillColor;
+@property (nonatomic,strong) UIColor *touchedColor;
 @end
