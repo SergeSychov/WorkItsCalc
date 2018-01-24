@@ -1,2 +1,3 @@
 /* Localized versions of Info.plist keys */
-
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>My description about why I need this capability</string>
