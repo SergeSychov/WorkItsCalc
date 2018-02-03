@@ -29,15 +29,15 @@
 @property (nonatomic,strong) NSArray* delettedButtonObjs;
 @property (nonatomic,strong) NSArray *workButtonsNames;
 
--(ButtonsStore*)initWithContext:(NSManagedObjectContext*) context;
+//-(ButtonsStore*)initWithContext:(NSManagedObjectContext*) context;
 -(void)setUpArrays;
 -(void)setButtonsByDefault;
 -(void)renewArryasAfterChanging;
 -(void)renewArraysAccordingNewButtonsSize;
 //-(void) resaveCoreButtons;
--(void)changeContext:(NSManagedObjectContext*)context;
+//-(void)changeContext:(NSManagedObjectContext*)context;
 //-(void)addNewButtonWithButtonObj:(NSArray*)butObjs;
--(void) checkButtonsArray;
+//-(void) checkButtonsArray;
 -(void) moveButton:(Buttons*)btn fromPosition:(NSNumber*)posFrom toPosition:(NSNumber*)posTo;
 -(void) setEnablingForButton:(Buttons*)button;
 -(void) setDisablingForButton:(Buttons*)button;

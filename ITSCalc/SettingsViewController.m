@@ -576,16 +576,14 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         self.bottomViewConstrain.constant = 64;
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SettingReciveChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(goForegraund:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
     [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(appWillGoToBackground:)
+                                               selector:@selector(applicationDidEnterBackground:)
+                                                   name:UIApplicationDidEnterBackgroundNotification
+                                                 object:[UIApplication sharedApplication]];
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(applicationWillEnterBackground:)
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
-    
 }
 
 #pragma mark DESIGN CONTROLLER DELEGATE
@@ -617,23 +615,23 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     
 }
 
--(void)goForegraund:(NSNotification*)note{
-    NSLog(@"Go Foregraund");
-    if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
+-(void)applicationDidEnterBackground:(NSNotification *)note{
+   // if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
         
-    } else {
-         [self dismis];
-    }
+    //} else {
+       // [self dismisAnimated:NO];
+    [self dismis];
+    //}
+   // NSLog(@"appWillGoToBackground");
 }
 
-
--(void)appWillGoToBackground:(NSNotification *)note{
-    if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
-        
-    } else {
-       // [self dismis];
-    }
-    NSLog(@"appWillGoToBackground");
+-(void)applicationWillEnterBackground:(NSNotification *)note{
+    // if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
+    
+    //} else {
+    //[self dismis];
+    //}
+    // NSLog(@"appWillGoToBackground");
 }
 
 -(void)viewDidDisappear:(BOOL)animated{

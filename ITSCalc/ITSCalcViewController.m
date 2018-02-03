@@ -247,7 +247,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL fristLunchWithicloudAvailable;
 //need to set iClouds images whole & empty
 //arrays to quick start scrollViews (buttonsCollection & historyTable)
-@property (nonatomic) NSArray* buttonsNames;
+//@property (nonatomic) NSArray* buttonsNames;
 @property (nonatomic) NSArray *cellHeights;
 @property (nonatomic) NSArray *infoAttributedStrings;
 @property (nonatomic) NSArray *mainAttributedStrings;
@@ -256,7 +256,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 //Document
 //@property (nonatomic, retain) UIDocumentInteractionController *docController;
-@property (nonatomic, strong) UIManagedDocument *doc;
+//@property (nonatomic, strong) UIManagedDocument *doc;
 
 //Fetch controller
 // Causes the fetchedResultsController to refetch the data.
@@ -280,6 +280,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSManagedObjectContext *buttonManagedObjectContext;
 @property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
@@ -373,6 +374,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     
     return _displayRam;
+}
+-(ButtonsStore*) buttonsStore{
+    if(!_buttonsStore){
+        _buttonsStore = [[ButtonsStore alloc] init];
+        _buttonsStore.delegate = self;
+    }
+    return _buttonsStore;
 }
 #pragma mark SET VARIABLES
 -(void) setCallShowController:(BOOL)callShowController
@@ -1253,7 +1261,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if(self.counterForShowingAllertView > 26){
                 if(self.fristLunchWithicloudAvailable){
                     //Important set heere appeared view
-                    [self askUserForiCloudStorage];
+                    //[self askUserForiCloudStorage];
                 }
             }
             if((25 < self.counterForShowingAllertView) && (self.counterForShowingAllertView < 37)){
@@ -1928,7 +1936,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
         
 
-        [self.doc updateChangeCount:UIDocumentChangeDone];
+       // [self.doc updateChangeCount:UIDocumentChangeDone];
+        NSError *error;
+        //[self.managedObjectContext save:&error];
+        [self.buttonManagedObjectContext save: &error];
+
 
     }
     
@@ -2867,9 +2879,8 @@ static BOOL moveIsAvailable;
     }else{
         //default
     }
-    
-    
 }
+
 -(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload
 {
     if(isNeedReload){
@@ -2882,11 +2893,19 @@ static BOOL moveIsAvailable;
     } else {
 
     }
-    [self.doc updateChangeCount:UIDocumentChangeDone];
+    NSError *error;
+   // [self.managedObjectContext save:&error];
+    [self.buttonManagedObjectContext save: &error];
+
+    //[self.doc updateChangeCount:UIDocumentChangeDone];
+    
+    //MAYBE IT WILL BE USEFUL BUT NOT NOW
+    /*
     if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
         [self.buttonsStore checkButtonsArray];
-    }
+    }*/
 }
+
 
 //ok
 //if allowedToDelete condition changed set alowedToDelete condition for each buttons
@@ -2915,7 +2934,7 @@ static BOOL moveIsAvailable;
 
 -(NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    NSInteger section = 0;
+    NSInteger section = 1;
     
     if(self.buttonManagedObjectContext){
         section = 1;
@@ -3219,12 +3238,14 @@ NSIndexPath *lastVisibleCellPatch;
 #pragma mark HISTORY TABLE VIEW DELEGATE
 
 //ONLY FOR TEST
+/*
 -(NSArray*)buttonsNames{
     if(!_buttonsNames){
         _buttonsNames =[[NSArray alloc]init];
     }
     return _buttonsNames;
 }
+*/
 
 -(NSArray*)cellHeights {
     if(!_cellHeights){
@@ -4167,7 +4188,7 @@ NSInteger dealWithCell;
 }
 */
 #pragma mark MANAGED CONTEXT
-
+/*
 -(void) setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     _managedObjectContext = [self removeDuplicateRecordsFromHistoryContext:managedObjectContext];
@@ -4185,6 +4206,7 @@ NSInteger dealWithCell;
                                                                                    cacheName:nil];
     
 }
+*/
 
 -(NSManagedObjectContext*)removeDuplicateRecordsFromHistoryContext:(NSManagedObjectContext*) internalContext
 {
@@ -4210,22 +4232,24 @@ NSInteger dealWithCell;
     }
     return context;
 }
-
+/*
 -(void) setButtonManagedObjectContext:(NSManagedObjectContext *)buttonManagedObjectContext
 {
     _buttonManagedObjectContext =[self removeDuplicateRecordsFromContext:buttonManagedObjectContext];
+    self.buttonsStore.buttonManagedObjectContext = buttonManagedObjectContext;
     //init button store with context
     //ask inside initialization makes all needed arrays
-    ButtonsStore* buttons = [[ButtonsStore alloc] initWithContext:buttonManagedObjectContext];
-    buttons.delegate = self;
+   // ButtonsStore* buttons = [[ButtonsStore alloc] initWithContext:buttonManagedObjectContext];
+    //buttons.delegate = self;
     //all setup inside buttons store
-    self.buttonsStore = buttons;
-    [self.buttonsStore setUpArrays];
+    //self.buttonsStore = buttons;
+    //[self.buttonsStore setUpArrays];
     
     //[self setUpArrays];
     //all buttons reload in delegate methods buttonsArrayDidChanged
     //[self.buttonsCollection reloadData];
 }
+*/
 
 -(NSManagedObjectContext*)removeDuplicateRecordsFromContext:(NSManagedObjectContext*) internalContext
 {
@@ -4335,16 +4359,21 @@ NSInteger dealWithCell;
 {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-           // NSLog(@"Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
+            NSLog(@"Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
         } else {
-          //  NSLog(@"No predicate");
+            NSLog(@"No predicate");
         }
         NSError *error;
-        [self.fetchedResultsController performFetch:&error];
+        if([self.fetchedResultsController performFetch:&error]){
+            NSLog(@"SUCCES PERFORM FETCH");
+        }
 
     } else {
 
     }
+    NSLog(@"performFetch fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
+    
+    
     [self updateHistoryTableArraysAndGoBottom:YES];
 }
 
@@ -4654,6 +4683,19 @@ BOOL isNewTableRow;
        // [self moveHistoryTableContentToRightPosition];
 
     }
+    
+    NSError *error;
+    if (self.managedObjectContext != nil) {
+        if (self.managedObjectContext.hasChanges && ![self.managedObjectContext save:&error]) {
+            /*
+             Replace this implementation with code to handle the error appropriately.
+             
+             abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
+             */
+            NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+            abort();
+        }
+    }
    
  
     
@@ -4796,7 +4838,7 @@ BOOL isNewTableRow;
     
 }
 
-
+/*
 -(void) documentIsReady:(UIManagedDocument*) document
 {
     if(document.documentState == UIDocumentStateNormal){
@@ -5160,13 +5202,11 @@ BOOL isNewTableRow;
             }
         }
     }
+    
 }
 
+*/
 
--(void) userDidChangeStorage:(BOOL)isiCloudInUse
-{
-    [self migrateToiCloudstorage:isiCloudInUse];
-}
 /*
 - (IBAction)isiCloudSwitch:(UISwitch *)sender
 {
@@ -5177,6 +5217,8 @@ BOOL isNewTableRow;
     }
 }
 */
+
+/*
 -(void) setIsiCloudInUse:(BOOL)isiCloudInUse
 {
     if(_isiCloudInUse != isiCloudInUse){
@@ -5214,9 +5256,10 @@ BOOL isNewTableRow;
     }];
     
 }
+*/
 
 #pragma mark SETUP_STORAGE
-
+/*
 -(NSURL*) localStoreUrl
 {
     if(!_localStoreUrl){
@@ -5291,7 +5334,16 @@ BOOL isNewTableRow;
     //self.doc = document;
     
 }
+*/
+/**
+ Returns the URL to the application's documents directory.
+ */
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+}
 
+/*
 -(void) setupiCloudUIManagedDocument
 {
     //init managed document
@@ -5329,40 +5381,170 @@ BOOL isNewTableRow;
 
     
 }
+*/
 
+#pragma mark - Core Data stack
 
 -(void) setupStorage
-{
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(iCloudAccountChanged:)
-                                                 name:NSUbiquityIdentityDidChangeNotification
-                                               object:nil];
+{    
+    self.buttonsStore.buttonManagedObjectContext  = self.buttonManagedObjectContext;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+    //request.predicate = nil;
+    //NSData *nullData = [NSKeyedArchiver archivedDataWithRootObject:[[NSArray alloc]init]];
+    request.predicate = [NSPredicate predicateWithFormat:@"date != %@",[NSDate distantPast]];
     
-    if(self.isiCloudInUse){
-        [self setupiCloudUIManagedDocument];
-    } else { //set up Local Storage
-        [self setupLocalUIManagedDocument];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+    request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:self.managedObjectContext
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
+    
+    //if(self.isiCloudInUse){
+    //    [self setupiCloudUIManagedDocument];
+    //} else { //set up Local Storage
+     //   [self setupLocalUIManagedDocument];
+   // }
+}
+-(NSManagedObjectContext*)buttonManagedObjectContext{
+    if(_buttonManagedObjectContext != nil){
+        return _buttonManagedObjectContext;
     }
+    NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
+    if (coordinator != nil) {
+        _buttonManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        _buttonManagedObjectContext.persistentStoreCoordinator = coordinator;
+    }
+    return _buttonManagedObjectContext;
+
 }
 
--(void) checkForiCloud
+- (NSManagedObjectContext *)managedObjectContext {
+    
+    if ( _managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+    
+    NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
+    if (coordinator != nil) {
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        _managedObjectContext.persistentStoreCoordinator = coordinator;
+    }
+    return _managedObjectContext;
+}
+
+-(NSPersistentStoreCoordinator*)persistentStoreCoordinator{
+    if (_persistentStoreCoordinator != nil) {
+        return _persistentStoreCoordinator;
+    }
+    
+    //test
+    //check previously created doc
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                     inDomains:NSUserDomainMask] lastObject];
+    
+    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
+    
+    NSURL *localStoreURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+    
+    NSURL *storeURL = [documentsDirectory URLByAppendingPathComponent:@"MyCloudDocument"];
+    
+    NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
+        NSLog(@"There is old MyDocument");
+    } else {
+        NSLog(@"NO old MyDocument");
+    }
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
+        NSLog(@"There is old MyCloudDocument");
+    } else {
+        NSLog(@"NO old MyCloudDocument");
+    }
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
+        NSLog(@"There is old iClouStoreURL");
+    } else {
+        NSLog(@"NO old iClouStoreURL");
+    }
+
+    NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
+                              //NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
+                              NSMigratePersistentStoresAutomaticallyOption: @YES,
+                              NSInferMappingModelAutomaticallyOption:@YES};
+
+    
+   // MyCloudDocument
+    NSString *documentsStorePath =
+    [[self applicationDocumentsDirectory].path stringByAppendingPathComponent:@"MyCloudDocumentNew"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:documentsStorePath]) {
+
+        [[NSFileManager defaultManager] createFileAtPath:documentsStorePath contents:nil attributes:nil];
+        //[[NSFileManager defaultManager] copyItemAtPath:defaultStorePath toPath:documentsStorePath error:NULL];
+    }
+    _persistentStoreCoordinator =
+    [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
+    
+    // Add the default store to our coordinator.
+    NSError *error;
+    NSURL *defaultStoreURL = [NSURL fileURLWithPath:documentsStorePath];
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                   configuration:nil
+                                                             URL:defaultStoreURL
+                                                         options:nil
+                                                           error:&error]) {
+        /*
+         Replace this implementation with code to handle the error appropriately.
+         
+         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
+         
+         Typical reasons for an error here include:
+         * The persistent store is not accessible
+         * The schema for the persistent store is incompatible with current managed object model
+         Check the error message to determine what the actual problem was.
+         */
+        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+        abort();
+    }
+    
+    return _persistentStoreCoordinator;
+
+}
+
+/**
+ Returns the managed object model for the application.
+ If the model doesn't already exist, it is created by merging all of the models found in the application bundle.
+ */
+- (NSManagedObjectModel *)managedObjectModel {
+    
+    if (_managedObjectModel != nil) {
+        return _managedObjectModel;
+    }
+    _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    return _managedObjectModel;
+}
+
+/*
+-(void) documentIsReady:(UIManagedDocument*) document
 {
-    id currentiCloudToken = [[NSFileManager defaultManager] ubiquityIdentityToken];
-    if(currentiCloudToken){
-        NSData *newTokenData = [NSKeyedArchiver archivedDataWithRootObject:currentiCloudToken];
-        [[NSUserDefaults standardUserDefaults]
-         setObject:newTokenData
-         forKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
-        self.isiCloudUseSwitcherEnabled = YES;
+    if(document.documentState == UIDocumentStateNormal){
+        //try to save core data through update document
+        self.doc = document;
+        
+        
+        NSManagedObjectContext *buttonContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [buttonContext setParentContext:document.managedObjectContext];
+        self.buttonManagedObjectContext = buttonContext;
+        self.managedObjectContext = document.managedObjectContext;
         
     } else {
-        [[NSUserDefaults standardUserDefaults]
-         removeObjectForKey:@"com.apple.ItsCalc.UbiquityIdentyToken"];
-        self.isiCloudInUse = NO;
-        self.isiCloudUseSwitcherEnabled = NO;
+        NSLog(@"Document state:%lu", (unsigned long)document.documentState);
     }
 }
+
+*/
 
 #pragma mark VIEW_DID_LOAD
 - (void)viewDidLoad
@@ -5371,6 +5553,9 @@ BOOL isNewTableRow;
     NSDate* launchTime = appClass.launchDate;
     //NSDate* appearDate = [NSDate date];
     NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+
+
+    
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
     if(userDefault && [self extractFromUserDefault:userDefault]){
@@ -5393,8 +5578,8 @@ BOOL isNewTableRow;
     self.atrStore.delegate = self;
     self.atrStore.design = self.designObj;
     
-    ButtonsStore *buttonsStore = [[ButtonsStore alloc] init];
-    buttonsStore.delegate = self;
+    //ButtonsStore *buttonsStore = [[ButtonsStore alloc] init];
+    //buttonsStore.delegate = self;
 
     //[UIDevice currentDevice]
     //for testing delegate
@@ -5415,7 +5600,7 @@ BOOL isNewTableRow;
         self.isiCloudInUse = [[[NSUserDefaults standardUserDefaults]
                               objectForKey:@"userUseiCloud"] boolValue];
     }
-    [self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
+    //[self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
     if(self.isiCloudInUse){
         NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -5427,6 +5612,7 @@ BOOL isNewTableRow;
         [store setString:@"Test" forKey:@"Test"];
         [store synchronize];
     }
+    
     [self setupStorage];
 
     
@@ -5512,6 +5698,7 @@ BOOL isNewTableRow;
                                                selector:@selector(appDidGoToForeground:)
                                                    name:UIApplicationDidBecomeActiveNotification
                                                  object:[UIApplication sharedApplication]];
+
     
   
     
@@ -6051,6 +6238,9 @@ CGFloat maxButtonsCollectionHeight;
             self.noticeButton.hidden = NO;
         }
     }
+    
+    //added to set buttons array
+   // [self newButtonsSize];
 }
 
 #pragma mark BUTTONS SIZE CHANGE
@@ -6062,14 +6252,16 @@ CGFloat maxButtonsCollectionHeight;
     _isBigSizeButtons = isBigSizeButtons;
     //reset buttons size only when core data available
     //as exemple don't set in view didload
+    /*
     if(self.buttonManagedObjectContext){
         //  [self setUpMainButtonsStartWithPosition];
         //  [self makeTwoArrays];
         //  [self.buttonsCollection reloadData];
         //[self.buttonsStore renewArraysAccordingNewButtonsSize];
+        self.buttonsStore.buttonManagedObjectContext = self.buttonManagedObjectContext;
         [self newButtonsSize];
         
-    }
+    }*/
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -6125,7 +6317,12 @@ static BOOL isNeedReloadAfterOtherController;
 
 -(void)upDateButtonsCollectionAfterChanginSize{
     if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
-        buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
+        
+        NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
+        NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
+        CGFloat width = self.view.bounds.size.width;
+        //buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
+        buttonsCollectionWidth = width;
         lastVisibleCellPatch = [self.historyTable indexPathForCell: [self.historyTable.visibleCells lastObject]];
         //selectedRowPatch = [self.historyTable indexPathForSelectedRow];
         [self newButtonsSize];
@@ -6206,7 +6403,7 @@ static BOOL isNeedReloadAfterOtherController;
     
     //renew buttons array
     [self.buttonsStore renewArraysAccordingNewButtonsSize];
-    [self.buttonsCollection reloadData];
+    //[self.buttonsCollection reloadData];
     
     //renew buttonsCollectionLayout
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
@@ -6333,9 +6530,16 @@ static BOOL isNeedReloadAfterOtherController;
 
 }
 
+-(void)applicationWillResignActive:(NSNotification *)note{
+    NSLog(@"UIApplicationDidEnterBackgroundNotification");
+
+}
+
 //possible enter to background, as example iTunes reques
 -(void)appWillGoToBackground:(NSNotification *)note
 {
+    
+    NSLog(@"appWillGoToBackground");
     //if there is byttonAssubview - delete it
     if(buttonsAsSubView){
         CGRect subFrame = subCell.frame;
@@ -6357,10 +6561,13 @@ static BOOL isNeedReloadAfterOtherController;
     //save managed object context
     //[self.buttonsStore resaveCoreButtons];
     //test
+    
+    /*
     NSError *error;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
     request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
+    */
 
     /*
     NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
@@ -6368,10 +6575,15 @@ static BOOL isNeedReloadAfterOtherController;
         NSLog(@"Button %@ position %@",btn.nameButton, btn.position);
     }
     */
+    
+   // NSLog(@"appWillGoToBackground fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
+
     if(!self.showedController){
-    //[self.buttonManagedObjectContext save:&error];
+        NSError *error;
+    //[self.managedObjectContext save:&error];
     [self.buttonManagedObjectContext save: &error];
-     [self.doc updateChangeCount:UIDocumentChangeDone];
+        
+     //[self.doc updateChangeCount:UIDocumentChangeDone];
     [self discardChanging];
     }
 
@@ -6405,9 +6617,9 @@ static BOOL isNeedReloadAfterOtherController;
             ((NewButtonsCollectionViewCell*)cell).isUnderChanging = NO;
         }
         NSError *error;
-        //[self.buttonManagedObjectContext save:&error];
-        //[self.doc.managedObjectContext save: &error];
-        [self.doc updateChangeCount:UIDocumentChangeDone];
+        [self.buttonManagedObjectContext save:&error];
+        [self.managedObjectContext save: &error];
+        //[self.doc updateChangeCount:UIDocumentChangeDone];
         //[self.buttonsStore resaveCoreButtons];
     }
     
@@ -6431,7 +6643,10 @@ static BOOL isNeedReloadAfterOtherController;
 
 -(void) appWillTerminate
 {
-    [self.doc updateChangeCount:UIDocumentChangeDone];
+    //[self.doc updateChangeCount:UIDocumentChangeDone];
+    NSError *error;
+    //[self.managedObjectContext save:&error];
+    [self.buttonManagedObjectContext save: &error];
 
 
     [self setKeyValuesFromStorage];
@@ -6484,9 +6699,12 @@ static BOOL isNeedReloadAfterOtherController;
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
     }
-    if(isNeedReloadAfterOtherController){
-        [self upDateButtonsCollectionAfterChanginSize];
+        if(isNeedReloadAfterOtherController){
+            [self.view setNeedsLayout];
+            [self upDateButtonsCollectionAfterChanginSize];
     }
+    
+    self.view.alpha = 1.;
 
     
 }
@@ -6559,6 +6777,7 @@ sourceController:(UIViewController *)source
         if([key isEqualToString:@"isBigSizeButtons"]){
             
             self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];//self.isBigSizeButtons = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            [self newButtonsSize];
             
         } else if([key isEqualToString:@"isSoundOn"]){
             
@@ -6584,6 +6803,10 @@ sourceController:(UIViewController *)source
                 //[self setUpArrays];
                 //[self.doc updateChangeCount:UIDocumentChangeDone];
                 //[self.buttonsCollection reloadData];
+                NSError *error;
+                //[self.managedObjectContext save:&error];
+                [self.buttonManagedObjectContext save: &error];
+
             }
             
         } else if ([key isEqualToString:@"cleanHistoryArchive"]){
@@ -7202,7 +7425,7 @@ sourceController:(UIViewController *)source
     
     NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
     
-    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsNames]];
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsStore.workButtonsNames]];
     
     [controllerArray addObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.cellHeights]];
     [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.mainAttributedStrings]]];
@@ -7321,7 +7544,7 @@ sourceController:(UIViewController *)source
             top = [controllerArray lastObject];
         }
         if(top && [top isKindOfClass:[NSData class]]){
-            self.buttonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:top];
+            self.buttonsStore.workButtonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:top];
             //[controllerArray removeLastObject];
             //top = [controllerArray lastObject];
         }
@@ -7337,7 +7560,10 @@ sourceController:(UIViewController *)source
 - (void)didReceiveMemoryWarning
 {
 
-    [self.doc updateChangeCount:UIDocumentChangeDone];
+    //[self.doc updateChangeCount:UIDocumentChangeDone];
+    NSError *error;
+    //[self.managedObjectContext save:&error];
+    [self.buttonManagedObjectContext save: &error];
 
     
     [self setKeyValuesFromStorage];

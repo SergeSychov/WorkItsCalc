@@ -21,6 +21,69 @@
 
 @implementation ButtonsStore
 
+#pragma mark INIT
+-(ButtonsStore*)init {
+    self = [super init];
+    if(self){
+        self.buttonManagedObjectContext = nil;
+        self.mainButtonsStartWithPosition = nil; //need set be at neel at stronge setuo
+    }
+    return self;
+}
+
+#pragma mark WORKS BUTTON ARRAY
+-(NSArray*)workButtonsNames{
+    if(!_workButtonsNames){
+        NSMutableArray* mutWorkButtonsNames = [[self startArray] mutableCopy];
+        NSArray *mainButtonsPosition = [self mainButtonsPositions];
+        NSArray *mainButtonsNames = [self mainButtonNames];
+        for(NSInteger i=0; i< [mainButtonsNames count]; i++){
+            [mutWorkButtonsNames insertObject:mainButtonsNames[i] atIndex:[mainButtonsPosition[i] integerValue]];
+        }
+        _workButtonsNames = [mutWorkButtonsNames copy];
+    }
+    return _workButtonsNames;
+
+}
+-(void) makeWorkButoonNamesArray
+{
+    //self.buttonsCollection.scrollEnabled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
+        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
+        
+        //1. add to allButtons changeble
+        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
+        
+        //2. insert Main buttons according right position
+        for(Buttons *btn in self.mainButtonObjs){
+            [allButtonsArray insertObject:btn atIndex:[btn.position integerValue]];
+        }
+        
+        //3.make string array for work condition of buttoncollectionView
+        //workButtonNames
+        for(Buttons *btn in allButtonsArray){
+            [workButtonNames addObject:btn.nameButton];
+        }
+        self.workButtonsNames = [workButtonNames copy];
+        
+        //self.buttonsCollection.scrollEnabled = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate buttonsArrayDidChangedWithReload:YES];
+        });
+    });
+}
+
+#pragma mark SET MANAGED CONTEXT
+-(void)setButtonManagedObjectContext:(NSManagedObjectContext *)buttonManagedObjectContext{
+    _buttonManagedObjectContext = buttonManagedObjectContext;
+    if(_buttonManagedObjectContext){
+       // [self setUpArrays];
+    }
+}
+
+/*
 -(ButtonsStore*) initWithContext:(NSManagedObjectContext *)context
 {
     self = [super init];
@@ -30,16 +93,16 @@
     }
     return self;
 }
-
+*/
 
 -(void) setUpArrays
 {
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    NSManagedObjectContext *context = self.buttonManagedObjectContext;
+    //NSManagedObjectContext *context = self.buttonManagedObjectContext;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
     
     NSError *error;
-    NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+    NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
     //NSLog(@"buttons quantity in core data %lu", (unsigned long)buttonsFromCoreData.count);
     if(!buttonsFromCoreData || (buttonsFromCoreData.count < 65)){//if array empty or wrong quantity
         
@@ -53,7 +116,8 @@
                                                 enabling:YES
                                                     Main:NO
                                                  Program:nil
-                                   inManageObjectContext:context];
+                                   inManageObjectContext:self.buttonManagedObjectContext];
+            
             [changebleButtonsArray addObject:newButton];
         }
         self.changebleButtonObjs = [changebleButtonsArray copy];
@@ -70,7 +134,7 @@
                                                 enabling:YES
                                                     Main:YES
                                                  Program:nil
-                                   inManageObjectContext:context];
+                                   inManageObjectContext:self.buttonManagedObjectContext];
             [mainButtonsArray addObject:newButton];
         }
         self.mainButtonObjs = [mainButtonsArray copy];
@@ -83,7 +147,7 @@
         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
         request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:YES]]; //hope it will work
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-        NSArray *buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
         if(error){
             NSLog(@"Error %@", error);
         }
@@ -92,7 +156,7 @@
         //2. check Main buttons 1,2,3... +,-,=... and resetPositionValue according screen
         request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@", [NSNumber numberWithBool:YES]];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
         for(NSInteger i = 0; i < buttonsFromCoreData.count; i++){
             Buttons *btn = buttonsFromCoreData[i];
             btn.position = [self.mainButtonsStartWithPosition objectForKey:btn.nameButton];
@@ -104,7 +168,7 @@
         request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
         request.predicate = [NSPredicate predicateWithFormat:@"isMain = %@ and enable = %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO]];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"dateOfDeletting" ascending:NO]];
-        buttonsFromCoreData = [context executeFetchRequest:request error:&error];
+        buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];
         self.delettedButtonObjs = buttonsFromCoreData;
 
     }
@@ -113,13 +177,13 @@
 
 }
 
-
+/*
 -(void)changeContext:(NSManagedObjectContext *)context
 {
     self.buttonManagedObjectContext = context;
     [self setUpArrays];
 }
-
+*/
 -(void)setButtonsByDefault
 {
     [Buttons clearContext:self.buttonManagedObjectContext];
@@ -128,6 +192,7 @@
 
 #pragma mark CHECK BUTTONS ARRAY
 //does buttons array contain all initial button
+/*
 -(void) checkButtonsArray
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -166,7 +231,7 @@
         });
     });
 }
-
+*/
 #pragma mark BUTTONS ARRAYS
 
 -(NSArray*)mainButtonNames
@@ -253,7 +318,9 @@
     [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1)]];//@"+"
     
     [mutArray addObject:[NSNumber numberWithInteger:(6*columsNumber - 1)]];//@"="
-    
+    NSLog(@"colums number: %@", [NSNumber numberWithInteger: columsNumber]);
+    NSLog(@"_mainButtonsStarPosition: %@",mutArray);
+
     return [mutArray copy];
 }
 
@@ -265,6 +332,7 @@
         NSArray *names = [self mainButtonNames];
         _mainButtonsStartWithPosition = [[NSDictionary alloc] initWithObjects:[self mainButtonsPositions]forKeys:names];
     }
+    
     return _mainButtonsStartWithPosition;
 }
 
@@ -306,48 +374,12 @@
     return _mainButtonObjs;
 }
 
--(void) makeWorkButoonNamesArray
-{
-    //self.buttonsCollection.scrollEnabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
-        NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
-        
-        //1. add to allButtons changeble
-        [allButtonsArray addObjectsFromArray:self.changebleButtonObjs];
-        
-        //2. insert Main buttons according right position
-        for(Buttons *btn in self.mainButtonObjs){
-            [allButtonsArray insertObject:btn atIndex:[btn.position integerValue]];
-        }
-        
-        //3.make string array for work condition of buttoncollectionView
-        //workButtonNames
-        for(Buttons *btn in allButtonsArray){
-            [workButtonNames addObject:btn.nameButton];
-        }
-        self.workButtonsNames = [workButtonNames copy];
-    
-    //self.buttonsCollection.scrollEnabled = YES;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate buttonsArrayDidChangedWithReload:YES];
-        });
-    });
-}
 
 
 
 
 
--(NSArray*) workButtonsNames
-{
-    if(!_workButtonsNames){
-        _workButtonsNames = [[NSArray alloc] init];
-        [self makeWorkButoonNamesArray];
-    }
-    return _workButtonsNames;
-}
+
 #pragma mark RESET ARRAYS AND CALLDELEGATE
 
 #define INSERT_BUTTON 1
@@ -361,7 +393,7 @@
 {
     // self.buttonsCollection.scrollEnabled = NO;
    // NSLog(@"makeTwoArraysWithReload");
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+   // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
         NSMutableArray *workButtonNames = [[NSMutableArray alloc] init];
@@ -371,12 +403,14 @@
         
         //2. insert Main buttons according right position
         for(Buttons *btn in self.mainButtonObjs){
+            NSLog(@"Buttons name: %@, and position: %@", btn.nameButton, btn.position);
             [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
         }
         
         //3.make string array for work condition of buttoncollectionView
         //workButtonNames
         for(Buttons *btn in allButtonsArray){
+            
             [workButtonNames addObject:btn.nameButton];
         }
         self.workButtonsNames = [workButtonNames copy];
@@ -385,11 +419,12 @@
         [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];
         self.allButtonObj = [allButtonsArray copy];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        //dispatch_async(dispatch_get_main_queue(), ^{
+            
             [self.delegate buttonsArrayDidChangedWithReload:isNeedreload];
             
-        });
-    });
+        //});
+    //});
 }
 
 -(void) makeTwoArraysWithReloadOperation:(NSInteger)operation;
