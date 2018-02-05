@@ -565,7 +565,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         [self.processSpinner setCenter:CGPointMake(self.buyAdditionsButton.bounds.size.width/2., self.buyAdditionsButton.bounds.size.height/2.)];
     }
     [self updateViewConstraints];
-    NSLog(@"viewDidLayoutSubviews settings VC");
+    if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
 
 
@@ -635,7 +635,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
-    NSLog(@"setting view disapear");
+    if(DEBUG_MODE) NSLog(@"setting view disapear");
     //[self dismis];
 }
 

@@ -10,6 +10,7 @@
 #import "ButtonsStore.h"
 #import "CreateNewButtonViewController.h"
 
+#define DEBUG_MODE NO
 
 @interface ButtonsStore() <CreateNewButtonController>
 
@@ -318,8 +319,11 @@
     [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1)]];//@"+"
     
     [mutArray addObject:[NSNumber numberWithInteger:(6*columsNumber - 1)]];//@"="
-    NSLog(@"colums number: %@", [NSNumber numberWithInteger: columsNumber]);
-    NSLog(@"_mainButtonsStarPosition: %@",mutArray);
+    if(DEBUG_MODE){
+        NSLog(@"colums number: %@", [NSNumber numberWithInteger: columsNumber]);
+        NSLog(@"_mainButtonsStarPosition: %@",mutArray);
+    }
+
 
     return [mutArray copy];
 }
@@ -403,7 +407,9 @@
         
         //2. insert Main buttons according right position
         for(Buttons *btn in self.mainButtonObjs){
-            NSLog(@"Buttons name: %@, and position: %@", btn.nameButton, btn.position);
+            if(DEBUG_MODE){
+                NSLog(@"makeTwoArraysWithReload Buttons name: %@, and position: %@", btn.nameButton, btn.position);
+            }
             [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
         }
         
@@ -430,7 +436,9 @@
 -(void) makeTwoArraysWithReloadOperation:(NSInteger)operation;
 {
     // self.buttonsCollection.scrollEnabled = NO;
-    NSLog(@"makeTwoArraysWithReload");
+    if(DEBUG_MODE){
+        NSLog(@"makeTwoArraysWithReload");
+    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
@@ -466,7 +474,9 @@
 #pragma mark DELEGATE CreateNewButtonController
 -(BOOL)createNewButtonWith:(NSString*)name andProgramm:(NSArray*)programm {
     
-    NSLog(@"Assking to make new button with name:%@ and program: %@", name, programm);
+    if(DEBUG_MODE){
+        NSLog(@"createNewButtonWith Assking to make new button with name:%@ and program: %@", name, programm);
+    }
 
     Buttons *newButton = [Buttons buttonWithName:name
                                         position:[NSNumber numberWithInteger:[self.changebleButtonObjs count]]
@@ -530,7 +540,9 @@
 
 -(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
 {
-    //NSLog(@"moveButton:(Buttons *)btn fromPosition:");
+    if(DEBUG_MODE){
+       NSLog(@"moveButton:(Buttons *)btn fromPosition:");
+    }
     [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
     [self makeTwoArraysWithReloadOperation:CHANGE_BUTTON_POISTION];
 }
@@ -538,7 +550,9 @@
 -(void) setEnablingForButton:(Buttons*)button{
     NSMutableArray *mutableChangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
     NSMutableArray *mutableDeletedButtonObjs = [self.delettedButtonObjs mutableCopy];
-    //NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    if(DEBUG_MODE){
+        NSLog(@"setEnablingForButton Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    }
 
     
     [mutableDeletedButtonObjs removeObject:button];
@@ -559,7 +573,10 @@
     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
 
-    //NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    if(DEBUG_MODE){
+        NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
+    }
+
     
     [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
 }

@@ -62,7 +62,7 @@
 
 #import "CreateNewButtonViewController.h"
 
-
+#define DEBUG_MODE NO
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -1032,9 +1032,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         //if there is constant or function
         //add
         NSString *keyTitle = [[title allKeys]firstObject];
-        //NSLog(@"keyTitle: %@",keyTitle);
         id valueProg = [title objectForKey:keyTitle];
-        //NSLog(@"valueProg %@", valueProg);
         if([valueProg isKindOfClass:[NSNumber class]]){
             if(self.userIsInTheMidleOfEnteringNumber){
             //[self push];
@@ -1074,7 +1072,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 self.isStronglyArgu = YES;
                 [self showStringThruManageDocument];
             } else {
-                NSLog(@"There no graduses");
+                if(DEBUG_MODE){
+                    NSLog(@"There no graduses");
+                }
             }
         }
         
@@ -1482,7 +1482,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if(!self.brain.isOpenBracets){
             [muttableOutputArray addObject:@" ="];
         }
-        //NSLog(@"muttableOutputArray %@", muttableOutputArray);
         self.lastRowDataArray = [muttableOutputArray copy];
         [self lastRowUpdate];
 
@@ -1689,9 +1688,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.displayTopConstrain.constant = 0;
         /*self.sviperBottomConstrain.constant = (self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2+self.calcScreenHeightConstrain.constant/10);*/
         self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
-
-        NSLog(@"calcScreenHeightConstrain:%f",self.calcScreenHeightConstrain.constant );
-        NSLog(@"sviperBottomConstrain:%f",self.sviperBottomConstrain.constant );
+        if(DEBUG_MODE){
+            NSLog(@"calcScreenHeightConstrain:%f",self.calcScreenHeightConstrain.constant );
+            NSLog(@"sviperBottomConstrain:%f",self.sviperBottomConstrain.constant );
+        }
         [UIView animateWithDuration:.6
                               delay:0
              usingSpringWithDamping:0.8
@@ -2196,9 +2196,10 @@ CGFloat historyTableBottomOffset;
             //[self.view layoutIfNeeded];
         }
 
-    
-        NSLog(@"sviperBottomConstrain: %f", self.sviperBottomConstrain.constant);
-        NSLog(@"calcScreenHeight: %f", self.displayContainer.bounds.size.height);
+        if(DEBUG_MODE){
+            NSLog(@"sviperBottomConstrain: %f", self.sviperBottomConstrain.constant);
+            NSLog(@"calcScreenHeight: %f", self.displayContainer.bounds.size.height);
+        }
 
         
     } else {
@@ -2255,7 +2256,7 @@ CGFloat historyTableBottomOffset;
                     [self finisDraggingUpWithVelocity:velosity];
                 }
             } else {
-                NSLog(@"Error can't show finaly history tab not 1 and not 0");
+                if(DEBUG_MODE) NSLog(@"Error can't show finaly history tab not 1 and not 0");
                 if(howHistoryShowed == 1){
                     self.isCalcShowed = NO;
                     self.isHistoryShowed = YES;
@@ -3783,19 +3784,16 @@ NSInteger dealWithCell;
     NSMutableArray *argArrayCopy = [[NSMutableArray alloc] init];
     NSMutableArray *wholeProgramCopy = [[NSMutableArray alloc] init];
     id top = [programFromHistory lastObject];
-    //NSLog(@"GetAttrString Top: %@", top);
     if(top && [top isKindOfClass:[NSArray class]]){
         [programFromHistory removeLastObject];
         argArrayCopy = [ACalcBrain deepArrayCopy:top];//CHECK HEERE
         top = [programFromHistory lastObject];
-        //NSLog(@"GetAttrString nextTop: %@", top);
         if(top && [top isKindOfClass:[NSArray class]]){
             [programFromHistory removeLastObject];
             wholeProgramCopy = [ACalcBrain deepArrayCopy:top];
         }
     }
     id topOfArgArray = [argArrayCopy lastObject];
-    //NSLog(@"GetAttrString topOfArguArray: %@", topOfArgArray);
     //add arg as stack but not add argu as stack if it isn't strong argu
     if(topOfArgArray && [topOfArgArray isKindOfClass:[NSArray class]]){
         if([(NSArray*)topOfArgArray count]==4 && [topOfArgArray[0] isKindOfClass:[NSString class]]){
@@ -4010,13 +4008,13 @@ NSInteger dealWithCell;
             argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
         }
         
-        NSLog(@"Argu %@", argArrayCopy);
+        if(DEBUG_MODE) NSLog(@"cellDidSelectRecount Argu %@", argArrayCopy);
         
         
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [programFromHistory lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        NSLog(@"program %@", programCopy);
+        if(DEBUG_MODE) NSLog(@"cellDidSelectRecount program %@", programCopy);
         
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
@@ -4037,7 +4035,7 @@ NSInteger dealWithCell;
 }
 
 -(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
-    //NSLog(@"Curr array after request: %@", currencies);
+    if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked Curr array after request: %@", currencies);
     NSArray *deepProgram = [self.brain.deepProgram copy];
     NSArray *deepArgu = [self.brain.deepArgu copy];
     NSArray *testArray = [[deepProgram lastObject] copy];
@@ -4066,7 +4064,7 @@ NSInteger dealWithCell;
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [muttableOutputArray lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        //NSLog(@"after programCopy %@:",programCopy );
+        if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked after programCopy %@:",programCopy );
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
         self.brain = newBrain;
@@ -4113,7 +4111,7 @@ NSInteger dealWithCell;
 {
    
     NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
-    NSLog(@"setSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
+    if(DEBUG_MODE) NSLog(@"cellDidSelectsetSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
     //self.selectedRow = cell;
     
     
@@ -4359,19 +4357,19 @@ NSInteger dealWithCell;
 {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-            NSLog(@"Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
+           if(DEBUG_MODE) NSLog(@"performFetch Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
         } else {
-            NSLog(@"No predicate");
+            if(DEBUG_MODE) NSLog(@"performFetch No predicate");
         }
         NSError *error;
         if([self.fetchedResultsController performFetch:&error]){
-            NSLog(@"SUCCES PERFORM FETCH");
+            if(DEBUG_MODE) NSLog(@"performFetch SUCCES PERFORM FETCH");
         }
 
     } else {
 
     }
-    NSLog(@"performFetch fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
+    if(DEBUG_MODE) NSLog(@"performFetch fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
     
     
     [self updateHistoryTableArraysAndGoBottom:YES];
@@ -5453,21 +5451,21 @@ BOOL isNewTableRow;
     NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
-        NSLog(@"There is old MyDocument");
+        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
     } else {
-        NSLog(@"NO old MyDocument");
+        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
     }
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
-        NSLog(@"There is old MyCloudDocument");
+        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
     } else {
-        NSLog(@"NO old MyCloudDocument");
+       if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
     }
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
-        NSLog(@"There is old iClouStoreURL");
+       if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
     } else {
-        NSLog(@"NO old iClouStoreURL");
+       if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
     }
 
     NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
@@ -5551,8 +5549,10 @@ BOOL isNewTableRow;
 {
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
-    //NSDate* appearDate = [NSDate date];
-    NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    if(DEBUG_MODE){
+        //NSDate* appearDate = [NSDate date];
+        NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    }
 
 
     
@@ -5785,8 +5785,9 @@ BOOL isNewTableRow;
     //cellHeights = [[NSMutableArray alloc] init];
     //self.historyTable.rowHeight = UITableViewAutomaticDimension;
     //self.historyTable.estimatedRowHeight = 60;
-
-    NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    if(DEBUG_MODE){
+        NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    }
 }
 
 
@@ -6084,7 +6085,9 @@ BOOL isNewTableRow;
 //CGFloat minButtonsCollectionHeight;
 CGFloat maxButtonsCollectionHeight;
 -(void)viewDidLayoutSubviews{
-    //NSLog(@"viewDidLayoutSubviews");
+    if(DEBUG_MODE){
+        NSLog(@"viewDidLayoutSubviews");
+    }
     //NSLog(@"Display Top before: %f", self.displayTopConstrain.constant);
     
     CGSize viewSize = self.view.bounds.size;
@@ -6316,10 +6319,12 @@ CGFloat maxButtonsCollectionHeight;
 static BOOL isNeedReloadAfterOtherController;
 
 -(void)upDateButtonsCollectionAfterChanginSize{
-    if(self.buttonsCollection.bounds.size.width != buttonsCollectionWidth){
-        
-        NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
-        NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
+    if((self.buttonsCollection.bounds.size.width != buttonsCollectionWidth) && (self.mainContainerWidth.constant!=0)){
+        if(DEBUG_MODE){
+            NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
+            NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
+            NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerWidth.constant);
+        }
         CGFloat width = self.view.bounds.size.width;
         //buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
         buttonsCollectionWidth = width;
@@ -6330,7 +6335,7 @@ static BOOL isNeedReloadAfterOtherController;
         [self updateHistoryTableArraysAndGoBottom:NO];
         [self.historyTable reloadData];
         
-    } else if(self.calcScreenHeightConstrain.constant!= screenHeight){
+    } else if((self.calcScreenHeightConstrain.constant!= screenHeight)&&(self.calcScreenHeightConstrain.constant!= 0)){
         //screenHeight = self.calcScreenHeightConstrain.constant;
         //need for iPad if changed screen height without changing buttonCollection width
         [self newButtonsSize];
@@ -6384,21 +6389,21 @@ static BOOL isNeedReloadAfterOtherController;
     //define wich side will be
     if(xFindSide<yFindSide*buttonsRatio){
         
-        buttonsWidth = self.buttonsCollection.bounds.size.width/xQantity;
+        buttonsWidth = floor(self.buttonsCollection.bounds.size.width/xQantity);
         buttonsIntens = 0;
         
         //find buttonsHeight
         yQantity = (NSInteger) round((buttCollectionHeight- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));//round((buttCollectionHeight-self.displayContainer.bounds.size.height- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));
-        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
+        buttonsHeight = floor((buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity);//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
         
     } else {
         
-        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
+        buttonsHeight = floor((buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity);//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
         buttonsIntens = 0;
         
         //find buttonsHeight
         xQantity = (NSInteger) round(self.buttonsCollection.bounds.size.width/(yFindSide*buttonsRatio));
-        buttonsWidth = (self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity;
+        buttonsWidth = floor((self.buttonsCollection.bounds.size.width - (xQantity+1)*buttonsIntens)/xQantity);
     }
     
     //renew buttons array
@@ -6531,7 +6536,9 @@ static BOOL isNeedReloadAfterOtherController;
 }
 
 -(void)applicationWillResignActive:(NSNotification *)note{
-    NSLog(@"UIApplicationDidEnterBackgroundNotification");
+    if(DEBUG_MODE){
+        NSLog(@"UIApplicationDidEnterBackgroundNotification");
+    }
 
 }
 
@@ -6539,7 +6546,7 @@ static BOOL isNeedReloadAfterOtherController;
 -(void)appWillGoToBackground:(NSNotification *)note
 {
     
-    NSLog(@"appWillGoToBackground");
+    if(DEBUG_MODE) NSLog(@"appWillGoToBackground");
     //if there is byttonAssubview - delete it
     if(buttonsAsSubView){
         CGRect subFrame = subCell.frame;
@@ -6694,13 +6701,13 @@ static BOOL isNeedReloadAfterOtherController;
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
     //NSDate* appearDate = [NSDate date];
-    NSLog(@"Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    if(DEBUG_MODE) NSLog(@"Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
     }
-        if(isNeedReloadAfterOtherController){
-            [self.view setNeedsLayout];
+    if(isNeedReloadAfterOtherController){
+            //[self.view updateConstraints];
             [self upDateButtonsCollectionAfterChanginSize];
     }
     
@@ -6711,7 +6718,7 @@ static BOOL isNeedReloadAfterOtherController;
 
 -(void) viewWillAppear:(BOOL)animated{
     
-   // NSLog(@"MainView Will appear");
+   if(DEBUG_MODE) NSLog(@"MainView Will appear");
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
@@ -6819,16 +6826,16 @@ sourceController:(UIViewController *)source
             }
             
         } else if ([key isEqualToString:@"ChangedDesign"]){
-            NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
+            if(DEBUG_MODE) NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
             self.designObj.designNumber = [[notification.userInfo objectForKey:keys[0]] integerValue];
             //IMPORTANT NEED TO RELOAD ALL VIEWS
             [self.view setNeedsDisplay];
             
         } else {
-            NSLog(@"Not find right key");
+            if(DEBUG_MODE) NSLog(@"Not find right key");
         }
     } else {
-        NSLog(@"recived wrong notification");
+        if(DEBUG_MODE) NSLog(@"recived wrong notification");
     }
     
 }
@@ -7184,7 +7191,7 @@ sourceController:(UIViewController *)source
 
 -(void) endsOfTrialPeriod
 {
-    NSLog(@"Finish trial period from about view");
+    if(DEBUG_MODE) NSLog(@"endsOfTrialPeriod Finish trial period from about view");
     self.isTrialPeriod = NO;
     //set settings view for change button
     //Important:

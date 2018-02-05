@@ -9,6 +9,7 @@
 #import "NewButtonsCollectionViewCell.h"
 #import "cmyk.h"
 
+#define DEBUG_MODE NO
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -166,10 +167,14 @@ NSDate *methodStart;
         //self.frame = self.rectArchive;
         //[self.cellSubView setFrame:CGRectMake(0, 0, self.bounds.size.width -4, self.bounds.size.height - 4)];
         self.cellSubView.isTaped = NO;
-        if([self.cellSubView.title isEqualToString:@"M-"]) NSLog(@"REct %f", self.frame.size.height);
+        if(DEBUG_MODE){
+            if([self.cellSubView.title isEqualToString:@"M-"]) NSLog(@"REct %f", self.frame.size.height);
+        }
     }
     NSDate *finishDate = [NSDate date];
+    if(DEBUG_MODE){
     NSLog(@"Timecexecution time: %f", [finishDate timeIntervalSinceDate:methodStart]);
+    }
 }
 -(void)setTypeOfButton:(NSInteger)typeOfButton{
     

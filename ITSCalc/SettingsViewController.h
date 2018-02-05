@@ -9,6 +9,7 @@
 #import "SecondViewController.h"
 #import "DesignObject.h"
 
+#define DEBUG_MODE NO
 @interface SettingsViewController : SecondViewController
 
 
