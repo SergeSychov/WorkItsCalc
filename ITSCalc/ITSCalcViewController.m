@@ -2346,6 +2346,7 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
                         } completion:^(BOOL finished) {
                             
                             self.isHistoryShowed = YES;
+                             [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:NO];
                             //[self.historyTable reloadData];
                             //[self.historyTable selectRowAtIndexPath:selectedRowPatch animated:NO scrollPosition:UITableViewScrollPositionNone];
                         }];
