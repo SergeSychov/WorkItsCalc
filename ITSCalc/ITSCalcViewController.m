@@ -6394,11 +6394,11 @@ static BOOL isNeedReloadAfterOtherController;
         
         //find buttonsHeight
         yQantity = (NSInteger) round((buttCollectionHeight- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));//round((buttCollectionHeight-self.displayContainer.bounds.size.height- INSENT_BUTTONS_PART)/(xFindSide/buttonsRatio));
-        buttonsHeight = floor((buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity);//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART-(yQantity+2)*buttonsIntens)/yQantity;
         
     } else {
         
-        buttonsHeight = floor((buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity);//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
+        buttonsHeight = (buttCollectionHeight-INSENT_BUTTONS_PART)/yQantity;//(buttCollectionHeight-self.displayContainer.bounds.size.height - INSENT_BUTTONS_PART)/yQantity;
         buttonsIntens = 0;
         
         //find buttonsHeight
