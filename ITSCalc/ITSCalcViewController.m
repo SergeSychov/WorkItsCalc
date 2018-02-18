@@ -2886,21 +2886,19 @@ static BOOL moveIsAvailable;
 -(void)buttonsArrayDidChangedWithReload:(BOOL)isNeedReload
 {
     if(isNeedReload){
-        if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
-            self.isAllowedToDelete = NO;
-        } else {
-            self.isAllowedToDelete = YES;
+        if(self.isButtonsCollectionUnderChanging){
+            if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+                self.isAllowedToDelete = NO;
+            } else {
+                self.isAllowedToDelete = YES;
+            }
+            NSError *error;
+            [self.buttonManagedObjectContext save: &error];
         }
         [self.buttonsCollection reloadData];
     } else {
 
     }
-    NSError *error;
-   // [self.managedObjectContext save:&error];
-    [self.buttonManagedObjectContext save: &error];
-
-    //[self.doc updateChangeCount:UIDocumentChangeDone];
-    
     //MAYBE IT WILL BE USEFUL BUT NOT NOW
     /*
     if(self.counterForShowingAllertView == 37 && self.buttonsStore.allButtonObj){
@@ -3154,19 +3152,28 @@ static BOOL moveIsAvailable;
 
 NSIndexPath *lastVisibleCellPatch;
 //NSIndexPath* selectedRowPatch;
+#define MIN_CELL_HEIGHT_COPACT 80.f
+#define MIN_CELL_HEIGHT_REGULAR 90.f
 
 
 -(void)moveHistoryTableContentToRightPosition
 {
     //NSLog(@"FetchedController count: %lu", [self.fetchedResultsController.fetchedObjects count]);
     //NSLog(@"HistoryTable count: %lu", [self.historyTable numberOfRowsInSection:0]);
-    //NSLog(@"self.historyTable.frame.size.height: %f", self.historyTable.frame.size.height);
-    //NSLog(@"self.historyTable.contentSize.height: %f", self.historyTable.contentSize.height);
+    /*if(DEBUG_MODE){
+        NSLog(@"self.historyTable.frame.size.height: %f", self.historyTable.frame.size.height);
+        NSLog(@"self.historyTable.contentSize.height: %f", self.historyTable.contentSize.height);
+    }*/
     if(self.historyTable.contentSize.height < self.historyTable.frame.size.height){
         // self.historyTable.isNeedToSetOffsetToButton = YES;
- 
-        [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
-        //[self.historyTable setContentOffset:<#(CGPoint)#>]
+        /*if(self.historyTable.contentSize.height == 0){
+            CGFloat setedMinHeight = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact?MIN_CELL_HEIGHT_COPACT:MIN_CELL_HEIGHT_REGULAR;
+            [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - setedMinHeight,0, 0, 0)];
+
+        } else {*/
+            [self.historyTable setContentInset:UIEdgeInsetsMake(self.historyTable.frame.size.height - self.historyTable.contentSize.height,0, 0, 0)];
+       // }
+        //[self.historyTable setContentOffset:]
  
     } else {
         [self.historyTable setContentInset:UIEdgeInsetsMake(0,0, 0, 0)];
@@ -3193,9 +3200,15 @@ NSIndexPath *lastVisibleCellPatch;
 -(void) selectLastRowInHistory {
 
     
-    if(self.historyTable && ([self.cellHeights count] >= 1)){
+    /*if(DEBUG_MODE){
+        NSLog(@"selectLastRowInHistory [self.cellHeights count] = %lun", (unsigned long)[self.cellHeights count] );
+    }*/
+    //if(self.historyTable && ([self.cellHeights count] >= 1)){
+    if(self.historyTable && ([self.historyTable numberOfRowsInSection:0] >= 1)){
+
         
-        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
+        //NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
+        NSIndexPath *lastRowPatch = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection:0]-1 inSection:0];
         //NSLog(@"selectLastRowInHistory lastRowPatch: %lu", lastRowPatch.row);
         
         //lastVisibleCellPatch = lastRowPatch;
@@ -3211,27 +3224,33 @@ NSIndexPath *lastVisibleCellPatch;
 
 -(void) setLastRowDataArray:(NSArray *)lastRowDataArray
 {
+    
     if(!lastRowDataArray) {
         _lastRowDataArray = [[NSArray alloc] init];
     } else {
         _lastRowDataArray = lastRowDataArray;
     }
     
-    self.lastRowsString = [self getAttributedStringFromArray:_lastRowDataArray];
+    //self.lastRowsString = [self getAttributedStringFromArray:_lastRowDataArray];
+    [self lastRowUpdate];
 }
 
 -(void)lastRowUpdate{
     NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
-   // NSLog(@"Last row %ld", (long)lastRow.row);
+    if(DEBUG_MODE){
+        NSLog(@"lastRowUpdate Last row %ld", (long)lastRow.row);
+    }
 
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
                              withRowAnimation:UITableViewRowAnimationFade];
     
-    [self selectLastRowInHistory];
+
 
     if(![self.historyTable.indexPathsForVisibleRows containsObject:lastRow]){
         [self moveHistoryTableContentToRightPosition];
     }
+    
+        [self selectLastRowInHistory];
     
     //NSLog(@"self.historyTable.rowHeight: %f", self.historyTable.rowHeight);
 }
@@ -3281,8 +3300,6 @@ NSIndexPath *lastVisibleCellPatch;
 
 */
 
-#define MIN_CELL_HEIGHT_COPACT 60.f
-#define MIN_CELL_HEIGHT_REGULAR 90.f
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -3321,6 +3338,7 @@ NSIndexPath *lastVisibleCellPatch;
     if([[self.fetchedResultsController sections] count] > 0){
         sections = [[self.fetchedResultsController sections] count];
     }
+    
     return sections;
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -3334,7 +3352,10 @@ NSIndexPath *lastVisibleCellPatch;
         rows = [self.cellHeights count] +1;
         self.noticeButton.enabled = YES;
     }
-    //NSLog(@"numberOfRowsInSection rowsNumber:%ld", (long)rows);
+    
+    if(DEBUG_MODE){
+        NSLog(@"numberOfRowsInSection rowsNumber:%ld", (long)rows);
+    }
 
     return rows;
 }
@@ -4924,7 +4945,9 @@ BOOL isNewTableRow;
             //[self setUpArrays];
             //[self.buttonsCollection reloadData];
 
-            [self.buttonsStore changeContext:self.buttonManagedObjectContext];
+            //[self.buttonsStore changeContext:self.buttonManagedObjectContext];
+            //need to replace
+            self.buttonsStore.buttonManagedObjectContext = self.buttonManagedObjectContext;
             
         }];
         
@@ -5452,21 +5475,21 @@ BOOL isNewTableRow;
     NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
-        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
+       // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
     } else {
-        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
+       // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
     }
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
-        if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
+        //if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
     } else {
-       if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
+       //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
     }
     
     if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
-       if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
+      // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
     } else {
-       if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
+       //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
     }
 
     NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
@@ -5555,8 +5578,6 @@ BOOL isNewTableRow;
         NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     }
 
-
-    
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
     if(userDefault && [self extractFromUserDefault:userDefault]){
@@ -5614,7 +5635,7 @@ BOOL isNewTableRow;
         [store synchronize];
     }
     
-    [self setupStorage];
+    //[self setupStorage];
 
     
     [super viewDidLoad];
@@ -6320,12 +6341,13 @@ CGFloat maxButtonsCollectionHeight;
 static BOOL isNeedReloadAfterOtherController;
 
 -(void)upDateButtonsCollectionAfterChanginSize{
+    /*if(DEBUG_MODE){
+        NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
+        NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
+        NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerWidth.constant);
+    }*/
+
     if((self.buttonsCollection.bounds.size.width != buttonsCollectionWidth) && (self.mainContainerWidth.constant!=0)){
-        if(DEBUG_MODE){
-            NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
-            NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
-            NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerWidth.constant);
-        }
         CGFloat width = self.view.bounds.size.width;
         //buttonsCollectionWidth = self.buttonsCollection.bounds.size.width;
         buttonsCollectionWidth = width;
@@ -6408,7 +6430,11 @@ static BOOL isNeedReloadAfterOtherController;
     }
     
     //renew buttons array
-    [self.buttonsStore renewArraysAccordingNewButtonsSize];
+    if(self.isButtonsCollectionUnderChanging){
+        [self.buttonsStore renewArraysAccordingNewButtonsSize];
+    } else {
+        [self.buttonsStore renewWorksButtonsArrayAfterSizeChanging];
+    }
     //[self.buttonsCollection reloadData];
     
     //renew buttonsCollectionLayout
@@ -6492,7 +6518,9 @@ static BOOL isNeedReloadAfterOtherController;
     
     //strange
     
-    [self.buttonsStore renewArryasAfterChanging];
+    //[self.buttonsStore renewArryasAfterChanging];
+   
+    
     /*
     [self makeAllButtonObjsArray];
     
@@ -6702,7 +6730,7 @@ static BOOL isNeedReloadAfterOtherController;
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
     //NSDate* appearDate = [NSDate date];
-    if(DEBUG_MODE) NSLog(@"Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    if(DEBUG_MODE) NSLog(@"viewDidAppear Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
@@ -7553,8 +7581,6 @@ sourceController:(UIViewController *)source
         }
         if(top && [top isKindOfClass:[NSData class]]){
             self.buttonsStore.workButtonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:top];
-            //[controllerArray removeLastObject];
-            //top = [controllerArray lastObject];
         }
 
         

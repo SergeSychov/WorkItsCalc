@@ -30,10 +30,13 @@
 @property (nonatomic,strong) NSArray *workButtonsNames;
 
 //-(ButtonsStore*)initWithContext:(NSManagedObjectContext*) context;
+//-(void) setInitialButtonsNames:(NSArray*)names;
+-(void)renewWorksButtonsArrayAfterSizeChanging;
+-(void)renewArraysAccordingNewButtonsSize;
 -(void)setUpArrays;
 -(void)setButtonsByDefault;
--(void)renewArryasAfterChanging;
--(void)renewArraysAccordingNewButtonsSize;
+//-(void)renewArryasAfterChanging;
+
 //-(void) resaveCoreButtons;
 //-(void)changeContext:(NSManagedObjectContext*)context;
 //-(void)addNewButtonWithButtonObj:(NSArray*)butObjs;
