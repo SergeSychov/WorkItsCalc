@@ -62,7 +62,7 @@
 
 #import "CreateNewButtonViewController.h"
 
-#define DEBUG_MODE NO
+#define DEBUG_MODE YES
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -1684,7 +1684,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     //lock interaction
     self.buttonsCollection.userInteractionEnabled = NO;
     
+    
     if(is){
+        if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
+            self.isAllowedToDelete = NO;
+        } else {
+            self.isAllowedToDelete = YES;
+        }
+
         self.displayTopConstrain.constant = 0;
         /*self.sviperBottomConstrain.constant = (self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2+self.calcScreenHeightConstrain.constant/10);*/
         self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
@@ -2358,6 +2365,9 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //method change offset in pan gesture is included new Thread
 -(CGFloat) moveButtonsCollectioViewByOffsetDown:(CGFloat) offset
 {
+    if(DEBUG_MODE){
+        NSLog(@"moveButtonsCollectioViewByOffsetDown");
+    }
     CGFloat retOffset = 0;
     if(!self.isThreadInWork){
         __block CGFloat blockOffset = 0;
@@ -2392,6 +2402,10 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //method change offset UP in pan gesture
 -(CGFloat) moveButtonsCollectioViewByOffsetUp:(CGFloat) offset
 {
+    if(DEBUG_MODE){
+        NSLog(@"moveButtonsCollectioViewByOffsetUp");
+    }
+
     CGFloat retOffset = 0;
     if(!self.isThreadInWork){
         __block CGFloat blockOffset = 0;
@@ -2431,6 +2445,10 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 
 - (IBAction)moveButtonToNewPosition:(UIPanGestureRecognizer *)panGesture
 {
+    if(DEBUG_MODE){
+        NSLog(@"moveButtonToNewPosition");
+    }
+
     if(panGesture.state == UIGestureRecognizerStateBegan){
         moveIsAvailable = YES;
         
@@ -2505,6 +2523,10 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //move buttonView from global variable subCell and findCell
 -(void) move
 {
+    if(DEBUG_MODE){
+        NSLog(@"move");
+    }
+
     //here is ok for all buttons
     NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
     Buttons *findButtonObj = [self.buttonsStore.allButtonObj objectAtIndex:findPatch.item];
@@ -2887,11 +2909,13 @@ static BOOL moveIsAvailable;
 {
     if(isNeedReload){
         if(self.isButtonsCollectionUnderChanging){
+            /*
             if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
                 self.isAllowedToDelete = NO;
             } else {
                 self.isAllowedToDelete = YES;
             }
+            */
             NSError *error;
             [self.buttonManagedObjectContext save: &error];
         }
@@ -3152,7 +3176,7 @@ static BOOL moveIsAvailable;
 
 NSIndexPath *lastVisibleCellPatch;
 //NSIndexPath* selectedRowPatch;
-#define MIN_CELL_HEIGHT_COPACT 80.f
+#define MIN_CELL_HEIGHT_COPACT 60.f
 #define MIN_CELL_HEIGHT_REGULAR 90.f
 
 
@@ -5409,18 +5433,95 @@ BOOL isNewTableRow;
 
 -(void) setupStorage
 {    
-    self.buttonsStore.buttonManagedObjectContext  = self.buttonManagedObjectContext;
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
-    //request.predicate = nil;
-    //NSData *nullData = [NSKeyedArchiver archivedDataWithRootObject:[[NSArray alloc]init]];
-    request.predicate = [NSPredicate predicateWithFormat:@"date != %@",[NSDate distantPast]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //check previously created doc
+        /*
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
+                                                         inDomains:NSUserDomainMask] lastObject];
+        
+        NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
+        
+        NSURL *localStoreURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
+        
+        NSURL *storeURL = [documentsDirectory URLByAppendingPathComponent:@"MyCloudDocument"];
+        
+        NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
+        
+        if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
+            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
+        } else {
+            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
+        }
+        
+        if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
+            //if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
+        } else {
+            //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
+        }
+        
+        if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
+            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
+        } else {
+            //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
+        }
+        
+        NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
+                                  //NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
+                                  NSMigratePersistentStoresAutomaticallyOption: @YES,
+                                  NSInferMappingModelAutomaticallyOption:@YES};
+        
+        */
+        // MyCloudDocument
+        NSString *documentsStorePath =
+        [[self applicationDocumentsDirectory].path stringByAppendingPathComponent:@"MyCloudDocumentNew"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:documentsStorePath]) {
+            
+            [[NSFileManager defaultManager] createFileAtPath:documentsStorePath contents:nil attributes:nil];
+            //[[NSFileManager defaultManager] copyItemAtPath:defaultStorePath toPath:documentsStorePath error:NULL];
+        }
+        _persistentStoreCoordinator =
+        [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
+        
+        // Add the default store to our coordinator.
+        NSError *error;
+        NSURL *defaultStoreURL = [NSURL fileURLWithPath:documentsStorePath];
+        if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                       configuration:nil
+                                                                 URL:defaultStoreURL
+                                                             options:nil
+                                                               error:&error]) {
+
+            NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+            abort();
+        } else {
+            _buttonManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+            _buttonManagedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
+            
+            _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            _managedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
+        }
+        
+       // return _persistentStoreCoordinator;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.buttonsStore.buttonManagedObjectContext  = self.buttonManagedObjectContext;
+            
+            NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+            //request.predicate = nil;
+            //NSData *nullData = [NSKeyedArchiver archivedDataWithRootObject:[[NSArray alloc]init]];
+            request.predicate = [NSPredicate predicateWithFormat:@"date != %@",[NSDate distantPast]];
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+            request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
+            self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                                managedObjectContext:self.managedObjectContext
+                                                                                  sectionNameKeyPath:nil
+                                                                                           cacheName:nil];
+        });
+    });
     
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-    request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                                        managedObjectContext:self.managedObjectContext
-                                                                          sectionNameKeyPath:nil
-                                                                                   cacheName:nil];
+    
+    
     
     //if(self.isiCloudInUse){
     //    [self setupiCloudUIManagedDocument];
@@ -5635,7 +5736,7 @@ BOOL isNewTableRow;
         [store synchronize];
     }
     
-    //[self setupStorage];
+    [self setupStorage];
 
     
     [super viewDidLoad];

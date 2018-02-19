@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#define DEBUG_MODE NO
+#define DEBUG_MODE YES
 
 //perfect it works!!!
 

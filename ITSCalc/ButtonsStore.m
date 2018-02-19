@@ -10,7 +10,7 @@
 #import "ButtonsStore.h"
 #import "CreateNewButtonViewController.h"
 
-#define DEBUG_MODE NO
+#define DEBUG_MODE YES
 
 @interface ButtonsStore() <CreateNewButtonController>
 
@@ -70,7 +70,7 @@
     
     //renew work names buttons array in other thread
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSArray *copyWorkNames = [self renewedNamesArray];
+        NSArray *copyWorkNames = [self renewedNamesArrayFromAllButtonsArray];
         dispatch_async(dispatch_get_main_queue(), ^{
             self.workButtonsNames = copyWorkNames;
         });
@@ -136,6 +136,17 @@
     return [workNamesMutable copy];
 }
 
+-(NSArray*)renewedNamesArrayFromAllButtonsArray{
+    NSMutableArray *workButtonNames =[[NSMutableArray alloc]init];
+    for(Buttons *btn in self.changebleButtonObjs){
+        [workButtonNames addObject:btn.nameButton];
+    }
+    for(Buttons *btn in self.mainButtonObjs){
+        [workButtonNames insertObject:btn.nameButton atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
+    }
+    return [workButtonNames copy];
+}
+
 -(NSArray*)renewedAllButtonsArray {
     NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
     //1. add to allButtons changeble
@@ -152,6 +163,8 @@
     
     return [allButtonsArray copy];
 }
+
+
 
 /*
 //make workbuttons array and names array together
@@ -299,7 +312,7 @@
             }
         }
         NSArray *copyAllObjs = [self renewedAllButtonsArray];
-        NSArray *copyWorkNames = [self renewedNamesArray];
+        NSArray *copyWorkNames = [self renewedNamesArrayFromAllButtonsArray];
         dispatch_async(dispatch_get_main_queue(), ^{
             self.allButtonObj = copyAllObjs;
             self.workButtonsNames = copyWorkNames;
