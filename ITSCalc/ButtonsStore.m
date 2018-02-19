@@ -154,9 +154,10 @@
 
     //2. insert Main buttons according right position
     for(Buttons *btn in self.mainButtonObjs){
+        /*
         if(DEBUG_MODE){
             NSLog(@"renewedAllButtonsArray Buttons name: %@, and position: %@", btn.nameButton, btn.position);
-        }
+        }*/
         [allButtonsArray insertObject:btn atIndex:[[self.mainButtonsStartWithPosition objectForKey:btn.nameButton] integerValue]];
     }
     [allButtonsArray addObjectsFromArray:self.delettedButtonObjs];

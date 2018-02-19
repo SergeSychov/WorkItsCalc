@@ -3261,9 +3261,9 @@ NSIndexPath *lastVisibleCellPatch;
 
 -(void)lastRowUpdate{
     NSIndexPath *lastRow = [NSIndexPath indexPathForRow:[self.cellHeights count]  inSection:0];
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"lastRowUpdate Last row %ld", (long)lastRow.row);
-    }
+    }*/
 
     [self.historyTable reloadRowsAtIndexPaths:[NSArray arrayWithObject:lastRow]
                              withRowAnimation:UITableViewRowAnimationFade];
@@ -3377,9 +3377,9 @@ NSIndexPath *lastVisibleCellPatch;
         self.noticeButton.enabled = YES;
     }
     
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"numberOfRowsInSection rowsNumber:%ld", (long)rows);
-    }
+    }*/
 
     return rows;
 }
@@ -4157,7 +4157,7 @@ NSInteger dealWithCell;
 {
    
     NSIndexPath *indexPath = [self.historyTable indexPathForCell:cell];
-    if(DEBUG_MODE) NSLog(@"cellDidSelectsetSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
+    //if(DEBUG_MODE) NSLog(@"cellDidSelectsetSelectedRow %ld, %ld", (long)indexPath.row, indexPath.section);
     //self.selectedRow = cell;
     
     
@@ -4403,19 +4403,19 @@ NSInteger dealWithCell;
 {
     if (self.fetchedResultsController) {
         if (self.fetchedResultsController.fetchRequest.predicate) {
-           if(DEBUG_MODE) NSLog(@"performFetch Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
+           //if(DEBUG_MODE) NSLog(@"performFetch Predicate %@", self.fetchedResultsController.fetchRequest.predicate);
         } else {
-            if(DEBUG_MODE) NSLog(@"performFetch No predicate");
+            //if(DEBUG_MODE) NSLog(@"performFetch No predicate");
         }
         NSError *error;
         if([self.fetchedResultsController performFetch:&error]){
-            if(DEBUG_MODE) NSLog(@"performFetch SUCCES PERFORM FETCH");
+            //if(DEBUG_MODE) NSLog(@"performFetch SUCCES PERFORM FETCH");
         }
 
     } else {
 
     }
-    if(DEBUG_MODE) NSLog(@"performFetch fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
+    //if(DEBUG_MODE) NSLog(@"performFetch fetchedObjs count %lu",[self.fetchedResultsController.fetchedObjects count]);
     
     
     [self updateHistoryTableArraysAndGoBottom:YES];
@@ -5674,10 +5674,10 @@ BOOL isNewTableRow;
 {
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         //NSDate* appearDate = [NSDate date];
         NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
-    }
+    } */
 
     //USER DEFAULT
     id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
@@ -5908,9 +5908,9 @@ BOOL isNewTableRow;
     //cellHeights = [[NSMutableArray alloc] init];
     //self.historyTable.rowHeight = UITableViewAutomaticDimension;
     //self.historyTable.estimatedRowHeight = 60;
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
-    }
+    }*/
 }
 
 
@@ -6848,7 +6848,7 @@ static BOOL isNeedReloadAfterOtherController;
 
 -(void) viewWillAppear:(BOOL)animated{
     
-   if(DEBUG_MODE) NSLog(@"MainView Will appear");
+   //if(DEBUG_MODE) NSLog(@"MainView Will appear");
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
