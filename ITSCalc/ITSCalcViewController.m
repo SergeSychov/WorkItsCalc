@@ -1695,10 +1695,10 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.displayTopConstrain.constant = 0;
         /*self.sviperBottomConstrain.constant = (self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2+self.calcScreenHeightConstrain.constant/10);*/
         self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
-        if(DEBUG_MODE){
+        /*if(DEBUG_MODE){
             NSLog(@"calcScreenHeightConstrain:%f",self.calcScreenHeightConstrain.constant );
             NSLog(@"sviperBottomConstrain:%f",self.sviperBottomConstrain.constant );
-        }
+        }*/
         [UIView animateWithDuration:.6
                               delay:0
              usingSpringWithDamping:0.8
@@ -2203,10 +2203,10 @@ CGFloat historyTableBottomOffset;
             //[self.view layoutIfNeeded];
         }
 
-        if(DEBUG_MODE){
+        /*if(DEBUG_MODE){
             NSLog(@"sviperBottomConstrain: %f", self.sviperBottomConstrain.constant);
             NSLog(@"calcScreenHeight: %f", self.displayContainer.bounds.size.height);
-        }
+        }*/
 
         
     } else {
@@ -2263,7 +2263,7 @@ CGFloat historyTableBottomOffset;
                     [self finisDraggingUpWithVelocity:velosity];
                 }
             } else {
-                if(DEBUG_MODE) NSLog(@"Error can't show finaly history tab not 1 and not 0");
+                //if(DEBUG_MODE) NSLog(@"Error can't show finaly history tab not 1 and not 0");
                 if(howHistoryShowed == 1){
                     self.isCalcShowed = NO;
                     self.isHistoryShowed = YES;
@@ -2365,9 +2365,9 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //method change offset in pan gesture is included new Thread
 -(CGFloat) moveButtonsCollectioViewByOffsetDown:(CGFloat) offset
 {
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"moveButtonsCollectioViewByOffsetDown");
-    }
+    }*/
     CGFloat retOffset = 0;
     if(!self.isThreadInWork){
         __block CGFloat blockOffset = 0;
@@ -2402,9 +2402,9 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //method change offset UP in pan gesture
 -(CGFloat) moveButtonsCollectioViewByOffsetUp:(CGFloat) offset
 {
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"moveButtonsCollectioViewByOffsetUp");
-    }
+    }*/
 
     CGFloat retOffset = 0;
     if(!self.isThreadInWork){
@@ -2445,9 +2445,10 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 
 - (IBAction)moveButtonToNewPosition:(UIPanGestureRecognizer *)panGesture
 {
-    if(DEBUG_MODE){
+    /*
+     if(DEBUG_MODE){
         NSLog(@"moveButtonToNewPosition");
-    }
+    }*/
 
     if(panGesture.state == UIGestureRecognizerStateBegan){
         moveIsAvailable = YES;
@@ -2492,11 +2493,13 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
                 findCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection  cellForItemAtIndexPath:patch];
                 
                 while (YES){
+                    //if(DEBUG_MODE) NSLog(@"moveButtonToNewPosition while YES");
                     if(([self.buttonsStore.changebleButtonObjs containsObject:[self.buttonsStore.allButtonObj objectAtIndex:[self.buttonsCollection indexPathForCell:findCell].item]])
                        && ((findCell.typeOfButton == CHANGE_BUTTON)||(findCell.typeOfButton == CHANGE_BUTTON_NOT_DELETABLE))){
                         break;
                     } else {
-                        findCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:[NSIndexPath indexPathForItem:patch.item -1 inSection:patch.section]];
+                        patch = [NSIndexPath indexPathForItem:patch.item -1 inSection:patch.section];
+                        findCell = (NewButtonsCollectionViewCell*)[self.buttonsCollection cellForItemAtIndexPath:patch];
                         if(!findCell){
                             findCell = subCell;
                             break;
@@ -2523,9 +2526,6 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
 //move buttonView from global variable subCell and findCell
 -(void) move
 {
-    if(DEBUG_MODE){
-        NSLog(@"move");
-    }
 
     //here is ok for all buttons
     NSIndexPath *findPatch = [self.buttonsCollection indexPathForCell:findCell];
@@ -2542,7 +2542,15 @@ NSString *finishDrugDirection;// = @"CloseHistroy";
         
         NSMutableArray *mutableCahngebleArray = [self.buttonsStore.changebleButtonObjs mutableCopy];
         [mutableCahngebleArray removeObject:subButtonObj];
+        /*if(DEBUG_MODE){
+            NSLog(@"move removeObject");
+        }*/
+
         [mutableCahngebleArray insertObject:subButtonObj atIndex:indexFindButtonObjInChangebleArray];
+        /*if(DEBUG_MODE){
+            NSLog(@"move insertObject");
+        }*/
+
         self.buttonsStore.changebleButtonObjs = [mutableCahngebleArray copy];
         //findButtonObjPositionInCoreData
         //subButtonObjPositionInCoreData
@@ -4054,13 +4062,13 @@ NSInteger dealWithCell;
             argArrayCopy = [[ACalcBrain deepArrayCopy:top] mutableCopy];
         }
         
-        if(DEBUG_MODE) NSLog(@"cellDidSelectRecount Argu %@", argArrayCopy);
+       // if(DEBUG_MODE) NSLog(@"cellDidSelectRecount Argu %@", argArrayCopy);
         
         
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [programFromHistory lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        if(DEBUG_MODE) NSLog(@"cellDidSelectRecount program %@", programCopy);
+        //if(DEBUG_MODE) NSLog(@"cellDidSelectRecount program %@", programCopy);
         
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
@@ -4081,7 +4089,7 @@ NSInteger dealWithCell;
 }
 
 -(void) resetProgrammAfterCurrensiesChecked:(NSArray*)currencies{
-    if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked Curr array after request: %@", currencies);
+    //if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked Curr array after request: %@", currencies);
     NSArray *deepProgram = [self.brain.deepProgram copy];
     NSArray *deepArgu = [self.brain.deepArgu copy];
     NSArray *testArray = [[deepProgram lastObject] copy];
@@ -4110,7 +4118,7 @@ NSInteger dealWithCell;
         NSMutableArray *programCopy = [[NSMutableArray alloc] init];
         top = [muttableOutputArray lastObject];
         if(top) programCopy = [ACalcBrain deepArrayCopy:top];
-        if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked after programCopy %@:",programCopy );
+        //if(DEBUG_MODE) NSLog(@"resetProgrammAfterCurrensiesChecked after programCopy %@:",programCopy );
         ACalcBrain *newBrain = [ACalcBrain initWithProgram:[programCopy copy] withArgu:[argArrayCopy copy]];
         
         self.brain = newBrain;
@@ -6666,9 +6674,9 @@ static BOOL isNeedReloadAfterOtherController;
 }
 
 -(void)applicationWillResignActive:(NSNotification *)note{
-    if(DEBUG_MODE){
+    /*if(DEBUG_MODE){
         NSLog(@"UIApplicationDidEnterBackgroundNotification");
-    }
+    }*/
 
 }
 
@@ -6676,7 +6684,7 @@ static BOOL isNeedReloadAfterOtherController;
 -(void)appWillGoToBackground:(NSNotification *)note
 {
     
-    if(DEBUG_MODE) NSLog(@"appWillGoToBackground");
+    //if(DEBUG_MODE) NSLog(@"appWillGoToBackground");
     //if there is byttonAssubview - delete it
     if(buttonsAsSubView){
         CGRect subFrame = subCell.frame;
@@ -6831,7 +6839,7 @@ static BOOL isNeedReloadAfterOtherController;
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
     //NSDate* appearDate = [NSDate date];
-    if(DEBUG_MODE) NSLog(@"viewDidAppear Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
+    //if(DEBUG_MODE) NSLog(@"viewDidAppear Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     
     if(!IS_IPAD){
         [self rotateIPhoneAsNonRotateWithSize:self.view.bounds.size];
@@ -6956,7 +6964,7 @@ sourceController:(UIViewController *)source
             }
             
         } else if ([key isEqualToString:@"ChangedDesign"]){
-            if(DEBUG_MODE) NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
+           // if(DEBUG_MODE) NSLog(@"Design changed to: %ld", (long)[[notification.userInfo objectForKey:keys[0]] integerValue]);
             self.designObj.designNumber = [[notification.userInfo objectForKey:keys[0]] integerValue];
             //IMPORTANT NEED TO RELOAD ALL VIEWS
             [self.view setNeedsDisplay];
