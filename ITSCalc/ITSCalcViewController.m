@@ -1756,6 +1756,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                 //ulock interaction
                                 self.buttonsCollection.userInteractionEnabled = YES;
                                 self.longPressRecognizer.minimumPressDuration = 0.5;
+                                [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
                             }];
     }
 }
