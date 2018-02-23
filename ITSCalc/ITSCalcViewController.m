@@ -1739,6 +1739,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                             options:UIViewAnimationOptionBeginFromCurrentState animations:^{
                                 [self.view layoutIfNeeded];
                                 self.labelsDisplayContainer.alpha = 1;
+                                [self.buttonsCollection setContentOffset:CGPointMake(0, 0)];
 
 
                                  //if(self.isIAdBaneerAvailable){
@@ -1755,9 +1756,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                             } completion:^(BOOL finished) {
                                 //ulock interaction
                                 self.buttonsCollection.userInteractionEnabled = YES;
-                                self.longPressRecognizer.minimumPressDuration = 0.5;
-                                [self.buttonsCollection setContentOffset:CGPointMake(0, 0) animated:YES];
-                            }];
+                                self.longPressRecognizer.minimumPressDuration = 0.5;                            }];
     }
 }
 

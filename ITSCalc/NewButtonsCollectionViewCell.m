@@ -248,9 +248,9 @@ NSDate *methodStart;
     
         CGFloat closeCheckWidth;
         if(IS_IPAD) {
-            closeCheckWidth = 36.;
+            closeCheckWidth = 36.*1.5;
         } else {
-            closeCheckWidth = 28.;
+            closeCheckWidth = 28.*1.5;
             
         }
         CGRect frameStartCloseButton = CGRectMake(self.bounds.size.width-closeCheckWidth*2/3+closeCheckWidth/2-4,

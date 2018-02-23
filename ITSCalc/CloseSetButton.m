@@ -27,7 +27,9 @@
 -(void)drawCircle:(CGContextRef)context inRect:(CGRect)rect
 {
     //defend center
-    UIBezierPath *patch = [UIBezierPath bezierPathWithOvalInRect:rect];
+    //to make icons some smoler then button it self
+    CGRect minRect = CGRectInset(rect, rect.size.width/5, rect.size.height/5);
+    UIBezierPath *patch = [UIBezierPath bezierPathWithOvalInRect:minRect];
     CGPathRef pathOfRect;
 
     UIColor *fillColor;
@@ -54,7 +56,9 @@
     UIBezierPath *patch = [UIBezierPath bezierPath];
     CGPathRef pathOfRect;
     
-    CGFloat width = rect.size.width/4;
+    //CGFloat width = rect.size.width/4;
+    //to make icons some smoler then button it self
+    CGFloat width = (rect.size.width*2/3.)/4;
     UIColor *storkeColor;
     if(self.isRemoveButton){
         CGPoint pointOne = CGPointMake(center.x+width/1.5, center.y-width/1.5);

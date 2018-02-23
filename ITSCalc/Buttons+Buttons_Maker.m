@@ -21,7 +21,23 @@
     NSArray *matches = [context executeFetchRequest:request error:&error];
     
     
-    if(!matches || error || ([matches count] > 0)){
+    if(!matches || error){
+        
+    } else if([matches count] > 0){
+        Buttons* existingButton = matches[0];
+        
+        existingButton.position = position;
+        existingButton.aloweToDelete = [NSNumber numberWithBool:alowDelete];
+        existingButton.dateOfDeletting = delDate;
+        existingButton.enable = [NSNumber numberWithBool:enabling];
+        existingButton.isMain = [NSNumber numberWithBool:isMain];
+        if(program){
+            NSData* dataProgram = [NSKeyedArchiver archivedDataWithRootObject:program];
+            existingButton.program = dataProgram;
+        } else {
+            existingButton.program = nil;
+        }
+        newButton = existingButton;
     } else {
         newButton = [NSEntityDescription insertNewObjectForEntityForName:@"Buttons" inManagedObjectContext:context];
         newButton.nameButton = name;

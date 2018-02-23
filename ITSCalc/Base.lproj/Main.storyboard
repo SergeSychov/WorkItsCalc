@@ -77,6 +77,75 @@
                                             <outletCollection property="gestureRecognizers" destination="iQj-4t-yg3" appends="YES" id="vk1-vQ-j5A"/>
                                         </connections>
                                     </collectionView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eK6-Ew-deE" userLabel="Container Banner">
+                                        <rect key="frame" x="0.0" y="50" width="410" height="50"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="U51-yK-br2"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="cL7-ZA-YOJ"/>
+                                        </constraints>
+                                    </view>
+                                    <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="onk-em-hqf">
+                                        <rect key="frame" x="0.0" y="0.0" width="410" height="185"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="redraw" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HistoryCell" id="wuO-1N-kP6" customClass="HistroryTableViewCell">
+                                                <rect key="frame" x="0.0" y="28" width="410" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="redraw" tableViewCell="wuO-1N-kP6" id="pX9-nR-ngu">
+                                                    <rect key="frame" x="0.0" y="0.0" width="410" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GvF-Sh-8W5">
+                                                            <rect key="frame" x="10" y="0.0" width="390" height="38.5"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMr-Nq-QKJ">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="390" height="20.5"/>
+                                                                    <attributedString key="attributedText">
+                                                                        <fragment content="Label">
+                                                                            <attributes>
+                                                                                <font key="NSFont" metaFont="system" size="17"/>
+                                                                            </attributes>
+                                                                        </fragment>
+                                                                    </attributedString>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rb0-no-UaV">
+                                                                    <rect key="frame" x="0.0" y="20.5" width="390" height="18"/>
+                                                                    <attributedString key="attributedText">
+                                                                        <fragment content="Label">
+                                                                            <attributes>
+                                                                                <font key="NSFont" metaFont="system" size="17"/>
+                                                                            </attributes>
+                                                                        </fragment>
+                                                                    </attributedString>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="GvF-Sh-8W5" secondAttribute="trailing" constant="20" id="BTz-ne-k7F">
+                                                            <variation key="widthClass=compact" constant="10"/>
+                                                        </constraint>
+                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="leading" secondItem="pX9-nR-ngu" secondAttribute="leading" constant="20" id="GUE-lv-B6f">
+                                                            <variation key="widthClass=compact" constant="10"/>
+                                                        </constraint>
+                                                        <constraint firstAttribute="bottom" secondItem="GvF-Sh-8W5" secondAttribute="bottom" constant="5" id="JFI-gR-SEc"/>
+                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="top" secondItem="pX9-nR-ngu" secondAttribute="top" id="Qwt-kN-dEX"/>
+                                                    </constraints>
+                                                </tableViewCellContentView>
+                                                <connections>
+                                                    <outlet property="infoLabel" destination="ZMr-Nq-QKJ" id="8Qn-cs-xly"/>
+                                                    <outlet property="mainProgrammLabel" destination="Rb0-no-UaV" id="vfJ-zK-oKm"/>
+                                                </connections>
+                                            </tableViewCell>
+                                        </prototypes>
+                                        <connections>
+                                            <outlet property="dataSource" destination="vXZ-lx-hvc" id="ceq-JD-4vJ"/>
+                                            <outlet property="delegate" destination="vXZ-lx-hvc" id="32H-eo-zqu"/>
+                                        </connections>
+                                    </tableView>
                                     <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="b0U-wF-F1m" userLabel="displayContainer">
                                         <rect key="frame" x="0.0" y="185" width="410" height="85"/>
                                         <subviews>
@@ -246,6 +315,20 @@
                                             <constraint firstItem="gpt-fG-IXi" firstAttribute="leading" secondItem="b0U-wF-F1m" secondAttribute="leading" constant="10" id="xHr-Hx-nXl"/>
                                             <constraint firstItem="xtl-p7-u3B" firstAttribute="top" secondItem="b0U-wF-F1m" secondAttribute="top" id="yAO-Vr-Jnh"/>
                                         </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="layer.ShadowColor">
+                                                <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.ShadowOpacity">
+                                                <real key="value" value="0.40000000000000002"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="size" keyPath="layer.ShadowSize">
+                                                <size key="value" width="0.0" height="0.0"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.ShadowRadius">
+                                                <integer key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="YQX-wv-lBu" appends="YES" id="thR-aq-yyf"/>
                                         </connections>
@@ -296,75 +379,6 @@
                                             <constraint firstItem="Zkd-ZX-a20" firstAttribute="width" relation="lessThanOrEqual" secondItem="65m-qJ-35V" secondAttribute="height" multiplier="0.16" id="zMa-3U-qB2"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eK6-Ew-deE" userLabel="Container Banner">
-                                        <rect key="frame" x="0.0" y="50" width="410" height="50"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="U51-yK-br2"/>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="cL7-ZA-YOJ"/>
-                                        </constraints>
-                                    </view>
-                                    <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="onk-em-hqf">
-                                        <rect key="frame" x="0.0" y="0.0" width="410" height="185"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="redraw" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HistoryCell" id="wuO-1N-kP6" customClass="HistroryTableViewCell">
-                                                <rect key="frame" x="0.0" y="28" width="410" height="44"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="redraw" tableViewCell="wuO-1N-kP6" id="pX9-nR-ngu">
-                                                    <rect key="frame" x="0.0" y="0.0" width="410" height="43.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GvF-Sh-8W5">
-                                                            <rect key="frame" x="10" y="0.0" width="390" height="38.5"/>
-                                                            <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMr-Nq-QKJ">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="390" height="20.5"/>
-                                                                    <attributedString key="attributedText">
-                                                                        <fragment content="Label">
-                                                                            <attributes>
-                                                                                <font key="NSFont" metaFont="system" size="17"/>
-                                                                            </attributes>
-                                                                        </fragment>
-                                                                    </attributedString>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rb0-no-UaV">
-                                                                    <rect key="frame" x="0.0" y="20.5" width="390" height="18"/>
-                                                                    <attributedString key="attributedText">
-                                                                        <fragment content="Label">
-                                                                            <attributes>
-                                                                                <font key="NSFont" metaFont="system" size="17"/>
-                                                                            </attributes>
-                                                                        </fragment>
-                                                                    </attributedString>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                            </subviews>
-                                                        </stackView>
-                                                    </subviews>
-                                                    <constraints>
-                                                        <constraint firstAttribute="trailing" secondItem="GvF-Sh-8W5" secondAttribute="trailing" constant="20" id="BTz-ne-k7F">
-                                                            <variation key="widthClass=compact" constant="10"/>
-                                                        </constraint>
-                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="leading" secondItem="pX9-nR-ngu" secondAttribute="leading" constant="20" id="GUE-lv-B6f">
-                                                            <variation key="widthClass=compact" constant="10"/>
-                                                        </constraint>
-                                                        <constraint firstAttribute="bottom" secondItem="GvF-Sh-8W5" secondAttribute="bottom" constant="5" id="JFI-gR-SEc"/>
-                                                        <constraint firstItem="GvF-Sh-8W5" firstAttribute="top" secondItem="pX9-nR-ngu" secondAttribute="top" id="Qwt-kN-dEX"/>
-                                                    </constraints>
-                                                </tableViewCellContentView>
-                                                <connections>
-                                                    <outlet property="infoLabel" destination="ZMr-Nq-QKJ" id="8Qn-cs-xly"/>
-                                                    <outlet property="mainProgrammLabel" destination="Rb0-no-UaV" id="vfJ-zK-oKm"/>
-                                                </connections>
-                                            </tableViewCell>
-                                        </prototypes>
-                                        <connections>
-                                            <outlet property="dataSource" destination="vXZ-lx-hvc" id="ceq-JD-4vJ"/>
-                                            <outlet property="delegate" destination="vXZ-lx-hvc" id="32H-eo-zqu"/>
-                                        </connections>
-                                    </tableView>
                                     <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="LsF-jj-Vfx" customClass="HistoryTableSviper">
                                         <rect key="frame" x="176" y="131" width="59" height="59"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -378,7 +392,7 @@
                                         </connections>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="FK6-Yi-iBk" secondAttribute="trailing" id="37e-t4-NWw"/>
@@ -594,7 +608,7 @@
                                                         </constraints>
                                                     </view>
                                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2fa-ZN-m1L">
-                                                        <rect key="frame" x="125" y="49" width="51" height="31"/>
+                                                        <rect key="frame" x="125.5" y="49" width="51" height="31"/>
                                                         <color key="onTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <connections>
                                                             <action selector="isiCloudSwitch:" destination="1pd-vL-M1V" eventType="valueChanged" id="H24-42-qJU"/>
