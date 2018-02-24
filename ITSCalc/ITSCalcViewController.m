@@ -170,7 +170,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //@property (weak, nonatomic) IBOutlet UIView *mainContainerView;
 //Display view
 @property (weak, nonatomic) IBOutlet UIView *displayContainer;
-@property (weak, nonatomic) IBOutlet UIVisualEffectView *displayBackground;
 
 @property (weak, nonatomic) IBOutlet UIView *labelsDisplayContainer;
 
@@ -478,9 +477,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     self.historyTable.backgroundColor = self.designObj.historyTableColor;
     self.historyTableSviper.designObj = self.designObj;
     
-    self.displayContainer.backgroundColor = self.designObj.displayContainerColor;
-    self.displayBackground.hidden = self.designObj.isScreenBlurHiden;
-    self.displayBackground.effect = self.designObj.screenBlurEffect;
+   // self.displayContainer.backgroundColor = self.designObj.displayContainerColor;
+    //self.displayBackground.hidden = self.designObj.isScreenBlurHiden;
+    //self.displayBackground.effect = self.designObj.screenBlurEffect;
     
     
     self.mainLabel.designObj = self.designObj;
@@ -3341,8 +3340,9 @@ NSIndexPath *lastVisibleCellPatch;
     if(([self.cellHeights count]==0) || indexPath.row>([self.cellHeights count]-1)){
         NSAttributedString* mainLabel =  [self getAttributedStringFromArray:self.lastRowDataArray];
         NSAttributedString* infoLabel = [[NSAttributedString alloc] initWithString:@" "];
-        
-        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass];
+        CGFloat motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? MOTION_IPAD:MOTION_IPHONE;
+
+        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass]+motionOffsetValue;
     } else {
         retHeight =  [[self.cellHeights objectAtIndex:indexPath.row] floatValue];
     }
@@ -5919,6 +5919,33 @@ BOOL isNewTableRow;
     /*if(DEBUG_MODE){
         NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     }*/
+    // Set vertical effect
+
+    id motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? [NSNumber numberWithFloat: MOTION_IPAD]:[NSNumber numberWithFloat: MOTION_IPHONE];
+    
+    UIInterpolatingMotionEffect *verticalMotionEffect =
+    [[UIInterpolatingMotionEffect alloc]
+     initWithKeyPath:@"center.y"
+     type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+    verticalMotionEffect.minimumRelativeValue = motionOffsetValue;
+    verticalMotionEffect.maximumRelativeValue = [NSNumber numberWithFloat:-[motionOffsetValue floatValue]];
+    
+    // Set horizontal effect
+    UIInterpolatingMotionEffect *horizontalMotionEffect =
+    [[UIInterpolatingMotionEffect alloc]
+     initWithKeyPath:@"center.x"
+     type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+    horizontalMotionEffect.minimumRelativeValue = motionOffsetValue;
+    horizontalMotionEffect.maximumRelativeValue = [NSNumber numberWithFloat:-[motionOffsetValue floatValue]];
+    
+    // Create group to combine both
+    UIMotionEffectGroup *group = [UIMotionEffectGroup new];
+    group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
+    
+    // Add both effects to your view
+    [self.buttonsCollection addMotionEffect:group];
+    [self.historyTable addMotionEffect:group];
+
 }
 
 
@@ -6219,6 +6246,13 @@ CGFloat maxButtonsCollectionHeight;
     if(DEBUG_MODE){
         NSLog(@"viewDidLayoutSubviews");
     }
+    
+    //set offset for motion effect
+    CGFloat motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? MOTION_IPAD:MOTION_IPHONE;
+    self.historyTableTrailingConstrain.constant = -motionOffsetValue;
+    self.historyTableLeadingConstrain.constant = -motionOffsetValue;
+    self.historyTableTopConstrain.constant = -motionOffsetValue;
+    self.historyTableBottomConstrain.constant = motionOffsetValue;
     //NSLog(@"Display Top before: %f", self.displayTopConstrain.constant);
     
     CGSize viewSize = self.view.bounds.size;

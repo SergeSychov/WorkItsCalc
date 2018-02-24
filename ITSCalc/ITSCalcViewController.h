@@ -40,6 +40,13 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *displayTopConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sviperBottomConstrain;
 
+//constrain of historyTable
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *historyTableTrailingConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *historyTableLeadingConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *historyTableTopConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *historyTableBottomConstrain;
+
+
 //@property (weak, nonatomic) IBOutlet NSLayoutConstraint *buttonscollectionHeightConstrain;
 
 //Models
