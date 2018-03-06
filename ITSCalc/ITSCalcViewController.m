@@ -4890,376 +4890,7 @@ BOOL isNewTableRow;
     
 }
 
-/*
--(void) documentIsReady:(UIManagedDocument*) document
-{
-    if(document.documentState == UIDocumentStateNormal){
-        //try to save core data through update document
-        self.doc = document;
-        
-       
-        NSManagedObjectContext *buttonContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [buttonContext setParentContext:document.managedObjectContext];
-        self.buttonManagedObjectContext = buttonContext;
-        self.managedObjectContext = document.managedObjectContext;
-
-    } else {
-        NSLog(@"Document state:%lu", (unsigned long)document.documentState);
-    }
-}
 #pragma mark ICLOUD SETUP
-
--(void) migrateDataToNewStorage:(NSURL*) newStorageURL
-{
-   // NSLog(@"Need to migrate to URL %@", newStorageURL);
-}
-
-
-
--(void) iCloudAccountChanged:(NSNotification*)notification
-{
-  //  NSLog(@"Storage did change");
-}
-
--(void)cloudDidChange:(NSNotification*)notification
-{
-   // NSLog(@"cloud Did Change %@", notification);// %@", [notification userInfo]);
-}
-
--(void)cloudWillChange:(NSNotification*)notification
-{
-   // NSLog(@"cloud will Change");
-
-    [self.managedObjectContext performBlock:^{
-        if([self.doc.managedObjectContext hasChanges]){
-            NSError *saveError;
-            if(![self.doc.managedObjectContext save: &saveError]){
-              //  NSLog(@"Save error: %@", saveError);
-            }
-        } else {
-            [self.doc.managedObjectContext reset];
-        }
-        [self performSelectorOnMainThread:@selector(performFetch)
-                              withObject:nil waitUntilDone:NO];
-        [self.doc.managedObjectContext processPendingChanges];
-
-    }];
-    
-}
-
--(void) performBlockContext
-{
-    [self.managedObjectContext performBlock:^{
-        if([self.doc.managedObjectContext hasChanges]){
-            NSError *saveError;
-            if(![self.doc.managedObjectContext save: &saveError]){
-               // NSLog(@"Save error: %@", saveError);
-            }
-        } else {
-            [self.doc.managedObjectContext reset];
-        }
-        [self performSelectorOnMainThread:@selector(performFetch)
-                               withObject:nil waitUntilDone:NO];
-        [self.doc.managedObjectContext processPendingChanges];
-        
-    }];
-}
-
--(void)cloudContentChange:(NSNotification*) notification
-{
-   // NSLog(@"content did chnage %@", notification);
-
-    if([notification.description containsString:@"Buttons"]){
-       // NSLog(@"Buttons was changed");
-        [self.doc.managedObjectContext performBlock:^{
-            [self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-            self.buttonManagedObjectContext = [self removeDuplicateRecordsFromContext:self.doc.managedObjectContext];
-            //[self setUpArrays];
-            //[self.buttonsCollection reloadData];
-
-            //[self.buttonsStore changeContext:self.buttonManagedObjectContext];
-            //need to replace
-            self.buttonsStore.buttonManagedObjectContext = self.buttonManagedObjectContext;
-            
-        }];
-        
-    } else {
-      //  NSLog(@"Button didn't changed");
-    }
-                
-    if ([notification.description containsString:@"History"]){
-        [self.doc.managedObjectContext performBlock:^{
-            [self.doc.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-            
-        }];
-    } else {
-       // NSLog(@"History didn't change");
-    }
-    
-}
-
-
--(void) setStoreNotifications
-{
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudDidChange:)
-                                                   name:NSPersistentStoreCoordinatorStoresDidChangeNotification
-                                                 object:nil];
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudWillChange:)
-                                                   name:NSPersistentStoreCoordinatorStoresWillChangeNotification
-                                                 object:nil];
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(cloudContentChange:)
-                                                   name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
-                                                 object:nil];
-}
-
--(void) removeStoreNotification
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSPersistentStoreCoordinatorStoresDidChangeNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSPersistentStoreCoordinatorStoresWillChangeNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSPersistentStoreDidImportUbiquitousContentChangesNotification
-                                                  object:nil];
-
-}
-
-#pragma mark CHANGE_STORAGE
-
--(void) migrateToiCloudstorage:(BOOL)isiCloud
-{
-    if(self.doc){
-        [self.doc updateChangeCount:UIDocumentChangeDone];
-        NSPersistentStoreCoordinator *pcs =[self.doc.managedObjectContext persistentStoreCoordinator];
-        UIManagedDocument *oldDoc = self.doc;
-        
-        NSPersistentStore *store = [pcs.persistentStores objectAtIndex:0];
-        
-        if(isiCloud){
-            
-            NSString* documentName = @"MyCloudDocument";
-            NSDictionary *ubiquityOptions = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
-                                              NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
-                                              NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                              NSInferMappingModelAutomaticallyOption:@YES};
-            
-            UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.storeURL];
-            document.persistentStoreOptions = ubiquityOptions;
-
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
-                [document openWithCompletionHandler:^(BOOL success) {
-                    if (success) {
-                        NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
-                        NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                        
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            NSError* error;
-                            [pcs migratePersistentStore:store
-                                                  toURL:newStore.URL
-                                                options:ubiquityOptions
-                                               withType:store.type
-                                                  error:&error];
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self documentIsReady:document];
-                                self.doc = document;
-                                [self setStoreNotifications];
-                                        
-                                [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                    if(!success){
-                                    //  NSLog(@"Close old document not sucesseful");
-                                    } else {
-                                        // NSLog(@"Close old sucesseful");
-                                    }
-                                    NSError *removeFileError;
-                                    [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:&removeFileError];
-                                }];
-                                        
-                                        
-                            });
-                                    
-                        });
-
-                    }
-                }];
-
-            } else {
-                [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
-                  completionHandler:^(BOOL success) {
-                      if (success) {
-                          NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
-                          NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-
-                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                              NSError* error;
-                              [pcs migratePersistentStore:store
-                                                    toURL:newStore.URL
-                                                  options:ubiquityOptions
-                                                 withType:store.type
-                                                    error:&error];
-                              
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [self documentIsReady:document];
-                                  self.doc = document;
-                                  [self setStoreNotifications];
-                                  
-                                  [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                      if(!success){
-                                         // NSLog(@"Close old document not sucesseful");
-                                      } else {
-                                        //  NSLog(@"Close old sucesseful");
-                                          NSError *removeFileError;
-                                          [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:&removeFileError];
-                                      }
-                                }];
-                                  
-                                  
-                            });
-                              
-                        });
-
-                      }
-                  }];
-            }
-            
-        } else {
-
-            NSDictionary *localOptions = @{NSPersistentStoreRemoveUbiquitousMetadataOption:@YES,
-                                           NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                           NSInferMappingModelAutomaticallyOption:@YES};
-            
-            NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
-            NSDictionary *ubiquityOptions = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
-                                              NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
-                                              NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                              NSInferMappingModelAutomaticallyOption:@YES};
-            
-            // Remove any local file
-            // We should check if a filename exists and then create a new filename using a counter...
-            // because its possible to have more than one file with the same user filename in iCloud
-            
-            [[NSFileManager defaultManager] removeItemAtURL:self.localStoreUrl error:nil];
-            
-            
-            UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.localStoreUrl];
-            
-
-            document.persistentStoreOptions = localOptions;
-            
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[self.localStoreUrl path]]) {
-                [document openWithCompletionHandler:^(BOOL success) {
-                    if (success) {
-                        NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
-                        NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                        
-                        // Now remove the existing store
-                        NSError *removeStoreError;
-                        if([newCoord removePersistentStore:newStore error:&removeStoreError]){
-                            id sourceStore = [newCoord addPersistentStoreWithType:NSSQLiteStoreType
-                                                                    configuration:nil
-                                                                              URL:store.URL
-                                                                          options:ubiquityOptions
-                                                                            error:nil];
-                            if (!sourceStore) {
-                                
-                             //   NSLog(@" failed to add old store");
-                                
-                            } else {
-                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    NSError *error;
-                                
-                                    [newCoord migratePersistentStore:sourceStore
-                                                               toURL:newStore.URL
-                                                             options:localOptions
-                                                            withType:NSSQLiteStoreType
-                                                               error:&error];
-                                    
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        [self documentIsReady:document];
-                                        self.doc = document;
-                                        [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                            if(!success){
-                                             //   NSLog(@"Close old document not sucesseful");
-                                            } else {
-                                             //   NSLog(@"Close old sucesseful");
-                                            }
-                                        }];
-                                    });
-                                    
-                                });
-                                
-
-                            }
-                        }
-                    
-                    }
-                }];
-            } else {
-                [document saveToURL:self.localStoreUrl forSaveOperation:UIDocumentSaveForCreating
-                  completionHandler:^(BOOL success) {
-                      if (success) {
-                          if (success) {
-                              NSPersistentStoreCoordinator *newCoord = document.managedObjectContext.persistentStoreCoordinator;
-                              NSPersistentStore *newStore= [newCoord.persistentStores objectAtIndex:0];
-                              
-                              // Now remove the existing store
-                              NSError *removeStoreError;
-                              if([newCoord removePersistentStore:newStore error:&removeStoreError]){
-                                  id sourceStore = [newCoord addPersistentStoreWithType:NSSQLiteStoreType
-                                                                          configuration:nil
-                                                                                    URL:store.URL
-                                                                                options:ubiquityOptions
-                                                                                  error:nil];
-                                  if (!sourceStore) {
-                                      
-                                     // NSLog(@" failed to add old store");
-                                      
-                                  } else {
-                                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                          NSError *error;
-                                          
-                                         [newCoord migratePersistentStore:sourceStore
-                                                                    toURL:newStore.URL
-                                                                  options:localOptions
-                                                                 withType:NSSQLiteStoreType
-                                                                    error:&error];
-                                          
-                                          dispatch_async(dispatch_get_main_queue(), ^{
-                                              [self documentIsReady:document];
-                                              self.doc = document;
-                                              [oldDoc closeWithCompletionHandler:^(BOOL success) {
-                                                  if(!success){
-                                                     // NSLog(@"Close old document not sucesseful");
-                                                  } else {
-                                                    //  NSLog(@"Close old sucesseful");
-                                                  }
-                                              }];
-                                          });
-                                          
-                                      });
-                                      
-                                      
-                                  }
-                              }
-                          }
-                      }
-                  }];
-            }
-        }
-    }
-    
-}
-
-*/
 
 /*
 - (IBAction)isiCloudSwitch:(UISwitch *)sender
@@ -5313,82 +4944,6 @@ BOOL isNewTableRow;
 */
 
 #pragma mark SETUP_STORAGE
-/*
--(NSURL*) localStoreUrl
-{
-    if(!_localStoreUrl){
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                         inDomains:NSUserDomainMask] lastObject];
-        NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
-        
-        _localStoreUrl =  [documentsDirectory URLByAppendingPathComponent:documentName];
-    }
-    return _localStoreUrl;
-}
-
-
--(NSURL*)storeURL
-{
-    if(!_storeURL){
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-        NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
-    
-        _storeURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-    }
-    return _storeURL;
-}
-
--(NSURL*)iCloudURL
-{
-    if(!_iCloudURL){
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
-        _iCloudURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: documentName];
-
-    }
-    return _iCloudURL;
-}
-
--(void) setupLocalUIManagedDocument
-{
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.localStoreUrl];
-    
-    NSDictionary *localOptions = @{
-                                   NSPersistentStoreRemoveUbiquitousMetadataOption:@YES,
-                                   NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                   NSInferMappingModelAutomaticallyOption:@YES};
-    document.persistentStoreOptions = localOptions;
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.localStoreUrl path]]) {
-        [document openWithCompletionHandler:^(BOOL success) {
-            if (success){
-                [self documentIsReady: document];
-            } else {
-                NSLog(@"Not succes with open");
-            }
-        }];
-        NSLog(@"No document");
-    } else {
-        NSLog(@"try to create document");
-        [document saveToURL:self.localStoreUrl forSaveOperation:UIDocumentSaveForCreating
-          completionHandler:^(BOOL success) {
-              if (success) {
-                  [self documentIsReady: document];
-              } else {
-                 NSLog(@"Created doc not succes with open");
-              }
-          }];
-    }
-    
-    //try to save core data through update document
-    //self.doc = document;
-    
-}
-*/
 /**
  Returns the URL to the application's documents directory.
  */
@@ -5396,97 +4951,105 @@ BOOL isNewTableRow;
 {
     return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
 }
-
-/*
--(void) setupiCloudUIManagedDocument
+#pragma mark DOCUMENT
+-(void) documentIsReady:(UIManagedDocument*) document
 {
-    //init managed document
-    NSString* documentName = @"MyCloudDocument";//@"MyDocument.sqlite"
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:self.storeURL];
+    if(document.documentState == UIDocumentStateNormal){
+
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+       // request.predicate = [NSPredicate predicateWithFormat:@"date != %@",[NSDate distantPast]];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+        request.fetchLimit = self.limitInDataBase + 20;//!!!!set this value to allow use set it by settings
+        NSFetchedResultsController* fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:document.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+        NSError *error;
+        [fetchedResultsController performFetch:&error];
+        NSArray* fetchedObjs = [fetchedResultsController fetchedObjects] ;
+        if(DEBUG_MODE) NSLog(@"documentIsReady Fetched objects: %lu",[fetchedObjs count]);
+        
+        if(fetchedObjs && (fetchedObjs.count >0)){
+            for (History *hist in fetchedObjs){
+                [History storyWithProgram:[NSKeyedUnarchiver unarchiveObjectWithData:hist.program] atDate:hist.date inManageObjectContext:self.managedObjectContext];
+            }
+        }
+        
+        [document closeWithCompletionHandler:^(BOOL success) {
+            if(!success){
+                //  NSLog(@"Close old document not sucesseful");
+            } else {
+                // NSLog(@"Close old sucesseful");
+            }
+            NSError *removeFileError;
+            [[NSFileManager defaultManager] removeItemAtURL:[document fileURL] error:&removeFileError];
+        }];
+        
+        [self performFetch];
+    }
+}
+
+-(void) checkICloudWith:(NSString*)fileName cloud:(NSString*)cloudName andKey:(NSString*)keyName
+{
     
-    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:documentName,
-                              NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
-                              NSMigratePersistentStoresAutomaticallyOption: @YES,
-                              NSInferMappingModelAutomaticallyOption:@YES};
+    NSLog(@"checkICloudWith file:%@, cloudName:%@ and keyName:%@", fileName, cloudName, keyName);//check iCloud store
+    NSURL *documentsStoreURL =
+    [[self applicationDocumentsDirectory] URLByAppendingPathComponent:fileName];
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:documentsStoreURL];
+    NSURL *iCloudURL = [[[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: cloudName];
+    
+    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:keyName,
+                NSPersistentStoreUbiquitousContentURLKey: iCloudURL,
+                NSMigratePersistentStoresAutomaticallyOption:@YES,
+                NSInferMappingModelAutomaticallyOption:@YES};
     document.persistentStoreOptions = options;
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[self.storeURL path]]) {
+    //oldICloudDocument = document;
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:documentsStoreURL.path]) {
+        //[self setStoreNotifications];
+        if(DEBUG_MODE) NSLog(@"Exist file");
         [document openWithCompletionHandler:^(BOOL success) {
-            
-            if (success) {
-              [self documentIsReady: document];
-                [self setStoreNotifications];
-
+            if (success){
+                [self documentIsReady:document];
             } else {
-                NSLog(@"file exist but not open");
+                if(DEBUG_MODE) NSLog(@"NOT SUCCESS TO OPEN MyCloudDocument");
             }
         }];
-    } else {
-        [document saveToURL:self.storeURL forSaveOperation:UIDocumentSaveForCreating
-          completionHandler:^(BOOL success) {
-              if (success){
-                  [self documentIsReady: document];
-                  [self setStoreNotifications];
-              }
-          }];
     }
-    //try to save core data through update document
-    //self.doc = document;
-
-    
 }
-*/
+-(void) checkPreviousStorage
+{
+    
+    //Check MyDocument
+    NSURL *documentsStoreURL =
+    [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"MyDocument"];
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:documentsStoreURL];
+    NSDictionary *options = @{
+                              NSPersistentStoreRemoveUbiquitousMetadataOption:@YES,
+                              NSMigratePersistentStoresAutomaticallyOption:@YES,
+                              NSInferMappingModelAutomaticallyOption:@YES};
 
-#pragma mark - Core Data stack
+    document.persistentStoreOptions = options;
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:documentsStoreURL.path]) {
+        if(DEBUG_MODE) NSLog(@"Exist file MyDocument");
+        [document openWithCompletionHandler:^(BOOL success) {
+            if (success){
+                [self documentIsReady:document];
+            } else {
+                if(DEBUG_MODE) NSLog(@"NOT SUCCESS TO OPEN MyDocument");
+            }
+        }];
+    }
+    [self checkICloudWith:@"MyCloudDocument" cloud:@"MyCloudDocument"  andKey:@"MyCloudDocument" ];//
+}
 
 -(void) setupStorage
 {    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //check previously created doc
-        /*
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                         inDomains:NSUserDomainMask] lastObject];
-        
-        NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
-        
-        NSURL *localStoreURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-        
-        NSURL *storeURL = [documentsDirectory URLByAppendingPathComponent:@"MyCloudDocument"];
-        
-        NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
-        
-        if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
-            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
-        } else {
-            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
-        }
-        
-        if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
-            //if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
-        } else {
-            //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
-        }
-        
-        if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
-            // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
-        } else {
-            //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
-        }
-        
-        NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
-                                  //NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
-                                  NSMigratePersistentStoresAutomaticallyOption: @YES,
-                                  NSInferMappingModelAutomaticallyOption:@YES};
-        
-        */
-        // MyCloudDocument
         NSString *documentsStorePath =
-        [[self applicationDocumentsDirectory].path stringByAppendingPathComponent:@"MyCloudDocumentNew"];
+        [[self applicationDocumentsDirectory].path stringByAppendingPathComponent:@"ItsCalcSQL"];
+
         if (![[NSFileManager defaultManager] fileExistsAtPath:documentsStorePath]) {
-            
             [[NSFileManager defaultManager] createFileAtPath:documentsStorePath contents:nil attributes:nil];
-            //[[NSFileManager defaultManager] copyItemAtPath:defaultStorePath toPath:documentsStorePath error:NULL];
         }
         _persistentStoreCoordinator =
         [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
@@ -5509,9 +5072,7 @@ BOOL isNewTableRow;
             _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
             _managedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
         }
-        
-       // return _persistentStoreCoordinator;
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             self.buttonsStore.buttonManagedObjectContext  = self.buttonManagedObjectContext;
             
@@ -5525,6 +5086,7 @@ BOOL isNewTableRow;
                                                                                 managedObjectContext:self.managedObjectContext
                                                                                   sectionNameKeyPath:nil
                                                                                            cacheName:nil];
+            [self checkPreviousStorage];
         });
     });
     
@@ -5537,113 +5099,6 @@ BOOL isNewTableRow;
      //   [self setupLocalUIManagedDocument];
    // }
 }
--(NSManagedObjectContext*)buttonManagedObjectContext{
-    if(_buttonManagedObjectContext != nil){
-        return _buttonManagedObjectContext;
-    }
-    NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
-    if (coordinator != nil) {
-        _buttonManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        _buttonManagedObjectContext.persistentStoreCoordinator = coordinator;
-    }
-    return _buttonManagedObjectContext;
-
-}
-
-- (NSManagedObjectContext *)managedObjectContext {
-    
-    if ( _managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-    
-    NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
-    if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        _managedObjectContext.persistentStoreCoordinator = coordinator;
-    }
-    return _managedObjectContext;
-}
-
--(NSPersistentStoreCoordinator*)persistentStoreCoordinator{
-    if (_persistentStoreCoordinator != nil) {
-        return _persistentStoreCoordinator;
-    }
-    
-    //test
-    //check previously created doc
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory
-                                                     inDomains:NSUserDomainMask] lastObject];
-    
-    NSString* documentName = @"MyDocument";//@"MyDocument.sqlite"
-    
-    NSURL *localStoreURL =  [documentsDirectory URLByAppendingPathComponent:documentName];
-    
-    NSURL *storeURL = [documentsDirectory URLByAppendingPathComponent:@"MyCloudDocument"];
-    
-    NSURL *iClouStoreURL = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: @"MyCloudDocument"];
-    
-    if([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]){
-       // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyDocument");
-    } else {
-       // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator NO old MyDocument");
-    }
-    
-    if([[NSFileManager defaultManager] fileExistsAtPath:[localStoreURL path]]){
-        //if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old MyCloudDocument");
-    } else {
-       //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old MyCloudDocument");
-    }
-    
-    if([[NSFileManager defaultManager] fileExistsAtPath:[iClouStoreURL path]]){
-      // if(DEBUG_MODE) NSLog(@"persistentStoreCoordinator There is old iClouStoreURL");
-    } else {
-       //if(DEBUG_MODE)  NSLog(@"persistentStoreCoordinator NO old iClouStoreURL");
-    }
-
-    NSDictionary *options = @{//NSPersistentStoreUbiquitousContentNameKey:documentName,
-                              //NSPersistentStoreUbiquitousContentURLKey: self.iCloudURL,
-                              NSMigratePersistentStoresAutomaticallyOption: @YES,
-                              NSInferMappingModelAutomaticallyOption:@YES};
-
-    
-   // MyCloudDocument
-    NSString *documentsStorePath =
-    [[self applicationDocumentsDirectory].path stringByAppendingPathComponent:@"MyCloudDocumentNew"];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:documentsStorePath]) {
-
-        [[NSFileManager defaultManager] createFileAtPath:documentsStorePath contents:nil attributes:nil];
-        //[[NSFileManager defaultManager] copyItemAtPath:defaultStorePath toPath:documentsStorePath error:NULL];
-    }
-    _persistentStoreCoordinator =
-    [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
-    
-    // Add the default store to our coordinator.
-    NSError *error;
-    NSURL *defaultStoreURL = [NSURL fileURLWithPath:documentsStorePath];
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                                   configuration:nil
-                                                             URL:defaultStoreURL
-                                                         options:nil
-                                                           error:&error]) {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-         
-         Typical reasons for an error here include:
-         * The persistent store is not accessible
-         * The schema for the persistent store is incompatible with current managed object model
-         Check the error message to determine what the actual problem was.
-         */
-        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
-        abort();
-    }
-    
-    return _persistentStoreCoordinator;
-
-}
-
 /**
  Returns the managed object model for the application.
  If the model doesn't already exist, it is created by merging all of the models found in the application bundle.
@@ -5656,26 +5111,6 @@ BOOL isNewTableRow;
     _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
     return _managedObjectModel;
 }
-
-/*
--(void) documentIsReady:(UIManagedDocument*) document
-{
-    if(document.documentState == UIDocumentStateNormal){
-        //try to save core data through update document
-        self.doc = document;
-        
-        
-        NSManagedObjectContext *buttonContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [buttonContext setParentContext:document.managedObjectContext];
-        self.buttonManagedObjectContext = buttonContext;
-        self.managedObjectContext = document.managedObjectContext;
-        
-    } else {
-        NSLog(@"Document state:%lu", (unsigned long)document.documentState);
-    }
-}
-
-*/
 
 #pragma mark VIEW_DID_LOAD
 - (void)viewDidLoad
@@ -6242,6 +5677,7 @@ BOOL isNewTableRow;
 */
 //CGFloat minButtonsCollectionHeight;
 CGFloat maxButtonsCollectionHeight;
+
 -(void)viewDidLayoutSubviews{
     if(DEBUG_MODE){
         NSLog(@"viewDidLayoutSubviews");
