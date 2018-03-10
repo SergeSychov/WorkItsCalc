@@ -4979,17 +4979,23 @@ BOOL isNewTableRow;
                 // NSLog(@"Close old sucesseful");
             }
             NSError *removeFileError;
-            [[NSFileManager defaultManager] removeItemAtURL:[document fileURL] error:&removeFileError];
+            if([[NSFileManager defaultManager] removeItemAtURL:[document fileURL] error:&removeFileError]){
+                if(DEBUG_MODE) NSLog(@"removeItemAtURL SUCCES");
+            }else {
+                if(DEBUG_MODE) NSLog(@"removeItemAtURL  NOT success");
+            }
         }];
         
         [self performFetch];
+
+        [self.managedObjectContext save:&error];
     }
 }
 
 -(void) checkICloudWith:(NSString*)fileName cloud:(NSString*)cloudName andKey:(NSString*)keyName
 {
     
-    NSLog(@"checkICloudWith file:%@, cloudName:%@ and keyName:%@", fileName, cloudName, keyName);//check iCloud store
+    if(DEBUG_MODE) NSLog(@"checkICloudWith file:%@, cloudName:%@ and keyName:%@", fileName, cloudName, keyName);//check iCloud store
     NSURL *documentsStoreURL =
     [[self applicationDocumentsDirectory] URLByAppendingPathComponent:fileName];
     UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:documentsStoreURL];
