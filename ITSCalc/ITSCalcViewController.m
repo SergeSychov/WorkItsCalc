@@ -4949,8 +4949,10 @@ BOOL isNewTableRow;
  */
 - (NSURL *)applicationDocumentsDirectory
 {
-    return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+   // return [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+     return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
 }
+
 #pragma mark DOCUMENT
 -(void) documentIsReady:(UIManagedDocument*) document
 {
@@ -5384,7 +5386,7 @@ BOOL isNewTableRow;
     group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
     
     // Add both effects to your view
-    [self.buttonsCollection addMotionEffect:group];
+    //[self.buttonsCollection addMotionEffect:group];
     [self.historyTable addMotionEffect:group];
 
 }

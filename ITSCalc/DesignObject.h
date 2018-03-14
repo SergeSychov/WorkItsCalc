@@ -40,7 +40,7 @@
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
 #define MOTION_IPAD 30.
-#define MOTION_IPHONE 15.
+#define MOTION_IPHONE 20.
 @class DesignObject;
 @protocol DesignStrDelegate <NSObject>
 -(UIUserInterfaceSizeClass)currentInterfaceClassSize;
