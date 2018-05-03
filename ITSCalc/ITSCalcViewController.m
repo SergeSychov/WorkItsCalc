@@ -62,7 +62,7 @@
 
 #import "CreateNewButtonViewController.h"
 
-#define DEBUG_MODE YES
+#define DEBUG_MODE NO
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
@@ -117,7 +117,7 @@
 #pragma mark CHANGES FROM OTHER CONTROLLERS
 NSString *const ReciveChangedNotification=@"SendChangedNotification";
 
-@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate, UIContentContainer,NSFilePresenter>
+@interface ITSCalcViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UIApplicationDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, HistoryTableViewCellDelegate, UICollectionViewDelegateFlowLayout,MFMailComposeViewControllerDelegate,UIAlertViewDelegate, DisplayRamDelegate, UITextViewDelegate, UIPopoverPresentationControllerDelegate, /* not shure its needed*/AppearedViewControllerProtocol, UIViewControllerTransitioningDelegate,ButtonsStoreProtocol, CellButtonActionDelegate, DesignStrDelegate, UIContentContainer,NSFilePresenter,AtrStrStoreSourse>
 
 
 //outlets
@@ -241,9 +241,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //@property (nonatomic) NSInteger design;
 @property (nonatomic) BOOL isNeedToBeReloadedAfterDesignChanged;
 
-@property (nonatomic) BOOL isiCloudInUse;
-@property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
-@property (nonatomic) BOOL fristLunchWithicloudAvailable;
+//@property (nonatomic) BOOL isiCloudInUse;
+//@property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
+//@property (nonatomic) BOOL fristLunchWithicloudAvailable;
 //need to set iClouds images whole & empty
 //arrays to quick start scrollViews (buttonsCollection & historyTable)
 //@property (nonatomic) NSArray* buttonsNames;
@@ -527,6 +527,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //attributes for history table
 -(NSDictionary*) attributes
 {
+    
     if(!_attributes){
 
         UIColor *textColor;
@@ -751,9 +752,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     } else if ([title isEqualToString:ALERT_ASSES_NO_BUTTON]){
         self.counterForShowingAllertView = -1;
         
-    } else if ([title isEqualToString:USE_ICLOUD]){
+    } /*else if ([title isEqualToString:USE_ICLOUD]){
         self.isiCloudInUse = YES;
-    }
+    }*/
     
 }
 
@@ -1257,12 +1258,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             //
             //show what i can
             //
+            /*
             if(self.counterForShowingAllertView > 26){
                 if(self.fristLunchWithicloudAvailable){
                     //Important set heere appeared view
                     //[self askUserForiCloudStorage];
                 }
             }
+            */
             if((25 < self.counterForShowingAllertView) && (self.counterForShowingAllertView < 37)){
                 
                 [self showHintViewAccordingCounter];
@@ -5003,24 +5006,24 @@ BOOL isNewTableRow;
     UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:documentsStoreURL];
     NSURL *iCloudURL = [[[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent: cloudName];
     
-    NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:keyName,
-                NSPersistentStoreUbiquitousContentURLKey: iCloudURL,
-                NSMigratePersistentStoresAutomaticallyOption:@YES,
-                NSInferMappingModelAutomaticallyOption:@YES};
-    document.persistentStoreOptions = options;
+    if(iCloudURL){
+        NSDictionary *options = @{NSPersistentStoreUbiquitousContentNameKey:keyName,
+                                  NSPersistentStoreUbiquitousContentURLKey: iCloudURL,
+                                  NSMigratePersistentStoresAutomaticallyOption:@YES,
+                                  NSInferMappingModelAutomaticallyOption:@YES};
+        document.persistentStoreOptions = options;
     
-    //oldICloudDocument = document;
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:documentsStoreURL.path]) {
-        //[self setStoreNotifications];
-        if(DEBUG_MODE) NSLog(@"Exist file");
-        [document openWithCompletionHandler:^(BOOL success) {
-            if (success){
-                [self documentIsReady:document];
-            } else {
-                if(DEBUG_MODE) NSLog(@"NOT SUCCESS TO OPEN MyCloudDocument");
-            }
-        }];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:documentsStoreURL.path]) {
+            //[self setStoreNotifications];
+            if(DEBUG_MODE) NSLog(@"Exist file");
+            [document openWithCompletionHandler:^(BOOL success) {
+                if (success){
+                    [self documentIsReady:document];
+                } else {
+                    if(DEBUG_MODE) NSLog(@"NOT SUCCESS TO OPEN MyCloudDocument");
+                }
+            }];
+    }
     }
 }
 -(void) checkPreviousStorage
@@ -5129,75 +5132,30 @@ BOOL isNewTableRow;
         //NSDate* appearDate = [NSDate date];
         NSLog(@"start view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     } */
-
-    //USER DEFAULT
-    id userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"wholeArray"];
-    if(userDefault && [self extractFromUserDefault:userDefault]){
-        
-    } else {
-        self.isBigDataBase = NO;
-        self.isBigSizeButtons = YES;//self.isBigSizeButtons = YES;
-        self.isSoundOn = YES;
-        //self.design = DESIGN_CLASSIC;
-        self.designObj = [[DesignObject alloc] initWithDesignIndex:DESIGN_CLASSIC forDelegator:self];
-        //self.designObj = [[DesignObject alloc] initWithDesignIndex:DESIGN_CLASSIC];
-        self.lastShowAllertViewDate = [NSDate date];
-        self.counterForShowingAllertView = 26;
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        self.currentProgrammVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
-    }
-    
     //IMPORTANT SET ATR STORE FOR BUTTONS
     self.atrStore = [[AtrStrStore alloc]init];
     self.atrStore.delegate = self;
     self.atrStore.design = self.designObj;
     
-    //ButtonsStore *buttonsStore = [[ButtonsStore alloc] init];
-    //buttonsStore.delegate = self;
+    //USER DEFAULT
+    //set KV Store selector
+    NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateKVStoreItems:)
+                                                 name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                               object:store];
+    //Important.What is this
+    //[store setString:@"Test" forKey:@"Test"];
+    [store synchronize];
+    
+    [self setMainProperties]; // set main properties from user default or initial defaults
+    [self setupStorage]; //setup icloud storage
 
-    //[UIDevice currentDevice]
-    //for testing delegate
-    //set Hegths of ellement according screen height
-    
-    
-    //check the first launch with available iCloud
-    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"firstLuanchValueStorage"]){
-        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:YES]
-                                                 forKey:@"firstLuanchValueStorage"];
-        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:NO]
-                                                 forKey:@"userUseiCloud"];
-
-        self.fristLunchWithicloudAvailable = YES;
-        self.isiCloudInUse = NO;
-    } else {
-        self.fristLunchWithicloudAvailable = [[[NSUserDefaults standardUserDefaults] objectForKey:@"firstLuanchValueStorage"] boolValue];
-        self.isiCloudInUse = [[[NSUserDefaults standardUserDefaults]
-                              objectForKey:@"userUseiCloud"] boolValue];
-    }
-    //[self checkForiCloud]; //set enable iCloud switcher and possibility of iCloud
-    if(self.isiCloudInUse){
-        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(updateKVStoreItems:)
-                                                     name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-                                                   object:store];
-        
-        //Important.What is this
-        [store setString:@"Test" forKey:@"Test"];
-        [store synchronize];
-    }
-    
-    [self setupStorage];
-
-    
     [super viewDidLoad];
-    
-    /*
+
     UIGraphicsBeginImageContext(self.view.bounds.size);
     UIGraphicsEndImageContext();
-
-    
-    
+    /*
     if(IS_IPAD){
         //self.noticeButton.enabled = NO;
     }
@@ -5211,43 +5169,14 @@ BOOL isNewTableRow;
     self.moveButtonsPanGestureRecognizer.delegate = self;
     self.isThreadInWork = NO;
     
-    
-
-    
-    //key value iCloudStorage
-    if([self extractKeyValuesFromStorage]){
-        [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
-        //[self showStringThruManageDocument];
-    } else {
-        [self.displayRam clearRam];//to key value
-        [self.mainLabel showString:[self.displayRam addSymbol:@0]];//to key value
-        
-        self.memoryOneLabel.text = @"";//to key value
-        self.memoryTwoLabel.text = @"";//to key value
-        self.decLabel.text = @"DEG";//to key value
-        self.userIsInTheMidleOfEnteringNumber = YES;//to key value
-        self.isProgramInProcess = NO;//to key value
-        self.isStronglyArgu = NO;//to key value
-        self.isResultFromMemory = NO;//to key value
-        self.isDecCounting = YES;//to key value
-        //Important WOKS With days trial
-        self.isTrialPeriod = YES;
-        self.lastRowDataArray = nil;
-        
-        //
-        //
-        self.nexNeedShovewTrialViewDay = 20;
-        NSDate *date = [NSDate date];
-        self.startTrialDate = date;
-    }
-    
-
+    /*
     if(IS_BLACK_MODE){
         [self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
         [self.buttonsCollection setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:1]];
     } else {
         //[self.historyTable setBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1]];
     }
+    */
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
@@ -5362,6 +5291,9 @@ BOOL isNewTableRow;
     /*if(DEBUG_MODE){
         NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     }*/
+    
+    
+    /*
     // Set vertical effect
 
     id motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? [NSNumber numberWithFloat: MOTION_IPAD]:[NSNumber numberWithFloat: MOTION_IPHONE];
@@ -5385,9 +5317,11 @@ BOOL isNewTableRow;
     UIMotionEffectGroup *group = [UIMotionEffectGroup new];
     group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
     
+    
     // Add both effects to your view
     //[self.buttonsCollection addMotionEffect:group];
     [self.historyTable addMotionEffect:group];
+     */
 
 }
 
@@ -5928,11 +5862,11 @@ CGFloat maxButtonsCollectionHeight;
 static BOOL isNeedReloadAfterOtherController;
 
 -(void)upDateButtonsCollectionAfterChanginSize{
-    /*if(DEBUG_MODE){
+    if(DEBUG_MODE){
         NSLog(@"upDateButtonsCollectionAfterChanginSize view:%f", self.view.bounds.size.width);
         NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerView.bounds.size.width);
         NSLog(@"upDateButtonsCollectionAfterChanginSize buttonsCollection:%f", self.mainContainerWidth.constant);
-    }*/
+    }
 
     if((self.buttonsCollection.bounds.size.width != buttonsCollectionWidth) && (self.mainContainerWidth.constant!=0)){
         CGFloat width = self.view.bounds.size.width;
@@ -6042,66 +5976,18 @@ static BOOL isNeedReloadAfterOtherController;
     [self.buttonsCollection setCollectionViewLayout:buttonsFlowLayout animated:YES];
 }
 
-#pragma mark updateKVStoreItems
 
-- (void)updateKVStoreItems:(NSNotification*)notification {
-
-    NSDictionary* userInfo = [notification userInfo];
-    NSNumber* reasonForChange = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangeReasonKey];
-    NSInteger reason = -1;
-    
-    // If a reason could not be determined, do not update anything.
-    if (!reasonForChange)
-        return;
-    
-    // Update only for changes from the server.
-    reason = [reasonForChange integerValue];
-    if ((reason == NSUbiquitousKeyValueStoreServerChange) ||
-        (reason == NSUbiquitousKeyValueStoreInitialSyncChange)) {
-        // If something is changing externally, get the changes
-        // and update the corresponding keys locally.
-        NSArray* changedKeys = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangedKeysKey];
-        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
-        NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-        
-        // This loop assumes you are using the same key names in both
-        // the user defaults database and the iCloud key-value store
-        for (NSString* key in changedKeys) {
-            id value = [store objectForKey:key];
-            [userDefaults setObject:value forKey:key];
-        }
-    }
-}
 
 //only at real enter in foregraund not at launch
 -(void) appWillEnterForeground
 {
-    if(self.isiCloudInUse){
-        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(updateKVStoreItems:)
-                                                     name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-                                                   object:store];
-        [store setString:@"Test" forKey:@"Test"];
-        
-        [store synchronize];
-    }
+    NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateKVStoreItems:)
+                                                 name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                               object:store];
+    [store synchronize];
 
-    if([self extractKeyValuesFromStorage]){
-        [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
-    } else {
-        [self.displayRam clearRam];//to key value
-        [self.mainLabel showString:[self.displayRam addSymbol:@0]];//to key value
-        
-        self.memoryOneLabel.text = @"";//to key value
-        self.memoryTwoLabel.text = @"";//to key value
-        self.decLabel.text = @"DEG";//to key value
-        self.userIsInTheMidleOfEnteringNumber = YES;//to key value
-        self.isProgramInProcess = NO;//to key value
-        self.isStronglyArgu = NO;//to key value
-        self.isResultFromMemory = NO;//to key value
-        self.isDecCounting = YES;//to key value
-    }
     
     //strange
     
@@ -6252,15 +6138,12 @@ static BOOL isNeedReloadAfterOtherController;
    // [self discardChanging];
 
     
+    //what is this
     [self deleteSuperfluousValuesFromManagedDocuments];
     
     [self.buttonsCollection reloadData];
     
-    NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
-    [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
-    [self setKeyValuesFromStorage];
-    [defaults synchronize];
+    [self saveMainProperties];
     
 }
 
@@ -6271,11 +6154,7 @@ static BOOL isNeedReloadAfterOtherController;
     //[self.managedObjectContext save:&error];
     [self.buttonManagedObjectContext save: &error];
 
-
-    [self setKeyValuesFromStorage];
-    NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
-    [defaults synchronize];
+    [self saveMainProperties];
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -6316,7 +6195,7 @@ static BOOL isNeedReloadAfterOtherController;
     
     ITSCalcAppDelegate* appClass = (ITSCalcAppDelegate*)[[UIApplication sharedApplication] delegate];//((AppDelegate *)
     NSDate* launchTime = appClass.launchDate;
-    //NSDate* appearDate = [NSDate date];
+   //NSDate* appearDate = [NSDate date];
     //if(DEBUG_MODE) NSLog(@"viewDidAppear Apperaing time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     
     if(!IS_IPAD){
@@ -6334,7 +6213,7 @@ static BOOL isNeedReloadAfterOtherController;
 
 -(void) viewWillAppear:(BOOL)animated{
     
-   //if(DEBUG_MODE) NSLog(@"MainView Will appear");
+   if(DEBUG_MODE) NSLog(@"MainView Will appear");
     if(self.isSoundOn){
         AudioServicesPlaySystemSound (_blankSoundFileObject);
     }
@@ -6410,11 +6289,11 @@ sourceController:(UIViewController *)source
             
             self.isBigDataBase = [[notification.userInfo objectForKey:keys[0]] boolValue];
             
-        } else if([key isEqualToString:@"isiCloudInUse"]){
+        } /*else if([key isEqualToString:@"isiCloudInUse"]){
             
             self.isiCloudInUse = [[notification.userInfo objectForKey:keys[0]] boolValue];
             
-        } else if([key isEqualToString:@"wasPurshaised"]){
+        }*/ else if([key isEqualToString:@"wasPurshaised"]){
             
             self.wasPurshaised = [[notification.userInfo objectForKey:keys[0]] boolValue];
             
@@ -6469,13 +6348,13 @@ sourceController:(UIViewController *)source
     
     //set all properties
     self.settingsController.designObj = self.designObj;
-    self.settingsController.isiCloudInUse = self.isiCloudInUse;;
+    //self.settingsController.isiCloudInUse = self.isiCloudInUse;;
     self.settingsController.isBigDataBase = self.isBigDataBase; //size dataBase
     self.settingsController.isSoundOn = self.isSoundOn;
     self.settingsController.isBigSizeButtons = self.isBigSizeButtons;
     self.settingsController.isTrialPeriod = self.isTrialPeriod;
     self.settingsController.wasPurshaised = self.wasPurshaised;
-    self.settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
+    //self.settingsController.isiCloudUseSwitcherEnabled = self.isiCloudUseSwitcherEnabled;
     self.settingsController.designObj = self.designObj;
 
     //settingsController.isTrialPeriod = self.isTrialPeriod;
@@ -6815,223 +6694,495 @@ sourceController:(UIViewController *)source
     //2. need to reset all views
 }
 
-#pragma mark KEY VALUE STORAGE
--(void) setKeyValuesFromStorage
-{
-    NSMutableArray *wholeArray = [[NSMutableArray alloc] init];
-    NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
+
+
+
+#pragma mark SET PROPERTIES
+//default properties keys
+#define PROG_PROPERTIES_KEY @"programmPropertiesArray"
+#define OLD_KEY_VALUES_KEY @"keyValuesArrayLast"
+#define OLD_WHOLE_PROG_KEY @"wholeArray"
+//define keys for default properies
+//prog condition for iCloud
+//#define TRIAL_PERIOD @"isTrialPeriod" //17
+//#define NEXT_TRIAL_ALLERT_DATE @"nexNeedShovewTrialViewDay"//18
+//#define START_TRIAL_DATE @"startTrialDate"//19
+//#define WAS_BUYED @"wasPurshaised"
+
+//main properties
+
+
+#define DISP_FIRST_MEM @"firstMemoryStack"//1
+#define DISP_SEC_MEM @"secondMemoryStack"//2
+#define DISP_GRAD   @"secondMemoryStack"//3
+#define DISP_RESULT @"resultNumber"//4
+#define BRAIN @"brainFromDefaults"//5
+#define RES_FROM_MEMORY @"isResultFromMemory"//6
+#define DEC_RAD @"isDecCounting"//7
+#define STRONG_ARGUMENT @"isStronglyArgu"//8
+#define PROG_IN_PROCESS @"isProgramInProcess"//9
+#define USER_ENTERING @"userIsInTheMidleOfEnteringNumber"//10
+#define LAST_ROW @"lastRowDataArray"//11
+
+#define ALLERT_VIEW_COUNTER @"counterForShowingAllertView"//12
+#define SOUND_SWITCH_POSITION @"isSoundOn"//13
+#define BUTTONS_SIZE @"isBigSizeButtons"//14
+#define SIZE_DATA_BASE @"isBigDataBase"//15 data base sixe
+#define DATE_LAST_ALLERT @"lastShowAllertViewDate"//16 date of last showing allert view
+
+#define PROG_VERSION @"currentProgrammVersion"//20
+#define DESIGN_NUMBER   @"designNumber"//21
+#define INFO_STRINGS @"InfoStringsArray"//22 info histroy strings array
+#define MAIN_STRINGS @"MainStringsArray"//23 main history strings archived
+#define CELL_HEIGHTS @"CellHeightsArray"//24 history cell's heights array arhived
+#define BUTTON_NAMES @"WorkButtonNames" //25 work button names array archived
+
+#define TRIAL_DATE @"startTrialDate"
+#define NEXT_SHOW_TRIAL_DATE @"nexNeedShovewTrialViewDay"
+#define IS_TRIAL @"isTrialPeriod"
+#define WAS_BUYED @"userHaveMadePurchase"
+
+#define SAVE_HISTORY_QNTITY 10
+
+-(void)setMainProperties{
+    //1. chek and delete old keyValuesArray
+    [self checkAndDeleteOldKeyValuesArray];
+    //2. if no new version check old versions
+    [self checkAndSetPropertiesFromUserDefaultOrDefaultValues];
+    //3. if no old and new versions set valuess by default
+}
+-(void) saveMainProperties{
+    [self saveUserDefaults];
+    [self saveKVStoreItems];
+}
+-(void)checkAndSetPropertiesFromUserDefaultOrDefaultValues{
+    if(DEBUG_MODE) NSLog(@"checkAndSetPropertiesFromUserDefaultOrDefaultValues");
     
-    [controllerArray addObject:self.lastRowDataArray];//to key value last row
-    [controllerArray addObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber]];//to key value
-    [controllerArray addObject:[NSNumber numberWithBool:self.isProgramInProcess]];//to key value
-    [controllerArray addObject:[NSNumber numberWithBool:self.isStronglyArgu]];//to key value
-    [controllerArray addObject:[NSNumber numberWithBool:self.isDecCounting]];//to key value
-    [controllerArray addObject:[NSNumber numberWithBool:self.isResultFromMemory]];//to key value
-    [controllerArray addObject:[NSNumber numberWithBool:self.isTrialPeriod]];//to kay value
-    [controllerArray addObject:[NSNumber numberWithInteger:self.nexNeedShovewTrialViewDay]];
-    [controllerArray addObject:self.startTrialDate];
-    
-    
-    [wholeArray addObject:[controllerArray copy]];
-    
-    [wholeArray addObject:[self.brain arrayToSaveBrain]]; //to key value
-    
-    NSMutableArray *displayRamArray = [[NSMutableArray alloc] init]; //to key value
-    [displayRamArray addObject:self.displayRam.firstMemoryStack];//to key value
-    [displayRamArray addObject:self.displayRam.secondMemoryStack];//to key value
-    [displayRamArray addObject:self.displayRam.gradArray];//to key value
-    [displayRamArray addObject:self.displayRam.resultNumber];//to key value
-    [wholeArray addObject:[displayRamArray copy]];//to key value
-    if(self.isiCloudInUse){
-        NSUbiquitousKeyValueStore *kvStore = [NSUbiquitousKeyValueStore defaultStore];
-        [kvStore setObject:[wholeArray copy] forKey:@"keyValuesArray"];
-        [kvStore synchronize];
-        
+    //------------------- from keyValuesArrayLast--------------------------------------
+    id valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DISP_RESULT];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.displayRam.resultNumber = valueForKey;
+    } else {
+        [self.displayRam clearRam];
     }
     
-        NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-        //[defaults setObject:self.workButtonsNames forKey:@"preWorkButtonsNames"];
-        [defaults setObject:[wholeArray copy] forKey:@"keyValuesArray"];
-        [defaults synchronize];
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DISP_GRAD];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSArray class]]){
+        self.displayRam.gradArray = valueForKey;
+    } else {
+        self.displayRam.gradArray  = [NSArray array];
+        self.displayRam.isGradMinutesSecons = 0;
+        self.displayRam.resDictionary = nil;
+    }
     
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DISP_SEC_MEM];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSArray class]]){
+        self.displayRam.secondMemoryStack = valueForKey;
+        //set the memory mark
+        NSArray* test = [valueForKey copy];
+        if([test count] > 0) {
+            self.memoryTwoLabel.text = @"MI";
+        } else {
+            self.memoryTwoLabel.text = @"";
+        }
+    } else {
+        self.memoryTwoLabel.text = @"";//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DISP_FIRST_MEM];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSArray class]]){
+        self.displayRam.firstMemoryStack = valueForKey;
+        //set the memory mark
+        NSArray* test = [valueForKey copy];
+        if([test count] > 0) {
+            self.memoryOneLabel.text = @"M";
+        } else {
+            self.memoryOneLabel.text = @"";
+        }
+    } else {
+        self.memoryOneLabel.text = @"";//to key value
+    }
+    [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
+
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:BRAIN];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSArray class]]){
+        self.brain = [ACalcBrain brainFromSavedArray:valueForKey];
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:RES_FROM_MEMORY];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isResultFromMemory = [valueForKey boolValue];
+    } else {
+        self.isResultFromMemory = NO;//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DEC_RAD];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isDecCounting = [valueForKey boolValue];
+    } else {
+        self.isDecCounting = YES;//to key value
+        self.decLabel.text = @"DEG";//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:STRONG_ARGUMENT];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isStronglyArgu = [valueForKey boolValue];
+    } else {
+        self.isStronglyArgu = NO;//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:PROG_IN_PROCESS];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isProgramInProcess = [valueForKey boolValue];
+    } else {
+        self.isProgramInProcess = NO;//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:USER_ENTERING];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.userIsInTheMidleOfEnteringNumber = [valueForKey boolValue];
+    } else {
+        self.userIsInTheMidleOfEnteringNumber = YES;//to key value
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:LAST_ROW];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSArray class]]){
+        self.lastRowDataArray = valueForKey;
+    } else {
+        self.lastRowDataArray = nil;
+    }
+    //--------------------------------from old wholeArray---------------------------------------------
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:ALLERT_VIEW_COUNTER];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.counterForShowingAllertView= [valueForKey integerValue];
+    } else {
+        self.counterForShowingAllertView = 26;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:SOUND_SWITCH_POSITION];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isSoundOn = [valueForKey boolValue];
+    } else {
+        self.isSoundOn = YES;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:BUTTONS_SIZE];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isBigSizeButtons = [valueForKey boolValue];
+    } else {
+         self.isBigSizeButtons = YES;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:SIZE_DATA_BASE];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isBigDataBase = [valueForKey boolValue];
+    } else {
+        self.isBigDataBase = NO;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DATE_LAST_ALLERT];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSDate class]]){
+        self.lastShowAllertViewDate = valueForKey;
+    } else {
+        self.lastShowAllertViewDate = [NSDate date];
+    }
+    
+    //---------------------------- new features------------------------------------------------------
+    
+    //-----Trial Period--------------------------------------------------------------------
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:TRIAL_DATE];
+    if(valueForKey && [valueForKey isKindOfClass:[NSDate class]]){
+        self.startTrialDate = valueForKey;
+    } else {
+        self.startTrialDate = [NSDate date];
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:NEXT_SHOW_TRIAL_DATE];
+    if(valueForKey && [valueForKey isKindOfClass:[NSNumber class]]){
+        self.nexNeedShovewTrialViewDay = [valueForKey integerValue];
+    }else{
+        self.nexNeedShovewTrialViewDay = 20;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:IS_TRIAL];
+    if(valueForKey && [valueForKey isKindOfClass:[NSNumber class]]){
+        self.isTrialPeriod = [valueForKey boolValue];
+    } else {
+        self.isTrialPeriod = YES;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:WAS_BUYED];
+    if(valueForKey && [valueForKey isKindOfClass:[NSNumber class]]){
+        self.wasPurshaised = [valueForKey boolValue];
+    } else {
+        self.wasPurshaised = NO;
+    }
+    //-------------------------------------------------------------------------
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:PROG_VERSION];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSString class]]){
+        self.currentProgrammVersion= valueForKey;
+        //check for new version
+        NSString *realVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+        if(![self.currentProgrammVersion isEqualToString:realVersion]){
+            self.counterForShowingAllertView= 37;
+            //important
+            //set here show aboutView with new functions and trial additions
+            //if the changes are so big and i whon show it to user
+            //set it manualy every time
+            //Important WOKS With days trial
+            self.isTrialPeriod = YES;
+            self.nexNeedShovewTrialViewDay = 20;
+            self.startTrialDate = [NSDate date];
+            self.currentProgrammVersion = realVersion;
+        }
+    } else {
+        self.currentProgrammVersion =  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:DESIGN_NUMBER];
+    if(valueForKey &&  [valueForKey isKindOfClass:[NSNumber class]]){
+        self.designObj = [[DesignObject alloc] initWithDesignIndex:[valueForKey integerValue] forDelegator:self];
+    } else {
+        self.designObj = [[DesignObject alloc] initWithDesignIndex:DESIGN_CLASSIC forDelegator:self];
+    }
+
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:INFO_STRINGS];
+    if(valueForKey && [valueForKey isKindOfClass:[NSData class]]){
+        self.infoAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:valueForKey];
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:MAIN_STRINGS];
+    if(valueForKey && [valueForKey isKindOfClass:[NSData class]]){
+        self.mainAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:valueForKey];
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:CELL_HEIGHTS];
+    if(valueForKey && [valueForKey isKindOfClass:[NSArray class]]){
+        self.cellHeights = valueForKey;
+    }
+    
+    valueForKey = [[NSUserDefaults standardUserDefaults] objectForKey:BUTTON_NAMES];
+    if(valueForKey && [valueForKey isKindOfClass:[NSData class]]){
+        self.buttonsStore.workButtonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:valueForKey];
+    }
+    
+    //not shure that its necessary BUT need to check
+    [self.mainLabel showString:[self.displayRam setResult:self.displayRam.resultNumber]];
 }
 
--(BOOL) extractKeyValuesFromStorage
-{
-    BOOL sucsess = YES;
+#pragma mark OLD USER DEFAULTS
+-(void)checkAndDeleteOldKeyValuesArray{
+    if(DEBUG_MODE) NSLog(@"checkAndDeleteOldKeyValuesArray");
     id userDefault;
-
-    userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:@"keyValuesArray"];
-
-    
+    //check keyValuesArray
+    userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:OLD_KEY_VALUES_KEY];
     if(userDefault && [userDefault isKindOfClass:[NSArray class]]){
         NSMutableArray *wholeArray = [userDefault mutableCopy];
-    
         //extract disaply
         id displayRamArray = [[wholeArray lastObject] mutableCopy];
-        
-        DisplayRam *newDisplayRam;
-        if(!self.displayRam){
-            newDisplayRam = [[DisplayRam alloc] init];
-            newDisplayRam.delegate = self;
-        }else {
-            newDisplayRam = self.displayRam;
-        }
-        
         if(displayRamArray && [displayRamArray isKindOfClass:[NSArray class]]){
             id top = [displayRamArray lastObject];
             if(top && [top isKindOfClass:[NSNumber class]]){
-                newDisplayRam.resultNumber = top;
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:DISP_RESULT];
                 [displayRamArray removeLastObject];
                 top = [displayRamArray lastObject];
-            } else {
-                return  NO;
             }
-        
-            if(top && [top isKindOfClass:[NSArray class]]){
-                newDisplayRam.gradArray = top;
-                [displayRamArray removeLastObject];
-                top = [displayRamArray lastObject];
-            } else {
-                return  NO;
-            }
-        
-            if(top && [top isKindOfClass:[NSArray class]]){
-                newDisplayRam.secondMemoryStack = top;
-                //set the memory mark
-                NSArray* test = [top copy];
-                if([test count] > 0) {
-                    self.memoryTwoLabel.text = @"MI";
-                } else {
-                    self.memoryTwoLabel.text = @"";
-                }
-                [displayRamArray removeLastObject];
-                top = [displayRamArray lastObject];
-            } else {
-                return  NO;
-            }
-        
-            if(top && [top isKindOfClass:[NSArray class]]){
-                newDisplayRam.firstMemoryStack = top;
-                //set the memory mark
-                NSArray* test = [top copy];
-                if([test count] > 0) {
-                    self.memoryOneLabel.text = @"M";
-                } else {
-                    self.memoryOneLabel.text = @"";
-                }
             
-            } else {
-                return  NO;
+            if(top && [top isKindOfClass:[NSArray class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:DISP_GRAD];
+                [displayRamArray removeLastObject];
+                top = [displayRamArray lastObject];
             }
-            self.displayRam = newDisplayRam;
-        
+            
+            if(top && [top isKindOfClass:[NSArray class]]){
+                 [[NSUserDefaults standardUserDefaults] setObject:top forKey:DISP_SEC_MEM];
+                [displayRamArray removeLastObject];
+                top = [displayRamArray lastObject];
+            }
+            if(top && [top isKindOfClass:[NSArray class]]){
+                 [[NSUserDefaults standardUserDefaults] setObject:top forKey:DISP_FIRST_MEM];
+            }
             [wholeArray removeLastObject];
-        
-        } else {
-            return  NO;
         }
-    
         //set brain
         id brainArray = [wholeArray lastObject];
         if(brainArray && [brainArray isKindOfClass:[NSArray class]]){
-            self.brain = [ACalcBrain brainFromSavedArray:brainArray];
+            [[NSUserDefaults standardUserDefaults] setObject:brainArray forKey:BRAIN];
             [wholeArray removeLastObject];
-        } else {
-            return  NO;
         }
-    
-    //set controller
+        
+        //set controller
         id controllerArray = [[wholeArray lastObject] mutableCopy];
         if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
-        
             id top = [controllerArray lastObject];
-            //-----Trial Period
-            if(top && [top isKindOfClass:[NSDate class]]){
-                self.startTrialDate = top;
-                [controllerArray removeLastObject];
-                top = [controllerArray lastObject];
-            } else {
-                return  NO;
-            }
             if(top && [top isKindOfClass:[NSNumber class]]){
-                self.nexNeedShovewTrialViewDay = [top integerValue];
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:RES_FROM_MEMORY];
                 [controllerArray removeLastObject];
                 top = [controllerArray lastObject];
-            } else {
-                return  NO;
             }
+            
             if(top && [top isKindOfClass:[NSNumber class]]){
-                self.isTrialPeriod = [top boolValue];
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:DEC_RAD];
                 [controllerArray removeLastObject];
                 top = [controllerArray lastObject];
-            } else {
-                return  NO;
             }
-        //-----------------------------------------
-        
+            
             if(top && [top isKindOfClass:[NSNumber class]]){
-                self.isResultFromMemory = [top boolValue];
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:STRONG_ARGUMENT];
                 [controllerArray removeLastObject];
                 top = [controllerArray lastObject];
-            } else {
-                return  NO;
             }
-        
+            
             if(top && [top isKindOfClass:[NSNumber class]]){
-                self.isDecCounting = [top boolValue];
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:PROG_IN_PROCESS];
                 [controllerArray removeLastObject];
                 top = [controllerArray lastObject];
-            } else {
-                return  NO;
             }
-        
+            
             if(top && [top isKindOfClass:[NSNumber class]]){
-                self.isStronglyArgu = [top boolValue];
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:USER_ENTERING];
                 [controllerArray removeLastObject];
                 top = [controllerArray lastObject];
-            } else {
-                return  NO;
-            }
-        
-            if(top && [top isKindOfClass:[NSNumber class]]){
-                self.isProgramInProcess = [top boolValue];
-                [controllerArray removeLastObject];
-                top = [controllerArray lastObject];
-            } else {
-                return  NO;
-            }
-        
-            if(top && [top isKindOfClass:[NSNumber class]]){
-                self.userIsInTheMidleOfEnteringNumber = [top boolValue];
-                [controllerArray removeLastObject];
-                top = [controllerArray lastObject];
-
-            } else {
-                return  NO;
             }
             
             if(top && [top isKindOfClass:[NSArray class]]){
-                self.lastRowDataArray = top;
-                //[controllerArray removeLastObject];
-                //top = [controllerArray lastObject];
-                
-            } else {
-                return  NO;
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:LAST_ROW];
             }
-
-        } else {
-            return  NO;
         }
-    } else {
-        return NO;
+        //clear keyValuesArray defaults
+        [[NSUserDefaults  standardUserDefaults] removeObjectForKey:OLD_KEY_VALUES_KEY];
+        if(DEBUG_MODE) NSLog(@"checkAndDeleteOldKeyValuesArray removeObjectForKey OLD_KEY_VALUES_KEY");
     }
-
-    return sucsess;
+    //-------------------------------------------------------------------------------------
+    userDefault = [[NSUserDefaults standardUserDefaults] objectForKey:OLD_WHOLE_PROG_KEY];
+    if(userDefault && [userDefault isKindOfClass:[NSArray class]]){
+        NSMutableArray *wholeArray = [userDefault mutableCopy];
+        //set controller
+        id controllerArray = [[wholeArray lastObject] mutableCopy];
+        if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
+            id top = [controllerArray lastObject];
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:ALLERT_VIEW_COUNTER];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            }
+            
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:SOUND_SWITCH_POSITION];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            }
+            
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:BUTTONS_SIZE];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            }
+            
+            if(top && [top isKindOfClass:[NSNumber class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:SIZE_DATA_BASE];
+                [controllerArray removeLastObject];
+                top = [controllerArray lastObject];
+            }
+            
+            if(top && [top isKindOfClass:[NSDate class]]){
+                [[NSUserDefaults standardUserDefaults] setObject:top forKey:DATE_LAST_ALLERT];
+                self.lastShowAllertViewDate = top;
+            }
+        }
+         [[NSUserDefaults  standardUserDefaults] removeObjectForKey:OLD_WHOLE_PROG_KEY];
+        if(DEBUG_MODE) NSLog(@"checkAndDeleteOldKeyValuesArray removeObjectForKey OLD_WHOLE_PROG_KEY");
+    }
 }
 
-#pragma mark FOR USER DEFAULT
-#define SAVE_HISTORY_QNTITY 10
+-(void)saveUserDefaults{
+    NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:self.displayRam.resultNumber forKey:DISP_RESULT];//1
+    [defaults setObject:self.displayRam.gradArray forKey:DISP_GRAD];//2
+    [defaults setObject:self.displayRam.secondMemoryStack forKey:DISP_SEC_MEM];//3
+    [defaults setObject:self.displayRam.firstMemoryStack forKey:DISP_FIRST_MEM];//4
+    [defaults setObject:[self.brain arrayToSaveBrain] forKey:BRAIN];//5
+    [defaults setObject:[NSNumber numberWithBool:self.isResultFromMemory] forKey:RES_FROM_MEMORY];//6
+    [defaults setObject:[NSNumber numberWithBool:self.isDecCounting] forKey:DEC_RAD];//7
+    [defaults setObject:[NSNumber numberWithBool:self.isStronglyArgu] forKey:STRONG_ARGUMENT];//8
+    [defaults setObject:[NSNumber numberWithBool:self.isProgramInProcess] forKey:PROG_IN_PROCESS];//9
+    [defaults setObject:[NSNumber numberWithBool:self.userIsInTheMidleOfEnteringNumber] forKey:USER_ENTERING];//10
+    [defaults setObject:self.lastRowDataArray forKey:LAST_ROW];//11
+    
+    [defaults setObject:[NSNumber numberWithBool:self.isSoundOn] forKey:SOUND_SWITCH_POSITION];//13
+    [defaults setObject:[NSNumber numberWithBool:self.isBigSizeButtons] forKey:BUTTONS_SIZE];//14
+    [defaults setObject:[NSNumber numberWithBool:self.isBigDataBase] forKey:SIZE_DATA_BASE];//15
+    [defaults setObject:self.lastShowAllertViewDate forKey:DATE_LAST_ALLERT];//16 - to Key Value Storage
+    
+    [defaults setObject:[NSNumber numberWithInteger:self.counterForShowingAllertView] forKey:ALLERT_VIEW_COUNTER];//12 - to Key Value Storage
+    //---------------------------- new features------------------------------------------
+    [defaults setObject:self.startTrialDate forKey:TRIAL_DATE];//17 - to Key Value Storage
+    [defaults setObject:[NSNumber numberWithInteger:self.nexNeedShovewTrialViewDay] forKey:NEXT_SHOW_TRIAL_DATE];//18 - to Key Value Storage
+    [defaults setObject:[NSNumber numberWithBool:self.isTrialPeriod]  forKey:IS_TRIAL];//19 - to Key Value Storage
+    [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised]  forKey:WAS_BUYED];//26 - to Key Value Storage
+    
+    [defaults setObject:self.currentProgrammVersion forKey:PROG_VERSION];//20
+    [defaults setObject:[NSNumber numberWithInteger:self.designObj.designNumber] forKey:DESIGN_NUMBER];//21
+    [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.infoAttributedStrings]] forKey:INFO_STRINGS];//22
+    [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.mainAttributedStrings]] forKey:MAIN_STRINGS];//23
+    [defaults setObject:self.cellHeights forKey:CELL_HEIGHTS];//24
+    [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsStore.workButtonsNames] forKey:BUTTON_NAMES];//25
+    
+    [defaults synchronize];
+}
+
+#pragma mark KEY VALUE STORAGE
+#pragma mark updateKVStoreItems
+
+- (void)updateKVStoreItems:(NSNotification*)notification {
+    
+    NSDictionary* userInfo = [notification userInfo];
+    NSNumber* reasonForChange = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangeReasonKey];
+    NSInteger reason = -1;
+    
+    // If a reason could not be determined, do not update anything.
+    if (!reasonForChange)
+        return;
+    
+    // Update only for changes from the server.
+    reason = [reasonForChange integerValue];
+    if ((reason == NSUbiquitousKeyValueStoreServerChange) ||
+        (reason == NSUbiquitousKeyValueStoreInitialSyncChange)) {
+        // If something is changing externally, get the changes
+        // and update the corresponding keys locally.
+        NSArray* changedKeys = [userInfo objectForKey:NSUbiquitousKeyValueStoreChangedKeysKey];
+        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+        NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+        
+        // This loop assumes you are using the same key names in both
+        // the user defaults database and the iCloud key-value store
+        for (NSString* key in changedKeys) {
+            id value = [store objectForKey:key];
+            [userDefaults setObject:value forKey:key];
+            
+            if([key isEqualToString:DATE_LAST_ALLERT] && value &&  [value isKindOfClass:[NSDate class]]) self.lastShowAllertViewDate = value;
+            if([key isEqualToString:TRIAL_DATE] && value &&  [value isKindOfClass:[NSDate class]]) self.startTrialDate = value;
+            if([key isEqualToString:NEXT_SHOW_TRIAL_DATE] && value &&  [value isKindOfClass:[NSNumber class]]) self.nexNeedShovewTrialViewDay = [value integerValue];
+            if([key isEqualToString:IS_TRIAL] && value &&  [value isKindOfClass:[NSNumber class]]) self.isTrialPeriod = [value boolValue];
+            if([key isEqualToString:WAS_BUYED] && value &&  [value isKindOfClass:[NSNumber class]]) self.wasPurshaised = [value boolValue];
+        }
+    }
+}
+-(void)saveKVStoreItems{
+    NSUbiquitousKeyValueStore *kvStore = [NSUbiquitousKeyValueStore defaultStore];
+    [kvStore setObject:self.lastShowAllertViewDate forKey:DATE_LAST_ALLERT];//16 - to Key Value Storage
+    
+    [kvStore setObject:[NSNumber numberWithInteger:self.counterForShowingAllertView] forKey:ALLERT_VIEW_COUNTER];//12 - to Key Value Storage
+    //---------------------------- new features------------------------------------------
+    [kvStore setObject:self.startTrialDate forKey:TRIAL_DATE];//17 - to Key Value Storage
+    [kvStore setObject:[NSNumber numberWithInteger:self.nexNeedShovewTrialViewDay] forKey:NEXT_SHOW_TRIAL_DATE];//18 - to Key Value Storage
+    [kvStore setObject:[NSNumber numberWithBool:self.isTrialPeriod]  forKey:IS_TRIAL];//19 - to Key Value Storage
+    [kvStore setObject:[NSNumber numberWithBool:self.wasPurshaised]  forKey:WAS_BUYED];//26 - to Key Value Storage
+    [kvStore synchronize];
+}
+
 -(NSArray*)returnOnlyMinQntity:(NSInteger)qnt fromArray:(NSArray*)arr{
     NSArray* retArray;
     //save only ten history cells heights
@@ -7042,141 +7193,35 @@ sourceController:(UIViewController *)source
     }
     return retArray;
 }
+
+/*
 -(NSArray*) arrayToUserDefault
 {
     NSMutableArray *wholeArray = [[NSMutableArray alloc] init];
     
     NSMutableArray *controllerArray = [[NSMutableArray alloc] init];
     
-    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsStore.workButtonsNames]];
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsStore.workButtonsNames]]; //BUTTON_NAMES
     
-    [controllerArray addObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.cellHeights]];
-    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.mainAttributedStrings]]];
-    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.infoAttributedStrings]]];
+    [controllerArray addObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.cellHeights]]; //CELL_HEIGHTS
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.mainAttributedStrings]]];//MAIN_STRINGS
+    [controllerArray addObject:[NSKeyedArchiver archivedDataWithRootObject:[self returnOnlyMinQntity:SAVE_HISTORY_QNTITY fromArray:self.infoAttributedStrings]]];//INFO_STRINGS
 
-    [controllerArray addObject:self.lastShowAllertViewDate];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];
-    [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];
-    [controllerArray addObject:[NSNumber numberWithInteger:self.designObj.designNumber]];
-    [controllerArray addObject: self.currentProgrammVersion];
-    [controllerArray addObject:[NSNumber numberWithInteger:self.counterForShowingAllertView]];
+    [controllerArray addObject:self.lastShowAllertViewDate]; //DATE_LAST_ALLERT
+    [controllerArray addObject:[NSNumber numberWithBool:self.isBigDataBase]];//SIZE_DATA_BASE
+    [controllerArray addObject:[NSNumber numberWithBool:self.isBigSizeButtons]];//BUTTONS_SIZE
+    [controllerArray addObject:[NSNumber numberWithBool:self.isSoundOn]];//SOUND_SWITCH_POSITION
+    [controllerArray addObject:[NSNumber numberWithInteger:self.designObj.designNumber]];//DESIGN_NUMBER
+    [controllerArray addObject: self.currentProgrammVersion];//PROG_VERSION
+    [controllerArray addObject:[NSNumber numberWithInteger:self.counterForShowingAllertView]];//ALLERT_VIEW_COUNTER
     
     
     [wholeArray addObject:[controllerArray copy]];
     
     return [wholeArray copy];
 }
+*/
 
--(BOOL) extractFromUserDefault:(NSArray*) array
-{
-    BOOL sucsess = YES;
-    NSMutableArray *wholeArray = [array mutableCopy];
-        //set controller
-    id controllerArray = [[wholeArray lastObject] mutableCopy];
-    if(controllerArray && [controllerArray isKindOfClass:[NSMutableArray class]]){
-        
-        id top = [controllerArray lastObject];
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.counterForShowingAllertView= [top integerValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSString class]]){
-            self.currentProgrammVersion= top;
-            //check is the equal to current version
-            NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-            NSString *realVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
-            if(![self.currentProgrammVersion isEqualToString:realVersion]){
-               self.counterForShowingAllertView= 37;
-
-                //important
-                //set here show aboutView with new functions and trial additions
-                //if the changes are so big and i whon show it to user
-                //set it manualy every time
-                //Important WOKS With days trial
-                self.isTrialPeriod = YES;
-                self.nexNeedShovewTrialViewDay = 20;
-                self.startTrialDate = [NSDate date];
-                self.currentProgrammVersion = realVersion;
-            }
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            //self.designObj =[[DesignObject alloc] initWithDesignIndex:[top integerValue]];
-            self.designObj = [[DesignObject alloc] initWithDesignIndex:[top integerValue] forDelegator:self];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isSoundOn = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isBigSizeButtons = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-        
-        if(top && [top isKindOfClass:[NSNumber class]]){
-            self.isBigDataBase = [top boolValue];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        } else {
-            return NO;
-        }
-       
-        if(top && [top isKindOfClass:[NSDate class]]){
-            // self.self.lastShowAllertViewDate = top;
-            self.lastShowAllertViewDate = top;
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-
-        } else {
-            return NO;
-        }
-        if(top && [top isKindOfClass:[NSData class]]){
-            self.infoAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:top];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        }
-        if(top && [top isKindOfClass:[NSData class]]){
-            self.mainAttributedStrings =  [NSKeyedUnarchiver unarchiveObjectWithData:top];
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        }
-        if(top && [top isKindOfClass:[NSArray class]]){
-            self.cellHeights = top;
-            [controllerArray removeLastObject];
-            top = [controllerArray lastObject];
-        }
-        if(top && [top isKindOfClass:[NSData class]]){
-            self.buttonsStore.workButtonsNames = [NSKeyedUnarchiver unarchiveObjectWithData:top];
-        }
-
-        
-    } else {
-        return NO;
-    }
-    
-    return sucsess;
-}
 
 - (void)didReceiveMemoryWarning
 {
@@ -7186,11 +7231,7 @@ sourceController:(UIViewController *)source
     //[self.managedObjectContext save:&error];
     [self.buttonManagedObjectContext save: &error];
 
-    
-    [self setKeyValuesFromStorage];
-    NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-    [defaults setObject:[self arrayToUserDefault] forKey:@"wholeArray"];
-    [defaults synchronize];
+    [self saveMainProperties];
     
     [super didReceiveMemoryWarning];
 }

@@ -316,7 +316,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
-
+/*
 - (IBAction)isiCloudSwitch:(UISwitch *)sender {
     self.isiCloudInUse = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
@@ -324,7 +324,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
-
+*/
 #pragma mark OVERRIDE ABSTRACT FUNCTION
 
 #define NAME_BUTTON_SWITCH NSLocalizedStringFromTable(@"Buttons size",@"ACalcTryViewControllerTableTwo", @"Button size")
@@ -375,15 +375,15 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     self.archivesizeBigView.backgroundColor = [UIColor clearColor];
     
     //iCloud use
-    [self.isiCloudUseSwitcher setOn:self.isiCloudInUse];
-    self.isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
-    self.isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
+   // [self.isiCloudUseSwitcher setOn:self.isiCloudInUse];
+    //self.isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
+    //self.isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
 
-    self.cloudOnView.on = YES;
-    self.cloudOnView.backgroundColor = [UIColor clearColor];
+    //self.cloudOnView.on = YES;
+    //self.cloudOnView.backgroundColor = [UIColor clearColor];
 
-    self.cloudOffView.on = NO;
-    self.cloudOffView.backgroundColor = [UIColor clearColor];
+    //self.cloudOffView.on = NO;
+    //self.cloudOffView.backgroundColor = [UIColor clearColor];
     //CLEAR HISTORY
 
     self.clearHistoryButton.normalColor = [UIColor whiteColor];

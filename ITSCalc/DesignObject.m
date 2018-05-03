@@ -143,7 +143,7 @@
             
             //calc screen
             self.displayContainerColorIn = [UIColor clearColor];
-            self.screenTextColorIn = [UIColor lightTextColor];
+            self.screenTextColorIn = [UIColor whiteColor];
             self.isScreenBlurHidenIn = NO;
             self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
             self.screenButtonShadowColorIn = [UIColor clearColor];;
