@@ -227,11 +227,16 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) NSInteger nexNeedShovewTrialViewDay;// ask user 1, 5, 10, 20 to the end of trial period to buy whole version
 //iAd banner
 @property (weak, nonatomic) IBOutlet UIView *bannerContainerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bannerAdTopConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bannerAdHeightConstrain;
+
+@property (nonatomic) BOOL canShowBanner; //set to YES after first operation = if WasPurchaised allways NO
+@property (nonatomic) BOOL isIAdBannerOnScreen; //to find out if the banner on the screen
 //@property (weak, nonatomic) IBOutlet ADBannerView *iAdBanner;
 
 //@property (nonatomic) BOOL isIAdBaneerAvailable;
 @property (nonatomic) NSInteger bannerRequestCounter;// need to limitation of IAd banner request at pressing "equal"
-//@property (nonatomic) BOOL isIAdBannerOnScreen; //to find out if the banner on the screen
+
 
 //Settings
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
@@ -1127,6 +1132,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             if((!self.userIsInTheMidleOfEnteringNumber) || (curentValue == 0)){
                 [self setStoryInforamtion];
                 [self.brain clearOperation];
+                
+                //show Ad banner
+                if(self.canShowBanner && (!self.isIAdBannerOnScreen)){
+                    [self appearAdBanner];
+                }
             }
             self.userIsInTheMidleOfEnteringNumber = NO;
 
@@ -1485,8 +1495,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
             [muttableOutputArray addObject:@" ="];
         }
         self.lastRowDataArray = [muttableOutputArray copy];
-        [self lastRowUpdate];
+        //[self lastRowUpdate];
 
+    }
+    
+    if(!self.wasPurshaised){
+        self.canShowBanner = YES;
     }
 }
 
@@ -1512,7 +1526,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     [muttableOutputArray addObject:emptyArray];
     
     self.lastRowDataArray = [muttableOutputArray copy];
-    [self lastRowUpdate];
+    //[self lastRowUpdate];
     
 }
 
@@ -1600,7 +1614,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         
         NSArray *new = [[NSArray alloc] init];
         self.lastRowDataArray = new;
-        [self lastRowUpdate];
+        //[self lastRowUpdate];
     } else {
         [self selectLastRowInHistory];
     }
@@ -1677,15 +1691,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
 }
 
-
 #pragma mark - BUTTONS COLLECTION
+static BOOL wasisIAdBannerOnScreen;
 -(void)setIsButtonsCollectionUnderChanging:(BOOL)is
 {
-    
     _isButtonsCollectionUnderChanging = is;
     //lock interaction
     self.buttonsCollection.userInteractionEnabled = NO;
-    
     
     if(is){
         if((self.buttonsStore.changebleButtonObjs.count +19) < 31){
@@ -1695,12 +1707,14 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         }
 
         self.displayTopConstrain.constant = 0;
-        /*self.sviperBottomConstrain.constant = (self.calcScreenHeightConstrain.constant/2.+ self.historyTableSviper.frame.size.height/2+self.calcScreenHeightConstrain.constant/10);*/
         self.sviperBottomConstrain.constant = -((self.calcScreenHeightConstrain.constant -self.historyTableSviper.frame.size.height)/2-self.calcScreenHeightConstrain.constant/10);
-        /*if(DEBUG_MODE){
-            NSLog(@"calcScreenHeightConstrain:%f",self.calcScreenHeightConstrain.constant );
-            NSLog(@"sviperBottomConstrain:%f",self.sviperBottomConstrain.constant );
-        }*/
+        
+        wasisIAdBannerOnScreen = self.isIAdBannerOnScreen;
+        if(self.isIAdBannerOnScreen){
+            self.isIAdBannerOnScreen = NO;
+            self.bannerAdTopConstrain.constant = -(self.bannerAdHeightConstrain.constant+10.);
+        }
+        
         [UIView animateWithDuration:.6
                               delay:0
              usingSpringWithDamping:0.8
@@ -1708,19 +1722,6 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                             options:UIViewAnimationOptionBeginFromCurrentState animations:^{
                                 [self.view layoutIfNeeded];
                                 self.labelsDisplayContainer.alpha = 0;
-
-                                /*
-                                 if(self.isIAdBaneerAvailable){
-                                 NSInteger bannerHeight;
-                                 if(IS_IPAD){
-                                 bannerHeight = 66;
-                                 } else {
-                                 bannerHeight = 50;
-                                 }
-                                 [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
-                                 [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-                                 }
-                                 */
                             } completion:^(BOOL finished) {
                                 [self.buttonsCollection reloadData];
                                 //ulock interaction
@@ -1734,6 +1735,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         self.sviperBottomConstrain.constant = -self.calcScreenHeightConstrain.constant*14./20.;
         [self.buttonsCollection reloadData];
         
+        self.isIAdBannerOnScreen = wasisIAdBannerOnScreen;
+        if(self.isIAdBannerOnScreen){
+            self.bannerAdTopConstrain.constant =bannerYOrigin;
+        }
+        
         [UIView animateWithDuration:.6
                               delay:0
              usingSpringWithDamping:0.8
@@ -1742,23 +1748,11 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                                 [self.view layoutIfNeeded];
                                 self.labelsDisplayContainer.alpha = 1;
                                 [self.buttonsCollection setContentOffset:CGPointMake(0, 0)];
-
-
-                                 //if(self.isIAdBaneerAvailable){
-                                 //NSInteger bannerHeight;
-                                 //if(IS_IPAD){
-                                 //bannerHeight = 66;
-                                 //} else {
-                                 //bannerHeight = 50;
-                                // }
-                                 //[self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
-                                // [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-                                //}
-
                             } completion:^(BOOL finished) {
                                 //ulock interaction
                                 self.buttonsCollection.userInteractionEnabled = YES;
-                                self.longPressRecognizer.minimumPressDuration = 0.5;                            }];
+                                self.longPressRecognizer.minimumPressDuration = 0.5;
+                            }];
     }
 }
 
@@ -3346,6 +3340,10 @@ NSIndexPath *lastVisibleCellPatch;
         CGFloat motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? MOTION_IPAD:MOTION_IPHONE;
 
         retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass]+motionOffsetValue;
+        
+        if(!self.wasPurshaised){
+            [self setOriginHeightOfAdBannerWithLastRowHeight: retHeight];
+        }
     } else {
         retHeight =  [[self.cellHeights objectAtIndex:indexPath.row] floatValue];
     }
@@ -5152,18 +5150,15 @@ BOOL isNewTableRow;
     [self setupStorage]; //setup icloud storage
 
     [super viewDidLoad];
-
-    UIGraphicsBeginImageContext(self.view.bounds.size);
-    UIGraphicsEndImageContext();
-    /*
-    if(IS_IPAD){
-        //self.noticeButton.enabled = NO;
-    }
-    self.plusButton.enabled = NO;
-    self.recountButton.enabled = NO;
-    self.deleteButton.enabled = NO;
-    */
     
+    //for work with AD banner
+    self.canShowBanner = NO;
+    self.isIAdBannerOnScreen = NO;
+    if(self.wasPurshaised){
+        self.bannerContainerView.hidden = YES;
+    } else {
+        [self hideAdBannerAnimate:NO];
+    }
     
     //set pan gesture delegate
     self.moveButtonsPanGestureRecognizer.delegate = self;
@@ -5208,40 +5203,7 @@ BOOL isNewTableRow;
 
     //set to 0 indication of previous rotation, also need at discard changing
     self.wasRightShowed = 0;
-    
-    //purchaising and banner
-    id wasPurchaised = [[NSUserDefaults standardUserDefaults] objectForKey:@"wasPurchaisedMark"];
-    if(wasPurchaised && [wasPurchaised isKindOfClass:[NSNumber class]]){
-        self.wasPurshaised = [wasPurchaised boolValue];
-    } else {
-        self.wasPurshaised = NO;
-    }
-    /* works with banner
-    if(!self.wasPurshaised){
-        
-        
-        self.isIAdBaneerAvailable = NO;
-        self.isIAdBannerOnScreen = NO;
-        
-        //set initial banners frame
-        NSInteger bannerHeight;
-        if(IS_IPAD){
-            bannerHeight = 66;
-        } else {
-            bannerHeight = 50;
-        }
 
-        [self.bannerContainerView setFrame:CGRectMake(0, -self.buttonsCollection.bounds.size.height, self.mainContainerView.bounds.size.width, bannerHeight)];
-        [self.iAdBanner setFrame:self.bannerContainerView.bounds];
-        self.bannerContainerView.hidden = YES;
-
-        self.bannerRequestCounter = 2;
-        
-    } else {
-        self.bannerContainerView.hidden = YES;
-    }*/
-    
-    //[self setHeightOfElementAccordingToScreenIPhone];
     //Important don't remember why i close it
     //IMPORTANT DELETE HERE
     /*
@@ -5285,9 +5247,6 @@ BOOL isNewTableRow;
     //INSERTED
     self.isCalcShowed = YES;
     self.isHistoryShowed = NO;
-    //cellHeights = [[NSMutableArray alloc] init];
-    //self.historyTable.rowHeight = UITableViewAutomaticDimension;
-    //self.historyTable.estimatedRowHeight = 60;
     /*if(DEBUG_MODE){
         NSLog(@"end view did time %f",[[NSDate date] timeIntervalSinceDate:launchTime]);
     }*/
@@ -5619,6 +5578,7 @@ BOOL isNewTableRow;
 */
 //CGFloat minButtonsCollectionHeight;
 CGFloat maxButtonsCollectionHeight;
+CGFloat bannerYOrigin;
 
 -(void)viewDidLayoutSubviews{
     if(DEBUG_MODE){
@@ -5784,7 +5744,19 @@ CGFloat maxButtonsCollectionHeight;
             self.noticeButton.hidden = NO;
         }
     }
+
+    //FOR BANNER CONTAINER
+    //make bigger place for AD banner on iPhone X
+    if(IS_X){
+        self.bannerAdHeightConstrain.constant = 94.;
+    }
     
+    if(self.isIAdBannerOnScreen){
+        self.bannerAdTopConstrain.constant =bannerYOrigin;
+        NSLog(@"Banner heigth:%f, banner origin:%f",self.bannerAdTopConstrain.constant, self.bannerAdHeightConstrain.constant );
+    } else {
+        self.bannerAdTopConstrain.constant = -(self.bannerAdHeightConstrain.constant +10.);
+    }
     //added to set buttons array
    // [self newButtonsSize];
 }
@@ -5987,7 +5959,6 @@ static BOOL isNeedReloadAfterOtherController;
                                                  name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
                                                object:store];
     [store synchronize];
-
     
     //strange
     
@@ -6144,6 +6115,11 @@ static BOOL isNeedReloadAfterOtherController;
     [self.buttonsCollection reloadData];
     
     [self saveMainProperties];
+
+    //for work with AD banner
+    self.canShowBanner = NO;
+    self.isIAdBannerOnScreen = NO;
+    [self hideAdBannerAnimate:NO];
     
 }
 
@@ -7743,6 +7719,61 @@ static NSAttributedString* resultStrForShowcontroller;
 */
 
 #pragma mark SHOWING IAd BANNER
+
+-(void)appearAdBanner{
+    [self moveAdBanner];
+    self.isIAdBannerOnScreen = YES;
+}
+-(void)hideAdBannerAnimate:(BOOL)animate{
+    self.bannerAdTopConstrain.constant = -(self.bannerAdHeightConstrain.constant + 10.);
+    if(animate){
+        [UIView animateWithDuration:0.8 animations:^{
+            self.bannerContainerView.alpha = 0.;
+        } completion:^(BOOL finished) {
+//            [self.bannerContainerView layoutIfNeeded];
+            self.bannerContainerView.alpha = 1.;
+            self.isIAdBannerOnScreen = NO;
+        }];
+    } else {
+        //[self.bannerContainerView setFrame:frame];
+        //[self.bannerContainerView layoutIfNeeded];
+    }
+}
+
+
+-(void) setOriginHeightOfAdBannerWithLastRowHeight:(CGFloat)lastRowHeight{
+    if(DEBUG_MODE) {
+        NSLog(@"setOriginHeightOfAdBannerWithLastRowHeight with height:%f", lastRowHeight);
+    }
+    CGFloat newOrigin;
+    
+    if((self.historyTable.frame.size.height-lastRowHeight)<self.bannerContainerView.bounds.size.height){
+        newOrigin=self.historyTable.frame.size.height-(lastRowHeight+self.bannerContainerView.bounds.size.height);
+    } else{
+        newOrigin = 0.;
+    }
+    
+    if(bannerYOrigin != newOrigin){
+        bannerYOrigin = newOrigin;
+        [self moveAdBanner];
+    }
+}
+-(void)moveAdBanner{
+    CGRect frame = self.bannerContainerView.frame;
+    frame.origin.y = bannerYOrigin;
+    self.bannerAdTopConstrain.constant = bannerYOrigin;
+    [UIView animateWithDuration:0.6
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         [self.bannerContainerView setFrame:frame];
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
+}
+
 /*
 //but exactly here need to show banner
 //1. delay banner appearence

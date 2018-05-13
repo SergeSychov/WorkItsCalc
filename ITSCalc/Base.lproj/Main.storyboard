@@ -77,14 +77,6 @@
                                             <outletCollection property="gestureRecognizers" destination="iQj-4t-yg3" appends="YES" id="vk1-vQ-j5A"/>
                                         </connections>
                                     </collectionView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eK6-Ew-deE" userLabel="Container Banner">
-                                        <rect key="frame" x="0.0" y="50" width="410" height="50"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="U51-yK-br2"/>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="cL7-ZA-YOJ"/>
-                                        </constraints>
-                                    </view>
                                     <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="onk-em-hqf">
                                         <rect key="frame" x="0.0" y="0.0" width="410" height="185"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -353,6 +345,27 @@
                                             <constraint firstItem="Zkd-ZX-a20" firstAttribute="width" relation="lessThanOrEqual" secondItem="65m-qJ-35V" secondAttribute="height" multiplier="0.16" id="zMa-3U-qB2"/>
                                         </constraints>
                                     </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eK6-Ew-deE" userLabel="Container Banner">
+                                        <rect key="frame" x="0.0" y="-60" width="410" height="50"/>
+                                        <color key="backgroundColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="U51-yK-br2">
+                                                <variation key="widthClass=compact" constant="50"/>
+                                                <variation key="heightClass=regular-widthClass=regular" constant="90"/>
+                                            </constraint>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="size" keyPath="layer.shadowOffset">
+                                                <size key="value" width="0.0" height="6"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowRadius">
+                                                <integer key="value" value="6"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowOpacity">
+                                                <real key="value" value="0.29999999999999999"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
                                     <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="LsF-jj-Vfx" customClass="HistoryTableSviper">
                                         <rect key="frame" x="176" y="131" width="59" height="59"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -371,7 +384,9 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="FK6-Yi-iBk" secondAttribute="trailing" id="37e-t4-NWw"/>
                                     <constraint firstItem="FK6-Yi-iBk" firstAttribute="top" secondItem="b0U-wF-F1m" secondAttribute="bottom" id="5Hu-mJ-QEo"/>
-                                    <constraint firstItem="eK6-Ew-deE" firstAttribute="top" secondItem="2Y9-ja-9gk" secondAttribute="top" constant="50" id="BfD-0H-8u9"/>
+                                    <constraint firstItem="eK6-Ew-deE" firstAttribute="top" secondItem="2Y9-ja-9gk" secondAttribute="top" constant="-60" id="EOo-ZA-vfY">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="-100"/>
+                                    </constraint>
                                     <constraint firstAttribute="height" constant="736" id="Iec-8o-Svd"/>
                                     <constraint firstItem="b0U-wF-F1m" firstAttribute="leading" secondItem="2Y9-ja-9gk" secondAttribute="leading" id="LXj-G8-PEI"/>
                                     <constraint firstAttribute="width" constant="410" id="LnE-pQ-xzG"/>
@@ -386,7 +401,6 @@
                                     <constraint firstItem="LsF-jj-Vfx" firstAttribute="bottom" secondItem="b0U-wF-F1m" secondAttribute="bottomMargin" constant="-72" id="nGY-MJ-dkG"/>
                                     <constraint firstItem="65m-qJ-35V" firstAttribute="top" secondItem="FK6-Yi-iBk" secondAttribute="top" id="omN-Qy-dPO"/>
                                     <constraint firstItem="onk-em-hqf" firstAttribute="leading" secondItem="2Y9-ja-9gk" secondAttribute="leading" id="pIc-O0-4pQ"/>
-                                    <constraint firstItem="eK6-Ew-deE" firstAttribute="leading" secondItem="b0U-wF-F1m" secondAttribute="leading" id="qPB-rI-O19"/>
                                     <constraint firstItem="FK6-Yi-iBk" firstAttribute="bottom" secondItem="2Y9-ja-9gk" secondAttribute="bottom" id="tOQ-93-W8e"/>
                                     <constraint firstItem="LsF-jj-Vfx" firstAttribute="centerX" secondItem="2Y9-ja-9gk" secondAttribute="centerX" id="tPo-ou-Hu6"/>
                                     <constraint firstAttribute="trailing" secondItem="onk-em-hqf" secondAttribute="trailing" id="urp-9n-VSa"/>
@@ -407,6 +421,8 @@
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
+                        <outlet property="bannerAdHeightConstrain" destination="U51-yK-br2" id="BsI-Vo-d11"/>
+                        <outlet property="bannerAdTopConstrain" destination="EOo-ZA-vfY" id="oKo-7b-Xac"/>
                         <outlet property="bannerContainerView" destination="eK6-Ew-deE" id="r8n-OF-XRI"/>
                         <outlet property="buttonsCollection" destination="FK6-Yi-iBk" id="1yH-LO-7Fo"/>
                         <outlet property="calcScreenHeightConstrain" destination="WzF-9j-f9Z" id="fSc-xo-YR0"/>

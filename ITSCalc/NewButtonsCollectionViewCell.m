@@ -9,7 +9,7 @@
 #import "NewButtonsCollectionViewCell.h"
 #import "cmyk.h"
 
-#define DEBUG_MODE YES
+#define DEBUG_MODE NO
 
 #define ANGLE_OFFSET (M_PI_4 * 0.1f)
 #define X_OFFSET 2.0f
