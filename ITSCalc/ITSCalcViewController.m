@@ -3337,9 +3337,8 @@ NSIndexPath *lastVisibleCellPatch;
     if(([self.cellHeights count]==0) || indexPath.row>([self.cellHeights count]-1)){
         NSAttributedString* mainLabel =  [self getAttributedStringFromArray:self.lastRowDataArray];
         NSAttributedString* infoLabel = [[NSAttributedString alloc] initWithString:@" "];
-        CGFloat motionOffsetValue = self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ? MOTION_IPAD:MOTION_IPHONE;
 
-        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass]+motionOffsetValue;
+        retHeight = [self getCellHeightFromMain:mainLabel and:infoLabel forHorizontal:self.view.traitCollection.horizontalSizeClass];
         
         if(!self.wasPurshaised){
             [self setOriginHeightOfAdBannerWithLastRowHeight: retHeight];
@@ -3946,7 +3945,8 @@ NSInteger dealWithCell;
 -(CGFloat)getCellHeightFromMain:(NSAttributedString*)mainStr and:(NSAttributedString*)infStr forHorizontal:(UIUserInterfaceSizeClass)size{
     CGFloat needHeight;
     
-    CGFloat needWidth = self.mainContainerWidth.constant - 4;
+    //here -40
+    CGFloat needWidth = self.mainContainerWidth.constant - 40;
     CGSize needSize = CGSizeMake(needWidth, 1000);
     NSStringDrawingContext *drawContext = [[NSStringDrawingContext alloc] init];
     
@@ -5753,7 +5753,7 @@ CGFloat bannerYOrigin;
     
     if(self.isIAdBannerOnScreen){
         self.bannerAdTopConstrain.constant =bannerYOrigin;
-        NSLog(@"Banner heigth:%f, banner origin:%f",self.bannerAdTopConstrain.constant, self.bannerAdHeightConstrain.constant );
+       if(DEBUG_MODE) NSLog(@"Banner heigth:%f, banner origin:%f",self.bannerAdTopConstrain.constant, self.bannerAdHeightConstrain.constant );
     } else {
         self.bannerAdTopConstrain.constant = -(self.bannerAdHeightConstrain.constant +10.);
     }
@@ -7107,6 +7107,8 @@ sourceController:(UIViewController *)source
     [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:self.buttonsStore.workButtonsNames] forKey:BUTTON_NAMES];//25
     
     [defaults synchronize];
+    //NSLog(@"Sound default saved: %@", [defaults objectForKey:SOUND_SWITCH_POSITION]);
+    
 }
 
 #pragma mark KEY VALUE STORAGE
