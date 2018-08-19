@@ -105,7 +105,6 @@
 
 
 //for constrain layout
-
 #define IPHONE_RATIO_BUTTONS_VIEW 1.33
 #define IPHONE_X_RATIO_BUTTONS_VIEW 1.54
 #define IPAD_RAIO_BUTTONS_VIEW 1.3
@@ -143,23 +142,18 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) BOOL showControllerIsForward;
 
 #pragma mark DESIGN OBJECT
-//design objeckt
 @property (nonatomic, strong) DesignObject* designObj;
 @property (nonatomic,strong) AtrStrStore* atrStore;
-
-
 @property (weak, nonatomic) HintView *hintView;
-
-
 @property (weak,nonatomic) UIImageView *imageBackgroundView;
-@property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
+//@property (nonatomic) int wasRightShowed; //need for show Shoving view at rotation 0 - not on screen, 1- was in left rotation, 2 - was in right rotation
 //important not shure its need
-@property (nonatomic) UIDeviceOrientation wasRotatedNotificationAnotherController;
+//@property (nonatomic) UIDeviceOrientation wasRotatedNotificationAnotherController;
 @property (nonatomic) BOOL willBePortraitRotated;
 //necessary height of element for 3,5" screen
-@property (nonatomic) CGFloat histroryTableViewHeight;
+//@property (nonatomic) CGFloat histroryTableViewHeight;
 //@property (nonatomic) CGFloat labelViewHeight;
-@property (nonatomic) CGFloat lastRowHistoryTableHeight;
+//@property (nonatomic) CGFloat lastRowHistoryTableHeight;
 
 
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *collectionViewFlowLayout;
@@ -205,12 +199,12 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 //property to show is one row from history table is selected
 @property (strong, nonatomic) HistroryTableViewCell *selectedRow;
 //attributes for historyTable
-@property (nonatomic,strong) NSDictionary * attributes;
+//@property (nonatomic,strong) NSDictionary * attributes;
 
 //items for dynamic draging
 
 
-@property (nonatomic) CGFloat wasDynamicOriginY;
+//@property (nonatomic) CGFloat wasDynamicOriginY;
 @property (weak, nonatomic) IBOutlet HistoryTableSviper *historyTableSviper;
 //@property (nonatomic) CGPoint svipeGestureLocation;
 
@@ -256,7 +250,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic) NSArray *infoAttributedStrings;
 @property (nonatomic) NSArray *mainAttributedStrings;
 //Showed View
-@property (nonatomic, strong) UIDynamicAnimator *animator;
+//@property (nonatomic, strong) UIDynamicAnimator *animator;
 
 //Document
 //@property (nonatomic, retain) UIDocumentInteractionController *docController;
@@ -288,9 +282,9 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSManagedObjectContext *buttonManagedObjectContext;
 @property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic,strong) NSURL * storeURL;
-@property (nonatomic, strong) NSURL *localStoreUrl;
-@property (nonatomic, strong) NSURL* iCloudURL;
+//@property (nonatomic,strong) NSURL * storeURL;
+//@property (nonatomic, strong) NSURL *localStoreUrl;
+//@property (nonatomic, strong) NSURL* iCloudURL;
 //set managed obj context specially for buttons
 
 //Buttons arrays
@@ -343,7 +337,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
 @property (nonatomic, strong) NSDate *lastShowAllertViewDate;
 
 // Set to YES to get some debugging output in the console.
-@property BOOL debug;
+//@property BOOL debug;
 @end
 
 @implementation ITSCalcViewController
@@ -528,26 +522,21 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     
 }
 
+/*
 #pragma mark TEXT ATTRIBUTES
 //attributes for history table
 -(NSDictionary*) attributes
 {
-    
     if(!_attributes){
-
         UIColor *textColor;
         if(IS_BLACK_MODE){
             textColor = [UIColor darkGrayColor]; //color of text
         } else {
             textColor = [UIColor grayColor]; //color of text
         }
-        
         //change font size
         NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
         style.alignment = NSTextAlignmentRight;
-        //style.
-        
-        
         //Change fontName to Helvetica Neue Light
         NSString *fontName = nil;
         NSArray *famalyNames  =[UIFont familyNames];
@@ -557,9 +546,8 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                 fontName = @"HelveticaNeue-Light";
             }
         }
+        
         CGFloat fontSize;// = 17.0;
-        
-        
         if(IS_IPAD){
             fontSize = 26.0;
             style.alignment = NSTextAlignmentRight;
@@ -579,7 +567,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
     }
     return _attributes;
 }
-/*
+
 
 -(NSDictionary*) heigthsOfNewRowsAccordingNewObjs
 {
@@ -804,7 +792,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                     if([[programm firstObject] isKindOfClass:[NSNumber class]]){
                         programmDescription = [(NSNumber*)[programm firstObject] stringValue];
                     } else {
-                        programmDescription = [ACalcBrain descriptionOfProgram:[[programFromHistory lastObject] mutableCopy] withAttributes:self.attributes].string;
+                        programmDescription = [ACalcBrain descriptionOfProgram:[[programFromHistory lastObject] mutableCopy] withAttributes:self.atrStore.mainAttributes].string;
                     }
                 }
                 
@@ -823,13 +811,13 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
                         
                         NSMutableArray *copyGradArray = [[self.displayRam getResult] mutableCopy];
                         [copyGradArray addObject: self.isDecCounting? @"D" : @"R" ];
-                        programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.attributes].string;
+                        programmDescription = [ACalcBrain descriptionOfProgram:copyGradArray withAttributes:self.atrStore.mainAttributes].string;
                         //programmDescription =[[self.displayRam getResult] stringValue];
                     } else {//if for eaxample it is grad value
                         programmDescription = [(NSNumber*)[programm firstObject] stringValue];
                     }
                 } else {
-                      programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+                      programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.atrStore.mainAttributes].string;
                 }
 
               
@@ -841,7 +829,7 @@ NSString *const ReciveChangedNotification=@"SendChangedNotification";
         if([[programm firstObject] isKindOfClass:[NSNumber class]]){
             programmDescription = [(NSNumber*)[programm firstObject] stringValue];
         } else {
-            programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.attributes].string;
+            programmDescription = [ACalcBrain descriptionOfProgram:[self.brain argu] withAttributes:self.atrStore.mainAttributes].string;
         }
   
     }
@@ -2065,7 +2053,7 @@ static BOOL wasisIAdBannerOnScreen;
 CGPoint startDragerLocation;
 CGFloat screenYOrigin;
 CGFloat howHistoryWasShowedBeforeDrag;
-CGPoint velocitySviperUnderChangin;
+CGPoint velocitySviperUnderChangin;//COPIED
 CGFloat historyTableBottomOffset;
 
 -(void)setIsCalcShowed:(BOOL)isCalcShowed{
@@ -2778,15 +2766,15 @@ CGFloat screenHeight;
 CGFloat buttonsWidth;
 CGFloat buttonsHeight;
 CGFloat buttonsIntens;
-NSIndexPath* patchForUse;
+NSIndexPath* patchForUse;//COPIED
 //BOOL isBigSizeButtons;
 
-#pragma mark MOVE BUTTON STATIC PROPERTIES
-static newButtonView* buttonsAsSubView;
-static NewButtonsCollectionViewCell* findCell;
-static NewButtonsCollectionViewCell* subCell;
-static NSArray *movedCells;
-static BOOL moveIsAvailable;
+#pragma mark MOVE BUTTON STATIC PROPERTIES //COPIED
+static newButtonView* buttonsAsSubView;//COPIED
+static NewButtonsCollectionViewCell* findCell;//COPIED
+static NewButtonsCollectionViewCell* subCell;//COPIED
+static NSArray *movedCells;//COPIED
+static BOOL moveIsAvailable;//COPIED
 
 
 
@@ -3178,7 +3166,7 @@ static BOOL moveIsAvailable;
 
 #pragma mark SET HISTORY TABLE TO RIGHT POSITION
 
-NSIndexPath *lastVisibleCellPatch;
+NSIndexPath *lastVisibleCellPatch;//COPIED
 //NSIndexPath* selectedRowPatch;
 #define MIN_CELL_HEIGHT_COPACT 60.f
 #define MIN_CELL_HEIGHT_REGULAR 90.f
@@ -3780,6 +3768,7 @@ NSInteger dealWithCell;
  }
 
 */
+
 #pragma mark GET ATTRIBUTED STRINGS
 -(NSMutableAttributedString*) getAttributedStringFronFetchForIndexPatch:(NSIndexPath*) indexPath
 {
@@ -4240,6 +4229,7 @@ NSInteger dealWithCell;
     }
 }
 */
+
 #pragma mark MANAGED CONTEXT
 /*
 -(void) setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
@@ -4355,6 +4345,7 @@ NSInteger dealWithCell;
         }
     }
 }
+
 
 
 #pragma mark SET HISTORY ARRAYS
@@ -4835,7 +4826,7 @@ BOOL isNewTableRow;
         if(!indexPath) indexPath = [NSIndexPath indexPathForRow:[self.historyTable numberOfRowsInSection: 0]-1  inSection:0];
         NSMutableAttributedString *atrStrFromString;
         if(indexPath.row == ([self.historyTable numberOfRowsInSection:0]-1)){
-            atrStrFromString = [self.lastRowsString mutableCopy];
+            atrStrFromString = [self.lastRowsString mutableCopy];//IMPORTANT not shure it needed. lastRowsString apears only here
            // atrStrFromString =  [[self getAttributedStringFromArray:self.lastRowDataArray] mutableCopy];
         } else {
             atrStrFromString =  [[self getAttributedStringFronFetchForIndexPatch:indexPath] mutableCopy];
@@ -4845,7 +4836,7 @@ BOOL isNewTableRow;
             if(indexPath.row == [self.historyTable numberOfRowsInSection: 0] - 1){
                 NSString *lastSymbol = [strToShare substringWithRange:NSMakeRange(strToShare.length -1, 1)];
                 if([lastSymbol isEqualToString: @"="]){
-                    NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.mainLabel.attributedText.string attributes:self.attributes];
+                    NSAttributedString *result = [[NSAttributedString alloc] initWithString:self.mainLabel.attributedText.string attributes:self.atrStore.mainAttributes];
                     [atrStrFromString insertAttributedString:result atIndex:atrStrFromString.length];
                 }
             }
@@ -5202,7 +5193,7 @@ BOOL isNewTableRow;
     
 
     //set to 0 indication of previous rotation, also need at discard changing
-    self.wasRightShowed = 0;
+    //self.wasRightShowed = 0;
 
     //Important don't remember why i close it
     //IMPORTANT DELETE HERE
@@ -5559,6 +5550,7 @@ BOOL isNewTableRow;
                                             resSize:resultLabelSize];
     //[self.showedController.testView setFrame:testViewFrame];
 }
+
 #pragma mark VIEW LAYOUT
 /*
 -(void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection{
@@ -5577,8 +5569,8 @@ BOOL isNewTableRow;
 }
 */
 //CGFloat minButtonsCollectionHeight;
-CGFloat maxButtonsCollectionHeight;
-CGFloat bannerYOrigin;
+CGFloat maxButtonsCollectionHeight;//COPIED
+CGFloat bannerYOrigin;//COPIED
 
 -(void)viewDidLayoutSubviews{
     if(DEBUG_MODE){
@@ -5831,7 +5823,7 @@ CGFloat bannerYOrigin;
     }
     //}
 }
-static BOOL isNeedReloadAfterOtherController;
+static BOOL isNeedReloadAfterOtherController; //COPIED
 
 -(void)upDateButtonsCollectionAfterChanginSize{
     if(DEBUG_MODE){
@@ -5949,7 +5941,7 @@ static BOOL isNeedReloadAfterOtherController;
 }
 
 
-
+#pragma mark APP CONDITIONS
 //only at real enter in foregraund not at launch
 -(void) appWillEnterForeground
 {
@@ -6217,6 +6209,7 @@ static BOOL isNeedReloadAfterOtherController;
     self.deleteButton.alpha = 0;
     [self.buttonsCollection reloadData];
 }
+
 #pragma mark TRANSITION DELEGATE
 -(id<UIViewControllerAnimatedTransitioning>)
 animationControllerForPresentedController:(UIViewController *)presented
@@ -6240,9 +6233,9 @@ sourceController:(UIViewController *)source
     return self.transition;
 }
 
-#pragma mark SHOW OTHER CONTROLLERS
+//#pragma mark SHOW OTHER CONTROLLERS
 
-#pragma mark SETTINGS VIEW CONTROLLER
+//#pragma mark SETTINGS VIEW CONTROLLER
 
 //recived notification from settingsViewcontroller
 #pragma mark NOTIFICATION
@@ -6308,8 +6301,8 @@ sourceController:(UIViewController *)source
     } else {
         if(DEBUG_MODE) NSLog(@"recived wrong notification");
     }
-    
 }
+
 -(void) showSettingsViewcontroller
 {
     if(!self.settingsController){
@@ -6608,9 +6601,7 @@ sourceController:(UIViewController *)source
     [self presentViewController:second animated:YES completion:nil];
 }
 
-
 #pragma mark ABOUT VIEW
-
 -(void) showAboutViewLeftDays:(NSInteger)days
 {
     
@@ -7871,7 +7862,7 @@ static NSAttributedString* resultStrForShowcontroller;
 
 #pragma mark HELPED FUNCTIONS______________________
 //return point according localisation
--(NSString *) point
+-(NSString *) point //COPIED
 {
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
