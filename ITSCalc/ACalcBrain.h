@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface ACalcBrain : NSObject
 -(void) pushOperand:(id) operand; //think it's neded to be argu stack

@@ -8,8 +8,7 @@
 
 #import "DisplayRam.h"
 #import "ACalcBrain.h"
-
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+#import "DesignObject.h"
 
 @interface DisplayRam()
 
