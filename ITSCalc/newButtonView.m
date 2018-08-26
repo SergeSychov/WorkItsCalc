@@ -342,8 +342,8 @@
 
     }
 
-    CGFloat x = borderWidth /2+0.5;
-    CGFloat y = borderWidth /2;
+    CGFloat x = 2*(borderWidth /2+0.5);
+    CGFloat y = 2*(borderWidth /2);
     CGFloat width = rect.size.width - borderWidth;
     CGFloat height = rect.size.height -borderWidth;
     cornerRect = CGRectMake(x,y,width,height); //CGRectInset(rect, borderWidth, borderWidth);//
@@ -362,8 +362,8 @@
     self.clipsToBounds = NO;
     CGContextRef context = UIGraphicsGetCurrentContext();
 
-    [self drawButtonViewInContext:context inRect:CGRectInset(rect, 2, 2)];
-    [self drawTitle:CGRectInset(rect, 2, 2) inContext: context];
+    [self drawButtonViewInContext:context inRect:CGRectInset(rect, 3, 3)];
+    [self drawTitle:CGRectInset(rect, 3, 3) inContext: context];
    
 }
 

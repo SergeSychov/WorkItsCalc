@@ -29,7 +29,7 @@
 
 
 
-#define BORDER_VS_RADIUS  [[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 16.2 : 7.2;
+#define BORDER_VS_RADIUS  [[UIDevice currentDevice].model hasPrefix:@"iPad"] ? 16.2 : 12.2;
 
 #define BUTTON_TITLE_INSET 0.8
 #define BUTTON_INDENT 5.
