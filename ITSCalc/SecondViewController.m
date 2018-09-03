@@ -15,7 +15,7 @@
 NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 
 
-@interface SecondViewController() <UIViewControllerTransitioningDelegate>
+@interface SecondViewController() 
 //@property (weak, nonatomic) UIButton *changeButton;
 //@property (weak, nonatomic) UIButton *goBackButton;
 //@property (weak,nonatomic) UILabel *label;

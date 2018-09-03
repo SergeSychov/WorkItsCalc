@@ -86,7 +86,6 @@
     return [resultString copy];
 }
 +(NSAttributedString*)resizeAttrString:(NSAttributedString *)inputStr toPointSize:(CGFloat)pointSize{
-    NSAttributedString* retAtrStr;
     //1. find the initial string point size
     CGFloat initSize = [AtrStrStore pointSizeOfAtrString:inputStr];
     //2. find the multiplyer

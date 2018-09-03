@@ -270,7 +270,7 @@
 -(void) setUpArrays
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if(_buttonManagedObjectContext){
+        if(self.buttonManagedObjectContext){
             NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
             NSError *error;
             NSArray *buttonsFromCoreData = [self.buttonManagedObjectContext executeFetchRequest:request error:&error];

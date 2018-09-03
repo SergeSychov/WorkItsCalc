@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BackTransition.h"
 
-@interface SecondViewController : UIViewController
+@interface SecondViewController : UIViewController <UIViewControllerTransitioningDelegate>
 @property (strong) BackTransition* transition;
 //@property (weak,nonatomic) UIView* cView;
 @property (nonatomic) UIDeviceOrientation wasOrient;

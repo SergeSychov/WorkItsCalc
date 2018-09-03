@@ -25,7 +25,7 @@
 - (void)tapRemoveItsButton:(UIButton *)sender;
 @end
 
-@interface NewButtonsCollectionViewCell : UICollectionViewCell //<SetingCellFrameDelegate>
+@interface NewButtonsCollectionViewCell : UICollectionViewCell
 
 @property (nonatomic, weak) DesignObject* designObj;
 //@property (nonatomic) NSInteger design;

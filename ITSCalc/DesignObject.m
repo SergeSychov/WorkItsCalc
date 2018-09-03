@@ -1380,26 +1380,19 @@
 }
              
 +(NSAttributedString*)changeFontSizeFrom:(NSAttributedString*)inStr toSize:(CGSize)size{
-                 NSMutableAttributedString *atrOutStr = [inStr mutableCopy];
+    NSMutableAttributedString *atrOutStr = [inStr mutableCopy];
                  //for each char set point size according ratio and needFontName
-                 [atrOutStr beginEditing];
-                 
-                 for (NSInteger index = 0; index < [atrOutStr length]; index++){
-                     NSDictionary * attributes = [atrOutStr attributesAtIndex:index effectiveRange:NULL];
-                     CGFloat newPointSize = size.height*BUTTON_TITLE_INSET;
-                     
-                     UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
-                     
-                     UIFont *newFont = [UIFont fontWithName:font.fontName size:newPointSize];
-                     
-                     NSRange charRange = NSMakeRange(index, 1);
-                     
-                     [atrOutStr addAttribute:NSFontAttributeName value:newFont range:charRange];
-                 }
-                 
-                 [atrOutStr endEditing];
-                 
-                 return [atrOutStr copy];
+    [atrOutStr beginEditing];
+    for (NSInteger index = 0; index < [atrOutStr length]; index++){
+        CGFloat newPointSize = size.height*BUTTON_TITLE_INSET;
+        UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
+        UIFont *newFont = [UIFont fontWithName:font.fontName size:newPointSize];
+        NSRange charRange = NSMakeRange(index, 1);
+        [atrOutStr addAttribute:NSFontAttributeName value:newFont range:charRange];
+        
+    }
+    [atrOutStr endEditing];
+    return [atrOutStr copy];
 }
              
 

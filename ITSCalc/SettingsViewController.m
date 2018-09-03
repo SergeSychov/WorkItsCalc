@@ -36,7 +36,7 @@
 #define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
 NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 
-@interface SettingsViewController() <SKPaymentTransactionObserver, SKProductsRequestDelegate, DesignViewControllerProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design>
+@interface SettingsViewController() <SKPaymentTransactionObserver, SKProductsRequestDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design>
 
 @property (nonatomic, strong) SKProduct *product;
 @property (nonatomic,strong) SKProductsRequest *request;
@@ -179,10 +179,9 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 {
     DesignViewController *designViewController = [[DesignViewController alloc] init];
     designViewController.delegate = self;
-    designViewController.transitioningDelegate = self;
     designViewController.designObj = self.designObj;
     self.designViewController = designViewController;
-    
+    self.designViewController.transitioningDelegate = self;
     [self presentViewController:self.designViewController animated:YES completion:nil];
     
 }
@@ -215,8 +214,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #define ALLERT_TITLE_CHANGE_KEYBOARD NSLocalizedStringFromTable(@"ALLERT_TITLE_CHANGE_KEYBOARD",@"ACalcTryViewControllerTableAdditional", @"Change keyboard")
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
-
-#pragma mark ALERT VIEW
+/*
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
@@ -244,21 +242,34 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         
     }
 }
-
+*/
 
 #pragma mark BUTTON ACTION
-
+#pragma mark ALERT VIEW
 
 - (IBAction)calcButtonTapped:(id)sender {
     [self dismis];
 }
 - (IBAction)pressedClearHistoryButton:(UIButton *)sender {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TITLE_CLEAR_HISTORY_BUTTON
-                                                    message:ALERT_MESSAGE_CLEAR_HOSTORY//@"delete history. all results will be lost"
-                                                   delegate:self
-                                          cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                                          otherButtonTitles:ALERT_CLEAR_BUTTON_TITLE, nil]; //@"Clear"
-    [alert show];
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:TITLE_CLEAR_HISTORY_BUTTON
+                                                                   message:ALERT_MESSAGE_CLEAR_HOSTORY
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* cancel = [UIAlertAction actionWithTitle:ALERT_CANCEL_BUTTON_TITLE style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction * action) {
+                                                          }];
+    [alert addAction:cancel];
+
+    UIAlertAction* clearHistoryAction = [UIAlertAction actionWithTitle:ALERT_CLEAR_BUTTON_TITLE style:UIAlertActionStyleDestructive
+                                                   handler:^(UIAlertAction * action) {
+                                                       NSNumber *message = [NSNumber numberWithBool:YES];
+                                                       NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"cleanHistoryArchive",nil];
+                                                       NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+                                                       [[NSNotificationCenter defaultCenter] postNotification:note];
+                                                   }];
+    [alert addAction:clearHistoryAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (IBAction)pressedDesignButton:(DesignButton *)sender {
@@ -266,25 +277,54 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 - (IBAction)pressedKeyboardDefaultButton:(UIButton *)sender {
-    UIAlertView *alert;
-    alert = [[UIAlertView alloc] initWithTitle:TITLE_RESET_BUTTON
-                                       message:ALERT_MESAGE_RESET_BUTTONS//@"restore initial buttons settings"
-                                      delegate:self
-                             cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                             otherButtonTitles:ALERT_RESTORE_BUTTON_TITLE, nil]; //@"Restore"
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:TITLE_RESET_BUTTON
+                                                                   message:ALERT_MESAGE_RESET_BUTTONS
+                                                            preferredStyle:UIAlertControllerStyleAlert];
     
-    [alert show];
+    UIAlertAction* cancel = [UIAlertAction actionWithTitle:ALERT_CANCEL_BUTTON_TITLE style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+                                                   }];
+    
+    [alert addAction:cancel];
+    
+    UIAlertAction* defaultButtonAction = [UIAlertAction actionWithTitle:ALERT_RESTORE_BUTTON_TITLE style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction * action) {
+                                                                    NSNumber *message = [NSNumber numberWithBool:YES];
+                                                                    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"setKeyboardDefaultAction",nil];
+                                                                    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+                                                                    [[NSNotificationCenter defaultCenter] postNotification:note];
+
+                                                                }];
+    [alert addAction:defaultButtonAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
+
 - (IBAction)pressedBuyAdditionsButton:(UIButton *)sender {
-    UIAlertView *alert;
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD
+                                                                   message:@""
+                                                            preferredStyle:UIAlertControllerStyleAlert];
     
-    alert = [[UIAlertView alloc] initWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD//@"Change keyboard"//TITLE_RESET_BUTTON
-                                       message:@""
-                                      delegate:self
-                             cancelButtonTitle:ALERT_CANCEL_BUTTON_TITLE//@"Cancel"
-                             otherButtonTitles: ALLERT_BUTTON_BUY,ALLERT_BUTTON_RESTORE, nil]; //@"Restore"
+    UIAlertAction* cancel = [UIAlertAction actionWithTitle:ALERT_CANCEL_BUTTON_TITLE style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+                                                   }];
     
-    [alert show];
+    [alert addAction:cancel];
+    
+    UIAlertAction* buyAction = [UIAlertAction actionWithTitle:ALLERT_BUTTON_BUY
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * action) {
+                                                                    [self buyUnlockKeyboard];
+                                                                }];
+    [alert addAction:buyAction];
+    
+    UIAlertAction* restorePurchaise = [UIAlertAction actionWithTitle:ALLERT_BUTTON_RESTORE
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * action) {
+                                                          [self restorePurchase];
+                                                      }];
+    [alert addAction:restorePurchaise];
+
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 
@@ -780,19 +820,21 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
                 
             case SKPaymentTransactionStateFailed: ;//NSLog(@"Purchasing faild");;
                 
-                
                 //stop and remove process spinner
                 [self.processSpinner stopAnimating];
                 [self.processSpinner removeFromSuperview];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Transaction failed"
-                                                                message:@""//@"restore initial buttons settings"
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Ok"//@"Cancel"
-                                                      otherButtonTitles: nil]; //@"Restore"
                 
-                [alert show];
+                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Transaction failed"
+                                                                               message:@""
+                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok"
+                                                             style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * action) {
+                                                               }];
+                [alert addAction:ok];
+                [self presentViewController:alert animated:YES completion:nil];
+                
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                
                 break;
         }
     }

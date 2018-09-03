@@ -8,9 +8,10 @@
 
 #import "SecondViewController.h"
 #import "DesignObject.h"
+#import "DesignViewController.h"
 
 #define DEBUG_MODE YES
-@interface SettingsViewController : SecondViewController
+@interface SettingsViewController : SecondViewController <DesignViewControllerProtocol, UIViewControllerTransitioningDelegate>
 
 
 @property (weak, nonatomic) IBOutlet UIView *cView;
