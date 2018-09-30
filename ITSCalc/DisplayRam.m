@@ -12,7 +12,7 @@
 
 @interface DisplayRam()
 
-@property (nonatomic, strong) NSString* resultString;
+@property  (nonatomic, strong) NSString* resultString; //(nonatomic, strong)
 @property (nonatomic) BOOL isFloat;
 @property (nonatomic) NSInteger displayLenght;
 
@@ -299,9 +299,11 @@
             }
             str = [self replasePointinString:self.resultString];
         } else if ([symbol isEqualToString:@"° ′″"]){
+           
             if(self.isGradMinutesSecons ==0){
                 double grad = floor([self.resultNumber doubleValue]);
-                NSMutableArray *copyGrad = [self.gradArray mutableCopy];
+                //NSMutableArray *copyGrad = [self.gradArray mutableCopy];
+                NSMutableArray *copyGrad = [[NSMutableArray alloc] init];;
                 [copyGrad addObject:[NSNumber numberWithDouble: fmod(grad, 360)]];
                 [copyGrad addObject:@"°"];
                 self.gradArray = [copyGrad copy];
@@ -346,7 +348,22 @@
             str = [self stringFromGrad:self.gradArray];
             
         }  else if([symbol isEqualToString:@"∓°"]){
-            NSMutableArray * copyGradArray = [self.gradArray mutableCopy];
+            NSMutableArray * copyGradArray = [[NSMutableArray alloc]init];
+            for(id elem in self.gradArray){
+                id obj;
+                if([elem isKindOfClass:[NSNumber class]]){
+                    obj = [NSNumber numberWithDouble:[elem doubleValue]* (-1)];
+                }else {
+                    obj = elem;
+                }
+                [copyGradArray addObject:obj];
+                
+            }
+            
+            self.gradArray = [copyGradArray copy];
+            str = [self stringFromGrad:self.gradArray];
+
+            /*
             id firstObj = [copyGradArray objectAtIndex:0];
             if(firstObj && [firstObj isKindOfClass:[NSNumber class]]){
                 [copyGradArray removeObjectAtIndex:0];
@@ -354,7 +371,7 @@
                 [copyGradArray insertObject:firstObj atIndex:0];
                 self.gradArray = [copyGradArray copy];
                 str = [self stringFromGrad:self.gradArray];
-            }
+            }*/
         } else if([symbol isEqualToString:@"x"] || [symbol isEqualToString:@"y"]){
             str = symbol;
         } else {
@@ -677,14 +694,17 @@
 {
     NSString *result = @"";
     NSMutableArray *copyGrad = [gradArray mutableCopy];
+    BOOL isNegativeNumber = NO;
     for(int i = 0; i < [gradArray count]; i++){
         if([copyGrad[i] isKindOfClass:[NSNumber class]]){
-            result = [result stringByAppendingString:[copyGrad[i] stringValue]];
+            if([copyGrad[i] compare:@0] == NSOrderedAscending) isNegativeNumber = YES;
+            int intNumber = ABS([copyGrad[i] intValue]);
+            result = [result stringByAppendingString:[NSString stringWithFormat:@"%i",intNumber]];
         } else if([copyGrad[i] isKindOfClass:[NSString class]]){
             result = [result stringByAppendingString:copyGrad[i]];
         }
-        
     }
+    if(isNegativeNumber) result = [@"-" stringByAppendingString:result];
     return result;
 }
 
@@ -701,5 +721,20 @@
         [self setup];
     }
     return self;
+}
+
+-(DisplayRam*) copyDisplayRamForCount{
+    DisplayRam *copyRam = [[DisplayRam alloc]init];
+    copyRam.resDictionary = [self.resDictionary copy];
+    copyRam.resultString = [self.resultString copy];
+    copyRam.resultNumber = [self.resultNumber copy];
+    copyRam.gradArray = [self.gradArray copy];
+    copyRam.formatter = [self.formatter copy];
+    copyRam.isGradMinutesSecons = self.isGradMinutesSecons;
+    copyRam.isFloat = self.isFloat;
+    copyRam.isIpadPortraitView = self.isIpadPortraitView;
+    copyRam.displayLenght = self.displayLenght;
+    
+    return copyRam;
 }
 @end

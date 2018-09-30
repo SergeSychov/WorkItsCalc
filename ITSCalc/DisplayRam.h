@@ -42,6 +42,7 @@
 -(NSString*) getResultFromMemory:(BOOL)isFirst;
 -(void) clearMemory:(BOOL)isFirst;
 -(BOOL) isGradValue;
+-(DisplayRam*)copyDisplayRamForCount;
 
 
 @property (nonatomic,weak) id <DisplayRamDelegate> delegate;

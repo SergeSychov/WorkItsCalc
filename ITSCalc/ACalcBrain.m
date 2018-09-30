@@ -1446,14 +1446,24 @@
                 if([topOfTopArray isEqualToString:@"D"] || [topOfTopArray isEqualToString:@"R"]){
                     [topOfStack removeLastObject];
                     NSArray *copyGrad = [topOfStack copy];
+                    BOOL isNegativeNumber = NO;
+                    NSInteger initialIndex = [attArg length];
                     for(int i = 0; i < [copyGrad count]; i++){
                         if([copyGrad[i] isKindOfClass:[NSNumber class]]){
-                            NSAttributedString * grad = [[NSAttributedString alloc] initWithString:[copyGrad[i] stringValue] attributes:attributes];
+                            if([copyGrad[i] compare:@0] == NSOrderedAscending) isNegativeNumber = YES;
+                            int intNumber = ABS([copyGrad[i] intValue]);
+                            //result = [result stringByAppendingString:[NSString stringWithFormat:@"%i",intNumber]];
+                            NSAttributedString * grad = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%i",intNumber] attributes:attributes];
                             [attArg insertAttributedString:grad atIndex:[attArg length]];
                         } else if([copyGrad[i] isKindOfClass:[NSString class]]){
                             NSAttributedString * grad = [[NSAttributedString alloc] initWithString:copyGrad[i] attributes:attributes];
                             [attArg insertAttributedString:grad atIndex:[attArg length]];
                         }
+                    }
+                    if(isNegativeNumber){
+                        NSAttributedString * negative = [[NSAttributedString alloc] initWithString:@"-" attributes:attributes];
+                        [attArg insertAttributedString:negative atIndex:initialIndex];
+
                     }
                 } else {
                     NSMutableArray *mutTopOfStack = [topOfStack mutableCopy];
