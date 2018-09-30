@@ -15,7 +15,7 @@
 @property (nonatomic, strong) NSDictionary *variableValue;
 @property (nonatomic) int numberOfOpenBrackets;
 
--(double) countWithStack:(id) stack;
+-(id) countWithStack:(id) stack;
 @end
 
 @implementation ACalcBrain
@@ -188,7 +188,7 @@
     //NSLog(@"arguStack %@",self.arguStack);
 }
 
--(double) performOperationInArgu:(id)operation
+-(id) performOperationInArgu:(id)operation
 {
     NSInteger operationPriority;
     //NSLog(@"Operation %@",operation);
@@ -224,7 +224,7 @@
 }
 
 
--(double)perfomOperation: (NSString *)operation
+-(id)perfomOperation: (NSString *)operation
 {
     int operationPriority = [ACalcBrain getPriorityOf:operation];
     if(!self.isStronglyArgu){
@@ -273,9 +273,9 @@
 }
 
 //check @"∓" or @"¹/x" for exepting double the same operation
--(double) checkMinusOrDivideOperationOnDubble:(NSString*)operand
+-(id) checkMinusOrDivideOperationOnDubble:(NSString*)operand
 {
-    double result;
+    id result;
     
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
     id lastObjInArgStack = [copyArgu lastObject];
@@ -848,44 +848,47 @@
 }
 #pragma mark COUNT
 
--(double) count
+-(id) count //possible return number value or grad array
 {
     NSMutableArray *programCopy = [ACalcBrain deepArrayCopy:self.programStacks];
     [self applyArgu];
     //set result stack as new argument
     [self getResultAndPutAsArguByPriotiy:0];
-    double result = [self countWithStack:self.program];
+    
+    //IMPORTANT get only id no NSNumber
+    id result =[self countWithStack:self.program];
     if([self.programStacks count] > 1){
         [programCopy removeLastObject];
     } else {
         [programCopy.lastObject removeAllObjects];
     }
     self.programStacks = [programCopy copy];
+    
     return result;
 }
 
--(double) countWithStack:(id) stack
+-(id) countWithStack:(id) stack //possible return number value or grad array
 {
     return [ACalcBrain runProgram:stack usingVariableValue:self.variableValue];
 }
 
 
 #pragma mark RUN PROGRAN
-+(double) runProgram:(id)program
++(id) runProgram:(id)program //possible return number value or grad array
 {
     NSMutableArray *stack;
     if([program isKindOfClass:[NSArray class]]) {
          stack = [ACalcBrain deepArrayCopy:program];
     }
-    return [self popOperandOfStack:stack];
+    return [NSNumber numberWithDouble:[self popOperandOfStack:stack]];
 }
 
-+(double) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues
++(id) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues
 {
     return [self runProgram:program usingVariableValue:variableValues withPriority:0];
 }
 
-+(double) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withPriority: (NSInteger) priority
++(id) runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withPriority: (NSInteger) priority
 {
     NSMutableArray *stack;
     if([program isKindOfClass:[NSArray class]]) {
@@ -896,7 +899,7 @@
     stack = [self arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
     // NSLog(@"runProgram second stack %@", stack);
 
-    return [self popOperandOfStack:stack accordingPriority:priority];
+    return [NSNumber numberWithDouble:[self popOperandOfStack:stack accordingPriority:priority]];
 }
 
 +(NSMutableArray*) arrayFromArray:(NSMutableArray*)stack WithValueFromVariabledictionary:(NSDictionary*)vaiableValues

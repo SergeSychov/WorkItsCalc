@@ -588,6 +588,8 @@
             str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
             
         }
+    }else {
+        NSLog(@"DisplayRam setResult: not number, not string" );
     }
     //if([str length] > self.displayLenght){
     //    str = [str substringToIndex:self.displayLenght];
@@ -655,8 +657,7 @@
 {
     [self clearRam];
     NSMutableArray * copyMemory = isFirst? [self.firstMemoryStack mutableCopy] : [self.secondMemoryStack mutableCopy];
-    
-    return [self setResult:[NSNumber numberWithDouble:[ACalcBrain runProgram:copyMemory]]];
+    return [self setResult:[ACalcBrain runProgram:copyMemory]];
 }
 
 -(void) clearMemory:(BOOL)isFirst

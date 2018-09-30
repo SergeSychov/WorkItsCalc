@@ -11,16 +11,16 @@
 
 @interface ACalcBrain : NSObject
 -(void) pushOperand:(id) operand; //think it's neded to be argu stack
--(double) performOperationInArgu:(id)operation;
+-(id) performOperationInArgu:(id)operation;
 -(void) applyArgu; //and may be this is need to be hiden
 -(void) pushArguForPerCent; //especialy for perCent function, inserts arg for percent before % operand
--(double) checkMinusOrDivideOperationOnDubble:(NSString*)operand;
+-(id) checkMinusOrDivideOperationOnDubble:(NSString*)operand;
 -(BOOL) deleteLastElement;
 
 
 -(void) getResultAndPutAsArguByPriotiy:(int)priority; //may be its need to be hiden???
--(double) count;
--(double) perfomOperation:(NSString *) operation;
+-(id) count;
+-(id) perfomOperation:(NSString *) operation;
 -(void) insertBracket: (BOOL) isRigthOpen;
 -(void) clearOperation;
 -(void) clearArgu;
@@ -43,8 +43,8 @@
 @property (readonly) int openBracets;
 
 
-+(double)runProgram:(id) program;
-+(double)runProgram:(id)program usingVariableValue: (NSDictionary *) variableValues;
++(id)runProgram:(id) program;
++(id)runProgram:(id)program usingVariableValue: (NSDictionary *) variableValues;
 //+(NSString *)descriptionOfProgram:(id)program;
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes;
 +(id) deepArrayCopy:(NSArray*) arrayToCopy;
