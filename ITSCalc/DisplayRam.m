@@ -657,7 +657,7 @@
 {
     [self clearRam];
     NSMutableArray * copyMemory = isFirst? [self.firstMemoryStack mutableCopy] : [self.secondMemoryStack mutableCopy];
-    return [self setResult:[ACalcBrain runProgram:copyMemory]];
+    return [self setResult:[ACalcBrain runProgram:copyMemory withCountAttr:NO_COUNT_ATTR]];
 }
 
 -(void) clearMemory:(BOOL)isFirst

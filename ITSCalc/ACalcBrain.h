@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 @interface ACalcBrain : NSObject
+-(void) setCountAttribute:(NSString*)attr; //add counting attribute Dec or Rad
 -(void) pushOperand:(id) operand; //think it's neded to be argu stack
 -(id) performOperationInArgu:(id)operation;
 -(void) applyArgu; //and may be this is need to be hiden
@@ -32,6 +33,11 @@
 -(NSArray*) arrayToSaveBrain;
 
 //program is alweys guaranty to be a Property list
+#define DEC @"DEC"
+#define RAD @"RAD"
+#define NO_COUNT_ATTR @"NO COUNT ATTR"
+
+@property (nonatomic,strong)NSString *countAttributeStr ;//string @"NO", @"DEC" or @"RAD" to know how count trigonom,etric function
 @property (nonatomic, strong) NSArray *programStacks;
 @property (readonly) id program;
 @property (readonly) id argu;
@@ -43,8 +49,8 @@
 @property (readonly) int openBracets;
 
 
-+(id)runProgram:(id) program;
-+(id)runProgram:(id)program usingVariableValue: (NSDictionary *) variableValues;
++(id)runProgram:(id)program withCountAttr:(NSString*)attrStr;
++(id)runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withCountAttr:(NSString*)attrStr;
 //+(NSString *)descriptionOfProgram:(id)program;
 +(NSAttributedString*) descriptionOfProgram:(id)program withAttributes:(NSDictionary*)atributes;
 +(id) deepArrayCopy:(NSArray*) arrayToCopy;
@@ -65,6 +71,6 @@
 
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;
-+(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu;
++(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu countAttrStr:(NSString*)countAttrStr;
 
 @end
