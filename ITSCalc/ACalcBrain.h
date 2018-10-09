@@ -19,7 +19,7 @@
 -(BOOL) deleteLastElement;
 
 
--(void) getResultAndPutAsArguByPriotiy:(int)priority; //may be its need to be hiden???
+-(void) getResultAndPutAsArguByPriotiy:(NSInteger)priority; //may be its need to be hiden???
 -(id) count;
 -(id) perfomOperation:(NSString *) operation;
 -(void) insertBracket: (BOOL) isRigthOpen;
