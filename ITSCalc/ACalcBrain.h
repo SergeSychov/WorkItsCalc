@@ -36,6 +36,7 @@
 #define DEC @"DEC"
 #define RAD @"RAD"
 #define NO_COUNT_ATTR @"NO COUNT ATTR"
+#define SHOW_GRAD_RESULT @"Show Grad Result"
 
 @property (nonatomic,strong)NSString *countAttributeStr ;//string @"NO", @"DEC" or @"RAD" to know how count trigonom,etric function
 @property (nonatomic, strong) NSArray *programStacks;

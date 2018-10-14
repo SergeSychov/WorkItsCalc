@@ -439,21 +439,20 @@
     } else {
         resultDouble = [number doubleValue];
     }
+    NSInteger wholeValue = round(resultDouble*3600);
     
-    double grad = trunc(resultDouble);
-    resultDouble = (resultDouble - grad) * 60;
-    grad = fmod(grad, 360);
-    [resultGradArray addObject:[NSNumber numberWithDouble:grad]];
+    NSInteger grad = (wholeValue/3600)%360;
+    [resultGradArray addObject:[NSNumber numberWithInteger:grad]];
     [resultGradArray addObject:@"°"];
     
+    NSInteger restValue = wholeValue%3600;
     
-    double minutes = trunc(resultDouble);
-    [resultGradArray addObject:[NSNumber numberWithDouble:minutes]];
+    NSInteger minutes = restValue/60;
+    [resultGradArray addObject:[NSNumber numberWithInteger:minutes]];
     [resultGradArray addObject:@"′"];
     
-    resultDouble = (resultDouble - minutes) * 60;
-    double seconds = trunc(resultDouble);
-    [resultGradArray addObject:[NSNumber numberWithDouble:seconds]];
+    NSInteger seconds =restValue%60;
+    [resultGradArray addObject:[NSNumber numberWithInteger:seconds]];
     [resultGradArray addObject:@"″"];
     
     return [resultGradArray copy];
@@ -938,7 +937,11 @@
          stack = [ACalcBrain deepArrayCopy:program];
     }
     NSDictionary* dicRes = [ACalcBrain popOperandOfStack:stack withCountAttr:attrStr];
-    return [dicRes valueForKey:VALUE];
+    if([[dicRes valueForKey:NEED_SHOW_GRAD_KEY] isEqualToString:SHOW_GRAD]){
+        return [ACalcBrain gradArrayFromNumber:[dicRes valueForKey:VALUE] withCountAttr:attrStr];
+    } else {
+        return [dicRes valueForKey:VALUE];
+    }
 }
 
 +(id)runProgram:(id)program usingVariableValue:(NSDictionary *)variableValues withCountAttr:(NSString*)attrStr
@@ -957,7 +960,12 @@
     stack = [ACalcBrain arrayFromArray:stack WithValueFromVariabledictionary:variableValues];
     // NSLog(@"runProgram second stack %@", stack);
     NSDictionary* dicRes = [ACalcBrain popOperandOfStack:stack accordingPriority:priority withCountAttr:attrStr];
-    return [dicRes valueForKey:VALUE];
+    
+    if([[dicRes valueForKey:NEED_SHOW_GRAD_KEY] isEqualToString:SHOW_GRAD]){
+        return [ACalcBrain gradArrayFromNumber:[dicRes valueForKey:VALUE] withCountAttr:attrStr];
+    } else {
+        return [dicRes valueForKey:VALUE];
+    }
 }
 
 +(NSMutableArray*) arrayFromArray:(NSMutableArray*)stack WithValueFromVariabledictionary:(NSDictionary*)vaiableValues
@@ -997,10 +1005,7 @@
     double result = 0.0;
     NSString* showGrad = POSSIBLE_TO_SHOW_GRAD;
     NSDictionary* dicResult;
-    //NSLog(@"popOperandOfStack Stack:%@",  stack);
-
     id topOfStack = [stack lastObject];
-    //NSLog(@"popOperandOfStack topOfStack:%@",  topOfStack);
 
     if(topOfStack){
         [stack removeLastObject];
@@ -1008,8 +1013,6 @@
     } else if (value){
         result = [value doubleValue];
     }
-
-    //NSLog(@"popOperandOfStack topOfStack:%@",  stack);
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function
         //NSLog(@"there is constant or function in popOperandOfStack");
@@ -1022,10 +1025,19 @@
             showGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
         } else if ([valueProg isKindOfClass:[NSArray class]]){
             if([valueProg containsObject:@"°"]){
+                NSDictionary *arguDict = [self popOperandOfStack:topOfStack withCountAttr:attrStr];
+                NSString *arguShowGrad = [arguDict valueForKey:NEED_SHOW_GRAD_KEY];
+                
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[[self popOperandOfStack:[valueProg mutableCopy]withCountAttr:attrStr] valueForKey:VALUE] accordingPriority:priority withCountAttr:attrStr];
                 result =  [[dicResult valueForKey:VALUE] doubleValue];
-                if(![[dicResult valueForKey:NEED_SHOW_GRAD_KEY] isEqualToString:NOT_SHOW_GRAD]){
+                
+                NSString *progShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                if([progShowGrad isEqualToString:NOT_SHOW_GRAD]|| [arguShowGrad isEqualToString:NOT_SHOW_GRAD]){
+                    showGrad = NOT_SHOW_GRAD;
+                } else if ([progShowGrad isEqualToString:SHOW_GRAD]|| [arguShowGrad isEqualToString:SHOW_GRAD]){
                     showGrad = SHOW_GRAD;
+                } else {
+                    showGrad = POSSIBLE_TO_SHOW_GRAD;
                 }
 
             } else {
@@ -1052,9 +1064,20 @@
             result = [resStr doubleValue];
             showGrad = NOT_SHOW_GRAD;
         } else {
-            dicResult = [self popOperandOfStack:stack withPreviousValue:[[self popOperandOfStack:topOfStack withCountAttr:attrStr] valueForKey:VALUE] accordingPriority:priority withCountAttr:attrStr];
+            NSDictionary *arguDict = [self popOperandOfStack:topOfStack withCountAttr:attrStr];
+            NSString *arguShowGrad = [arguDict valueForKey:NEED_SHOW_GRAD_KEY];
+            
+            dicResult = [self popOperandOfStack:stack withPreviousValue:[arguDict valueForKey:VALUE] accordingPriority:priority withCountAttr:attrStr];
             result = [[dicResult valueForKeyPath:VALUE] doubleValue];
-            showGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+            
+            NSString *progShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+            if([progShowGrad isEqualToString:NOT_SHOW_GRAD]|| [arguShowGrad isEqualToString:NOT_SHOW_GRAD]){
+                showGrad = NOT_SHOW_GRAD;
+            } else if ([progShowGrad isEqualToString:SHOW_GRAD]|| [arguShowGrad isEqualToString:SHOW_GRAD]){
+                showGrad = SHOW_GRAD;
+            } else {
+                showGrad = POSSIBLE_TO_SHOW_GRAD;
+            }
         }
     } else if([topOfStack isKindOfClass:[NSNumber class]]){
         dicResult = [self popOperandOfStack:stack withPreviousValue:topOfStack accordingPriority:priority withCountAttr:attrStr];
@@ -1253,6 +1276,14 @@
                     result = arg;
                 }
                 showGrad = NOT_SHOW_GRAD;
+            } else if([operation isEqualToString:SHOW_GRAD_RESULT]){
+                dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
+                result = [[dicResult valueForKey:VALUE] doubleValue];
+                if([[dicResult valueForKey:NEED_SHOW_GRAD_KEY] isEqualToString:POSSIBLE_TO_SHOW_GRAD]|| [[dicResult valueForKey:NEED_SHOW_GRAD_KEY] isEqualToString:NOT_SHOW_GRAD]){
+                    showGrad = SHOW_GRAD;
+                } else {
+                    showGrad = NOT_SHOW_GRAD;
+                }
             } else if ([operation isEqualToString:@"D"] || [operation isEqualToString:@"R"]){
                 double arg = 0;
                 id nexTopOfStack = [stack lastObject];
@@ -1554,6 +1585,8 @@
                 showGrad =NOT_SHOW_GRAD;
             } else if([operation isEqualToString:@"+"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:0 withCountAttr:attrStr];
+                NSString *arguShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 if(value){
                     dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg +[value doubleValue])] accordingPriority:priority withCountAttr:attrStr];
@@ -1561,10 +1594,20 @@
                 } else {
                     result = arg;
                 }
-                showGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                
+                NSString *progShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                if([progShowGrad isEqualToString:NOT_SHOW_GRAD]|| [arguShowGrad isEqualToString:NOT_SHOW_GRAD]){
+                    showGrad = NOT_SHOW_GRAD;
+                } else if ([progShowGrad isEqualToString:SHOW_GRAD]|| [arguShowGrad isEqualToString:SHOW_GRAD]){
+                    showGrad = SHOW_GRAD;
+                } else {
+                    showGrad = POSSIBLE_TO_SHOW_GRAD;
+                }
             }
             else if([operation isEqualToString:@"-"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:0 withCountAttr:attrStr];
+                 NSString *arguShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 if(value){
                     dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg - [value doubleValue])] accordingPriority:priority withCountAttr:attrStr];
@@ -1572,7 +1615,14 @@
                 } else {
                     result = arg;
                 }
-                showGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                NSString *progShowGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
+                if([progShowGrad isEqualToString:NOT_SHOW_GRAD]|| [arguShowGrad isEqualToString:NOT_SHOW_GRAD]){
+                    showGrad = NOT_SHOW_GRAD;
+                } else if ([progShowGrad isEqualToString:SHOW_GRAD]|| [arguShowGrad isEqualToString:SHOW_GRAD]){
+                    showGrad = SHOW_GRAD;
+                } else {
+                    showGrad = POSSIBLE_TO_SHOW_GRAD;
+                }
             } else if([operation isEqualToString:@"%"]){
                 id nextTop = [stack lastObject];
                 double arg;
@@ -1605,7 +1655,7 @@
     return @{
              NEED_SHOW_GRAD_KEY : showGrad,
              VALUE: [NSNumber numberWithDouble:result],
-             };;
+             };
 }
 
 
@@ -1825,7 +1875,19 @@
             //
             //---------------inserted
             //
-        
+        if([topOfStack isEqualToString:SHOW_GRAD_RESULT]){
+            NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
+            NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
+
+                NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
+                [attArg insertAttributedString:[self popStringOfStack:arguArray
+                                                   withNextArguString:empty
+                                                       withAttributes:attributes] atIndex:0];
+           // }
+            resultStr = [[self popStringOfStack:stack
+                             withNextArguString:attArg
+                                 withAttributes:attributes] mutableCopy];
+        } else
             if([topOfStack isEqualToString:@"D"] || [topOfStack isEqualToString:@"R"]){
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 //[stack removeLastObject];

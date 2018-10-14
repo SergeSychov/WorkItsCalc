@@ -588,6 +588,19 @@
             str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
             
         }
+    } else if ([result isKindOfClass:[NSArray class]]){
+        if([result[1] isKindOfClass:[NSString class]] && [result[1] isEqualToString:@"°"]){
+            self.gradArray = [result copy];
+            if([result containsObject:@"″"]){
+                self.isGradMinutesSecons = 3;
+            } else if ([result containsObject:@"′"]){
+                self.isGradMinutesSecons = 2;
+            } else {
+               self.isGradMinutesSecons = 1;
+            }
+            str = [self stringFromGrad:result];
+        }
+        
     }else {
         NSLog(@"DisplayRam setResult: not number, not string" );
     }
