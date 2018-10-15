@@ -1780,6 +1780,10 @@
                              withNextArguString:attArg
                                  withAttributes:attributes] mutableCopy];
             
+            NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
+            [attArg insertAttributedString:bracet atIndex:0];
+            bracet = [bracet initWithString:@")" attributes:attributes];
+            [attArg insertAttributedString:bracet atIndex:[attArg length]];
         } else {
             NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
             //for gradus view
@@ -1822,12 +1826,12 @@
                 [attArg insertAttributedString:[self popStringOfStack:mutTopOfStack
                                                    withNextArguString:empty
                                                        withAttributes:attributes] atIndex:0];
+                NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
+                [attArg insertAttributedString:bracet atIndex:0];
+                bracet = [bracet initWithString:@")" attributes:attributes];
+                [attArg insertAttributedString:bracet atIndex:[attArg length]];
             
             }
-            NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
-            [attArg insertAttributedString:bracet atIndex:0];
-            bracet = [bracet initWithString:@")" attributes:attributes];
-            [attArg insertAttributedString:bracet atIndex:[attArg length]];
             resultStr = [[self popStringOfStack:stack withNextArguString:attArg withAttributes:attributes] mutableCopy];
         }
         
@@ -2642,7 +2646,8 @@
                 //check the lenght of argu stack if more then one add brackets
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
-                if(([testArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]]){
+                if(([testArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]] &&  ![testArray[0] containsObject:@"°"]){
+                    //![testArray[0] containsObject:@"°"] - if it's not grad array - another way it need brackets
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
