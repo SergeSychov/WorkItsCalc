@@ -22,7 +22,7 @@
 @property (nonatomic,strong) NSNumber* resultNumber;
 @property (nonatomic,strong) NSDictionary* resDictionary;
 
-@property (nonatomic) int isGradMinutesSecons;//if isn't - 0, if grad - 1, if min - 2, if sec - 3
+@property (nonatomic) NSInteger isGradMinutesSecons;//if isn't - 0, if grad - 1, if min - 2, if sec - 3
 //
 
 @property (nonatomic, strong) NSNumberFormatter* formatter;
