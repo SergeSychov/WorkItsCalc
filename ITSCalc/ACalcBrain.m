@@ -430,6 +430,10 @@
 }
 
 #pragma mark _HELPED FUNCTIOS___________________________________________________
++(double)setPrecission:(double)prec toValue:(double)value {
+    double precTen = pow(10, prec);    
+    return round(value*precTen)/precTen;
+}
 
 +(NSArray*)gradArrayFromNumber:(NSNumber*)number withCountAttr:(NSString*)countAttr{
     NSMutableArray *resultGradArray = [[NSMutableArray alloc] init];
@@ -1344,13 +1348,15 @@
             } else if ([operation isEqualToString:@"cos"]){
                 double arg;
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
+                
                 if([attrStr isEqualToString:RAD]){
                     arg = [[dicResult valueForKey:VALUE] doubleValue];
                 } else{
                     arg = [[dicResult valueForKey:VALUE] doubleValue] * M_PI / 180;
                 }
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cos(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"sin"]){
@@ -1362,7 +1368,8 @@
                     arg = [[dicResult valueForKey:VALUE] doubleValue] * M_PI / 180;
                 }
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sin(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
             } else if ([operation isEqualToString:@"tg"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
@@ -1373,7 +1380,7 @@
                     arg = [[dicResult valueForKey:VALUE] doubleValue] * M_PI / 180;
                 }
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:tan(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"ctg"]){
@@ -1385,7 +1392,7 @@
                     arg = [[dicResult valueForKey:VALUE] doubleValue] * M_PI / 180;
                 }
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tan(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"acos"]){
@@ -1396,7 +1403,7 @@
                 } else{
                     dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:acos(arg) * 180 / M_PI] accordingPriority:priority withCountAttr:attrStr];
                 }
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = [dicResult valueForKey:NEED_SHOW_GRAD_KEY];
                 
             } else if ([operation isEqualToString:@"asin"]){
@@ -1434,39 +1441,39 @@
                 dicResult= [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cos(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result =[ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
             } else if ([operation isEqualToString:@"rsin"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sin(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
             } else if ([operation isEqualToString:@"rtg"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3  withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:tan(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
             } else if ([operation isEqualToString:@"rctg"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tan(arg)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"dsin"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:sin(arg * M_PI / 180)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"dcos"]){
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:cos(arg * M_PI / 180)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"dtg"]){
@@ -1480,7 +1487,7 @@
                 
                 // } else {
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:tan(arg * M_PI / 180)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 // }
                 
@@ -1488,7 +1495,7 @@
                 dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr];
                 double arg = [[dicResult valueForKey:VALUE] doubleValue];
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:1 / tan(arg * M_PI / 180)] accordingPriority:priority withCountAttr:attrStr];
-                result = [[dicResult valueForKey:VALUE] doubleValue];
+                result = [ACalcBrain setPrecission:15 toValue:[[dicResult valueForKey:VALUE] doubleValue]];
                 showGrad = NOT_SHOW_GRAD;
                 
             } else if ([operation isEqualToString:@"racos"]){
