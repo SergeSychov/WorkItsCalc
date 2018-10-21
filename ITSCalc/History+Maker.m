@@ -27,8 +27,8 @@
     }
     else {
         history = [NSEntityDescription insertNewObjectForEntityForName:@"History" inManagedObjectContext:context];
-        
-        history.program = [NSKeyedArchiver archivedDataWithRootObject:program];
+        NSError* errorArchove;
+        history.program = [NSKeyedArchiver archivedDataWithRootObject:program requiringSecureCoding:YES error:&errorArchove];
         history.date = date;
         history.currensyRate = currensyRate;
         history.variableDescription = variableDescription;

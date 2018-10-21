@@ -22,7 +22,6 @@
     
     
     if(!matches || error){
-        
     } else if([matches count] > 0){
         Buttons* existingButton = matches[0];
         
@@ -32,7 +31,8 @@
         existingButton.enable = [NSNumber numberWithBool:enabling];
         existingButton.isMain = [NSNumber numberWithBool:isMain];
         if(program){
-            NSData* dataProgram = [NSKeyedArchiver archivedDataWithRootObject:program];
+            NSError * errorArchive;
+            NSData* dataProgram = [NSKeyedArchiver archivedDataWithRootObject:program requiringSecureCoding:YES error:&errorArchive];
             existingButton.program = dataProgram;
         } else {
             existingButton.program = nil;
@@ -47,7 +47,8 @@
         newButton.enable = [NSNumber numberWithBool:enabling];
         newButton.isMain = [NSNumber numberWithBool:isMain];
         if(program){
-            NSData* dataProgram = [NSKeyedArchiver archivedDataWithRootObject:program];
+             NSError * errorArchive;
+            NSData* dataProgram = [NSKeyedArchiver archivedDataWithRootObject:program requiringSecureCoding:YES error:&errorArchive];
             newButton.program = dataProgram;
         } else {
         newButton.program = nil;
