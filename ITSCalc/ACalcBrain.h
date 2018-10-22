@@ -67,6 +67,11 @@
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
 +(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)curArray withAtrtributes:(NSDictionary*)atrbutes;
 
++(NSArray*)gradArrayFromNumber:(NSNumber*)number withCountAttr:(NSString*)countAttr;
++(NSString*) resultStringFromCountResult:(id) countResult;
+//+(NSString*)resultStringFromNumber:(NSNumber*)number;
+//+(NSString*)resultStringFromGradArray:(NSArray*)array;
+
 //replace arrays with currencies in program with new values of currencies exhange
 +(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
 

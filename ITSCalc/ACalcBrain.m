@@ -430,6 +430,57 @@
 }
 
 #pragma mark _HELPED FUNCTIOS___________________________________________________
++(NSString*) resultStringFromCountResult:(id) countResult{
+    NSString *resultString = @" ";
+    if(countResult && [countResult isKindOfClass:[NSNumber class]]){
+        resultString = [ACalcBrain resultStringFromNumber:countResult];
+    } else if(countResult && [countResult isKindOfClass:[NSArray class]] && [countResult containsObject:@"°"]){ //if it's grad array
+        resultString = [ACalcBrain resultStringFromGradArray:countResult];
+    }else if (countResult && [countResult isKindOfClass:[NSString class]]){
+        resultString = countResult;
+    }  else {
+        //NSLog(@"ViewController getAttributedStringFromArray: result not number and not string");
+        resultString = @" ";
+    }
+    return resultString;
+}
+
++(NSString*)resultStringFromNumber:(NSNumber*)number{
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setExponentSymbol:@"e"];
+    [numberFormatter setZeroSymbol:@"0"];
+    if (fabs([number doubleValue])>9e9 || fabs([number doubleValue])<9e-9) {
+        [numberFormatter setNumberStyle:NSNumberFormatterScientificStyle];
+        [numberFormatter setMaximumFractionDigits:7];
+    }else{
+        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+        double intPartLenght = log10(fabs([number doubleValue]));
+        double intPart;//fractPart,
+        modf(intPartLenght, &intPart);// fractPart =
+        if(intPart <0) intPart = 0;
+        [numberFormatter setMaximumFractionDigits:(9 - (int)intPart)];
+    }
+    return  [numberFormatter stringFromNumber:number];
+}
+
++(NSString*)resultStringFromGradArray:(NSArray*)countResult{
+    NSString *resultString = @"";
+    BOOL isNegativeNumber = NO;
+    for(int i = 0; i < [(NSArray*)countResult count]; i++){
+        if([countResult[i] isKindOfClass:[NSNumber class]]){
+            if([countResult[i] compare:@0] == NSOrderedAscending) isNegativeNumber = YES;
+            NSInteger intNumber = ABS([countResult[i] intValue]);
+            
+            resultString = [resultString stringByAppendingString:[NSString stringWithFormat:@"%li",(long)intNumber]];
+        } else if([countResult[i] isKindOfClass:[NSString class]]){
+            resultString = [resultString stringByAppendingString:countResult[i]];
+        }
+    }
+    
+    if(isNegativeNumber) resultString = [@"-" stringByAppendingString:resultString];
+    return resultString;
+}
+
 +(double)setPrecission:(double)prec toValue:(double)value {
     double precTen = pow(10, prec);    
     return round(value*precTen)/precTen;
