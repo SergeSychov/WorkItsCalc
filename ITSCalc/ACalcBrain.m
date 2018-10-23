@@ -460,7 +460,7 @@
         if(intPart <0) intPart = 0;
         [numberFormatter setMaximumFractionDigits:(9 - (int)intPart)];
     }
-    return  [numberFormatter stringFromNumber:number];
+    return  [@" = " stringByAppendingString:[numberFormatter stringFromNumber:number]];
 }
 
 +(NSString*)resultStringFromGradArray:(NSArray*)countResult{
@@ -478,7 +478,7 @@
     }
     
     if(isNegativeNumber) resultString = [@"-" stringByAppendingString:resultString];
-    return resultString;
+    return [@" = " stringByAppendingString:resultString];
 }
 
 +(double)setPrecission:(double)prec toValue:(double)value {
