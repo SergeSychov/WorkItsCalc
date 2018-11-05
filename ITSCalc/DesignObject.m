@@ -668,7 +668,8 @@
     if ([self.delegate currentInterfaceClassSize] == UIUserInterfaceSizeClassCompact) {
         //get current class size
         fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.compactTextStyleIn];
-        font  = [UIFont fontWithDescriptor:fontDescriptor size:20];
+        CGFloat compactTextSize = [self.delegate currentCalcWith]*PHONE_HISTORY_CELL_HEIGHT_VS_WIDTH/3;
+        font  = [UIFont fontWithDescriptor:fontDescriptor size:compactTextSize];
         style.alignment = NSTextAlignmentLeft;
     }else {
         fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.regularTextStyle];

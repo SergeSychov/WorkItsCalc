@@ -39,11 +39,13 @@
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_X (([[UIScreen mainScreen]bounds].size.height/[[UIScreen mainScreen]bounds].size.width > 1.8) || ([[UIScreen mainScreen]bounds].size.height/[[UIScreen mainScreen]bounds].size.width < 0.52))
+#define PHONE_HISTORY_CELL_HEIGHT_VS_WIDTH 0.1875
 #define MOTION_IPAD 0.//30.
 #define MOTION_IPHONE 0.//20.
 @class DesignObject;
 @protocol DesignStrDelegate <NSObject>
 -(UIUserInterfaceSizeClass)currentInterfaceClassSize;
+-(CGFloat)currentCalcWith;
 @end
 
 @interface DesignObject : NSObject
