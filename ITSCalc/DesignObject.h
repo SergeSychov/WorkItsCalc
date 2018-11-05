@@ -38,7 +38,7 @@
 #define MULTIPLY_BUTTON_BY_TOUCH 2.
 
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define IS_X ([[UIScreen mainScreen]bounds].size.height == 812. || [[UIScreen mainScreen]bounds].size.width == 812.)
+#define IS_X (([[UIScreen mainScreen]bounds].size.height/[[UIScreen mainScreen]bounds].size.width > 1.8) || ([[UIScreen mainScreen]bounds].size.height/[[UIScreen mainScreen]bounds].size.width < 0.52))
 #define MOTION_IPAD 0.//30.
 #define MOTION_IPHONE 0.//20.
 @class DesignObject;
