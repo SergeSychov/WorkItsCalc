@@ -273,7 +273,11 @@
         if([symbol isEqualToString:@"."] && (self.isGradMinutesSecons == 0)){
             if(!self.isFloat){
                 self.resultString = [self.resultString stringByAppendingString:symbol];
-                str = [[self.formatter stringFromNumber:self.resultNumber] stringByAppendingString:[self point]];
+                if([self.resultNumber isEqualToNumber:@0]){
+                    str = self.resultString;
+                } else {
+                    str = [[self.formatter stringFromNumber:self.resultNumber] stringByAppendingString:[self point]];
+                }
                 self.isFloat = YES;
             } else {
                 if([self.resultNumber doubleValue] != 0){
