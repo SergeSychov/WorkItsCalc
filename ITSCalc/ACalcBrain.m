@@ -488,11 +488,11 @@
 
 +(NSArray*)gradArrayFromNumber:(NSNumber*)number withCountAttr:(NSString*)countAttr{
     NSMutableArray *resultGradArray = [[NSMutableArray alloc] init];
-    double resultDouble;
+    double resultDouble = [number doubleValue];
+    if(resultDouble<0) [resultGradArray addObject:@"-"];
+    resultDouble = fabs(resultDouble);
     if([countAttr isEqualToString:RAD]){
-        resultDouble = [number doubleValue] * 180 / M_PI;
-    } else {
-        resultDouble = [number doubleValue];
+        resultDouble = resultDouble * 180 / M_PI;
     }
     NSInteger wholeValue = round(resultDouble*3600);
     
@@ -1352,8 +1352,11 @@
                 id nexTopOfStack = [stack lastObject];
                 while (nexTopOfStack) {
                     [stack removeLastObject];
+                    BOOL isNegativeNumber = NO;
                     if([nexTopOfStack isKindOfClass:[NSString class]]){
-                        if([nexTopOfStack isEqualToString:@"″"]){
+                        if([nexTopOfStack isEqualToString:@"-"]){
+                            isNegativeNumber = YES;
+                        } else if([nexTopOfStack isEqualToString:@"″"]){
                             nexTopOfStack = [stack lastObject];
                             if(nexTopOfStack && [nexTopOfStack isKindOfClass:[NSNumber class]]){
                                 [stack removeLastObject];
@@ -1375,7 +1378,8 @@
                             nexTopOfStack = [stack lastObject];
                             if(nexTopOfStack && [nexTopOfStack isKindOfClass:[NSNumber class]]){
                                 [stack removeLastObject];
-                                arg += [nexTopOfStack doubleValue];
+                                //if([nexTopOfStack doubleValue]<0) isNegativeNumber = YES;
+                                arg += fabs([nexTopOfStack doubleValue]);
                             } else {
                                 arg += 0;
                             }
@@ -1385,6 +1389,7 @@
                         }
                         arg +=0;
                     }
+                    if(isNegativeNumber) arg = arg*(-1);
                     nexTopOfStack = [stack lastObject];
                 }
                 if([attrStr isEqualToString:RAD]){

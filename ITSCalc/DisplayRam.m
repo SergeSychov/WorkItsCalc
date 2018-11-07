@@ -304,7 +304,11 @@
                 double grad = floor([self.resultNumber doubleValue]);
                 //NSMutableArray *copyGrad = [self.gradArray mutableCopy];
                 NSMutableArray *copyGrad = [[NSMutableArray alloc] init];;
-                [copyGrad addObject:[NSNumber numberWithDouble: fmod(grad, 360)]];
+                
+                if(grad <0){
+                    [copyGrad addObject:@"-"];
+                }
+                [copyGrad addObject:[NSNumber numberWithDouble: fabs(fmod(grad, 360))]];
                 [copyGrad addObject:@"°"];
                 self.gradArray = [copyGrad copy];
                 self.isGradMinutesSecons = 1;
@@ -348,18 +352,14 @@
             str = [self stringFromGrad:self.gradArray];
             
         }  else if([symbol isEqualToString:@"∓°"]){
-            NSMutableArray * copyGradArray = [[NSMutableArray alloc]init];
-            for(id elem in self.gradArray){
-                id obj;
-                if([elem isKindOfClass:[NSNumber class]]){
-                    obj = [NSNumber numberWithDouble:[elem doubleValue]* (-1)];
-                }else {
-                    obj = elem;
-                }
-                [copyGradArray addObject:obj];
-                
-            }
             
+            NSMutableArray * copyGradArray = [self.gradArray mutableCopy];
+            id first = [copyGradArray firstObject];
+            if(first && [first isKindOfClass:[NSString class]] && [first isEqualToString:@"-"]){
+                [copyGradArray removeObjectAtIndex:0];
+            }else{
+                [copyGradArray insertObject:@"-" atIndex:0];
+            }
             self.gradArray = [copyGradArray copy];
             str = [self stringFromGrad:self.gradArray];
 
@@ -588,8 +588,8 @@
             str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
             
         }
-    } else if ([result isKindOfClass:[NSArray class]]){
-        if([result[1] isKindOfClass:[NSString class]] && [result[1] isEqualToString:@"°"]){
+    } else if ([result isKindOfClass:[NSArray class]]&&[result containsObject:@"°"]){
+        if([result containsObject:@"°"]){
             self.gradArray = [result copy];
             if([result containsObject:@"″"]){
                 self.isGradMinutesSecons = 3;
@@ -711,11 +711,15 @@
     BOOL isNegativeNumber = NO;
     for(int i = 0; i < [gradArray count]; i++){
         if([copyGrad[i] isKindOfClass:[NSNumber class]]){
-            if([copyGrad[i] compare:@0] == NSOrderedAscending) isNegativeNumber = YES;
+            //if([copyGrad[i] compare:@0] == NSOrderedAscending) isNegativeNumber = YES;
             int intNumber = ABS([copyGrad[i] intValue]);
             result = [result stringByAppendingString:[NSString stringWithFormat:@"%i",intNumber]];
         } else if([copyGrad[i] isKindOfClass:[NSString class]]){
-            result = [result stringByAppendingString:copyGrad[i]];
+            if([copyGrad[i] isEqualToString:@"-"]){
+                isNegativeNumber = YES;
+            } else {
+                result = [result stringByAppendingString:copyGrad[i]];
+            }
         }
     }
     if(isNegativeNumber) result = [@"-" stringByAppendingString:result];
