@@ -1765,6 +1765,7 @@
 
 +(NSAttributedString *) popStringOfStack:(NSMutableArray *)stack withNextArguString:(NSAttributedString*)argStr withAttributes:(NSDictionary*) attributes
 {
+    
     NSMutableAttributedString * resultStr = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
     
     //number formatter
@@ -2021,7 +2022,7 @@
                 NSArray *testArray = [[NSArray alloc] init];
                 testArray = [arguArray copy];
                 if([testArray count] > 1){
-                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@"(" attributes:attributes];
+                    NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
