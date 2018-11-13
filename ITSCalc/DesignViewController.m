@@ -20,8 +20,8 @@
 
 NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 
-#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-#define INDENT 20.0f
+//#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
+//#define INDENT 20.0f
 //define design numbers
 //#define DESIGN_CLASSIC 1
 //#define DESIGN_PAPER 2
@@ -33,8 +33,9 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 //#define DESIGN_PHOTO 4
 
 @interface DesignViewController() <UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design
-@property (nonatomic, weak) UIView *cView;
+//@property (nonatomic, weak) UIView *cView;
 
+/*
 @property (nonatomic,weak) CalcButton* calcButton;
 @property (nonatomic,weak) SettingButton *settingButton;
 
@@ -61,6 +62,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 @property (nonatomic,weak) designButtonView *photoButtonView;
 @property (nonatomic,weak) TestButtonBackGroundView *photButton;
 @property (nonatomic,weak) PlusButton *addNewPhotoButton; //"+"
+*/
 
 //necessary to add plus button
 
@@ -90,7 +92,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 -(void)trySetDesign:(NSInteger)design
 {
     if(self.designIndex != design){
-        if(design == DESIGN_PHOTO){
+       /* if(design == DESIGN_PHOTO){
             //check is there user photo in store
             NSFileManager *fileManager = [NSFileManager defaultManager];
             NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
@@ -114,7 +116,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
                 
             }
             //if send user to photo library throug message
-        } else {
+        } else {*/
             if (design == DESIGN_COLOR_BLUE){
                 [self setNewBackgroundImageForColor:[Clr blueGround]];
             }else if (design == DESIGN_COLOR_GRAY){
@@ -127,10 +129,12 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
                 [self setNewBackgroundImageForColor:[Clr yellowGround]];
             }
             [self sendNoteChangeDesign:design];
-        }
+        //}
         
     }
 }
+
+
 -(void) setNewBackgroundImageForColor:(UIColor*)color
 {
     UIImage *createdImage = [RoundedGroundView getImageForRect:CGRectInset(self.view.bounds, -40, -40) withColor:color];
@@ -170,29 +174,20 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     
 }
 
-#pragma mark ROTATION
--(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [self willRotatetoSize:size];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
 #pragma mark TAP ACTION SEND NOTIFICATION
--(void)calcButtonTapped:(id)sender
-{
+
+- (IBAction)calcButtonTapped:(UIButton *)sender {
     [self dismissViewControllerAnimated:YES completion:^{
         [self.delegate designViewControllerDidCloseWithString:@"TO CALC"];
     }];
 }
-
--(void) settingButtonTapped:(id)sender
-{
+- (IBAction)settingButtonTapped:(UIButton *)sender {
     [self dismissViewControllerAnimated:YES completion:^{
         
     }];
     [self.delegate designViewControllerDidCloseWithString:@"BACK"];
-    
 }
+
 #pragma mark RECIVE CHANGE DESIGN NOTIFICATION
 -(void) recivedNotification:(NSNotification*)notification
 {
@@ -208,6 +203,8 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         //NSLog(@"recived wrong notification");
     }
 }
+
+/*
 #pragma mark UIImagePickerControllerDelegate
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -434,10 +431,10 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         if([fileManager isDeletableFileAtPath:[storeURL path]]){
             imageForPhotoPart = [UIImage imageWithData:[NSData dataWithContentsOfURL:storeURL]];
         } else {
-            imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
+            imageForPhotoPart =[UIImage imageNamed:@"photoGround.png"];
         }
     } else {
-        imageForPhotoPart =[UIImage imageNamed:/*@"handmadepaper.png"*/@"photoGround.png"];
+        imageForPhotoPart =[UIImage imageNamed:@"photoGround.png"];
         
     }
     
@@ -604,11 +601,11 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         CGFloat addToColorButtonX = (rect.size.width - 5*quardSide - quardSide*0.2)/6;
         
         CGRect rct = CGRectMake(firstPositionStart+origWidth+addToColorButtonX, (onePart-quardSide)/2, quardSide, quardSide);
-        /*
-         CGRect rctforButtonView = CGRectMake(2*firstPositionStart+origWidth+quardSide-addition/2,
-         (onePart-quardSide)/2-addition/2,
-         rect.size.width -2*quardSide - 4*firstPositionStart+addition, quardSide+addition);
-         */
+ 
+         //CGRect rctforButtonView = CGRectMake(2*firstPositionStart+origWidth+quardSide-addition/2,
+         //(onePart-quardSide)/2-addition/2,
+         //rect.size.width -2*quardSide - 4*firstPositionStart+addition, quardSide+addition);
+ 
         CGRect rctforButtonView = CGRectMake(origWidth+(rect.size.width*3/10),
                                              (onePart-quardSide)/2-addition/2,
                                              rect.size.width/2.5,
@@ -733,69 +730,9 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
         
     }
 }
-
--(void) viewDidLayoutSubviewsWithRect:(CGRect)rect
-{
-    
-    [self setLayOutOfSettingsView:rect];
-    
-}
-
--(void) setCViewAccordingFrameRect:(CGRect)rctIn
-{
-    CGRect rct;
-    rct.size.width = rctIn.size.width/0.8;
-    rct.size.height = rctIn.size.height/0.8;
-    rct.origin.x = (rctIn.size.width - rct.size.width)/2;
-    rct.origin.y = (rctIn.size.height - rct.size.height)/2;
-    
-    
-    CGRect rect = rctIn;
-    rect.origin.x = -rct.origin.x;
-    rect.origin.y = -rct.origin.y;
-    
-    CGFloat angle = 0;
-    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
-    self.wasOrient = orient;
-    
-    if(!IS_IPAD){
-        CGFloat width = rct.size.width;
-        CGFloat height = rct.size.height;
-        
-        if(width > height){
-            
-            switch (orient) {
-                case UIDeviceOrientationLandscapeLeft:
-                    angle = -M_PI/2;
-                    break;
-                case UIDeviceOrientationLandscapeRight:
-                    angle = M_PI/2;
-                    
-                default:
-                    break;
-            }
-            rect.size.width = self.view.bounds.size.height;
-            rect.size.height = self.view.bounds.size.width;
-            rect.origin.x = -rct.origin.y;
-            rect.origin.y = -rct.origin.x;
-        }
-        
-        self.cView.center = self.view.center;
-        [self.cView setTransform:CGAffineTransformMakeRotation(angle)];
-    }
-    [self.cView setFrame:rct];
-    
-    [self viewDidLayoutSubviewsWithRect:rect];
-    
-}
-
-
+*/
 -(void)viewWillAppear:(BOOL)animated
 {
-    
-    CGRect rct = self.view.bounds;
-    [self setCViewAccordingFrameRect:rct];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
@@ -803,14 +740,29 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
     [super viewWillAppear:animated];
-    
-}
--(void)willRotatetoSize:(CGSize)size
-{
-    CGRect rct = CGRectMake(0,0,size.width,size.height);
-    [self setCViewAccordingFrameRect:rct];
 }
 
+#pragma mark ROTATION
+-(void)viewDidLayoutSubviews{
+    CGSize viewSize = self.view.bounds.size;
+    CGSize windowSize = self.view.window.bounds.size;
+    if(viewSize.width != windowSize.width){
+        [self.view setFrame:self.view.window.bounds];
+    }
+    if(!IS_IPAD){
+        if(viewSize.width < viewSize.height){
+            self.cViewWidthConstrain.constant = 0;
+            self.cViewHeigthConstrain.constant = 0;
+        } else {
+            self.cViewWidthConstrain.constant = -viewSize.width+viewSize.height;
+            self.cViewHeigthConstrain.constant = -viewSize.height+viewSize.width;
+            ;
+        }
+    }
+
+    [self updateViewConstraints];
+    //if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
+}
 -(void)appWillGoToBackground:(NSNotification *)note{
     
     

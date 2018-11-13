@@ -177,28 +177,13 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 -(void) showDesignViewcontroller
 {
-    DesignViewController *designViewController = [[DesignViewController alloc] init];
-    designViewController.delegate = self;
-    designViewController.designObj = self.designObj;
-    self.designViewController = designViewController;
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    DesignViewController *designVC = [storyBoard instantiateViewControllerWithIdentifier:@"DesignViewController"];
+    designVC.delegate = self;
+    designVC.designObj = self.designObj;
+    self.designViewController = designVC;
     self.designViewController.transitioningDelegate = self;
-    [self presentViewController:self.designViewController animated:YES completion:nil];
-    
-}
-
-
-
-#pragma mark ROTATION
--(void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [self willRotatetoSize:size];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
--(void)willRotatetoSize:(CGSize)size
-{
-    CGRect rct = CGRectMake(0,0,size.width,size.height);
-     [self setLayOutOfSettingsView:rct];
+    [self presentViewController:self.designViewController animated:YES completion:nil];    
 }
 
 #define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
@@ -214,35 +199,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #define ALLERT_TITLE_CHANGE_KEYBOARD NSLocalizedStringFromTable(@"ALLERT_TITLE_CHANGE_KEYBOARD",@"ACalcTryViewControllerTableAdditional", @"Change keyboard")
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
-/*
--(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-    
-    if([title isEqualToString:ALERT_RESTORE_BUTTON_TITLE]){
-        
-        NSNumber *message = [NSNumber numberWithBool:YES];
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"setKeyboardDefaultAction",nil];
-        NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
-        [[NSNotificationCenter defaultCenter] postNotification:note];
-        
-        
-    }  else if ([title isEqualToString:ALERT_CLEAR_BUTTON_TITLE]){
-        
-        NSNumber *message = [NSNumber numberWithBool:YES];
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"cleanHistoryArchive",nil];
-        NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
-        [[NSNotificationCenter defaultCenter] postNotification:note];
-        
-    } else if ([title isEqualToString:ALLERT_BUTTON_RESTORE]){
-        [self restorePurchase];
-        
-    } else if ([title isEqualToString:ALLERT_BUTTON_BUY]){
-        [self buyUnlockKeyboard];
-        
-    }
-}
-*/
 
 #pragma mark BUTTON ACTION
 #pragma mark ALERT VIEW
@@ -558,32 +514,6 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     
 }
 
-
-
--(void) setLayOutOfSettingsView:(CGRect)rect
-{
-    if(IS_IPAD){
-   
-        //BUY ANDDEFAULT KEYBOARD BUTTONS
-        if((self.wasPurshaised) || (self.isTrialPeriod)){
-            
-        }
-        
-        
-    } else { //if iPhone
-        
-    }
-    //need to set spinner
-}
-
-
--(void) viewDidLayoutSubviewsWithRect:(CGRect)rect
-{
-    
-    [self setLayOutOfSettingsView:rect];
-    
-}
-
 -(void)viewDidLayoutSubviews{
     CGSize viewSize = self.view.bounds.size;
     CGSize windowSize = self.view.window.bounds.size;
@@ -704,14 +634,14 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     [[NSNotificationCenter defaultCenter] postNotification:note];
     [self setNeedViews];
     
-    CGRect rect = self.view.bounds;
+    //CGRect rect = self.view.bounds;
     
     [UIView animateWithDuration:0.4
                           delay:0.1
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          
-                         [self setLayOutOfSettingsView:rect];
+                       //  [self setLayOutOfSettingsView:rect];
                          
                      } completion:^(BOOL finished) {
                          [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];

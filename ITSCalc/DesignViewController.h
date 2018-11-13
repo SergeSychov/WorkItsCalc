@@ -20,6 +20,9 @@
 @interface DesignViewController : SecondViewController
 @property (nonatomic,weak) id <DesignViewControllerProtocol> delegate;
 
+@property (weak, nonatomic) IBOutlet UIView *cView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewWidthConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewHeigthConstrain;
 @property (nonatomic, weak) DesignObject* designObj;
 @property (nonatomic) NSInteger designIndex;
 
