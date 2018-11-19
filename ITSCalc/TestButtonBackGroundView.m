@@ -133,6 +133,7 @@ NSString *const TestButtonReciveChangedNotification=@"SendChangedNotification";
 
 -(void)drawRect:(CGRect)rect
 {
+    rect = CGRectInset(rect, 3, 3);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGRect qardForButton = CGRectMake(0, 0, rect.size.width, rect.size.width);
     
