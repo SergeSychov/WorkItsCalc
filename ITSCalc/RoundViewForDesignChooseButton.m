@@ -12,15 +12,13 @@
 -(void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect qardForButton = CGRectMake(0, 0, rect.size.width, rect.size.width);
-    
+    CGRect newRect = CGRectInset(rect,rect.size.height*0.35, rect.size.height*0.35);
     CGContextBeginPath(context);
     CGMutablePathRef patch= CGPathCreateMutable();
-    CGPathAddEllipseInRect(patch, NULL, CGRectInset(qardForButton, qardForButton.size.width/10, qardForButton.size.height/10.));
+    CGPathAddEllipseInRect(patch, NULL, newRect);
     CGContextAddPath(context, patch);
 
-    CGContextSetFillColorWithColor(context, self.bodyColor.CGColor);
+    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
     CGContextDrawPath(context, kCGPathFill);
-    
 }
 @end

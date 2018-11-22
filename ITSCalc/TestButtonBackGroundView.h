@@ -12,6 +12,6 @@
 @interface TestButtonBackGroundView : UIButton
 
 @property (nonatomic) BOOL isChoosed;
-@property (nonatomic) NSInteger designIndex;
+@property (nonatomic) NSString* designString;
 
 @end

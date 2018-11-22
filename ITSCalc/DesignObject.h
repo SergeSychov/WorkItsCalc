@@ -20,6 +20,13 @@
 #define DESIGN_COLOR_GRAY 34
 #define DESIGN_PHOTO 4
 
+#define DESIGN_CLASSIC_STR @"Classic"
+#define DESIGN_PAPER_STR @"Paper"
+#define DESIGN_COLOR_STR @"Color"
+#define DESIGN_MARTINI_STR @"Martini"
+#define DESIGN_ADVENTURE_TIME_STR @"Adventure Time"
+#define DESIGN_HIGH_TECH_STR @"Hight Tech"
+
 //types of calculator buttons
 #define MAIN_BUTTON 1
 #define CHANGE_BUTTON 2

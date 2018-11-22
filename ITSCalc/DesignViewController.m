@@ -744,12 +744,14 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 
 #pragma mark ROTATION
 -(void)viewDidLayoutSubviews{
+
     CGSize viewSize = self.view.bounds.size;
     CGSize windowSize = self.view.window.bounds.size;
     if(viewSize.width != windowSize.width){
         [self.view setFrame:self.view.window.bounds];
     }
     if(!IS_IPAD){
+        
         if(viewSize.width < viewSize.height){
             self.cViewWidthConstrain.constant = 0;
             self.cViewHeigthConstrain.constant = 0;
