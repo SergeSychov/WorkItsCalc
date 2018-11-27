@@ -11,5 +11,6 @@
 @interface RoundViewForDesignChooseButton : UIView
 
 @property (nonatomic,weak)UIColor* bodyColor;
+//@property (nonatomic, weak) id <MarkRecProtocol> delegate;
 
 @end
