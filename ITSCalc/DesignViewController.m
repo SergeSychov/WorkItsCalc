@@ -18,7 +18,7 @@
 #import "RoundedGroundView.h"
 
 
-NSString *const DesignSendChangedNotification=@"SendChangedNotification";
+//NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 
 //#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 //#define INDENT 20.0f
@@ -76,6 +76,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     return YES;
 }
 
+/*
 #define ALERT_MESSAGE_CHOOSE_NEW_PHOTO NSLocalizedStringFromTable(@"ALERT_MESSAGE_CHOOSE_NEW_PHOTO",@"ACalcTryViewControllerTableNew", @"Выберите фотографию из Вашего фотоархива")
 #define TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK NSLocalizedStringFromTable(@"TITLE_BUTTON_CHOOSE_NEW_PHOTO_OK",@"ACalcTryViewControllerTableNew", @"Ok")
 
@@ -116,7 +117,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
                 
             }
             //if send user to photo library throug message
-        } else {*/
+        } else {
             if (design == DESIGN_COLOR_BLUE){
                 [self setNewBackgroundImageForColor:[Clr blueGround]];
             }else if (design == DESIGN_COLOR_GRAY){
@@ -173,7 +174,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
     }
     
 }
-
+*/
 #pragma mark TAP ACTION SEND NOTIFICATION
 
 - (IBAction)calcButtonTapped:(UIButton *)sender {
@@ -733,7 +734,7 @@ NSString *const DesignSendChangedNotification=@"SendChangedNotification";
 */
 -(void)viewWillAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)
