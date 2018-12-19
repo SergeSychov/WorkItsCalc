@@ -58,6 +58,7 @@
 @interface DesignObject : NSObject
 
 @property (nonatomic) NSInteger designNumber;
+@property (nonatomic) NSString* designString;
 @property (nonatomic, weak) id <DesignStrDelegate> delegate;
 
 

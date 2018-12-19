@@ -86,6 +86,11 @@
     return self;
 }
 
+-(void)setDesignString:(NSString *)designString{
+    //NSLog(@"Design obj set design:%@",designString);
+    _designString = designString;
+}
+
 -(UIColor*)textcolorButtonWithTitle:(NSString*)title {
     //need to be changed according title
     return self.digitsColor;
