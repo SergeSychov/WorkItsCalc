@@ -81,6 +81,30 @@
     self = [super init];
     if(self){
         self.delegate = controller;
+        switch (designIndex) {
+            case DESIGN_CLASSIC:
+                self.designString =DESIGN_CLASSIC_STR;
+                break;
+            case DESIGN_PAPER:
+                self.designString =DESIGN_PAPER_STR;
+                break;
+            case DESIGN_COLOR_BLUE:
+                self.designString =DESIGN_COLOR_STR;
+                break;
+            case DESIGN_COLOR_GREEN:
+                self.designString =DESIGN_MARTINI_STR;
+                break;
+            case DESIGN_COLOR_PINK:
+                self.designString =DESIGN_ADVENTURE_TIME_STR;
+                break;
+            case DESIGN_COLOR_GRAY:
+                self.designString =DESIGN_HIGH_TECH_STR;
+                break;
+
+            default:
+                self.designString =DESIGN_CLASSIC_STR;
+                break;
+        }
         self.designNumber = designIndex;
     }
     return self;
@@ -89,7 +113,24 @@
 -(void)setDesignString:(NSString *)designString{
     //NSLog(@"Design obj set design:%@",designString);
     _designString = designString;
+    if([designString isEqualToString:DESIGN_CLASSIC_STR]){
+        _designNumber = DESIGN_CLASSIC;
+    } else if([designString isEqualToString:DESIGN_PAPER_STR]){
+        _designNumber = DESIGN_PAPER;
+    }else if([designString isEqualToString:DESIGN_COLOR_STR]){
+        _designNumber = DESIGN_COLOR_BLUE;
+    }else if([designString isEqualToString:DESIGN_MARTINI_STR]){
+        _designNumber = DESIGN_COLOR_GREEN;
+    }else if([designString isEqualToString:DESIGN_ADVENTURE_TIME_STR]){
+        _designNumber = DESIGN_COLOR_PINK;
+    }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
+        _designNumber = DESIGN_COLOR_GRAY;
+    } else {
+        _designNumber = DESIGN_CLASSIC;
+    }
 }
+
+
 
 -(UIColor*)textcolorButtonWithTitle:(NSString*)title {
     //need to be changed according title

@@ -19,6 +19,7 @@
 
 #import "Transition.h"
 #import "DesignViewController.h"
+#import "CildDesignViewController.h"
 
 //#import "LineView.h"
 
@@ -554,6 +555,15 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
                                                selector:@selector(applicationWillEnterBackground:)
                                                    name:UIApplicationWillResignActiveNotification
                                                  object:[UIApplication sharedApplication]];
+    for (UIViewController *childViewController in [self childViewControllers])
+    {
+        if ([childViewController isKindOfClass:[CildDesignViewController class]])
+        {
+            CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
+            cildDesignViewController.designObj = self.designObj;
+            break;
+        }
+    }
 }
 
 #pragma mark DESIGN CONTROLLER DELEGATE

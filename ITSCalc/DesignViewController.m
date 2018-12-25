@@ -7,6 +7,7 @@
 //
 
 #import "DesignViewController.h"
+#import "CildDesignViewController.h"
 #import "designButtonView.h"
 #import "Transition.h"
 #import "CalcButton.h"
@@ -33,6 +34,7 @@
 //#define DESIGN_PHOTO 4
 
 @interface DesignViewController() <UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design
+
 //@property (nonatomic, weak) UIView *cView;
 
 /*
@@ -732,6 +734,18 @@
     }
 }
 */
+-(void)viewDidLoad{
+    [super viewDidLoad];
+    for (UIViewController *childViewController in [self childViewControllers])
+    {
+        if ([childViewController isKindOfClass:[CildDesignViewController class]])
+        {
+            CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
+            cildDesignViewController.designObj = self.designObj;
+            break;
+        }
+    }
+}
 -(void)viewWillAppear:(BOOL)animated
 {
    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
