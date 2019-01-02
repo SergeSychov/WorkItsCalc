@@ -77,10 +77,8 @@
 
 //for history table view
 @property (nonatomic, readonly) UIColor* historyTableColor;
-@property (nonatomic, readonly)UIColor* colorSelectedFirstGradient;
-@property (nonatomic, readonly)UIColor* colorSelectedSecondGradient;
-@property (nonatomic, readonly)UIColor* colorUnselectedFirstGradient;
-@property (nonatomic, readonly)UIColor* colorUnselectedSecondGradient;
+@property (nonatomic, readonly)UIColor* colorSelectedHistoryRow;
+@property (nonatomic, readonly)UIColor* colorUnselectedHistoryRow;
 @property (nonatomic, readonly)UIColor* colorForSelectedText;
 @property (nonatomic, readonly)UIColor* colorForUnselectedText;
 @property (nonatomic, readonly)UIColor *moreButtonColor;

@@ -25,10 +25,8 @@
 
 //for history table view
 @property (nonatomic, strong) UIColor* historyTableColorIn;
-@property (nonatomic, strong )UIColor* colorSelectedFirstGradientIn;
-@property (nonatomic, strong )UIColor* colorSelectedSecondGradientIn;
-@property (nonatomic, strong )UIColor* colorUnselectedFirstGradientIn;
-@property (nonatomic, strong )UIColor* colorUnselectedSecondGradientIn;
+@property (nonatomic, strong )UIColor* colorSelectedHistoryRowIn;
+@property (nonatomic, strong )UIColor* colorUnselectedHistoryRowIn;
 @property (nonatomic, strong )UIColor* colorForSelectedTextIn;
 @property (nonatomic, strong )UIColor* colorForUnselectedTextIn;
 @property (nonatomic, strong )UIColor *moreButtonColorIn;
@@ -114,19 +112,19 @@
     //NSLog(@"Design obj set design:%@",designString);
     _designString = designString;
     if([designString isEqualToString:DESIGN_CLASSIC_STR]){
-        _designNumber = DESIGN_CLASSIC;
+        self.designNumber = DESIGN_CLASSIC;
     } else if([designString isEqualToString:DESIGN_PAPER_STR]){
-        _designNumber = DESIGN_PAPER;
+        self.designNumber = DESIGN_PAPER;
     }else if([designString isEqualToString:DESIGN_COLOR_STR]){
-        _designNumber = DESIGN_COLOR_BLUE;
+        self.designNumber= DESIGN_COLOR_BLUE;
     }else if([designString isEqualToString:DESIGN_MARTINI_STR]){
-        _designNumber = DESIGN_COLOR_GREEN;
+        self.designNumber = DESIGN_COLOR_GREEN;
     }else if([designString isEqualToString:DESIGN_ADVENTURE_TIME_STR]){
-        _designNumber = DESIGN_COLOR_PINK;
+        self.designNumber = DESIGN_COLOR_PINK;
     }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
-        _designNumber = DESIGN_COLOR_GRAY;
+        self.designNumber = DESIGN_COLOR_GRAY;
     } else {
-        _designNumber = DESIGN_CLASSIC;
+        self.designNumber = DESIGN_CLASSIC;
     }
 }
 
@@ -148,14 +146,12 @@
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
             //form main container view
-            self.mainViewBackgroundColorIn = [UIColor clearColor];
+            self.mainViewBackgroundColorIn = [UIColor colorWithWhite:0.15 alpha:1];//[UIColor clearColor];
             
             //HistoryTableView
             self.historyTableColorIn = [UIColor whiteColor];
-            self.colorSelectedFirstGradientIn = [UIColor whiteColor];
-            self.colorSelectedSecondGradientIn = [UIColor whiteColor];
-            self.colorUnselectedFirstGradientIn = [UIColor colorWithWhite:0.95 alpha:1];
-            self.colorUnselectedSecondGradientIn = [UIColor colorWithWhite:0.9 alpha:1];
+            self.colorSelectedHistoryRowIn = [UIColor whiteColor];
+            self.colorUnselectedHistoryRowIn = [UIColor colorWithWhite:0.95 alpha:1];
             self.colorForSelectedTextIn = [UIColor darkTextColor];
             self.colorForUnselectedTextIn = [UIColor lightGrayColor];
             
@@ -205,7 +201,7 @@
             
         case DESIGN_PAPER:
             //for attr text
-            self.mainAtrTextColorIn = [UIColor lightTextColor];
+            self.mainAtrTextColorIn = [Clr paperButton];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
@@ -214,12 +210,10 @@
             
             //HistoryTableView
             self.historyTableColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            self.colorSelectedFirstGradientIn = [UIColor clearColor];
-            self.colorSelectedSecondGradientIn = [UIColor clearColor];
-            self.colorUnselectedFirstGradientIn = [UIColor clearColor];
-            self.colorUnselectedSecondGradientIn = [UIColor clearColor];
+            self.colorSelectedHistoryRowIn = [UIColor clearColor];
+            self.colorUnselectedHistoryRowIn = [UIColor clearColor];
             self.colorForSelectedTextIn = [Clr paperButton];
-            self.colorForUnselectedTextIn = [[Clr paperButton] colorWithAlphaComponent:0.6];
+            self.colorForUnselectedTextIn = [[Clr paperButton] colorWithAlphaComponent:0.4];
             /*if(!self.lineView){
                 LineView *lineView = [[LineView alloc] init];
                 lineView.backgroundColor = [UIColor clearColor];
@@ -256,7 +250,7 @@
             
             //calc screen
             self.displayContainerColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
-            self.screenTextColorIn = [UIColor whiteColor];
+            self.screenTextColorIn = [Clr paperButton];
             self.isScreenBlurHidenIn = NO;
             self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
             self.screenButtonShadowColorIn = [UIColor clearColor];;
@@ -282,10 +276,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr blueFirstGradient];
-            self.colorSelectedFirstGradientIn = [UIColor whiteColor];
-            self.colorSelectedSecondGradientIn = [UIColor whiteColor];
-            self.colorUnselectedFirstGradientIn = [Clr blueFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr blueSecondGradient];
+            self.colorSelectedHistoryRowIn = [UIColor whiteColor];
+            self.colorUnselectedHistoryRowIn = [Clr blueFirstGradient];
             self.colorForSelectedTextIn = [Clr blueDisplay];
             self.colorForUnselectedTextIn =  [[Clr blueDisplay] colorWithAlphaComponent:0.6];
             
@@ -342,10 +334,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr greenFirstGradient];
-            self.colorSelectedFirstGradientIn = [Clr greenFirstGradient];
-            self.colorSelectedSecondGradientIn = [Clr greenFirstGradient];
-            self.colorUnselectedFirstGradientIn = [Clr greenFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr greenSecondGradient];
+            self.colorSelectedHistoryRowIn = [Clr greenFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr greenFirstGradient];
             self.colorForSelectedTextIn = [Clr greenDisplay];
             self.colorForUnselectedTextIn =  [[Clr greenDisplay] colorWithAlphaComponent:0.6];
             
@@ -402,10 +392,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr yellowFirstGradient];
-            self.colorSelectedFirstGradientIn = [Clr yellowFirstGradient];
-            self.colorSelectedSecondGradientIn = [Clr yellowFirstGradient];
-            self.colorUnselectedFirstGradientIn = [Clr yellowFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr yellowSecondGradient];
+            self.colorSelectedHistoryRowIn = [Clr yellowFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr yellowFirstGradient];
             self.colorForSelectedTextIn = [Clr yellowText];
             self.colorForUnselectedTextIn =  [[Clr yellowText] colorWithAlphaComponent:0.6];
             
@@ -462,10 +450,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr pinkFirstGradient];
-            self.colorSelectedFirstGradientIn = [Clr pinkFirstGradient];
-            self.colorSelectedSecondGradientIn = [Clr pinkFirstGradient];
-            self.colorUnselectedFirstGradientIn = [Clr pinkFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr pinkSecondGradient];
+            self.colorSelectedHistoryRowIn = [Clr pinkFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr pinkFirstGradient];
             self.colorForSelectedTextIn = [Clr pinkText];
             self.colorForUnselectedTextIn =  [[Clr pinkDisplay] colorWithAlphaComponent:0.6];
             
@@ -521,10 +507,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr grayFirstGradient];
-            self.colorSelectedFirstGradientIn = [Clr grayFirstGradient];
-            self.colorSelectedSecondGradientIn = [Clr grayFirstGradient];
-            self.colorUnselectedFirstGradientIn = [Clr grayFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr graySecondGradient];
+            self.colorSelectedHistoryRowIn = [Clr grayFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr grayFirstGradient];
             self.colorForSelectedTextIn = [Clr grayText];
             self.colorForUnselectedTextIn = [[Clr grayText] colorWithAlphaComponent:0.4];
             
@@ -581,10 +565,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [Clr photoFirstGradient];
-            self.colorSelectedFirstGradientIn = [UIColor colorWithWhite:0 alpha:0.2];
-            self.colorSelectedSecondGradientIn = [UIColor colorWithWhite:0 alpha:0.2];
-            self.colorUnselectedFirstGradientIn = [Clr photoFirstGradient];
-            self.colorUnselectedSecondGradientIn = [Clr photoSecondGradient];
+            self.colorSelectedHistoryRowIn = [UIColor colorWithWhite:0 alpha:0.2];
+            self.colorUnselectedHistoryRowIn = [Clr photoFirstGradient];
             self.colorForSelectedTextIn = [UIColor whiteColor];
             self.colorForUnselectedTextIn =  [[UIColor whiteColor] colorWithAlphaComponent:0.6];
             
@@ -641,10 +623,8 @@
             
             //HistoryTableView
             self.historyTableColorIn = [UIColor whiteColor];
-            self.colorSelectedFirstGradientIn = [UIColor whiteColor];
-            self.colorSelectedSecondGradientIn = [UIColor whiteColor];
-            self.colorUnselectedFirstGradientIn = [Clr blueButton];
-            self.colorUnselectedSecondGradientIn =[UIColor colorWithWhite:0.8 alpha:1];
+            self.colorSelectedHistoryRowIn = [UIColor whiteColor];
+            self.colorUnselectedHistoryRowIn = [Clr blueButton];
             
             self.colorForSelectedTextIn = [UIColor darkTextColor];
             self.colorForUnselectedTextIn = [UIColor grayColor];
@@ -844,18 +824,12 @@
     return  self.historyTableColorIn;
 }
 
--(UIColor*) colorSelectedFirstGradient{
-    return self.colorSelectedFirstGradientIn;
-}
--(UIColor*) colorSelectedSecondGradient{
-    return self.colorSelectedSecondGradientIn;
-}
--(UIColor*) colorUnselectedFirstGradient{
-    return self.colorUnselectedFirstGradientIn;
+-(UIColor*) colorSelectedHistoryRow{
+    return self.colorSelectedHistoryRowIn;
 }
 
--(UIColor*) colorUnselectedSecondGradient{
-    return self.colorUnselectedSecondGradientIn;
+-(UIColor*) colorUnselectedHistoryRow{
+    return self.colorUnselectedHistoryRowIn;
 }
 
 -(UIColor*) colorForSelectedText{

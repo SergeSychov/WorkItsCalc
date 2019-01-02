@@ -158,23 +158,13 @@
     //NSLog(@"Draw rect history cell");
     //self.contentView.frame = self.bounds;
     if(self.selected){
-        /*
-        self.scrollGradientView.firstGradientColor = self.design.colorSelectedFirstGradient;
-        self.scrollGradientView.secondGradientColor = self.design.colorSelectedSecondGradient;
-        [self.scrollGradientView setNeedsDisplay];
-        */
-        self.contentView.backgroundColor = [UIColor whiteColor];
+
+        self.contentView.backgroundColor = self.design.colorSelectedHistoryRow;
         [self.infoLabel setTextColor:self.design.colorForSelectedText];
         [self.mainProgrammLabel setTextColor:self.design.colorForSelectedText];
         
     } else {
-        /*
-        self.scrollGradientView.firstGradientColor = self.design.colorUnselectedFirstGradient;
-        self.scrollGradientView.secondGradientColor = self.design.colorUnselectedSecondGradient;
-        [self.scrollGradientView setNeedsDisplay];
-        */
-        self.contentView.backgroundColor= [UIColor colorWithWhite:0.95 alpha:1];
-
+        self.contentView.backgroundColor= self.design.colorUnselectedHistoryRow;
         [self.infoLabel setTextColor:self.design.colorForUnselectedText];
         
         [self.mainProgrammLabel setTextColor:self.design.colorForUnselectedText];
