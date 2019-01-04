@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface DelButton : UIButton
-@property (nonatomic,weak) UIColor *shadowColor;
-@property (nonatomic) CGSize shadowSize;
-@property (nonatomic) CGFloat shadowBlur;
+@property (nonatomic) UIColor* disabledColor;
+//@property (nonatomic,weak) UIColor *shadowColor;
+//@property (nonatomic) CGSize shadowSize;
+//@property (nonatomic) CGFloat shadowBlur;
 @end

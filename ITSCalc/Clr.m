@@ -38,7 +38,7 @@
 
 #pragma mark PAPER
 +(UIColor*)paperEqual{
-    return [UIColor colorWithRed:.02 green:.576 blue:.878 alpha:1.];
+    return [UIColor colorWithRed:.341 green:.482 blue:.655 alpha:1.];
     //return [UIColor colorWithRed:.031 green:.361 blue:.592 alpha:1.];
 }
 
@@ -51,8 +51,7 @@
 
 }
 +(UIColor*)paperC{
-    return [UIColor orangeColor];
-    return [UIColor colorWithRed:.925 green:.522 blue:.0 alpha:1.];
+    return [UIColor colorWithRed:.776 green:.533 blue:.153 alpha:1.];
 }
 +(UIColor*)paperDisplay{
     return [UIColor clearColor];

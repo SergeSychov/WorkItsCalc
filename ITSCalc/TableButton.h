@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface TableButton : UIButton
-@property (nonatomic,weak) UIColor *shadowColor;
-@property (nonatomic) CGSize shadowSize;
-@property (nonatomic) CGFloat shadowBlur;
+@property (nonatomic, weak) UIColor* disabledColor;
+//@property (nonatomic,weak) UIColor *shadowColor;
+//@property (nonatomic) CGSize shadowSize;
+//@property (nonatomic) CGFloat shadowBlur;
 @end

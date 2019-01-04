@@ -57,11 +57,14 @@
 //for calc screen label
 @property (nonatomic,strong) UIColor *displayContainerColorIn;
 @property (nonatomic,strong) UIColor *screenTextColorIn;
-@property (nonatomic) BOOL isScreenBlurHidenIn;
-@property (nonatomic,strong) UIBlurEffect* screenBlurEffectIn;
-@property (nonatomic,strong) UIColor* screenButtonShadowColorIn;
-@property (nonatomic) CGSize screenButtonShadowSizeIn;
-@property (nonatomic) CGFloat screenButtonShadowBlurIn;
+@property (nonatomic) BOOL isScreenShadowIn;
+@property (nonatomic, strong) UIColor *screenButtonsEnabledColorIn;
+@property (nonatomic, strong) UIColor *screenButtonsDisabledColorIn;
+
+//@property (nonatomic,strong) UIBlurEffect* screenBlurEffectIn;
+//@property (nonatomic,strong) UIColor* screenButtonShadowColorIn;
+//@property (nonatomic) CGFloat screenButtonShadowOpacityIn;
+//@property (nonatomic) CGFloat screenButtonShadowBlurIn;
 
 //for showed view
 @property (nonatomic,strong)NSDictionary* attributesInfoIn;
@@ -184,18 +187,20 @@
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
             //calc screen
-            self.displayContainerColorIn = [UIColor clearColor];
+            self.displayContainerColorIn = [UIColor blackColor];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor blackColor];
-            self.explShowViewColor =[UIColor blackColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
+            self.explShowViewColor =[UIColor darkTextColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
             
             break;
             
@@ -227,9 +232,9 @@
             self.lineView.shadowSize = CGSizeMake(1., 1.);
             */
             self.moreButtonColorIn = [Clr paperEqual];
-            self.moreButtonBackgroundColorIn = [UIColor clearColor];
-            self.deleteButtonColorIn =[UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
-            self.deleteButtonBackgroundColorIn = [UIColor clearColor];
+            self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
+            self.deleteButtonColorIn = [UIColor whiteColor];
+            self.deleteButtonBackgroundColorIn = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
             self.buttonShadowColorIn = [UIColor whiteColor];
             self.buttonShadowSizeIn = CGSizeMake(1., 1.);
             self.buttonShadowBlurIn = 0.5;
@@ -251,16 +256,18 @@
             //calc screen
             self.displayContainerColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
             self.screenTextColorIn = [Clr paperButton];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = YES;
+            self.screenButtonsEnabledColorIn = [Clr paperButton];
+            self.screenButtonsDisabledColorIn = [[Clr paperButton] colorWithAlphaComponent:0.4];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor blackColor];;
+            //self.screenButtonShadowOpacityIn = 0.15;
+            //self.screenButtonShadowBlurIn = 6.;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -310,16 +317,18 @@
             //calc screen
             self.displayContainerColorIn = [Clr blueDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+           // self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -368,16 +377,18 @@
             //calc screen
             self.displayContainerColorIn =[Clr greenDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -426,16 +437,18 @@
             //calc screen
             self.displayContainerColorIn = [Clr yellowDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -484,17 +497,19 @@
             //calc screen
             self.displayContainerColorIn =[Clr pinkDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
-            
+            self.resultShowViewColor=[UIColor darkTextColor];
+
             break;
         case DESIGN_COLOR_GRAY:
             //for attr text
@@ -541,16 +556,18 @@
             //calc screen
             self.displayContainerColorIn = [Clr grayDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -599,16 +616,19 @@
             //calc screen
             self.displayContainerColorIn = [UIColor clearColor];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
+
 
             
             break;
@@ -659,16 +679,18 @@
             //calc screen
             self.displayContainerColorIn = [UIColor clearColor];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenBlurHidenIn = NO;
-            self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            self.screenButtonShadowColorIn = [UIColor clearColor];;
-            self.screenButtonShadowSizeIn = CGSizeMake(0., 0.);
-            self.screenButtonShadowBlurIn = 0;
+            self.isScreenShadowIn = NO;
+            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            //self.screenButtonShadowColorIn = [UIColor clearColor];;
+            //self.screenButtonShadowOpacityIn = 0.;
+            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor lightTextColor];
+            self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor blackColor];
+            self.resultShowViewColor=[UIColor darkTextColor];
 
             
             break;
@@ -919,23 +941,30 @@
 -(UIColor*)screenTextColor {
     return self.screenTextColorIn;
 }
--(BOOL)isScreenBlurHiden{
-    return self.isScreenBlurHidenIn;
+-(BOOL)isScreenShadow{
+    return self.isScreenShadowIn;
 }
 
+-(UIColor*)screenButtonsEnabledColor{
+    return self.screenButtonsEnabledColorIn;
+}
+-(UIColor*)screenButtonsDisabledColor{
+    return self.screenButtonsDisabledColorIn;
+}
+/*
 -(UIBlurEffect*)screenBlurEffect{
     return self.screenBlurEffectIn;
 }
 -(UIColor*)screenButtonShadowColor{
  return self.screenButtonShadowColorIn;
 }
--(CGSize)screenButtonShadowSize{
-    return self.screenButtonShadowSizeIn;
+-(CGFloat)screenButtonShadowOpacity{
+    return self.screenButtonShadowOpacityIn;
 }
 -(CGFloat)screenButtonShadowBlur{
     return self.screenButtonShadowBlurIn;
 }
-
+*/
 -(NSDictionary*)attributesInfo{
     return self.attributesInfoIn;
 }

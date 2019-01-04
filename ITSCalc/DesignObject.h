@@ -109,11 +109,13 @@
 //for calc screen label
 @property (nonatomic, readonly) UIColor *displayContainerColor;
 @property (nonatomic, readonly) UIColor *screenTextColor;
-@property (readonly) BOOL isScreenBlurHiden;
-@property (nonatomic, readonly) UIBlurEffect* screenBlurEffect;
-@property (readonly) UIColor* screenButtonShadowColor;
-@property (readonly) CGSize screenButtonShadowSize;
-@property (readonly) CGFloat screenButtonShadowBlur;
+@property (readonly) BOOL isScreenShadow;
+@property (nonatomic, readonly) UIColor *screenButtonsEnabledColor;
+@property (nonatomic, readonly) UIColor *screenButtonsDisabledColor;
+//@property (nonatomic, readonly) UIBlurEffect* screenBlurEffect;
+//@property (readonly) UIColor* screenButtonShadowColor;
+//@property (readonly) CGFloat screenButtonShadowOpacity;
+//@property (readonly) CGFloat screenButtonShadowBlur;
 
 //for showed view
 @property (nonatomic,readonly)NSDictionary* attributesInfo;

@@ -13,8 +13,9 @@
 //@property (nonatomic,strong) UIColor *normalColor;
 //@property (nonatomic,strong) UIColor *touchedColor;
 
-@property (nonatomic,weak) UIColor *shadowColor;
-@property (nonatomic) CGSize shadowSize;
-@property (nonatomic) CGFloat shadowBlur;
+@property (nonatomic, weak) UIColor* disabledColor;
+//@property (nonatomic,weak) UIColor *shadowColor;
+//@property (nonatomic) CGSize shadowSize;
+//@property (nonatomic) CGFloat shadowBlur;
 
 @end

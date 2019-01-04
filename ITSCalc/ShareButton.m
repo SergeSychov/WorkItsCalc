@@ -10,14 +10,15 @@
 
 @interface ShareButton()
 
-@property (nonatomic,strong) UIColor* storkeColor;
-@property (nonatomic,strong) UIColor *normalColor;
-@property (nonatomic,strong) UIColor *touchedColor;
+//@property (nonatomic,strong) UIColor* storkeColor;
+//@property (nonatomic,strong) UIColor *normalColor;
+//@property (nonatomic,strong) UIColor *touchedColor;
 
 @end
 
 @implementation ShareButton
 
+/*
 
 -(UIColor*)shadowColor{
     if(!_shadowColor){
@@ -27,7 +28,6 @@
     }
     return _shadowColor;
 }
-
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     
@@ -75,8 +75,13 @@
     
     return _storkeColor;
 }
-
-
+*/
+-(UIColor*)disabledColor{
+    if(!_disabledColor){
+        _disabledColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    }
+    return _disabledColor;
+}
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -163,7 +168,7 @@
         color = self.tintColor;
         
     }else if (self.state == UIControlStateDisabled){
-        color = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+        color = self.disabledColor;
     }
     CGContextSetStrokeColorWithColor(context, color.CGColor);
     
@@ -171,7 +176,7 @@
     
     
     CGContextAddPath(context, pathOfRect);
-    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
+    //CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
     
 }

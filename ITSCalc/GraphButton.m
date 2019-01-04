@@ -15,6 +15,7 @@
 
 @end
 @implementation GraphButton
+/*
 
 -(UIColor*)shadowColor{
     if(!_shadowColor){
@@ -24,7 +25,6 @@
     }
     return _shadowColor;
 }
-
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     
@@ -71,6 +71,13 @@
     }
     
     return _storkeColor;
+}*/
+
+-(UIColor*)disabledColor{
+    if(!_disabledColor){
+        _disabledColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    }
+    return _disabledColor;
 }
 
 -(CGFloat) func:(CGFloat)arg{
@@ -172,7 +179,7 @@
     
     
     CGContextAddPath(context, pathOfRect);
-    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
+    //CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextDrawPath(context, kCGPathFillStroke);
 }
 

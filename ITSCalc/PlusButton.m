@@ -12,14 +12,15 @@
 
 @interface PlusButton()
 
-@property (nonatomic,strong) UIColor* storkeColor;
-@property (nonatomic,strong) UIColor *normalColor;
-@property (nonatomic,strong) UIColor *touchedColor;
+//@property (nonatomic,strong) UIColor* storkeColor;
+//@property (nonatomic,strong) UIColor *normalColor;
+//@property (nonatomic,strong) UIColor *touchedColor;
 
 @end
 
 @implementation PlusButton
 
+/*
 
 -(UIColor*)shadowColor{
     if(!_shadowColor){
@@ -29,7 +30,6 @@
     }
     return _shadowColor;
 }
-
 -(BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     
@@ -77,6 +77,14 @@
     
     return _storkeColor;
 }
+*/
+-(UIColor*)disabledColor{
+    if(!_disabledColor){
+        _disabledColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    }
+    return _disabledColor;
+}
+
 
 -(void) drawHistoryTrashWithContect:(CGContextRef)context inRect:(CGRect)rect
 {
@@ -179,7 +187,7 @@
     }
     CGContextSetStrokeColorWithColor(context, color.CGColor);
     
-    CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
+    //CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, self.shadowColor.CGColor);
     CGContextAddPath(context, pathOfRect);
     CGContextDrawPath(context, kCGPathFillStroke);
     
