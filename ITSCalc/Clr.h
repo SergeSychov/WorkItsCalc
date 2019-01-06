@@ -21,6 +21,7 @@
 + (UIColor*)blueGround;
 + (UIColor*)blueButton;
 + (UIColor*)blueC;
++ (UIColor*)blueEqual;
 + (UIColor*)blueDigits;
 + (UIColor*)blueDisplay;
 + (UIColor*)blueText;

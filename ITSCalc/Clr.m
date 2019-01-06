@@ -38,20 +38,22 @@
 
 #pragma mark PAPER
 +(UIColor*)paperEqual{
-    return [UIColor colorWithRed:.341 green:.482 blue:.655 alpha:1.];
+    return [UIColor colorWithRed:.137 green:.553 blue:.984 alpha:1.];
     //return [UIColor colorWithRed:.031 green:.361 blue:.592 alpha:1.];
 }
 
 +(UIColor*)paperButton{
-    return [UIColor colorWithRed:0.31 green:0.33 blue:.38 alpha:1.];
+    return [UIColor colorWithRed:0.496 //64
+                           green:0.510 //156
+                            blue:.549 //204
+                           alpha:1.];
 
 }
 +(UIColor*)paperDigits{
-    return [UIColor colorWithRed:0.373 green:0.345 blue:.286 alpha:1.];
-
+    return [UIColor colorWithRed:0.31 green:0.33 blue:.38 alpha:1.];
 }
 +(UIColor*)paperC{
-    return [UIColor colorWithRed:.776 green:.533 blue:.153 alpha:1.];
+    return [UIColor colorWithRed:.847 green:.651 blue:.0 alpha:1.];
 }
 +(UIColor*)paperDisplay{
     return [UIColor clearColor];
@@ -60,24 +62,29 @@
 
 #pragma mark BLUE
 +(UIColor*)blueDisplay{
-    return [UIColor colorWithRed:.094 green:0.227 blue:.373 alpha:1.];
+    return [UIColor colorWithRed:.282 green:0.09 blue:.380 alpha:1.];
 }
 
 +(UIColor*)blueButton{
-    return [UIColor colorWithRed:.333 green:0.518 blue:0.769 alpha:1];
+    return [UIColor colorWithRed:.235 green:0.467 blue:0.043 alpha:1];
 }
 +(UIColor*)blueDigits{
-    return [UIColor colorWithRed:.478 green:0.639 blue:0.859 alpha:1];
+    return [UIColor colorWithRed:.671 green:0.231 blue:0.588 alpha:1];
 }
 +(UIColor*)blueC{
-    return [UIColor colorWithRed:.824 green:0.776 blue:0.706 alpha:1];
+    return [UIColor colorWithRed:.929 green:0.447 blue:0.200 alpha:1];
 }
+
++(UIColor*)blueEqual{
+    return [UIColor colorWithRed:.137 green:0.553 blue:0.984 alpha:1];
+}
+
 +(UIColor*)blueGround{
-    return [UIColor colorWithRed:.647 green:0.725 blue:0.824 alpha:1];
+    return [UIColor colorWithRed:.933 green:0.937 blue:0.949 alpha:1];
 }
 
 + (UIColor*)blueFirstGradient{
-    return [UIColor colorWithRed:.949 green:0.969 blue:0.984 alpha:1];
+    return [UIColor colorWithRed:.933 green:0.937 blue:0.949 alpha:1];
 }
 + (UIColor*)blueSecondGradient{
     return [UIColor colorWithRed:.812 green:0.867 blue:0.922 alpha:1];

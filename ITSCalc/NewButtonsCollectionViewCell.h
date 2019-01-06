@@ -32,6 +32,7 @@
 @property (strong, nonatomic) CloseSetButton *closeAndSetButton;
 @property (strong, nonatomic) CloseSetButton *removeButton;
 @property (weak, nonatomic) IBOutlet newButtonView *cellSubView;
+@property (weak, nonatomic) IBOutlet UIImageView *imgGlossyView;
 
 @property (weak,nonatomic) UIColor *drawColor;
 @property (nonatomic,strong) NSString* name;

@@ -110,6 +110,8 @@
 @property (nonatomic, readonly) UIColor *displayContainerColor;
 @property (nonatomic, readonly) UIColor *screenTextColor;
 @property (readonly) BOOL isScreenShadow;
+@property (nonatomic, readonly) CGFloat screenShadowOpasity;
+@property (nonatomic, readonly) CGFloat screenShadowRadius;
 @property (nonatomic, readonly) UIColor *screenButtonsEnabledColor;
 @property (nonatomic, readonly) UIColor *screenButtonsDisabledColor;
 //@property (nonatomic, readonly) UIBlurEffect* screenBlurEffect;

@@ -554,6 +554,11 @@ NSDate *methodStart;
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    if([self.designObj.designString isEqualToString:DESIGN_COLOR_STR]){
+        [self.imgGlossyView setImage:[UIImage imageNamed:@"Gloss.png"]];
+    }else{
+        self.imgGlossyView.image = nil;
+    }
     [self.cellSubView setFrame:rect];
     // Drawing code
 }
