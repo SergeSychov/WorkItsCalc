@@ -76,6 +76,7 @@
 
 
 //for history table view
+@property (nonatomic, readonly) UIColor* historySwiperColor;
 @property (nonatomic, readonly) UIColor* historyTableColor;
 @property (nonatomic, readonly)UIColor* colorSelectedHistoryRow;
 @property (nonatomic, readonly)UIColor* colorUnselectedHistoryRow;
@@ -99,6 +100,7 @@
 @property (nonatomic, readonly) CGFloat fotnWeight;
 @property (nonatomic, readonly) CGFloat borderVSRadius;
 @property (nonatomic, readonly) BOOL fillButton;
+@property (nonatomic, readonly) UIColor* storkeButtonWithFill;
 @property (nonatomic, readonly,strong) UIColor *shadowColor;
 @property (nonatomic, readonly) CGFloat shadowBlur;
 @property (nonatomic, readonly) CGSize shadowSize;

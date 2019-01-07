@@ -43,9 +43,9 @@
 }
 
 +(UIColor*)paperButton{
-    return [UIColor colorWithRed:0.496 //64
-                           green:0.510 //156
-                            blue:.549 //204
+    return [UIColor colorWithRed:0.418 //64
+                           green:0.410 //156
+                            blue:0.398 //204
                            alpha:1.];
 
 }
@@ -53,7 +53,7 @@
     return [UIColor colorWithRed:0.31 green:0.33 blue:.38 alpha:1.];
 }
 +(UIColor*)paperC{
-    return [UIColor colorWithRed:.847 green:.651 blue:.0 alpha:1.];
+    return [UIColor colorWithRed:.745 green:.518 blue:.153 alpha:1.];
 }
 +(UIColor*)paperDisplay{
     return [UIColor clearColor];
@@ -101,32 +101,48 @@
 
 #pragma mark GREEN
 +(UIColor*)greenDisplay{
-    return [UIColor colorWithRed:.039 green:0.392 blue:.314 alpha:1.];
-    //return [UIColor colorWithRed:.075 green:0.176 blue:.024 alpha:1.];
+    //return [UIColor colorWithRed:.027 green:0.161 blue:0.388 alpha:1];
+    return [UIColor colorWithRed:.196 green:0.251 blue:0.459 alpha:1];
+
 }
 
 +(UIColor*)greenButton{
-        return [UIColor colorWithRed:.478 green:0.812 blue:0.259 alpha:1];
+    //return [UIColor colorWithRed:.145 green:0.192 blue:0.329 alpha:1];
+    return [UIColor colorWithRed:.318 green:0.227 blue:0.400 alpha:1];
+
 }
 +(UIColor*)greenDigits{
-    return [UIColor colorWithRed:.592 green:0.89 blue:0.396 alpha:1];
+    //return [UIColor colorWithRed:.314 green:0.063 blue:0.082 alpha:1];
+    return [UIColor colorWithRed:.431 green:0.106 blue:0.180 alpha:1];
 }
 +(UIColor*)greenC{
-    return [UIColor colorWithRed:1. green:.627 blue:0.451 alpha:1];
+    return [UIColor colorWithRed:.706 green:.184 blue:0.145 alpha:1];
+    //return [UIColor colorWithRed:.898 green:.247 blue:0.278 alpha:1];
+
 }
++(UIColor*)greenEqual{
+    return [UIColor colorWithRed:.071 green:.325 blue:0.592 alpha:1];
+    //return [UIColor colorWithRed:.361 green:.812 blue:0.961 alpha:1];
+}
+
 +(UIColor*)greenGround{
-    return [UIColor colorWithRed:.467 green:0.792 blue:0.718 alpha:1];
+    return [UIColor colorWithRed:.310 green:0.357 blue:0.541 alpha:1];
+    //return [UIColor colorWithRed:.947 green:0.845 blue:0.700 alpha:1];
 }
 
 
 + (UIColor*)greenText{
-    return [UIColor colorWithRed:.0 green:0.148 blue:0.185 alpha:1];
+    return [UIColor colorWithRed:.976 green:0.976 blue:0.976 alpha:1];
+    //return [UIColor colorWithRed:.141 green:0.094 blue:0.082 alpha:1];
+
 }
 + (UIColor*)greenFirstGradient{
-    return [UIColor colorWithRed:.859 green:0.961 blue:0.945 alpha:1];
+    return [UIColor colorWithRed:.310 green:0.357 blue:0.541 alpha:1];
+    //return [UIColor colorWithRed:.947 green:0.845 blue:0.700 alpha:1];
 }
 + (UIColor*)greenSecondGradient{
     return [UIColor colorWithRed:.663 green:0.894 blue:0.843 alpha:1];
+    //return [UIColor colorWithRed:.847 green:0.745 blue:0.600 alpha:1];
 }
 + (UIColor*)greenDelButton{
     return [UIColor colorWithRed:.569 green:0.059 blue:0.141 alpha:1];
@@ -135,6 +151,9 @@
     return [UIColor colorWithRed:.518 green:0.518 blue:0.588 alpha:1];
 }
 
++ (UIColor*)greenStorkeAndScreenColor{
+    return [UIColor colorWithRed:.822 green:0.844 blue:0.822 alpha:1];
+}
 
 #pragma mark YELLOW
 +(UIColor*)yellowDisplay{

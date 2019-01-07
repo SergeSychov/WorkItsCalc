@@ -355,6 +355,19 @@
     CGContextAddPath(context, pathOfRect);
 
     CGContextDrawPath(context, kCGPathFillStroke);
+    
+    if(self.designObj.storkeButtonWithFill){
+        UIBezierPath *drawStrokePath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(self.radiusCorner)];
+        CGContextSetStrokeColorWithColor(context, self.designObj.storkeButtonWithFill.CGColor);
+        CGContextSetLineWidth(context, borderWidth*3);
+        CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, [UIColor clearColor].CGColor);
+       // CGPathRef patchToStorke;
+        CGContextAddPath(context, drawStrokePath.CGPath);
+        CGContextDrawPath(context, kCGPathStroke);
+    }
+    
+    
+    
 }
 
 - (void)drawRect:(CGRect)rect

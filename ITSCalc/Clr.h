@@ -33,6 +33,7 @@
 + (UIColor*)greenGround;
 + (UIColor*)greenButton;
 + (UIColor*)greenC;
++ (UIColor*)greenEqual;
 + (UIColor*)greenDigits;
 + (UIColor*)greenDisplay;
 + (UIColor*)greenText;
@@ -40,6 +41,7 @@
 + (UIColor*)greenSecondGradient;
 + (UIColor*)greenDelButton;
 + (UIColor*)greenMoreButton;
++ (UIColor*)greenStorkeAndScreenColor;
 
 + (UIColor*)yellowGround;
 + (UIColor*)yellowButton;

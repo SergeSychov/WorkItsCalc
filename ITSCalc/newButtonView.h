@@ -15,6 +15,7 @@
 //@property (nonatomic) struct Color buttonColor;
 
 @property (nonatomic,strong) UIColor *buttonColor;
+@property (nonatomic, strong) UIColor* storkeWithFill;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic,strong) NSAttributedString* attrbutedTitle;
 //@property (nonatomic, strong) UILabel *labelView;

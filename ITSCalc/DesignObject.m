@@ -24,6 +24,7 @@
 @property (nonatomic) UIColor* mainViewBackgroundColorIn;
 
 //for history table view
+@property (nonatomic, strong) UIColor* historySwiperColorIn;
 @property (nonatomic, strong) UIColor* historyTableColorIn;
 @property (nonatomic, strong )UIColor* colorSelectedHistoryRowIn;
 @property (nonatomic, strong )UIColor* colorUnselectedHistoryRowIn;
@@ -47,6 +48,7 @@
 @property (nonatomic ) CGFloat fotnWeightIn;
 @property (nonatomic ) CGFloat borderVSRadiusIn;
 @property (nonatomic ) BOOL fillButtonIn;
+@property (nonatomic,strong) UIColor* storkeButtonWithFillIn;
 @property (nonatomic ,strong) UIColor *shadowColorIn;
 @property (nonatomic ) CGFloat shadowBlurIn;
 @property (nonatomic ) CGSize shadowSizeIn;
@@ -154,6 +156,7 @@
             self.mainViewBackgroundColorIn = [UIColor colorWithWhite:0.15 alpha:1];//[UIColor clearColor];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [UIColor whiteColor];
             self.colorSelectedHistoryRowIn = [UIColor whiteColor];
             self.colorUnselectedHistoryRowIn = [UIColor colorWithWhite:0.95 alpha:1];
@@ -181,6 +184,7 @@
             self.fotnWeightIn = UIFontWeightLight;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;;
             self.fillButtonIn = NO;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor clearColor];
             self.shadowBlurIn = 0.;
@@ -218,6 +222,7 @@
             self.mainViewBackgroundColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[Clr paperDigits] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
             self.colorSelectedHistoryRowIn = [UIColor clearColor];
             self.colorUnselectedHistoryRowIn = [UIColor clearColor];
@@ -250,6 +255,7 @@
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;;
             self.fillButtonIn = NO;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor whiteColor];
             self.shadowBlurIn = 0.5;
@@ -288,6 +294,7 @@
             self.mainViewBackgroundColorIn = [Clr blueGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr blueFirstGradient];
             self.colorSelectedHistoryRowIn = [UIColor whiteColor];
             self.colorUnselectedHistoryRowIn = [Clr blueFirstGradient];
@@ -317,6 +324,7 @@
             self.fotnWeightIn = UIFontWeightLight;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -346,7 +354,7 @@
             break;
         case DESIGN_COLOR_GREEN:
             //for attr text
-            self.mainAtrTextColorIn = [UIColor lightTextColor];
+            self.mainAtrTextColorIn = [Clr greenText];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
@@ -354,11 +362,12 @@
             self.mainViewBackgroundColorIn = [Clr greenGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[Clr greenText] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr greenFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr greenFirstGradient];
             self.colorUnselectedHistoryRowIn = [Clr greenFirstGradient];
-            self.colorForSelectedTextIn = [Clr greenDisplay];
-            self.colorForUnselectedTextIn =  [[Clr greenDisplay] colorWithAlphaComponent:0.6];
+            self.colorForSelectedTextIn = [Clr greenText];
+            self.colorForUnselectedTextIn =  [[Clr greenText] colorWithAlphaComponent:0.4];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             self.moreButtonBackgroundColorIn = [Clr greenMoreButton];
@@ -374,11 +383,12 @@
             //ButtonsCollection
             self.digitsColorIn = [Clr greenDigits];
             self.cColorIn = [Clr greenC];
-            self.equalColorIn = [Clr greenC];
+            self.equalColorIn = [Clr greenEqual];
             self.mainColorIn = [Clr greenButton];
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
+            self.storkeButtonWithFillIn =[Clr greenStorkeAndScreenColor];
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -389,9 +399,9 @@
             //calc screen
             self.displayContainerColorIn =[Clr greenDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenShadowIn = NO;
-            self.screenShadowOpasityIn = 0.;
-            self.screenShadowRadiusIn = 0;
+            self.isScreenShadowIn = YES;
+            self.screenShadowOpasityIn = 0.75;//0.85;
+            self.screenShadowRadiusIn = 12;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
             //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
@@ -416,6 +426,7 @@
             self.mainViewBackgroundColorIn = [Clr yellowGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr yellowFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr yellowFirstGradient];
             self.colorUnselectedHistoryRowIn = [Clr yellowFirstGradient];
@@ -441,6 +452,7 @@
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -478,6 +490,7 @@
             self.mainViewBackgroundColorIn = [Clr pinkGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr pinkFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr pinkFirstGradient];
             self.colorUnselectedHistoryRowIn = [Clr pinkFirstGradient];
@@ -503,6 +516,7 @@
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -539,6 +553,7 @@
             self.mainViewBackgroundColorIn =[Clr grayGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr grayFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr grayFirstGradient];
             self.colorUnselectedHistoryRowIn = [Clr grayFirstGradient];
@@ -564,6 +579,7 @@
             self.fotnWeightIn = UIFontWeightLight;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -601,6 +617,7 @@
             self.mainViewBackgroundColorIn = [Clr blueGround];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr photoFirstGradient];
             self.colorSelectedHistoryRowIn = [UIColor colorWithWhite:0 alpha:0.2];
             self.colorUnselectedHistoryRowIn = [Clr photoFirstGradient];
@@ -626,6 +643,7 @@
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;;
             self.fillButtonIn = NO;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = BORDER_VS_RADIUS;
@@ -664,6 +682,7 @@
             self.mainViewBackgroundColorIn =  [UIColor clearColor];
             
             //HistoryTableView
+            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [UIColor whiteColor];
             self.colorSelectedHistoryRowIn = [UIColor whiteColor];
             self.colorUnselectedHistoryRowIn = [Clr blueButton];
@@ -691,6 +710,7 @@
             self.fotnWeightIn = UIFontWeightLight;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;;
             self.fillButtonIn = NO;
+            self.storkeButtonWithFillIn = nil;
             
             self.shadowColorIn = [UIColor clearColor];
             self.shadowBlurIn = 0.;
@@ -865,6 +885,9 @@
 }
 
 //for history table view
+-(UIColor*)historySwiperColor{
+    return self.historySwiperColorIn;
+}
 
 -(UIColor*)historyTableColor{
     return  self.historyTableColorIn;
@@ -937,6 +960,10 @@
 
 -(BOOL) fillButton{
     return self.fillButtonIn;
+}
+
+-(UIColor*) storkeButtonWithFill{
+    return self.storkeButtonWithFillIn;
 }
 
 -(UIColor *)shadowColor{

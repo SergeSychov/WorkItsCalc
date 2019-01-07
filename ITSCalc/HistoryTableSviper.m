@@ -30,7 +30,7 @@
     if(self.designObj.designNumber == DESIGN_PHOTO){
         self.color = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
     } else {
-        self.color = [[UIColor grayColor] colorWithAlphaComponent:0.5];
+        self.color = self.designObj.historySwiperColor;
     }
     return _color;
 }
