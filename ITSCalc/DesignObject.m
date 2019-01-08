@@ -104,6 +104,9 @@
                 self.designString =DESIGN_ADVENTURE_TIME_STR;
                 break;
             case DESIGN_COLOR_GRAY:
+                self.designString =DESIGN_OLD_SCOOL_STR;
+                break;
+            case DESIGN_COLOR_PINK:
                 self.designString =DESIGN_HIGH_TECH_STR;
                 break;
 
@@ -129,8 +132,10 @@
         self.designNumber = DESIGN_COLOR_GREEN;
     }else if([designString isEqualToString:DESIGN_ADVENTURE_TIME_STR]){
         self.designNumber = DESIGN_COLOR_YELOW;
-    }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
+    }else if([designString isEqualToString:DESIGN_OLD_SCOOL_STR]){
         self.designNumber = DESIGN_COLOR_GRAY;
+    }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
+        self.designNumber = DESIGN_COLOR_PINK;
     } else {
         self.designNumber = DESIGN_CLASSIC;
     }
