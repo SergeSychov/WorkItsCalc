@@ -274,7 +274,7 @@
     
     neededRect.origin.y = (rect.size.height - neededRect.size.height)/2;
     neededRect.origin.x = (rect.size.width - neededRect.size.width) /2+0.5;
-    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN || self.designObj.designNumber ==DESIGN_COLOR_PINK || self.designObj.designNumber == DESIGN_COLOR_YELOW){
+    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN || self.designObj.designNumber ==DESIGN_COLOR_PINK){
         CGContextSetShadowWithColor(context, CGSizeMake(-1., -1.), 1,[UIColor colorWithWhite:0 alpha:0.3].CGColor);
     }
 
@@ -284,7 +284,11 @@
     if(self.designObj.designNumber == DESIGN_PAPER){
         textColor = self.buttonColor;
     } else {
-        textColor = [UIColor colorWithWhite:1. alpha:1];
+        if(self.designObj){
+            textColor = self.designObj.buttonTextColor;//[UIColor whiteColor];//
+        } else {
+            textColor = [UIColor whiteColor];
+        }
     }
     [mutAtrStr beginEditing];
     NSRange wholeRange = NSMakeRange(0, [mutAtrStr  length]);

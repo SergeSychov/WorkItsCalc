@@ -41,6 +41,7 @@
 
 
 //for buttons collection view
+@property (nonatomic, strong) UIColor *buttonTextColorIn;
 @property (nonatomic,strong ) UIColor *mainColorIn;
 @property (nonatomic,strong ) UIColor *digitsColorIn;
 @property (nonatomic,strong ) UIColor *equalColorIn;
@@ -99,7 +100,7 @@
             case DESIGN_COLOR_GREEN:
                 self.designString =DESIGN_MARTINI_STR;
                 break;
-            case DESIGN_COLOR_PINK:
+            case DESIGN_COLOR_YELOW:
                 self.designString =DESIGN_ADVENTURE_TIME_STR;
                 break;
             case DESIGN_COLOR_GRAY:
@@ -127,7 +128,7 @@
     }else if([designString isEqualToString:DESIGN_MARTINI_STR]){
         self.designNumber = DESIGN_COLOR_GREEN;
     }else if([designString isEqualToString:DESIGN_ADVENTURE_TIME_STR]){
-        self.designNumber = DESIGN_COLOR_PINK;
+        self.designNumber = DESIGN_COLOR_YELOW;
     }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
         self.designNumber = DESIGN_COLOR_GRAY;
     } else {
@@ -177,6 +178,7 @@
             }*/
             
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr digitsButton];
             self.cColorIn = [Clr cButton];
             self.equalColorIn = [Clr equalButton];
@@ -248,6 +250,7 @@
             self.buttonShadowSizeIn = CGSizeMake(1., 1.);
             self.buttonShadowBlurIn = 0.5;
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr paperDigits];
             self.cColorIn = [Clr paperC];
             self.equalColorIn = [Clr paperEqual];
@@ -295,11 +298,11 @@
             
             //HistoryTableView
             self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
-            self.historyTableColorIn = [Clr blueFirstGradient];
-            self.colorSelectedHistoryRowIn = [UIColor whiteColor];
-            self.colorUnselectedHistoryRowIn = [Clr blueFirstGradient];
+            self.historyTableColorIn = [Clr blueGround];
+            self.colorSelectedHistoryRowIn = [Clr blueGround];//[UIColor whiteColor];
+            self.colorUnselectedHistoryRowIn = [Clr blueSecondGradient];
             self.colorForSelectedTextIn = [Clr blueDisplay];
-            self.colorForUnselectedTextIn =  [[Clr blueDisplay] colorWithAlphaComponent:0.6];
+            self.colorForUnselectedTextIn =  [[Clr blueDisplay] colorWithAlphaComponent:0.4];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             //self.moreButtonBackgroundColorIn = [Clr blueMoreButton];
@@ -317,6 +320,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr blueDigits];
             self.cColorIn = [Clr blueC];
             self.equalColorIn = [Clr blueEqual];
@@ -381,6 +385,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr greenDigits];
             self.cColorIn = [Clr greenC];
             self.equalColorIn = [Clr greenEqual];
@@ -418,7 +423,7 @@
             break;
         case DESIGN_COLOR_YELOW:
             //for attr text
-            self.mainAtrTextColorIn = [UIColor lightTextColor];
+            self.mainAtrTextColorIn = [Clr yellowText];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
@@ -429,9 +434,9 @@
             self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr yellowFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr yellowFirstGradient];
-            self.colorUnselectedHistoryRowIn = [Clr yellowFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr yellowSecondGradient];
             self.colorForSelectedTextIn = [Clr yellowText];
-            self.colorForUnselectedTextIn =  [[Clr yellowText] colorWithAlphaComponent:0.6];
+            self.colorForUnselectedTextIn =  [[Clr yellowText] colorWithAlphaComponent:0.4];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             self.moreButtonBackgroundColorIn = [Clr yellowMoreButton];
@@ -445,14 +450,15 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [Clr yellowText];
             self.digitsColorIn = [Clr yellowDigits];
             self.cColorIn = [Clr yellowC];
-            self.equalColorIn = [Clr yellowC];
+            self.equalColorIn = [Clr yellowEqal];
             self.mainColorIn = [Clr yellowButton];
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
-            self.storkeButtonWithFillIn = nil;
+            self.storkeButtonWithFillIn = [Clr yellowText];
             
             self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
             self.shadowBlurIn = 3.;
@@ -462,21 +468,21 @@
             
             //calc screen
             self.displayContainerColorIn = [Clr yellowDisplay];
-            self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenShadowIn = NO;
-            self.screenShadowOpasityIn = 0.;
-            self.screenShadowRadiusIn = 0;
-            self.screenButtonsEnabledColorIn = [UIColor whiteColor];
-            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+            self.screenTextColorIn = [Clr yellowText];
+            self.isScreenShadowIn = YES;
+            self.screenShadowOpasityIn = 0.5;
+            self.screenShadowRadiusIn = 8.0;
+            self.screenButtonsEnabledColorIn = [Clr yellowText];
+            self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1.0];
             //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
             //self.screenButtonShadowColorIn = [UIColor clearColor];;
             //self.screenButtonShadowOpacityIn = 0.;
             //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
-            self.infoShowViewColor =[UIColor darkTextColor];
-            self.explShowViewColor =[UIColor darkTextColor];
-            self.resultShowViewColor=[UIColor darkTextColor];
+            self.infoShowViewColor =[Clr yellowText];
+            self.explShowViewColor =[Clr yellowText];
+            self.resultShowViewColor=[Clr yellowText];
 
             
             break;
@@ -509,6 +515,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr pinkDigits];
             self.cColorIn = [Clr pinkC];
             self.equalColorIn = [Clr pinkC];
@@ -572,6 +579,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr grayDigits];
             self.cColorIn = [Clr grayC];
             self.equalColorIn = [Clr grayC];
@@ -636,6 +644,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [UIColor whiteColor];
             self.cColorIn = [UIColor whiteColor];
             self.equalColorIn = [UIColor whiteColor];
@@ -703,6 +712,7 @@
                 self.lineView = nil;
             }*/
             //ButtonsCollection
+            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr digitsButton];
             self.cColorIn = [Clr cButton];
             self.equalColorIn = [Clr equalButton];
@@ -935,6 +945,10 @@
 
 
 //for buttons collection view
+-(UIColor*) buttonTextColor{
+    return self.buttonTextColorIn;
+}
+
 -(UIColor*) mainColor{
     return self.mainColorIn;
 }

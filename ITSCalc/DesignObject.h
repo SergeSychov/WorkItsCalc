@@ -93,6 +93,7 @@
 
 
 //for buttons collection view
+@property (nonatomic, readonly) UIColor *buttonTextColor;
 @property (nonatomic, readonly) UIColor *mainColor;
 @property (nonatomic, readonly) UIColor *digitsColor;
 @property (nonatomic, readonly) UIColor *equalColor;

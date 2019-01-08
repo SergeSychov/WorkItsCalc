@@ -46,6 +46,7 @@
 + (UIColor*)yellowGround;
 + (UIColor*)yellowButton;
 + (UIColor*)yellowC;
++ (UIColor*)yellowEqal;
 + (UIColor*)yellowDigits;
 + (UIColor*)yellowDisplay;
 + (UIColor*)yellowText;
