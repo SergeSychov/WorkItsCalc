@@ -556,6 +556,8 @@ NSDate *methodStart;
 {
     if([self.designObj.designString isEqualToString:DESIGN_COLOR_STR]){
         [self.imgGlossyView setImage:[UIImage imageNamed:@"Gloss.png"]];
+    }else if([self.designObj.designString isEqualToString:DESIGN_MARTINI_STR]){
+        [self.imgGlossyView setImage:[UIImage imageNamed:@"Pepsi1.png"]];
     }else{
         self.imgGlossyView.image = nil;
     }

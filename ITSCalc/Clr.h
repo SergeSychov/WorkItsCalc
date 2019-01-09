@@ -58,6 +58,7 @@
 + (UIColor*)pinkGround;
 + (UIColor*)pinkButton;
 + (UIColor*)pinkC;
++ (UIColor*)pinkEqual;
 + (UIColor*)pinkDigits;
 + (UIColor*)pinkDisplay;
 + (UIColor*)pinkText;

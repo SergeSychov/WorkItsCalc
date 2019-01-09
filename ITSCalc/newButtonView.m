@@ -274,7 +274,7 @@
     
     neededRect.origin.y = (rect.size.height - neededRect.size.height)/2;
     neededRect.origin.x = (rect.size.width - neededRect.size.width) /2+0.5;
-    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN || self.designObj.designNumber ==DESIGN_COLOR_PINK){
+    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN){
         CGContextSetShadowWithColor(context, CGSizeMake(-1., -1.), 1,[UIColor colorWithWhite:0 alpha:0.3].CGColor);
     }
 
@@ -283,6 +283,8 @@
     UIColor *textColor;
     if(self.designObj.designNumber == DESIGN_PAPER){
         textColor = self.buttonColor;
+    } else if(self.designObj.designNumber==DESIGN_COLOR_PINK && [self.title isEqualToString:@"C"]){
+        textColor = [UIColor blackColor];
     } else {
         if(self.designObj){
             textColor = self.designObj.buttonTextColor;//[UIColor whiteColor];//

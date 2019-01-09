@@ -498,15 +498,15 @@
             self.regularTextStyleIn = UIFontTextStyleTitle1;
             
             //form main container view
-            self.mainViewBackgroundColorIn = [Clr pinkGround];
+            self.mainViewBackgroundColorIn = [UIColor clearColor];//[Clr pinkGround];
             
             //HistoryTableView
-            self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
-            self.historyTableColorIn = [Clr pinkFirstGradient];
-            self.colorSelectedHistoryRowIn = [Clr pinkFirstGradient];
-            self.colorUnselectedHistoryRowIn = [Clr pinkFirstGradient];
-            self.colorForSelectedTextIn = [Clr pinkText];
-            self.colorForUnselectedTextIn =  [[Clr pinkDisplay] colorWithAlphaComponent:0.6];
+            self.historySwiperColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
+            self.historyTableColorIn =[UIColor clearColor];// [Clr pinkFirstGradient];
+            self.colorSelectedHistoryRowIn = [UIColor clearColor];//[Clr pinkFirstGradient];
+            self.colorUnselectedHistoryRowIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];// [Clr pinkFirstGradient];
+            self.colorForSelectedTextIn = [UIColor whiteColor];//[Clr pinkText];
+            self.colorForUnselectedTextIn = [[UIColor whiteColor] colorWithAlphaComponent:0.4];//[[Clr pinkDisplay] colorWithAlphaComponent:0.6];
             
             self.moreButtonColorIn = [UIColor whiteColor];
             self.moreButtonBackgroundColorIn = [Clr pinkMoreButton];
@@ -521,27 +521,27 @@
             }*/
             //ButtonsCollection
             self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
-            self.digitsColorIn = [Clr pinkDigits];
-            self.cColorIn = [Clr pinkC];
-            self.equalColorIn = [Clr pinkC];
-            self.mainColorIn = [Clr pinkButton];
+            self.digitsColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.5];//[Clr pinkDigits];
+            self.cColorIn = [[UIColor whiteColor] colorWithAlphaComponent:1.];//[Clr pinkC];
+            self.equalColorIn = [Clr pinkEqual];
+            self.mainColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.3];//[Clr pinkButton];
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = 3.;
-            self.shadowSizeIn = CGSizeMake(2, 2);
+            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.0];
+            self.shadowBlurIn = 0.;
+            self.shadowSizeIn = CGSizeMake(0, 0);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
             //calc screen
-            self.displayContainerColorIn =[Clr pinkDisplay];
+            self.displayContainerColorIn =[[UIColor whiteColor] colorWithAlphaComponent:0.0];//[Clr pinkDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
-            self.isScreenShadowIn = NO;
-            self.screenShadowOpasityIn = 0.;
-            self.screenShadowRadiusIn = 0;
+            self.isScreenShadowIn = YES;
+            self.screenShadowOpasityIn = 0.8;
+            self.screenShadowRadiusIn = 12;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
             //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
@@ -568,7 +568,7 @@
             self.historySwiperColorIn = [[UIColor grayColor] colorWithAlphaComponent:0.5];
             self.historyTableColorIn = [Clr grayFirstGradient];
             self.colorSelectedHistoryRowIn = [Clr grayFirstGradient];
-            self.colorUnselectedHistoryRowIn = [Clr grayFirstGradient];
+            self.colorUnselectedHistoryRowIn = [Clr graySecondGradient];
             self.colorForSelectedTextIn = [Clr grayText];
             self.colorForUnselectedTextIn = [[Clr grayText] colorWithAlphaComponent:0.4];
             

@@ -62,43 +62,45 @@
 
 #pragma mark BLUE
 +(UIColor*)blueDisplay{
-    return [UIColor colorWithRed:.282 green:0.09 blue:.380 alpha:1.];
-    //return [UIColor colorWithRed:.318 green:0.192 blue:.380 alpha:1.];
+    //return [UIColor colorWithRed:.282 green:0.09 blue:.380 alpha:1.];
+    return [UIColor colorWithRed:.549 green:0.188 blue:0.494 alpha:1];
 }
 
 +(UIColor*)blueButton{
-    return [UIColor colorWithRed:.235 green:0.467 blue:0.043 alpha:1];
-    //return [UIColor colorWithRed:.188 green:0.388 blue:0.290 alpha:1];
+   // return [UIColor colorWithRed:.235 green:0.467 blue:0.043 alpha:1];
+    return [UIColor colorWithRed:.392 green:0.761 blue:0.110 alpha:1];
 
 }
 +(UIColor*)blueDigits{
-    return [UIColor colorWithRed:.671 green:0.231 blue:0.588 alpha:1];
-    //return [UIColor colorWithRed:.831 green:0.243 blue:0.412 alpha:1];
+    //return [UIColor colorWithRed:.671 green:0.231 blue:0.588 alpha:1];
+    return [UIColor colorWithRed:.149 green:0.345 blue:0.984 alpha:1];
 }
 +(UIColor*)blueC{
     //return [UIColor colorWithRed:.929 green:0.447 blue:0.200 alpha:1];
-    return [UIColor colorWithRed:.952 green:0.404 blue:0.310 alpha:1];
+    return [UIColor colorWithRed:.929 green:0.463 blue:0.200 alpha:1];
 
 }
 
 +(UIColor*)blueEqual{
-    return [UIColor colorWithRed:.137 green:0.553 blue:0.984 alpha:1];
-   // return [UIColor colorWithRed:.184 green:0.502 blue:0.710 alpha:1];
+    //return [UIColor colorWithRed:.137 green:0.553 blue:0.984 alpha:1];
+    return [UIColor colorWithRed:.188 green:0.537 blue:0.984 alpha:1];
 }
 
 +(UIColor*)blueGround{
-    //return [UIColor colorWithRed:.933 green:0.937 blue:0.949 alpha:1];
-    return [UIColor colorWithRed:.947 green:0.876 blue:0.873 alpha:1];
+    //return [UIColor colorWithRed:.947 green:0.876 blue:0.873 alpha:1];
+    return [UIColor colorWithRed:.973 green:0.973 blue:0.980 alpha:1];
 }
 
 + (UIColor*)blueFirstGradient{
-    //return [UIColor colorWithRed:.933 green:0.937 blue:0.949 alpha:1];
-    return [UIColor colorWithRed:.947 green:0.876 blue:0.873 alpha:1];
+    //return [UIColor colorWithRed:.947 green:0.876 blue:0.873 alpha:1];
+    return [UIColor colorWithRed:.973 green:0.973 blue:0.980 alpha:1];
+    
 
 }
 + (UIColor*)blueSecondGradient{
-    //return [UIColor colorWithRed:.812 green:0.867 blue:0.922 alpha:1];
-    return [UIColor colorWithRed:.847 green:0.776 blue:0.773 alpha:1];
+    //return [UIColor colorWithRed:.847 green:0.776 blue:0.773 alpha:1];
+    return [UIColor colorWithRed:.875 green:0.875 blue:0.922 alpha:1];
+    
 
 }
 + (UIColor*)blueDelButton{
@@ -170,7 +172,7 @@
 #pragma mark YELLOW
 +(UIColor*)yellowDisplay{
     //return [UIColor colorWithRed:.659 green:0.455 blue:.745 alpha:1.];//violet
-    return [UIColor colorWithRed:.667 green:0.894 blue:.816 alpha:1.];//green
+    return [UIColor colorWithRed:.345 green:0.722 blue:.647 alpha:1.];//green
 }
 
 +(UIColor*)yellowButton{
@@ -220,6 +222,9 @@
 }
 +(UIColor*)pinkC{
     return [UIColor colorWithRed:.65 green:0.36 blue:0.37 alpha:1];
+}
++(UIColor*)pinkEqual{
+    return [UIColor colorWithRed:.290 green:0.573 blue:0.847 alpha:1];
 }
 +(UIColor*)pinkGround{
     return [UIColor colorWithRed:.65 green:0.65 blue:0.69 alpha:1];
