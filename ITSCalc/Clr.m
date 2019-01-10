@@ -60,30 +60,31 @@
 }
 
 
-#pragma mark BLUE
+#pragma mark BLUE//Colored
 +(UIColor*)blueDisplay{
-    //return [UIColor colorWithRed:.282 green:0.09 blue:.380 alpha:1.];
-    return [UIColor colorWithRed:.549 green:0.188 blue:0.494 alpha:1];
+    return [UIColor colorWithRed:.067 green:0.220 blue:.482 alpha:1.];
+    //return [UIColor colorWithRed:.549 green:0.188 blue:0.494 alpha:1];
 }
 
 +(UIColor*)blueButton{
-   // return [UIColor colorWithRed:.235 green:0.467 blue:0.043 alpha:1];
-    return [UIColor colorWithRed:.392 green:0.761 blue:0.110 alpha:1];
+    return [UIColor colorWithRed:.361 green:0.733 blue:0.573 alpha:1];
+    
+   // return [UIColor colorWithRed:.336 green:0.722 blue:0.09 alpha:1];
 
 }
 +(UIColor*)blueDigits{
-    //return [UIColor colorWithRed:.671 green:0.231 blue:0.588 alpha:1];
-    return [UIColor colorWithRed:.149 green:0.345 blue:0.984 alpha:1];
+    return [UIColor colorWithRed:.251 green:0.682 blue:0.984 alpha:1];
+    //return [UIColor colorWithRed:.149 green:0.345 blue:0.984 alpha:1];
 }
 +(UIColor*)blueC{
-    //return [UIColor colorWithRed:.929 green:0.447 blue:0.200 alpha:1];
-    return [UIColor colorWithRed:.929 green:0.463 blue:0.200 alpha:1];
+    return [UIColor colorWithRed:.988 green:0.863 blue:0.310 alpha:1];
+    //return [UIColor colorWithRed:.929 green:0.463 blue:0.200 alpha:1];
 
 }
 
 +(UIColor*)blueEqual{
-    //return [UIColor colorWithRed:.137 green:0.553 blue:0.984 alpha:1];
-    return [UIColor colorWithRed:.188 green:0.537 blue:0.984 alpha:1];
+    return [UIColor colorWithRed:.91 green:0.286 blue:0.590 alpha:1];
+    //return [UIColor colorWithRed:.188 green:0.537 blue:0.984 alpha:1];
 }
 
 +(UIColor*)blueGround{
@@ -113,7 +114,7 @@
     return [UIColor colorWithRed:0.027 green:0.149 blue:0.267 alpha:1.];
 }
 
-#pragma mark GREEN
+#pragma mark GREEN //pepsi
 +(UIColor*)greenDisplay{
     //return [UIColor colorWithRed:.027 green:0.161 blue:0.388 alpha:1];
     return [UIColor colorWithRed:.196 green:0.251 blue:0.459 alpha:1];
@@ -121,22 +122,22 @@
 }
 
 +(UIColor*)greenButton{
-    //return [UIColor colorWithRed:.145 green:0.192 blue:0.329 alpha:1];
+    //return [UIColor colorWithRed:.133 green:0.188 blue:0.357 alpha:1];
     return [UIColor colorWithRed:.318 green:0.227 blue:0.400 alpha:1];
 
 }
 +(UIColor*)greenDigits{
-    //return [UIColor colorWithRed:.314 green:0.063 blue:0.082 alpha:1];
-    return [UIColor colorWithRed:.431 green:0.106 blue:0.180 alpha:1];
+    //return [UIColor colorWithRed:.169 green:0.082 blue:0.09 alpha:1];
+    return [UIColor colorWithRed:.306 green:0.011 blue:0.094 alpha:1];
 }
 +(UIColor*)greenC{
     return [UIColor colorWithRed:.706 green:.184 blue:0.145 alpha:1];
-    //return [UIColor colorWithRed:.898 green:.247 blue:0.278 alpha:1];
+    //return [UIColor colorWithRed:.424 green:.067 blue:0.037 alpha:1];
 
 }
 +(UIColor*)greenEqual{
     return [UIColor colorWithRed:.071 green:.325 blue:0.592 alpha:1];
-    //return [UIColor colorWithRed:.361 green:.812 blue:0.961 alpha:1];
+    //return [UIColor colorWithRed:.131 green:.306 blue:0.545 alpha:1];
 }
 
 +(UIColor*)greenGround{
