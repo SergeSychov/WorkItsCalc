@@ -474,7 +474,7 @@
             //calc screen
             self.displayContainerColorIn = [Clr yellowDisplay];
             self.screenTextColorIn = [Clr yellowText];
-            self.isScreenShadowIn = YES;
+            self.isScreenShadowIn = NO;
             self.screenShadowOpasityIn = 0.5;
             self.screenShadowRadiusIn = 8.0;
             self.screenButtonsEnabledColorIn = [Clr yellowText];
@@ -501,7 +501,7 @@
             self.mainViewBackgroundColorIn = [UIColor clearColor];//[Clr pinkGround];
             
             //HistoryTableView
-            self.historySwiperColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.4];
+            self.historySwiperColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];
             self.historyTableColorIn =[UIColor clearColor];// [Clr pinkFirstGradient];
             self.colorSelectedHistoryRowIn = [UIColor clearColor];//[Clr pinkFirstGradient];
             self.colorUnselectedHistoryRowIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];// [Clr pinkFirstGradient];
