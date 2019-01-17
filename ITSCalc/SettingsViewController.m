@@ -64,13 +64,13 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 @property (weak, nonatomic) IBOutlet SoundView *soundOn;
 @property (weak, nonatomic) IBOutlet UISwitch *soundSwitcher;
 
-@property (weak, nonatomic) IBOutlet ArchiveSizeView *archsizeViewSmall;
-@property (weak, nonatomic) IBOutlet ArchiveSizeView *archivesizeBigView;
-@property (weak, nonatomic) IBOutlet UISwitch *isBigDataBaseSwitcher;
+//@property (weak, nonatomic) IBOutlet ArchiveSizeView *archsizeViewSmall;
+//@property (weak, nonatomic) IBOutlet ArchiveSizeView *archivesizeBigView;
+//@property (weak, nonatomic) IBOutlet UISwitch *isBigDataBaseSwitcher;
 
-@property (weak, nonatomic) IBOutlet CloudView *cloudOffView;
-@property (weak, nonatomic) IBOutlet CloudView *cloudOnView;
-@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
+//@property (weak, nonatomic) IBOutlet CloudView *cloudOffView;
+//@property (weak, nonatomic) IBOutlet CloudView *cloudOnView;
+//@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
 
 @property (weak, nonatomic) IBOutlet DesignButton *changeDesignButton;
 @property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
@@ -306,13 +306,14 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
+/*
 - (IBAction)switchIsBigDataBase:(UISwitch *)sender {
     self.isBigDataBase = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isBigDataBase", nil];
     NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
-}
+}*/
 /*
 - (IBAction)isiCloudSwitch:(UISwitch *)sender {
     self.isiCloudInUse = sender.on;
@@ -362,14 +363,14 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     self.soundOn.backgroundColor = [UIColor clearColor];
    
     //ARCHIVE SIZE
-    [self.isBigDataBaseSwitcher setOn:self.isBigDataBase];
-    self.isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
+    //[self.isBigDataBaseSwitcher setOn:self.isBigDataBase];
+    //self.isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
 
-    self.archsizeViewSmall.isBig=NO;
-    self.archsizeViewSmall.backgroundColor = [UIColor clearColor];
+    //self.archsizeViewSmall.isBig=NO;
+    //self.archsizeViewSmall.backgroundColor = [UIColor clearColor];
 
-    self.archivesizeBigView.isBig=YES;
-    self.archivesizeBigView.backgroundColor = [UIColor clearColor];
+    //self.archivesizeBigView.isBig=YES;
+    //self.archivesizeBigView.backgroundColor = [UIColor clearColor];
     
     //iCloud use
    // [self.isiCloudUseSwitcher setOn:self.isiCloudInUse];

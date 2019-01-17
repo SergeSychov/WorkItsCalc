@@ -23,7 +23,7 @@
 
 //@property (nonatomic) BOOL isiCloudInUse;
 //@property (nonatomic) BOOL isiCloudUseSwitcherEnabled;
-@property (nonatomic) BOOL isBigDataBase; //size dataBase
+//@property (nonatomic) BOOL isBigDataBase; //size dataBase
 @property (nonatomic) BOOL isSoundOn;
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
 

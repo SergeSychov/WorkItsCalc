@@ -521,10 +521,10 @@
             }*/
             //ButtonsCollection
             self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
-            self.digitsColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.5];//[Clr pinkDigits];
+            self.digitsColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.35];//[Clr pinkDigits];
             self.cColorIn = [[UIColor whiteColor] colorWithAlphaComponent:1.];//[Clr pinkC];
             self.equalColorIn = [Clr pinkEqual];
-            self.mainColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.3];//[Clr pinkButton];
+            self.mainColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];//[Clr pinkButton];
             self.fotnWeightIn = UIFontWeightMedium;
             self.borderVSRadiusIn = BORDER_VS_RADIUS;
             self.fillButtonIn = YES;
