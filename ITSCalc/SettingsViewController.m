@@ -16,6 +16,7 @@
 #import "DesignButton.h"
 #import "DesignViewFromButton.h"
 #import "newButtonView.h"
+#import "TrialClockView.h"
 
 #import "Transition.h"
 #import "DesignViewController.h"
@@ -50,12 +51,6 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 @property (weak,nonatomic) Transition* rightTransition;
 @property (weak,nonatomic) DesignViewController *designViewController;
 
-//copied from main controller
-//@property (weak, nonatomic) UILabel *buttonSwitcherLabel;
-//@property (weak, nonatomic) UILabel *soundSwitcherLabel;
-//@property (weak, nonatomic) UILabel *archiveSwitcherLabel;
-//@property (weak,nonatomic) UILabel *changeDesignButtonLabel;
-//@property (weak,nonatomic) UILabel* clearHistoryButtonLabel;
 @property (weak, nonatomic) IBOutlet newButtonView *smallButtonView;
 @property (weak, nonatomic) IBOutlet newButtonView *bigButtonView;
 @property (weak, nonatomic) IBOutlet UISwitch *isBigSizeSwitcher;
@@ -63,21 +58,18 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 @property (weak, nonatomic) IBOutlet SoundView *soundOff;
 @property (weak, nonatomic) IBOutlet SoundView *soundOn;
 @property (weak, nonatomic) IBOutlet UISwitch *soundSwitcher;
-
-//@property (weak, nonatomic) IBOutlet ArchiveSizeView *archsizeViewSmall;
-//@property (weak, nonatomic) IBOutlet ArchiveSizeView *archivesizeBigView;
-//@property (weak, nonatomic) IBOutlet UISwitch *isBigDataBaseSwitcher;
-
-//@property (weak, nonatomic) IBOutlet CloudView *cloudOffView;
-//@property (weak, nonatomic) IBOutlet CloudView *cloudOnView;
-//@property (weak, nonatomic) IBOutlet UISwitch *isiCloudUseSwitcher;
-
 @property (weak, nonatomic) IBOutlet DesignButton *changeDesignButton;
 @property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
 @property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
 
 @property (weak, nonatomic) IBOutlet CalcButton *calcButton;
+@property (weak, nonatomic) IBOutlet UILabel *trailPeriodLabel;
+@property (weak, nonatomic) IBOutlet UIButton *extendTrailButton;
+@property (weak, nonatomic) IBOutlet TrialClockView *trialClockView;
+@property (weak, nonatomic) IBOutlet UILabel *leftTrailLabel;
+@property (weak, nonatomic) IBOutlet UILabel *numberOfDayLabel;
+@property (weak, nonatomic) IBOutlet UILabel *daysLabel;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewConstrain;
@@ -282,6 +274,13 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [alert addAction:restorePurchaise];
 
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (IBAction)infoAdditionalButtonTapped:(UIButton *)sender {
+    NSLog(@"Info Addition Button Tapped");
+}
+- (IBAction)extendTrialPressed:(id)sender {
+    NSLog(@"Extend Trial Button Tapped");
 }
 
 
@@ -565,6 +564,10 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             break;
         }
     }
+    
+    self.trialClockView.outTrialDays = (CGFloat) self.daysSpentTrial;
+    self.trialClockView.totalTrialDays =(CGFloat) self.totalTrialDays;
+    self.numberOfDayLabel.text = [NSString stringWithFormat:@"%ld", (self.totalTrialDays-self.daysSpentTrial)];
 }
 
 #pragma mark DESIGN CONTROLLER DELEGATE
@@ -618,6 +621,21 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 -(void)viewDidDisappear:(BOOL)animated{
     if(DEBUG_MODE) NSLog(@"setting view disapear");
     //[self dismis];
+}
+
+
+#pragma mark TRIAL
+-(NSInteger) daysSpentTrial {
+    if(!_daysSpentTrial){
+        _daysSpentTrial = 26;
+    }
+    return _daysSpentTrial;
+}
+-(NSInteger) totalTrialDays {
+    if(!_totalTrialDays){
+        _totalTrialDays = 100;
+    }
+    return _totalTrialDays;
 }
 
 #pragma mark IN-APP PURSHASE

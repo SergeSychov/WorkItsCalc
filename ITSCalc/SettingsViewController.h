@@ -31,6 +31,8 @@
 //@property (nonatomic) NSInteger design; //number of design
 
 @property (nonatomic) BOOL isTrialPeriod;
+@property (nonatomic) NSInteger totalTrialDays;
+@property (nonatomic) NSInteger daysSpentTrial;
 @property (nonatomic) BOOL wasPurshaised;
 
 //-(void) willRotatetoSize:(CGSize)size;
