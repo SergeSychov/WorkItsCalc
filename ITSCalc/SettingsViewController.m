@@ -193,6 +193,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
 #define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
 
+#define TRIAL_PERIOD NSLocalizedStringFromTable(@"ПРОБНЫЙ ПЕРИОД",@"ACalcTryViewControllerTableAdditionalTwo", @"ПРОБНЫЙ ПЕРИОД")
+#define LEFT NSLocalizedStringFromTable(@"осталось",@"ACalcTryViewControllerTableAdditionalTwo", @"осталось")
+#define DAYS NSLocalizedStringFromTable(@"дней",@"ACalcTryViewControllerTableAdditionalTwo", @"дней")
+#define LEAVE_A_REVIEW NSLocalizedStringFromTable(@"Оставьте отзыв, чтобы продлить",@"ACalcTryViewControllerTableAdditionalTwo", @"Оставьте отзыв, чтобы продлить")
+
 #pragma mark BUTTON ACTION
 #pragma mark ALERT VIEW
 
@@ -281,6 +286,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 - (IBAction)extendTrialPressed:(id)sender {
     NSLog(@"Extend Trial Button Tapped");
+    NSString *iTunesLink = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=873164530&type=Purple+Software";//&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:iTunesLink] options:@{}
+                             completionHandler:^(BOOL success) {
+                                 nil;
+                             }];
 }
 
 
@@ -411,6 +421,11 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         //keyboardDefaultButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
         //keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
+    
+    self.trailPeriodLabel.text = TRIAL_PERIOD;
+    [self.extendTrailButton setTitle:LEAVE_A_REVIEW forState:UIControlStateNormal];
+    self.leftTrailLabel.text =LEFT;
+    self.daysLabel.text =DAYS;
 
     
     
