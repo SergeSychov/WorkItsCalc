@@ -12,7 +12,7 @@
 #define INDENT 20.0f
 #define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 
-NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
+//NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 
 
 @interface SecondViewController() 
@@ -22,24 +22,6 @@ NSString *const SecondVCSendChangedNotification=@"SendChangedNotification";
 
 @end
 @implementation SecondViewController
-#pragma mark LAZY INITIALISATION
-
-#pragma mark ACTION
-/*
--(void) userPressedChangeButton:(id)sender
-{
-    //NSLog(@"userPressedChangeButton");
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"Done",@"Message", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SecondVCSendChangedNotification object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-}
-
--(void) userPressedBackButton:(id)sender
-{
-    [self dismis];
-}
-*/
-#pragma mark ROTATION
 
 #pragma mark TRANSITION DELEGATE
 -(id <UIViewControllerAnimatedTransitioning>)
@@ -76,17 +58,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                   green:0.61
                                                    blue:.80
                                                   alpha:1.]];
-    
-    
-    /*
-    UIView *cView = [[UIView alloc] init];
-    cView.center = self.view.center;
-    
-    [cView setBackgroundColor:self.view.backgroundColor];
-    [self.view addSubview:cView];
-    self.cView = cView;
-    */
-    
     [self setNeedViews];
 }
 

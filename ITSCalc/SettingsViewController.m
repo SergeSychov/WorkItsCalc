@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Sergey Sychov. All rights reserved.
 //
 
-#import <StoreKit/StoreKit.h>
 #import "SettingsViewController.h"
 #import "CalcButton.h"
 #import "SoundView.h"
@@ -21,31 +20,14 @@
 #import "Transition.h"
 #import "DesignViewController.h"
 #import "CildDesignViewController.h"
-
-//#import "LineView.h"
-
-//#import "TestButtonBackGroundView.h"
 #import "designButtonView.h"
 #import "PlusButton.h"
-//#import "CLr.h"
-//#import "RoundedGroundView.h"
 
 //#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
 #define IS_568_SCREEN ([[UIScreen mainScreen]bounds].size.height == 568. || [[UIScreen mainScreen]bounds].size.width == 568.)
 #define INDENT 20.0f
 
-
-#define kInAppPurchaseProductID @"ItsCalc.changekeyboard"
-NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
-
-@interface SettingsViewController() <SKPaymentTransactionObserver, SKProductsRequestDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design>
-
-@property (nonatomic, strong) SKProduct *product;
-@property (nonatomic,strong) SKProductsRequest *request;
-
-
-
-//@property (nonatomic,weak) CalcButton *calcButton;
+@interface SettingsViewController() /*SKPaymentTransactionObserver, SKProductsRequestDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design>*/
 
 //transition
 @property (weak,nonatomic) Transition* rightTransition;
@@ -76,70 +58,13 @@ NSString *const SettingReciveChangedNotification=@"SendChangedNotification";
 
 @property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
 
-@property (nonatomic) BOOL fristLunchWithicloudAvailable;
-
-//@property (weak,nonatomic) DesignViewFromButton *designViewFromButton;
-
-
-
-
-//@property (weak, nonatomic) UIButton *buyAdditionsButton;
-//add spin activity to show process of purchaising
-
-//end copied from main controller
-
-//FOR IAPD SET DESIGN CHOOSING
-/*
-@property (nonatomic,weak) UILabel* chooseDesignLabel;
-
-@property (nonatomic,weak) UIView *classicPartView;
-@property (nonatomic,weak) TestButtonBackGroundView *classicButton;
-@property (nonatomic,weak) designButtonView *classicButtonView;
-
-@property (nonatomic,weak) UIView *paperPartView;
-@property (nonatomic,weak) TestButtonBackGroundView *paperButton;
-@property (nonatomic,weak) designButtonView *paperButtonView;
-
-@property (nonatomic,weak) UIView *colorPartView;
-@property (nonatomic,weak) designButtonView *colorButtonView;
-@property (nonatomic,weak) TestButtonBackGroundView *clolorBlueButton;
-@property (nonatomic,weak) TestButtonBackGroundView *colorPinkButton;
-@property (nonatomic,weak) TestButtonBackGroundView *colorGreenButton;
-@property (nonatomic,weak) TestButtonBackGroundView *colorYelowButton;
-@property (nonatomic,weak) TestButtonBackGroundView *colorBlackButton;
-
-@property (nonatomic,weak) UIImageView *photo;
-@property (nonatomic,weak) UIView *photoPartView;
-@property (nonatomic,weak) designButtonView *photoButtonView;
-@property (nonatomic,weak) TestButtonBackGroundView *photButton;
-@property (nonatomic,weak) PlusButton *addNewPhotoButton; //"+"
-*/
-
-
 @end
 
 @implementation SettingsViewController
 
-
 -(BOOL) prefersStatusBarHidden
 {
     return YES;
-}
-
-#pragma mark NOTIFICATION
--(void) recivedNotification:(NSNotification*)notification
-{
-    NSArray *keys = notification.userInfo.allKeys;
-    if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
-        //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
-        NSString *key = keys[0];
-        if([key isEqualToString:@"ChangedDesign"]){
-            
-            //self.design = [[notification.userInfo objectForKey:keys[0]] integerValue];
-            [self.view setNeedsDisplay];
-        }
-        //NSLog(@"recived wrong notification");
-    }
 }
 
 #pragma mark TRANSITION DELEGATE
@@ -179,31 +104,13 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [self presentViewController:self.designViewController animated:YES completion:nil];    
 }
 
-#define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
-#define ALERT_MESSAGE_CLEAR_HOSTORY NSLocalizedStringFromTable(@"ALERT_MESSAGE_CLEAR_HOSTORY",@"ACalcTryViewControllerTable", @"delete history. all results will be lost")
-#define ALERT_CLEAR_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CLEAR_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"clear")
-
-#define TITLE_RESET_BUTTON NSLocalizedStringFromTable(@"TITLE_RESET_BUTTON",@"ACalcTryViewControllerTable", @"reset button title")
-#define ALERT_MESAGE_RESET_BUTTONS NSLocalizedStringFromTable(@"ALERT_MESAGE_RESET_BUTTONS",@"ACalcTryViewControllerTable", @"reset button alert mesage")
-#define ALERT_RESTORE_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_RESTORE_BUTTON_TITLE ",@"ACalcTryViewControllerTable", @"restore buton title")
-
-
-#define ALERT_CANCEL_BUTTON_TITLE NSLocalizedStringFromTable(@"ALERT_CANCEL_BUTTON_TITLE",@"ACalcTryViewControllerTable", @"alert cancel buton title")
-#define ALLERT_TITLE_CHANGE_KEYBOARD NSLocalizedStringFromTable(@"ALLERT_TITLE_CHANGE_KEYBOARD",@"ACalcTryViewControllerTableAdditional", @"Change keyboard")
-#define ALLERT_BUTTON_BUY NSLocalizedStringFromTable(@"ALLERT_BUTTON_BUY",@"ACalcTryViewControllerTableAdditional", @"Buy")
-#define ALLERT_BUTTON_RESTORE NSLocalizedStringFromTable(@"ALLERT_BUTTON_RESTORE",@"ACalcTryViewControllerTableAdditional", @"Restore purshace")
-
-#define TRIAL_PERIOD NSLocalizedStringFromTable(@"ПРОБНЫЙ ПЕРИОД",@"ACalcTryViewControllerTableAdditionalTwo", @"ПРОБНЫЙ ПЕРИОД")
-#define LEFT NSLocalizedStringFromTable(@"осталось",@"ACalcTryViewControllerTableAdditionalTwo", @"осталось")
-#define DAYS NSLocalizedStringFromTable(@"дней",@"ACalcTryViewControllerTableAdditionalTwo", @"дней")
-#define LEAVE_A_REVIEW NSLocalizedStringFromTable(@"Оставьте отзыв, чтобы продлить",@"ACalcTryViewControllerTableAdditionalTwo", @"Оставьте отзыв, чтобы продлить")
-
 #pragma mark BUTTON ACTION
 #pragma mark ALERT VIEW
 
 - (IBAction)calcButtonTapped:(id)sender {
     [self dismis];
 }
+
 - (IBAction)pressedClearHistoryButton:(UIButton *)sender {
     
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:TITLE_CLEAR_HISTORY_BUTTON
@@ -219,7 +126,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                    handler:^(UIAlertAction * action) {
                                                        NSNumber *message = [NSNumber numberWithBool:YES];
                                                        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"cleanHistoryArchive",nil];
-                                                       NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+                                                       NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
                                                        [[NSNotificationCenter defaultCenter] postNotification:note];
                                                    }];
     [alert addAction:clearHistoryAction];
@@ -245,13 +152,29 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                                 handler:^(UIAlertAction * action) {
                                                                     NSNumber *message = [NSNumber numberWithBool:YES];
                                                                     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"setKeyboardDefaultAction",nil];
-                                                                    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+                                                                    NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
                                                                     [[NSNotificationCenter defaultCenter] postNotification:note];
 
                                                                 }];
     [alert addAction:defaultButtonAction];
     [self presentViewController:alert animated:YES completion:nil];
 }
+
+- (IBAction)infoAdditionalButtonTapped:(UIButton *)sender {
+    NSLog(@"Info Addition Button Tapped");
+}
+- (IBAction)extendTrialPressed:(id)sender {
+    NSLog(@"Extend Trial Button Tapped");
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ITUNES_LINK] options:@{}
+                             completionHandler:^(BOOL success) {
+                                 NSNumber *message = [NSNumber numberWithBool:YES];
+                                 NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"userHaveLivedReview",nil];
+                                 NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
+                                 [[NSNotificationCenter defaultCenter] postNotification:note];
+                             }];
+}
+
 
 - (IBAction)pressedBuyAdditionsButton:(UIButton *)sender {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD
@@ -261,49 +184,92 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     UIAlertAction* cancel = [UIAlertAction actionWithTitle:ALERT_CANCEL_BUTTON_TITLE style:UIAlertActionStyleCancel
                                                    handler:^(UIAlertAction * action) {
                                                    }];
-    
     [alert addAction:cancel];
     
     UIAlertAction* buyAction = [UIAlertAction actionWithTitle:ALLERT_BUTTON_BUY
                                                                   style:UIAlertActionStyleDefault
                                                                 handler:^(UIAlertAction * action) {
-                                                                    [self buyUnlockKeyboard];
+                                                                    [self.paymetnObj buyUnlockKeyboard];
                                                                 }];
     [alert addAction:buyAction];
     
     UIAlertAction* restorePurchaise = [UIAlertAction actionWithTitle:ALLERT_BUTTON_RESTORE
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction * action) {
-                                                          [self restorePurchase];
+                                                          [self.paymetnObj restorePurchase];
                                                       }];
     [alert addAction:restorePurchaise];
 
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (IBAction)infoAdditionalButtonTapped:(UIButton *)sender {
-    NSLog(@"Info Addition Button Tapped");
+#pragma mark RECIVE PAYMENT NOTIFICATIONS
+-(void)recivedPayNotification:(NSNotification*)notification
+{
+    NSArray *keys = notification.userInfo.allKeys;
+    if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
+        //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
+        NSString *key = keys[0];
+        if([key isEqualToString:CanMakePayment]){
+            self.buyAdditionsButton.enabled = [[notification.userInfo objectForKey:keys[0]] boolValue];
+            if(self.processSpinner){
+                //stop and remove process spinner
+                [self.processSpinner stopAnimating];
+                [self.processSpinner removeFromSuperview];
+            }
+        } else if([key isEqualToString:RequestFiled]){
+            //stop and remove process spinner
+            [self.processSpinner stopAnimating];
+            [self.processSpinner removeFromSuperview];
+            [self.buyAdditionsButton setEnabled:NO];
+        } else if([key isEqualToString:TransactionResult]){
+            NSNumber* result = [notification.userInfo objectForKey:keys[0]];
+            if([result isEqualToNumber:TRANSACTION_FAILED]){
+                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Transaction failed"
+                                                                               message:@""
+                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok"
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                           }];
+                [alert addAction:ok];
+                [self presentViewController:alert animated:YES completion:nil];
+                
+            } else if([result isEqualToNumber:TRANSACTION_SUCCESS]){
+                // NSLog(@"Succes payment");
+                [self wasSuccesTransaction];
+            } else if([result isEqualToNumber:RESTORE_SUCCESS]){
+                // NSLog(@"Succes restoring");
+                [self wasSuccesTransaction];
+            }else if([result isEqualToNumber:TRANSACTION_IN_PROCCES]){
+                
+            }
+            if(self.processSpinner){
+                //stop and remove process spinner
+                [self.processSpinner stopAnimating];
+                [self.processSpinner removeFromSuperview];
+            }
+        }
+    }
 }
-- (IBAction)extendTrialPressed:(id)sender {
-    NSLog(@"Extend Trial Button Tapped");
-    NSString *iTunesLink = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=873164530&type=Purple+Software";//&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:iTunesLink] options:@{}
-                             completionHandler:^(BOOL success) {
-                                 nil;
-                             }];
+-(void) wasSuccesTransaction
+{
+    self.wasPurshaised = YES;
+    NSNumber *message = self.wasPurshaised? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"wasPurshaised", nil];
+    NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotification:note];
+    [self setNeedViews];
+    //[self setShowedNecessaryViews]; NOT SHURE ABOUT THAT
 }
 
 
 #pragma mark SWITCHER ACTIONS
-
-NSString *const SettingSendChangedNotification=@"SendChangedNotification";
-
-
 - (IBAction)isBigSizeButtonSwitch:(UISwitch*)sender {
     self.isBigSizeButtons = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isBigSizeButtons",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -312,26 +278,9 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     self.isSoundOn = sender.on;
     NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"isSoundOn",nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
+    NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
-/*
-- (IBAction)switchIsBigDataBase:(UISwitch *)sender {
-    self.isBigDataBase = sender.on;
-    NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isBigDataBase", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-}*/
-/*
-- (IBAction)isiCloudSwitch:(UISwitch *)sender {
-    self.isiCloudInUse = sender.on;
-    NSNumber *message = sender.on? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"isiCloudInUse", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-}
-*/
 #pragma mark OVERRIDE ABSTRACT FUNCTION
 
 #define NAME_BUTTON_SWITCH NSLocalizedStringFromTable(@"Buttons size",@"ACalcTryViewControllerTableTwo", @"Button size")
@@ -370,32 +319,8 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
     self.soundOn.on = YES;
     self.soundOn.backgroundColor = [UIColor clearColor];
-   
-    //ARCHIVE SIZE
-    //[self.isBigDataBaseSwitcher setOn:self.isBigDataBase];
-    //self.isBigDataBaseSwitcher.onTintColor = [UIColor whiteColor];
-
-    //self.archsizeViewSmall.isBig=NO;
-    //self.archsizeViewSmall.backgroundColor = [UIColor clearColor];
-
-    //self.archivesizeBigView.isBig=YES;
-    //self.archivesizeBigView.backgroundColor = [UIColor clearColor];
-    
-    //iCloud use
-   // [self.isiCloudUseSwitcher setOn:self.isiCloudInUse];
-    //self.isiCloudUseSwitcher.enabled = self.isiCloudUseSwitcherEnabled;
-    //self.isiCloudUseSwitcher.onTintColor = [UIColor whiteColor];
-
-    //self.cloudOnView.on = YES;
-    //self.cloudOnView.backgroundColor = [UIColor clearColor];
-
-    //self.cloudOffView.on = NO;
-    //self.cloudOffView.backgroundColor = [UIColor clearColor];
     //CLEAR HISTORY
-
     self.clearHistoryButton.normalColor = [UIColor whiteColor];
-    
-    
     
     //CHANGE DESIGN BUTTON
     //if((self.wasPurshaised) || (self.isTrialPeriod)){
@@ -404,130 +329,45 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     //fro iPad its only pictures
     self.changeDesignButton.storkeColor = [UIColor whiteColor];
     self.changeDesignButton.fillColor = self.cView.backgroundColor;
-    /*
-        } else {
-            DesignViewFromButton *designViewFromButton = [[DesignViewFromButton alloc]init];
-            designViewFromButton.backgroundColor = [UIColor clearColor];
-            //fro iPad its only pictures
-            [self.cView addSubview:designViewFromButton];
-            self.designViewFromButton = designViewFromButton;
-        }
-     */
         
         //set KEYBOARD DEFAULT BUTTON
 
-        [self.keyboardDefaultButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        self.keyboardDefaultButton.titleLabel.numberOfLines = 0;
-        //keyboardDefaultButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-        //keyboardDefaultButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-    
-    self.trailPeriodLabel.text = TRIAL_PERIOD;
-    [self.extendTrailButton setTitle:LEAVE_A_REVIEW forState:UIControlStateNormal];
-    self.leftTrailLabel.text =LEFT;
-    self.daysLabel.text =DAYS;
+    [self.keyboardDefaultButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.keyboardDefaultButton.titleLabel.numberOfLines = 0;
+    [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
 
-    
-    
+
     //set BUY ADDITIONS BUTTON
     if(!self.wasPurshaised){
-        
-        //UIButton *buyAdditionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        //[buyAdditionsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-       // buyAdditionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.];
         self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.buyAdditionsButton.titleLabel.numberOfLines = 0;
-        //self.buyAdditionsButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
-        //self.buyAdditionsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
         
         self.buyAdditionsButton.enabled = NO;
         [self.buyAdditionsButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
 
-        
-        
-        //setProcessSpiner
-        
+        //setProcessSpine
         UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
         [processSpinner startAnimating];
         [self.buyAdditionsButton addSubview:processSpinner];
+        [processSpinner setCenter:self.buyAdditionsButton.center];
         self.processSpinner = processSpinner;
-        
-        
-        
-        
+        processSpinner.hidesWhenStopped = YES;
+        [self.processSpinner startAnimating];
+
         //make product request
-        if([SKPaymentQueue canMakePayments]) {
-            
-            SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kInAppPurchaseProductID]];
-            request.delegate = self;
-            self.request = request;
-            
-            [request start];
-            [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-        } else {
+        if(![self.paymetnObj canMakePaymentRequest]) {
             //if cant make purchaising stop and remove spinner
             [self.processSpinner stopAnimating];
             [self.processSpinner removeFromSuperview];
-            self.buyAdditionsButton.titleLabel.textColor = [UIColor grayColor];
+            self.buyAdditionsButton.enabled = NO;
         }
         
-        
+        self.trailPeriodLabel.text = TRIAL_PERIOD;
+        [self.extendTrailButton setTitle:LEAVE_A_REVIEW forState:UIControlStateNormal];
+        self.leftTrailLabel.text =LEFT;
+        self.daysLabel.text =DAYS;
     }
-    
-    /*if(IS_IPAD){
-        UILabel *soundSwitcherLabel = [[UILabel alloc]init];
-        soundSwitcherLabel.text = NAME_SOUND_SWITCH;
-        soundSwitcherLabel.textAlignment = NSTextAlignmentCenter;
-        soundSwitcherLabel.adjustsFontSizeToFitWidth = YES;
-        soundSwitcherLabel.textColor = [UIColor whiteColor];
-        
-        [self.cView addSubview:soundSwitcherLabel];
-        self.soundSwitcherLabel = soundSwitcherLabel;
-        
-        UILabel *buttonSwitcherLabel = [[UILabel alloc]init];
-        buttonSwitcherLabel.text = NAME_BUTTON_SWITCH;
-        buttonSwitcherLabel.textAlignment = NSTextAlignmentCenter;
-        buttonSwitcherLabel.adjustsFontSizeToFitWidth = YES;
-        buttonSwitcherLabel.textColor = [UIColor whiteColor];
-        [self.cView addSubview:buttonSwitcherLabel];
-        self.buttonSwitcherLabel = buttonSwitcherLabel;
-        
-        UILabel *archiveSwitcherLabel = [[UILabel alloc]init];
-        archiveSwitcherLabel.text = NAME_ARCHIVE_SWITCH;
-        archiveSwitcherLabel.textAlignment = NSTextAlignmentCenter;
-        archiveSwitcherLabel.adjustsFontSizeToFitWidth = YES;
-        archiveSwitcherLabel.textColor = [UIColor whiteColor];
-        [self.cView addSubview:archiveSwitcherLabel];
-        self.archiveSwitcherLabel = archiveSwitcherLabel;
-        
-        UILabel *iCloudSwitcherName = [[UILabel alloc]init];
-        iCloudSwitcherName.text = NAME_ICLOUD_SWITCH;
-        iCloudSwitcherName.textAlignment = NSTextAlignmentCenter;
-        iCloudSwitcherName.adjustsFontSizeToFitWidth = YES;
-        iCloudSwitcherName.textColor = [UIColor whiteColor];
-        [self.cView addSubview:iCloudSwitcherName];
-        self.iCloudSwitcherName = iCloudSwitcherName;
-        
-        UILabel *clearHistoryButtonLabel = [[UILabel alloc]init];
-        clearHistoryButtonLabel.text = TITLE_CLEAR_HISTORY_BUTTON;
-        clearHistoryButtonLabel.textAlignment = NSTextAlignmentCenter;
-        clearHistoryButtonLabel.adjustsFontSizeToFitWidth = YES;
-        clearHistoryButtonLabel.textColor = [UIColor whiteColor];
-        [self.cView addSubview:clearHistoryButtonLabel];
-        self.clearHistoryButtonLabel = clearHistoryButtonLabel;
-        
-        if((self.wasPurshaised) || (self.isTrialPeriod)){
-            UILabel *changeDesignButtonLabel = [[UILabel alloc]init];
-            changeDesignButtonLabel.text = NAME_DESIGN_BUTTON;
-            changeDesignButtonLabel.textAlignment = NSTextAlignmentCenter;
-            changeDesignButtonLabel.adjustsFontSizeToFitWidth = YES;
-            changeDesignButtonLabel.textColor = [UIColor whiteColor];
-            [self.cView addSubview:changeDesignButtonLabel];
-            self.changeDesignButtonLabel = changeDesignButtonLabel;
-        }
-    }*/
-    
 }
 
 -(void)viewDidLayoutSubviews{
@@ -554,6 +394,35 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
     if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
 
+-(void) setShowedNecessaryViews{
+    if(self.wasPurshaised){
+        self.buyAdditionsButton.hidden = YES;
+        self.trailPeriodLabel.hidden = YES;
+        self.trialClockView.hidden = YES;
+        self.extendTrailButton.hidden = YES;
+        self.leftTrailLabel.hidden = YES;
+        self.numberOfDayLabel.hidden = YES;
+        self.daysLabel.hidden = YES;
+        
+    } else if(!self.isTrialPeriod && self.isUserLeaveReview){
+        self.trailPeriodLabel.hidden = YES;
+        self.trialClockView.hidden = YES;
+        self.extendTrailButton.hidden = YES;
+        self.leftTrailLabel.hidden = YES;
+        self.numberOfDayLabel.hidden = YES;
+        self.daysLabel.hidden = YES;
+    } else  if(self.isTrialPeriod || !self.isUserLeaveReview){
+        if(self.isUserLeaveReview){
+            //hide liave review buttons if user have not leave review
+            self.extendTrailButton.hidden = YES;
+        }
+        NSInteger leftDays = [self.finishTrialDate timeIntervalSinceNow]/SEC_IN_DAY;
+        leftDays = (leftDays<0)? 0: leftDays; //if trial done but user still not leaved review show 0 days to end
+        self.numberOfDayLabel.text = [NSString stringWithFormat:@"%ld", leftDays];
+        self.trialClockView.outTrialDays = (CGFloat) (self.totalTrialDays - leftDays);
+        self.trialClockView.totalTrialDays =(CGFloat) self.totalTrialDays;
+    }
+}
 
 -(void)viewDidLoad{
     [super viewDidLoad];
@@ -561,7 +430,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
         self.topViewConstrain.constant = 84;
         self.bottomViewConstrain.constant = 64;
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:SettingReciveChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedPayNotification:) name:PaymentObjNotification object:nil];
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(applicationDidEnterBackground:)
                                                    name:UIApplicationDidEnterBackgroundNotification
@@ -579,12 +448,8 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
             break;
         }
     }
-    
-    self.trialClockView.outTrialDays = (CGFloat) self.daysSpentTrial;
-    self.trialClockView.totalTrialDays =(CGFloat) self.totalTrialDays;
-    self.numberOfDayLabel.text = [NSString stringWithFormat:@"%ld", (self.totalTrialDays-self.daysSpentTrial)];
+    [self setShowedNecessaryViews];
 }
-
 #pragma mark DESIGN CONTROLLER DELEGATE
 
 -(void)designViewControllerDidCloseWithString:(NSString*) str
@@ -601,17 +466,12 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 
 -(void) dismis
 {
-    
-    [self.request cancel];
-    [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+    [self.paymetnObj stopTransactionObserving];
     [self.processSpinner stopAnimating];
     [self.processSpinner removeFromSuperview];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     [super dismis];
-    
-    
 }
 
 -(void)applicationDidEnterBackground:(NSNotification *)note{
@@ -634,186 +494,7 @@ NSString *const SettingSendChangedNotification=@"SendChangedNotification";
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
-    if(DEBUG_MODE) NSLog(@"setting view disapear");
+    //if(DEBUG_MODE) NSLog(@"setting view disapear");
     //[self dismis];
 }
-
-
-#pragma mark TRIAL
--(NSInteger) daysSpentTrial {
-    if(!_daysSpentTrial){
-        _daysSpentTrial = 26;
-    }
-    return _daysSpentTrial;
-}
--(NSInteger) totalTrialDays {
-    if(!_totalTrialDays){
-        _totalTrialDays = 100;
-    }
-    return _totalTrialDays;
-}
-
-#pragma mark IN-APP PURSHASE
--(void) startSpinner
-{
-    
-    
-    UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc] init];
-    [processSpinner setCenter:self.buyAdditionsButton.center];
-    
-    [self.cView addSubview:processSpinner];
-    processSpinner.hidesWhenStopped = YES;
-    self.processSpinner = processSpinner;
-    [self.processSpinner startAnimating];
-}
-
--(void) wasSuccesTransaction
-{
-    
-    
-    self.wasPurshaised = YES;
-    NSNumber *message = self.wasPurshaised? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"wasPurshaised", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:SettingSendChangedNotification object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
-    [self setNeedViews];
-    
-    //CGRect rect = self.view.bounds;
-    
-    [UIView animateWithDuration:0.4
-                          delay:0.1
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         
-                       //  [self setLayOutOfSettingsView:rect];
-                         
-                     } completion:^(BOOL finished) {
-                         [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-                         
-                         NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-                         [defaults setObject:[NSNumber numberWithBool:self.wasPurshaised] forKey:@"wasPurchaisedMark"];
-                         [defaults synchronize];
-                         
-                         
-                     }];
-}
-
-
--(void) buyUnlockKeyboard
-{
-    
-    SKPayment *payment = [SKPayment paymentWithProduct:self.product];
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
-    
-}
-
--(void) restorePurchase
-{
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-}
-
-
--(void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
-{
-    //1.
-    
-    for(SKPaymentTransaction *transaction in queue.transactions){
-        if(transaction.transactionState == SKPaymentTransactionStateRestored){
-            break;
-        }
-    }
-    
-    
-}
-
-#pragma mark _
-#pragma mark SKProductsRequestDelegate
-
--(void) productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
-{
-    NSArray *products = response.products;
-    if(products.count != 0) {
-        
-        
-        self.product = products[0];
-        self.buyAdditionsButton.enabled = YES;
-        
-    } else {
-        // NSLog(@"Product not FUND");
-    }
-    
-    if(self.processSpinner){
-        //stop and remove process spinner
-        [self.processSpinner stopAnimating];
-        [self.processSpinner removeFromSuperview];
-    }
-    
-}
-
-
--(void) request:(SKRequest *)request didFailWithError:(NSError *)error
-{
-    //stop and remove process spinner
-    [self.processSpinner stopAnimating];
-    [self.processSpinner removeFromSuperview];
-    [self.buyAdditionsButton setEnabled:NO];
-    
-}
-
--(void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
-{
-    //3.
-    
-    for(SKPaymentTransaction *transaction in transactions){
-        switch (transaction.transactionState) {
-            case SKPaymentTransactionStatePurchased: [self wasSuccesTransaction];
-                // NSLog(@"Succes payment");
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                
-                break;
-                
-            case SKPaymentTransactionStateRestored: [self wasSuccesTransaction];
-                //NSLog(@"Succes restored");
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                
-                break;
-                
-            case SKPaymentTransactionStateDeferred:
-                
-                break;
-                
-            case SKPaymentTransactionStatePurchasing: //NSLog(@"Purchasing in process");
-                
-                break;
-                
-            case SKPaymentTransactionStateFailed: ;//NSLog(@"Purchasing faild");;
-                
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-                
-                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Transaction failed"
-                                                                               message:@""
-                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
-                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok"
-                                                             style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
-                                                               }];
-                [alert addAction:ok];
-                [self presentViewController:alert animated:YES completion:nil];
-                
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                break;
-        }
-    }
-    
-}
-
-
 @end
