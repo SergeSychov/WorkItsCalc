@@ -8,6 +8,7 @@
 
 #import "SecondViewController.h"
 #import "DesignObject.h"
+#import "PaymentObj.h"
 
 
 @class DesignViewController;
@@ -24,6 +25,8 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewWidthConstrain;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewHeigthConstrain;
 @property (nonatomic, weak) DesignObject* designObj;
+@property (nonatomic) PaymentObj *paymentObj;
+
 @property (nonatomic) NSInteger designIndex;
 
 @end

@@ -13,6 +13,7 @@
 
 #define DEBUG_MODE YES
 
+/*
 #define CHANGE_NOTIFICATION @"SendChangedNotification"
 
 #define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
@@ -31,10 +32,10 @@
 
 #define TRIAL_PERIOD NSLocalizedStringFromTable(@"ПРОБНЫЙ ПЕРИОД",@"ACalcTryViewControllerTableAdditionalTwo", @"TRIAL_PERIOD")
 #define LEFT NSLocalizedStringFromTable(@"осталось",@"ACalcTryViewControllerTableAdditionalTwo", @"LEFT")
-#define DAYS NSLocalizedStringFromTable(@"дней",@"ACalcTryViewControllerTableAdditionalTwo", @"DAYS")
 #define LEAVE_A_REVIEW NSLocalizedStringFromTable(@"Оставьте отзыв, чтобы продлить",@"ACalcTryViewControllerTableAdditionalTwo", @"LEAVE_A_REVIEW")
+ */
 
-@interface SettingsViewController : SecondViewController <DesignViewControllerProtocol, UIViewControllerTransitioningDelegate>
+@interface SettingsViewController : SecondViewController <DesignViewControllerProtocol, UIViewControllerTransitioningDelegate,PaymentDelegateProtocol>
 
 
 @property (weak, nonatomic) IBOutlet UIView *cView;
@@ -47,12 +48,12 @@
 @property (nonatomic) DesignObject* designObj;
 @property (nonatomic, nullable) PaymentObj* paymetnObj;
 
-@property (nonatomic) BOOL wasPurshaised;
-@property (nonatomic) BOOL isTrialPeriod;
-@property (nonatomic) BOOL isUserLeaveReview;
-@property (nonatomic) NSDate* finishTrialDate;
-@property (nonatomic) NSInteger totalTrialDays;
-@property (nonatomic) NSDate* lastShowedTralAlertInDesignChoosingDate;
+//@property (nonatomic) BOOL wasPurshaised;
+//@property (nonatomic) BOOL isTrialPeriod;
+//@property (nonatomic) BOOL isUserLeaveReview;
+//@property (nonatomic) NSDate* finishTrialDate;
+//@property (nonatomic) NSInteger totalTrialDays;
+//@property (nonatomic) NSDate* lastShowedTralAlertInDesignChoosingDate;
 //@property (nonatomic) NSInteger daysSpentTrial;
 
 -(void) setShowedNecessaryViews;

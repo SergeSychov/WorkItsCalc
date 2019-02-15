@@ -192,7 +192,7 @@
 }
 
 #pragma mark RECIVE CHANGE DESIGN NOTIFICATION
--(void) recivedNotification:(NSNotification*)notification
+-(void) reciveChangeNotification:(NSNotification*)notification
 {
     NSArray *keys = notification.userInfo.allKeys;
     if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
@@ -742,13 +742,14 @@
         {
             CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
             cildDesignViewController.designObj = self.designObj;
+            cildDesignViewController.paymetObj = self.paymentObj;
             break;
         }
     }
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedNotification:) name:DesignSendChangedNotification object:nil];
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveChangeNotification:) name:DesignSendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appWillGoToBackground:)

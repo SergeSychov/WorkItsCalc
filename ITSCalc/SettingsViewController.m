@@ -172,6 +172,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"userHaveLivedReview",nil];
                                  NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
                                  [[NSNotificationCenter defaultCenter] postNotification:note];
+                                 [self setShowedNecessaryViews];
                              }];
 }
 
@@ -204,61 +205,17 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 #pragma mark RECIVE PAYMENT NOTIFICATIONS
--(void)recivedPayNotification:(NSNotification*)notification
-{
-    NSArray *keys = notification.userInfo.allKeys;
-    if(keys.count && (keys.count < 2) && [keys[0] isKindOfClass:[NSString class]]){
-        //NSLog(@"Ok recived notification %@ for key %@", [notification.userInfo objectForKey:keys[0]], keys[0]);
-        NSString *key = keys[0];
-        if([key isEqualToString:CanMakePayment]){
-            self.buyAdditionsButton.enabled = [[notification.userInfo objectForKey:keys[0]] boolValue];
-            if(self.processSpinner){
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-            }
-        } else if([key isEqualToString:RequestFiled]){
-            //stop and remove process spinner
-            [self.processSpinner stopAnimating];
-            [self.processSpinner removeFromSuperview];
-            [self.buyAdditionsButton setEnabled:NO];
-        } else if([key isEqualToString:TransactionResult]){
-            NSNumber* result = [notification.userInfo objectForKey:keys[0]];
-            if([result isEqualToNumber:TRANSACTION_FAILED]){
-                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Transaction failed"
-                                                                               message:@""
-                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
-                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok"
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                           }];
-                [alert addAction:ok];
-                [self presentViewController:alert animated:YES completion:nil];
-                
-            } else if([result isEqualToNumber:TRANSACTION_SUCCESS]){
-                // NSLog(@"Succes payment");
-                [self wasSuccesTransaction];
-            } else if([result isEqualToNumber:RESTORE_SUCCESS]){
-                // NSLog(@"Succes restoring");
-                [self wasSuccesTransaction];
-            }else if([result isEqualToNumber:TRANSACTION_IN_PROCCES]){
-                
-            }
-            if(self.processSpinner){
-                //stop and remove process spinner
-                [self.processSpinner stopAnimating];
-                [self.processSpinner removeFromSuperview];
-            }
-        }
+-(void)respondsToPayReuest:(BOOL)canPay{
+    [self.buyAdditionsButton setEnabled:canPay];
+    if(self.processSpinner){
+        //stop and remove process spinner
+        [self.processSpinner stopAnimating];
+        [self.processSpinner removeFromSuperview];
     }
 }
--(void) wasSuccesTransaction
+
+-(void) wasSuccesTransaction //wasSuccesTransaction
 {
-    self.wasPurshaised = YES;
-    NSNumber *message = self.wasPurshaised? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO] ;
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message,@"wasPurshaised", nil];
-    NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotification:note];
     [self setNeedViews];
     //[self setShowedNecessaryViews]; NOT SHURE ABOUT THAT
 }
@@ -338,7 +295,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 
     //set BUY ADDITIONS BUTTON
-    if(!self.wasPurshaised){
+    if(!self.paymetnObj.wasPurshaised){
         self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.buyAdditionsButton.titleLabel.numberOfLines = 0;
         [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
@@ -395,7 +352,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 -(void) setShowedNecessaryViews{
-    if(self.wasPurshaised){
+    if(self.paymetnObj.wasPurshaised){
         self.buyAdditionsButton.hidden = YES;
         self.trailPeriodLabel.hidden = YES;
         self.trialClockView.hidden = YES;
@@ -404,33 +361,38 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         self.numberOfDayLabel.hidden = YES;
         self.daysLabel.hidden = YES;
         
-    } else if(!self.isTrialPeriod && self.isUserLeaveReview){
+    } else if(!self.paymetnObj.isTrialPeriod && self.paymetnObj.isUserLeaveReview){
         self.trailPeriodLabel.hidden = YES;
         self.trialClockView.hidden = YES;
         self.extendTrailButton.hidden = YES;
         self.leftTrailLabel.hidden = YES;
         self.numberOfDayLabel.hidden = YES;
         self.daysLabel.hidden = YES;
-    } else  if(self.isTrialPeriod || !self.isUserLeaveReview){
-        if(self.isUserLeaveReview){
+    } else  if(self.paymetnObj.isTrialPeriod || !self.paymetnObj.isUserLeaveReview){
+        if(self.paymetnObj.isUserLeaveReview){
             //hide liave review buttons if user have not leave review
             self.extendTrailButton.hidden = YES;
         }
-        NSInteger leftDays = [self.finishTrialDate timeIntervalSinceNow]/SEC_IN_DAY;
+        NSInteger leftDays = [self.paymetnObj.finishTrialDate timeIntervalSinceNow]/SEC_IN_DAY;
         leftDays = (leftDays<0)? 0: leftDays; //if trial done but user still not leaved review show 0 days to end
         self.numberOfDayLabel.text = [NSString stringWithFormat:@"%ld", leftDays];
-        self.trialClockView.outTrialDays = (CGFloat) (self.totalTrialDays - leftDays);
-        self.trialClockView.totalTrialDays =(CGFloat) self.totalTrialDays;
+        self.trialClockView.outTrialDays = (CGFloat) (self.paymetnObj.totalTrialDays - leftDays);
+        self.trialClockView.totalTrialDays =(CGFloat) self.paymetnObj.totalTrialDays;
     }
 }
 
 -(void)viewDidLoad{
+    if(!self.paymetnObj.wasPurshaised){
+        self.paymetnObj.delegate = self;
+        self.paymetnObj.askedController = self;
+    }
+    
     [super viewDidLoad];
     if(IS_X){
         self.topViewConstrain.constant = 84;
         self.bottomViewConstrain.constant = 64;
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recivedPayNotification:) name:PaymentObjNotification object:nil];
+
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(applicationDidEnterBackground:)
                                                    name:UIApplicationDidEnterBackgroundNotification
