@@ -101,6 +101,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     designVC.designObj = self.designObj;
     self.designViewController = designVC;
     self.designViewController.transitioningDelegate = self;
+    self.designViewController.paymentObj = self.paymetnObj;
     [self presentViewController:self.designViewController animated:YES completion:nil];    
 }
 
@@ -407,6 +408,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         {
             CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
             cildDesignViewController.designObj = self.designObj;
+            cildDesignViewController.paymetObj = self.paymetnObj;
             break;
         }
     }
