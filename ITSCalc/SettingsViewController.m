@@ -61,6 +61,7 @@
 @end
 
 @implementation SettingsViewController
+@dynamic  cView;
 
 -(BOOL) prefersStatusBarHidden
 {
@@ -169,10 +170,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ITUNES_LINK] options:@{}
                              completionHandler:^(BOOL success) {
-                                 NSNumber *message = [NSNumber numberWithBool:YES];
+                                  [self.paymetnObj reviewHaveLived:YES];
+                                 /*NSNumber *message = [NSNumber numberWithBool:YES];
                                  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, @"userHaveLivedReview",nil];
                                  NSNotification *note = [[NSNotification alloc] initWithName:CHANGE_NOTIFICATION object:self userInfo:userInfo];
-                                 [[NSNotificationCenter defaultCenter] postNotification:note];
+                                 [[NSNotificationCenter defaultCenter] postNotification:note];*/
                                  [self setShowedNecessaryViews];
                              }];
 }
@@ -206,6 +208,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 #pragma mark RECIVE PAYMENT NOTIFICATIONS
+#pragma mark PURCHAISING
 -(void)respondsToPayReuest:(BOOL)canPay{
     [self.buyAdditionsButton setEnabled:canPay];
     if(self.processSpinner){
@@ -213,6 +216,14 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         [self.processSpinner stopAnimating];
         [self.processSpinner removeFromSuperview];
     }
+}
+
+-(void)rejectedByUserAlert{
+     if(DEBUG_MODE) NSLog(@"Was rejectedByUser transaction from setting controller");
+}
+-(void)userHaveLivedReview{
+    
+    if(DEBUG_MODE) NSLog(@"userHaveLivedReview from setting controller");
 }
 
 -(void) wasSuccesTransaction //wasSuccesTransaction
@@ -245,8 +256,8 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #define NAME_SOUND_SWITCH NSLocalizedStringFromTable(@"Sound",@"ACalcTryViewControllerTableTwo", @"Sound")
 #define NAME_ARCHIVE_SWITCH NSLocalizedStringFromTable(@"History archive size",@"ACalcTryViewControllerTableTwo", @"Archive size")
 #define NAME_ICLOUD_SWITCH NSLocalizedStringFromTable(@"iCloud",@"ACalcTryViewControllerTableTwo", @"iCloud")
-#define TITLE_RESET_BUTTON NSLocalizedStringFromTable(@"TITLE_RESET_BUTTON",@"ACalcTryViewControllerTable", @"reset button title")
-#define BUY_REQUEST_BUTTON NSLocalizedStringFromTable(@"BUY_REQUEST_BUTTON",@"ACalcTryViewControllerTable", @"buy button title")
+/*#define TITLE_RESET_BUTTON NSLocalizedStringFromTable(@"TITLE_RESET_BUTTON",@"ACalcTryViewControllerTable", @"reset button title")
+#define BUY_REQUEST_BUTTON NSLocalizedStringFromTable(@"BUY_REQUEST_BUTTON",@"ACalcTryViewControllerTable", @"buy button title")*/
 
 #define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
 //------new------
@@ -322,7 +333,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         }
         
         self.trailPeriodLabel.text = TRIAL_PERIOD;
-        [self.extendTrailButton setTitle:LEAVE_A_REVIEW forState:UIControlStateNormal];
+        [self.extendTrailButton setTitle:LEAVE_A_REVIEW_FOR_EXTEND forState:UIControlStateNormal];
         self.leftTrailLabel.text =LEFT;
         self.daysLabel.text =DAYS;
     }

@@ -313,6 +313,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             self.allButtonObj = copyAllObjs;
             self.workButtonsNames = copyWorkNames;
+            NSError* error;
+            [self.buttonManagedObjectContext save:&error];
             [self.delegate buttonsArrayDidChangedWithReload:YES];
         });
     });

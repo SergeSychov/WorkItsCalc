@@ -109,13 +109,12 @@
 +(void) clearContext:(NSManagedObjectContext *)context
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Buttons"];
-    
     NSError *error;
     NSArray *matches = [context executeFetchRequest:request error:&error];
     for(id button in matches){
         [context deleteObject:button];
     }
-    
+    [context save:&error];
 }
 
 +(Buttons *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date inManageObjectContext:(NSManagedObjectContext*) context

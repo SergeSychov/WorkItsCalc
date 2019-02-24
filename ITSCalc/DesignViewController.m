@@ -72,6 +72,7 @@
 @end
 
 @implementation DesignViewController
+@dynamic cView;
 
 -(BOOL) prefersStatusBarHidden
 {
@@ -190,7 +191,66 @@
     }];
     [self.delegate designViewControllerDidCloseWithString:@"BACK"];
 }
+-(void)viewDidLoad{
+    [super viewDidLoad];
+    for (UIViewController *childViewController in [self childViewControllers])
+    {
+        if ([childViewController isKindOfClass:[CildDesignViewController class]])
+        {
+            CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
+            cildDesignViewController.designObj = self.designObj;
+            cildDesignViewController.paymetObj = self.paymentObj;
+            break;
+        }
+    }
+}
+-(void)viewWillAppear:(BOOL)animated
+{
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveChangeNotification:) name:DesignSendChangedNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter]   addObserver:self
+                                               selector:@selector(appWillGoToBackground:)
+                                                   name:UIApplicationWillResignActiveNotification
+                                                 object:[UIApplication sharedApplication]];
+    [super viewWillAppear:animated];
+}
 
+#pragma mark ROTATION
+-(void)viewDidLayoutSubviews{
+    
+    CGSize viewSize = self.view.bounds.size;
+    CGSize windowSize = self.view.window.bounds.size;
+    if(viewSize.width != windowSize.width){
+        [self.view setFrame:self.view.window.bounds];
+    }
+    if(!IS_IPAD){
+        
+        if(viewSize.width < viewSize.height){
+            self.cViewWidthConstrain.constant = 0;
+            self.cViewHeigthConstrain.constant = 0;
+        } else {
+            self.cViewWidthConstrain.constant = -viewSize.width+viewSize.height;
+            self.cViewHeigthConstrain.constant = -viewSize.height+viewSize.width;
+            ;
+        }
+    }
+    
+    [self updateViewConstraints];
+    //if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
+}
+-(void)appWillGoToBackground:(NSNotification *)note
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self dismissViewControllerAnimated:NO completion:^{
+        [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
+    }];
+}
+
+-(void) dismis {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dismis];
+}
+/*
 #pragma mark RECIVE CHANGE DESIGN NOTIFICATION
 -(void) reciveChangeNotification:(NSNotification*)notification
 {
@@ -207,7 +267,7 @@
     }
 }
 
-/*
+
 #pragma mark UIImagePickerControllerDelegate
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -734,67 +794,6 @@
     }
 }
 */
--(void)viewDidLoad{
-    [super viewDidLoad];
-    for (UIViewController *childViewController in [self childViewControllers])
-    {
-        if ([childViewController isKindOfClass:[CildDesignViewController class]])
-        {
-            CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
-            cildDesignViewController.designObj = self.designObj;
-            cildDesignViewController.paymetObj = self.paymentObj;
-            break;
-        }
-    }
-}
--(void)viewWillAppear:(BOOL)animated
-{
-   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveChangeNotification:) name:DesignSendChangedNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(appWillGoToBackground:)
-                                                   name:UIApplicationWillResignActiveNotification
-                                                 object:[UIApplication sharedApplication]];
-    [super viewWillAppear:animated];
-}
 
-#pragma mark ROTATION
--(void)viewDidLayoutSubviews{
-
-    CGSize viewSize = self.view.bounds.size;
-    CGSize windowSize = self.view.window.bounds.size;
-    if(viewSize.width != windowSize.width){
-        [self.view setFrame:self.view.window.bounds];
-    }
-    if(!IS_IPAD){
-        
-        if(viewSize.width < viewSize.height){
-            self.cViewWidthConstrain.constant = 0;
-            self.cViewHeigthConstrain.constant = 0;
-        } else {
-            self.cViewWidthConstrain.constant = -viewSize.width+viewSize.height;
-            self.cViewHeigthConstrain.constant = -viewSize.height+viewSize.width;
-            ;
-        }
-    }
-
-    [self updateViewConstraints];
-    //if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
-}
--(void)appWillGoToBackground:(NSNotification *)note{
-    
-    
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self dismissViewControllerAnimated:NO completion:^{
-        [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
-    }];
-    
-}
-
--(void) dismis {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super dismis];
-}
 
 @end

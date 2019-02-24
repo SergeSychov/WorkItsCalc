@@ -27,6 +27,6 @@
 @property (nonatomic, weak) DesignObject* designObj;
 @property (nonatomic) PaymentObj *paymentObj;
 
-@property (nonatomic) NSInteger designIndex;
+//@property (nonatomic) NSInteger designIndex;
 
 @end

@@ -22,6 +22,7 @@
 
 @end
 @implementation SecondViewController
+@synthesize cView;
 
 #pragma mark TRANSITION DELEGATE
 -(id <UIViewControllerAnimatedTransitioning>)
