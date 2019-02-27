@@ -45,6 +45,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
 @property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
 
+@property (weak, nonatomic) IBOutlet UIStackView *trailStackView;
 @property (weak, nonatomic) IBOutlet CalcButton *calcButton;
 @property (weak, nonatomic) IBOutlet UILabel *trailPeriodLabel;
 @property (weak, nonatomic) IBOutlet UIButton *extendTrailButton;
@@ -308,6 +309,18 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
     //set BUY ADDITIONS BUTTON
     if(!self.paymetnObj.wasPurshaised){
+        //add background for trial stackView
+        UIView* trialBackgroundView = [[UIView alloc]initWithFrame:self.trailStackView.bounds];
+        trialBackgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                                UIViewAutoresizingFlexibleHeight);
+        trialBackgroundView.layer.cornerRadius = 14.;
+        trialBackgroundView.layer.masksToBounds = true;
+        trialBackgroundView.layer.borderColor = [UIColor whiteColor].CGColor;
+        trialBackgroundView.layer.borderWidth = 1.5f;
+        
+        [self.trailStackView insertSubview:trialBackgroundView atIndex:0];
+        
+        
         self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.buyAdditionsButton.titleLabel.numberOfLines = 0;
         [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
