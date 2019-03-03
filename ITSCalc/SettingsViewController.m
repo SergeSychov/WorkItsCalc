@@ -313,11 +313,8 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         UIView* trialBackgroundView = [[UIView alloc]initWithFrame:self.trailStackView.bounds];
         trialBackgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                                 UIViewAutoresizingFlexibleHeight);
-        trialBackgroundView.layer.cornerRadius = 14.;
-        trialBackgroundView.layer.masksToBounds = true;
-        trialBackgroundView.layer.borderColor = [UIColor whiteColor].CGColor;
-        trialBackgroundView.layer.borderWidth = 1.5f;
-        
+        trialBackgroundView.backgroundColor = [UIColor colorWithWhite:1. alpha:0.2];
+        trialBackgroundView.layer.cornerRadius = 15.;        
         [self.trailStackView insertSubview:trialBackgroundView atIndex:0];
         
         
