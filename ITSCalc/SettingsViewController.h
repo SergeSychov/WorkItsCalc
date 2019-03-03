@@ -9,11 +9,12 @@
 #import "SecondViewController.h"
 #import "DesignObject.h"
 #import "DesignViewController.h"
+#import "InfoViewController.h"
 #import "PaymentObj.h"
 
 #define DEBUG_MODE YES
 
-@interface SettingsViewController : SecondViewController <DesignViewControllerProtocol, UIViewControllerTransitioningDelegate,PaymentDelegateProtocol>
+@interface SettingsViewController : SecondViewController <DesignViewControllerProtocol,InfoViewControllerProtocol, UIViewControllerTransitioningDelegate,PaymentDelegateProtocol>
 
 
 @property (weak, nonatomic) IBOutlet UIView *cView;

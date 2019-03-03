@@ -45,15 +45,16 @@
             [toVC.view setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
             self.context = transitionContext;
             [UIView animateWithDuration:[self transitionDuration:transitionContext]
-                             animations:^{
-                                 [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
-                                 toVC.view.alpha = 1;
-                                 
-                                 [fromVC.view setTransform:CGAffineTransformMakeScale(4., 4.)];
-                                 fromVC.view.alpha = 0;
-                             } completion:^(BOOL finished) {
-                                 [self.context completeTransition:YES];
-                             }];
+                                  delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                                    [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
+                                    toVC.view.alpha = 1;
+                                    
+                                    [fromVC.view setTransform:CGAffineTransformMakeScale(4., 4.)];
+                                    fromVC.view.alpha = 0;
+                                } completion:^(BOOL finished) {
+                                    [self.context completeTransition:YES];
+                                }];
         } else {
             [transitionContext.containerView addSubview:fromVC.view];
             [transitionContext.containerView addSubview:toVC.view];
@@ -61,15 +62,16 @@
             toVC.view.alpha = 0;
             self.context = transitionContext;
             [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                                  delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
                              animations:^{
-                                 [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
-                                 toVC.view.alpha = 1;
-                                 
-                                 [fromVC.view setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
-                                 //fromVC.view.alpha = 0;
-                             } completion:^(BOOL finished) {
-                                 [self.context completeTransition:YES];
-                             }];
+                                    [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
+                                    toVC.view.alpha = 1;
+                                    
+                                    [fromVC.view setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
+                                } completion:^(BOOL finished) {
+                                    [self.context completeTransition:YES];
+                                }];
         }
         
     } else {

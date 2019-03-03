@@ -165,6 +165,13 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 - (IBAction)infoAdditionalButtonTapped:(UIButton *)sender {
     NSLog(@"Info Addition Button Tapped");
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    InfoViewController *infoVC = [storyBoard instantiateViewControllerWithIdentifier:@"InfoViewController"];
+    infoVC.delegate = self;
+    infoVC.transitioningDelegate = self;
+    infoVC.paymetnObj = self.paymetnObj;
+    infoVC.buyEnabling = self.buyAdditionsButton.enabled;
+    [self presentViewController:infoVC animated:YES completion:nil];
 }
 - (IBAction)extendTrialPressed:(id)sender {
     NSLog(@"Extend Trial Button Tapped");
@@ -436,7 +443,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [self setShowedNecessaryViews];
 }
 #pragma mark DESIGN CONTROLLER DELEGATE
-
 -(void)designViewControllerDidCloseWithString:(NSString*) str
 {
     
@@ -448,6 +454,14 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     
 }
 
+#pragma mark INFO CONTROLLER DELEGATE
+-(void)infoViewControllerDidCloseWithString:(NSString*)str {
+    if([str isEqualToString:@"TO CALC"]){
+        [self dismis];
+    } else if([str isEqualToString:@"BACKGROUND"]){
+        [self dismis];
+    }
+}
 
 -(void) dismis
 {
