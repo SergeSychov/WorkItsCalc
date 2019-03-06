@@ -29,7 +29,7 @@
 @property (nonatomic) CGFloat incr; //parameter to set increesing by touch
 @property (nonatomic) struct Color buttonColor;
 @property (nonatomic) CGRect rectArchive;
-@property (nonatomic,weak) UIView *paperFillView;
+//@property (nonatomic,weak) UIView *paperFillView;
 
 @end
 
@@ -80,6 +80,7 @@
 
 NSDate *methodStart;
 
+static UIView *paperFillView;
 
 -(void) myTouchBegan
 {
@@ -101,17 +102,16 @@ NSDate *methodStart;
             CGRect rct = CGRectInset(self.frame,2,2);
             rct.origin = CGPointMake(x, y);
             
-            UIView *paperFillView = [[UIView alloc] initWithFrame:rct];
+            paperFillView = [[UIView alloc] initWithFrame:rct];
             paperFillView.layer.cornerRadius = radiusCorner;
             paperFillView.backgroundColor = self.cellSubView.buttonColor;
             paperFillView.alpha = 0;
             [self addSubview:paperFillView];
-            self.paperFillView = paperFillView;
             [UIView animateWithDuration:0.2
                                   delay:0.0
                                 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                              animations:^{
-                                 self.paperFillView.alpha = .8;
+                                 paperFillView.alpha = .8;
                              } completion:^(BOOL finished) {
                                  
                              }];
@@ -140,15 +140,28 @@ NSDate *methodStart;
     if(!self.isUnderChanging){
 
         if(self.designObj.designNumber == DESIGN_PAPER){
+            
+            [UIView animateWithDuration:0.6
+                                  delay:0.0
+                 usingSpringWithDamping:0.6
+                  initialSpringVelocity:0.0
+                                options:  UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 paperFillView.alpha = .0;
+                             } completion:^(BOOL finished) {
+                                 [paperFillView removeFromSuperview];
+                                 paperFillView = nil;
+                             }];
 
-            [UIView animateWithDuration:0.8
+           /* [UIView animateWithDuration:0.4
                                   delay:0.0
                                 options:UIViewAnimationCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
                              animations:^{
-                                 self.paperFillView.alpha = .0;
+                                paperFillView.alpha = .0;
                              } completion:^(BOOL finished) {
-                                 [self.paperFillView removeFromSuperview];
-                             }];
+                                 [paperFillView removeFromSuperview];
+                                 paperFillView = nil;
+                             }];*/
 
         } else {
         [UIView animateWithDuration:0.15
@@ -232,6 +245,9 @@ NSDate *methodStart;
         [self removeCheckButtons];
         if(self.typeOfButton == DELETED_BUTTON || self.typeOfButton == DELETED_USER_BUTTON){
             [self animateDisapearenceForDeletedButtons];
+        }
+        if(paperFillView){
+            paperFillView = nil;
         }
     }
 
@@ -554,6 +570,8 @@ NSDate *methodStart;
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    
+    
     if([self.designObj.designString isEqualToString:DESIGN_COLOR_STR]){
         [self.imgGlossyView setImage:[UIImage imageNamed:@"Gloss.png"]];
     }else if([self.designObj.designString isEqualToString:DESIGN_MARTINI_STR]){
