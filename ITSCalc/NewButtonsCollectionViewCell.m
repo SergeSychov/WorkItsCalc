@@ -80,7 +80,7 @@
 
 NSDate *methodStart;
 
-static UIView *paperFillView;
+//static UIView *paperFillView;
 
 -(void) myTouchBegan
 {
@@ -88,7 +88,7 @@ static UIView *paperFillView;
     if(!self.isUnderChanging){
         self.rectArchive = self.frame;
         if(self.designObj.designNumber == DESIGN_PAPER){
-            CGFloat radiusCorner;
+            /*CGFloat radiusCorner;
             if(IS_IPAD){
                radiusCorner = (self.frame.size.height-4)/ 3.;
 
@@ -102,16 +102,41 @@ static UIView *paperFillView;
             CGRect rct = CGRectInset(self.frame,2,2);
             rct.origin = CGPointMake(x, y);
             
+            if(paperFillView){
+                paperFillView = nil;
+            }
+            
             paperFillView = [[UIView alloc] initWithFrame:rct];
             paperFillView.layer.cornerRadius = radiusCorner;
             paperFillView.backgroundColor = self.cellSubView.buttonColor;
             paperFillView.alpha = 0;
-            [self addSubview:paperFillView];
-            [UIView animateWithDuration:0.2
+            [self addSubview:paperFillView];*/
+            CGColorRef color = [self.cellSubView.buttonColor CGColor];
+            
+            NSInteger numComponents = CGColorGetNumberOfComponents(color);
+            CGFloat red;// = components[0];
+            CGFloat green;// = components[1];
+            CGFloat blue;// = components[2];
+            CGFloat alpha;//
+            
+            if (numComponents == 4)
+            {
+                const CGFloat *components = CGColorGetComponents(color);
+                red = components[0];
+                green = components[1];
+                blue = components[2];
+                alpha = components[3];
+            }
+            
+            //paperFillView.backgroundColor = self.cellSubView.buttonColor;
+           // self.backgroundColor = [UIColor colo]
+            
+            [UIView animateWithDuration:.2
                                   delay:0.0
                                 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                              animations:^{
-                                 paperFillView.alpha = .8;
+                                 self.layer.backgroundColor = [self.cellSubView.buttonColor CGColor];
+                                // paperFillView.alpha = .8;
                              } completion:^(BOOL finished) {
                                  
                              }];
@@ -143,25 +168,14 @@ static UIView *paperFillView;
             
             [UIView animateWithDuration:0.6
                                   delay:0.0
-                 usingSpringWithDamping:0.6
+                 usingSpringWithDamping:1.
                   initialSpringVelocity:0.0
                                 options:  UIViewAnimationOptionAllowUserInteraction
                              animations:^{
-                                 paperFillView.alpha = .0;
+                                 self.layer.backgroundColor = [[UIColor clearColor] CGColor];
                              } completion:^(BOOL finished) {
-                                 [paperFillView removeFromSuperview];
-                                 paperFillView = nil;
-                             }];
 
-           /* [UIView animateWithDuration:0.4
-                                  delay:0.0
-                                options:UIViewAnimationCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
-                             animations:^{
-                                paperFillView.alpha = .0;
-                             } completion:^(BOOL finished) {
-                                 [paperFillView removeFromSuperview];
-                                 paperFillView = nil;
-                             }];*/
+                             }];
 
         } else {
         [UIView animateWithDuration:0.15
@@ -170,7 +184,6 @@ static UIView *paperFillView;
               initialSpringVelocity:0.1
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                            // self.cellSubView.frame = self.rectArchive;
                              self.frame = self.rectArchive;
                          } completion:nil];
         }
@@ -246,9 +259,9 @@ static UIView *paperFillView;
         if(self.typeOfButton == DELETED_BUTTON || self.typeOfButton == DELETED_USER_BUTTON){
             [self animateDisapearenceForDeletedButtons];
         }
-        if(paperFillView){
-            paperFillView = nil;
-        }
+        //if(paperFillView){
+        //    paperFillView = nil;
+        //}
     }
 
 }
@@ -576,6 +589,9 @@ static UIView *paperFillView;
         [self.imgGlossyView setImage:[UIImage imageNamed:@"Gloss.png"]];
     }else if([self.designObj.designString isEqualToString:DESIGN_MARTINI_STR]){
         [self.imgGlossyView setImage:[UIImage imageNamed:@"Pepsi1.png"]];
+    }else if([self.designObj.designString isEqualToString:DESIGN_PAPER_STR]){
+        self.layer.cornerRadius = IS_IPAD? (self.frame.size.height-4)/ 3.5:(self.frame.size.height-4)/ 3.3;;
+        self.imgGlossyView.image = nil;
     }else{
         self.imgGlossyView.image = nil;
     }
