@@ -269,6 +269,9 @@
         [self changeFontsizeWithSize:newSize];
         neededRect = [self.attrbutedTitle boundingRectWithSize:rect.size options:NSStringDrawingUsesFontLeading
                                                        context:drawContext];
+        if(newSize<5.){
+            break;
+        }
         
     }
     

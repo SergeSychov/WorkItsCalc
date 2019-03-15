@@ -14,14 +14,14 @@
 #define KEYBOARD @"keyboard"
 #define MORE @"more"
 
-#define DESIGN_NAME_ADDITION NSLocalizedStringFromTable(@"DESIGN_NAME_ADDITION",@"ACalcTryViewControllerTableAdd", @"choose design")
-#define KEYBOARD_NAME_ADDITION NSLocalizedStringFromTable(@"KEYBOARD_NAME_ADDITION",@"ACalcTryViewControllerTableAdd", @"change keyboard")
-#define DESIGN_DESCRIPTION NSLocalizedStringFromTable(@"DESIGN_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"chosee appropriate design stile. Set liked photo as background")
-#define KEYBOARD_CHANGE_DESCRIPTION NSLocalizedStringFromTable(@"KEYBOARD_CHANGE_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"Tap and hold keyboar to change. Move buttons. Delete not necessary buttons. Restore previously deleted buttons")
-#define MORE_NAME NSLocalizedStringFromTable(@"DESIGN_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"more")
-#define MORE_DESCRIPTION NSLocalizedStringFromTable(@"KEYBOARD_CHANGE_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"to be continued")
+//#define DESIGN_NAME_ADDITION NSLocalizedStringFromTable(@"DESIGN_NAME_ADDITION",@"ACalcTryViewControllerTableAdd", @"choose design")
+//#define KEYBOARD_NAME_ADDITION NSLocalizedStringFromTable(@"KEYBOARD_NAME_ADDITION",@"ACalcTryViewControllerTableAdd", @"change keyboard")
+//#define DESIGN_DESCRIPTION NSLocalizedStringFromTable(@"DESIGN_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"chosee appropriate design stile. Set liked photo as background")
+//#define KEYBOARD_CHANGE_DESCRIPTION NSLocalizedStringFromTable(@"KEYBOARD_CHANGE_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"Tap and hold keyboar to change. Move buttons. Delete not necessary buttons. Restore previously deleted buttons")
+//#define MORE_NAME NSLocalizedStringFromTable(@"DESIGN_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"more")
+//#define MORE_DESCRIPTION NSLocalizedStringFromTable(@"KEYBOARD_CHANGE_DESCRIPTION",@"ACalcTryViewControllerTableAdd", @"to be continued")
 
-#define INDENT 20.0f
+//#define INDENT 20.0f
 
 @interface AddViewController ()
 @property (nonatomic,weak) UIColor* drawColor;

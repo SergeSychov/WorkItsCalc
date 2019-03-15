@@ -80,11 +80,11 @@
                          [self removeFromSuperview];
                      }];
 }
-
+/*
 #define ASK_TO_TOUCH_DISPLAY NSLocalizedStringFromTable(@"ASK_TO_TOUCH_DISPLAY",@"ACalcTryViewControllerTable", @"Touch and hold to copy to clipboard")
 #define ASK_TO_ROTATE_DEVICE NSLocalizedStringFromTable(@"ASK_TO_ROTATE_DEVICE",@"ACalcTryViewControllerTable", @"Rotate to see counting")
 #define ASK_TO_TOUCH_KEYBOARD NSLocalizedStringFromTable(@"ASK_TO_TOUCH_KEYBOARD",@"ACalcTryViewControllerTable", @"Touch and hold to change keyboard")
-
+*/
 
 -(void) setTypeOfHint:(NSInteger)typeOfHint
 {
