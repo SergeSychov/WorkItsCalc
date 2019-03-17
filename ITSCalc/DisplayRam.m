@@ -22,7 +22,6 @@
 
 @implementation DisplayRam
 
-#define ERROR_STRING NSLocalizedStringFromTable(@"ERROR_STRING",@"ACalcTryViewControllerTable", @"ERROR")
 -(void) setup
 {
     self.isFloat = NO;

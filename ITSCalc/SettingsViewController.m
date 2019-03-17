@@ -259,18 +259,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [[NSNotificationCenter defaultCenter] postNotification:note];
 }
 #pragma mark OVERRIDE ABSTRACT FUNCTION
-
-#define NAME_BUTTON_SWITCH NSLocalizedStringFromTable(@"Buttons size",@"ACalcTryViewControllerTableTwo", @"Button size")
-#define NAME_SOUND_SWITCH NSLocalizedStringFromTable(@"Sound",@"ACalcTryViewControllerTableTwo", @"Sound")
-#define NAME_ARCHIVE_SWITCH NSLocalizedStringFromTable(@"History archive size",@"ACalcTryViewControllerTableTwo", @"Archive size")
-#define NAME_ICLOUD_SWITCH NSLocalizedStringFromTable(@"iCloud",@"ACalcTryViewControllerTableTwo", @"iCloud")
-/*#define TITLE_RESET_BUTTON NSLocalizedStringFromTable(@"TITLE_RESET_BUTTON",@"ACalcTryViewControllerTable", @"reset button title")
-#define BUY_REQUEST_BUTTON NSLocalizedStringFromTable(@"BUY_REQUEST_BUTTON",@"ACalcTryViewControllerTable", @"buy button title")*/
-
-#define TITLE_CLEAR_HISTORY_BUTTON NSLocalizedStringFromTable(@"TITLE_CLEAR_HISTORY_BUTTON",@"ACalcTryViewControllerTable", @"Clear history button title")
-//------new------
-#define NAME_DESIGN_BUTTON NSLocalizedStringFromTable(@"Change design",@"ACalcTryViewControllerTableAdd", @"Change design")
-
 -(void)setNeedViews
 {
     self.backGroundView.backgroundColor = self.cView.backgroundColor;

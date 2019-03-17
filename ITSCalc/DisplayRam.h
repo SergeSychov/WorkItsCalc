@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "StringsSourse.h"
 @class DisplayRam;
 
 @protocol DisplayRamDelegate <NSObject>
