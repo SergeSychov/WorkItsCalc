@@ -351,6 +351,9 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         
         self.trailPeriodLabel.text = TRIAL_PERIOD;
         [self.extendTrailButton setTitle:LEAVE_A_REVIEW_FOR_EXTEND forState:UIControlStateNormal];
+        
+        self.extendTrailButton.enabled = [self.paymetnObj canConnectItunes];
+        [self.extendTrailButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
         self.leftTrailLabel.text =LEFT;
         self.daysLabel.text =DAYS;
     }
