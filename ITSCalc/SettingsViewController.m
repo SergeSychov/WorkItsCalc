@@ -189,7 +189,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 
 - (IBAction)pressedBuyAdditionsButton:(UIButton *)sender {
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:ALLERT_TITLE_CHANGE_KEYBOARD
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:CHANGE_BUTTON_ALERT_TITLE
                                                                    message:@""
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
