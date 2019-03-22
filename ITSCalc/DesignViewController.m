@@ -96,7 +96,7 @@
 -(void)trySetDesign:(NSInteger)design
 {
     if(self.designIndex != design){
-       /* if(design == DESIGN_PHOTO){
+        if(design == DESIGN_PHOTO){
             //check is there user photo in store
             NSFileManager *fileManager = [NSFileManager defaultManager];
             NSString* documentName = @"PhotoPicture";//@"MyDocument.sqlite"
@@ -206,11 +206,10 @@
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveChangeNotification:) name:DesignSendChangedNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(appWillGoToBackground:)
-                                                   name:UIApplicationWillResignActiveNotification
+                                               selector:@selector(appDidGoToBackground:)
+                                                   name:UIApplicationDidEnterBackgroundNotification
                                                  object:[UIApplication sharedApplication]];
     [super viewWillAppear:animated];
 }
@@ -238,7 +237,7 @@
     [self updateViewConstraints];
     //if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
--(void)appWillGoToBackground:(NSNotification *)note
+-(void)appDidGoToBackground:(NSNotification *)note
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self dismissViewControllerAnimated:NO completion:^{

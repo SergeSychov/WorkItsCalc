@@ -44,6 +44,7 @@
 @property (weak, nonatomic) IBOutlet ClearHistoryButton *clearHistoryButton;
 @property (weak, nonatomic) IBOutlet UIButton *keyboardDefaultButton;
 @property (weak, nonatomic) IBOutlet UIButton *buyAdditionsButton;
+@property (weak, nonatomic) IBOutlet UIButton *infoButton;
 
 @property (weak, nonatomic) IBOutlet UIStackView *trailStackView;
 @property (weak, nonatomic) IBOutlet CalcButton *calcButton;
@@ -58,6 +59,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewConstrain;
 
 @property (weak, nonatomic) UIActivityIndicatorView *processSpinner;
+@property (weak, nonatomic) UIActivityIndicatorView* processSpinnerBuing;
 
 @end
 
@@ -164,13 +166,12 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 - (IBAction)infoAdditionalButtonTapped:(UIButton *)sender {
-    NSLog(@"Info Addition Button Tapped");
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     InfoViewController *infoVC = [storyBoard instantiateViewControllerWithIdentifier:@"InfoViewController"];
     infoVC.delegate = self;
     infoVC.transitioningDelegate = self;
     infoVC.paymetnObj = self.paymetnObj;
-    infoVC.buyEnabling = self.buyAdditionsButton.enabled;
+    infoVC.buyEnabling = self.paymetnObj.CanMakeAPayment;
     [self presentViewController:infoVC animated:YES completion:nil];
 }
 - (IBAction)extendTrialPressed:(id)sender {
@@ -202,6 +203,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                                   style:UIAlertActionStyleDefault
                                                                 handler:^(UIAlertAction * action) {
                                                                     [self.paymetnObj buyUnlockKeyboard];
+                                                                     [self visualBuingProccesStart:YES];
                                                                 }];
     [alert addAction:buyAction];
     
@@ -209,10 +211,31 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction * action) {
                                                           [self.paymetnObj restorePurchase];
+                                                           [self visualBuingProccesStart:YES];
                                                       }];
     [alert addAction:restorePurchaise];
 
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+//buying spinner
+-(void)visualBuingProccesStart:(BOOL)start{
+    if(start){
+        if(!self.processSpinnerBuing){
+            UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
+            [self.view addSubview:processSpinner];
+            processSpinner.hidesWhenStopped = YES;
+            processSpinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+            self.processSpinnerBuing = processSpinner;
+            [self.processSpinnerBuing setCenter:self.cView.center];
+        }
+        [self.processSpinnerBuing startAnimating];
+    } else {
+        if(self.processSpinnerBuing){
+            [self.processSpinnerBuing stopAnimating];
+            [self.processSpinnerBuing removeFromSuperview];
+        }
+    }
 }
 
 #pragma mark RECIVE PAYMENT NOTIFICATIONS
@@ -232,12 +255,36 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 -(void)userHaveLivedReview{
     
     if(DEBUG_MODE) NSLog(@"userHaveLivedReview from setting controller");
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.extendTrailButton.alpha = 0;
+                     } completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.8 animations:^{
+                             [self setShowedNecessaryViews];
+                         }];
+                     }];
 }
 
 -(void) wasSuccesTransaction //wasSuccesTransaction
 {
-    [self setNeedViews];
-    //[self setShowedNecessaryViews]; NOT SHURE ABOUT THAT
+   // [self setNeedViews];
+    [self visualBuingProccesStart:NO];
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.trailStackView.alpha = 0;
+                         self.buyAdditionsButton.alpha = 0;
+                         self.infoButton.alpha = 0;
+                         self.trailPeriodLabel.alpha = 0;
+                         self.trialClockView.alpha = 0;
+                         self.extendTrailButton.alpha = 0;
+                         self.leftTrailLabel.alpha = 0;
+                         self.numberOfDayLabel.alpha = 0;
+                         self.daysLabel.alpha = 0;
+                     } completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.8 animations:^{
+                              [self setShowedNecessaryViews];
+                         }];
+                     }];
 }
 
 
@@ -300,51 +347,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [self.keyboardDefaultButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.keyboardDefaultButton.titleLabel.numberOfLines = 0;
     [self.keyboardDefaultButton setTitle:TITLE_RESET_BUTTON forState:UIControlStateNormal];
-
-
-    //set BUY ADDITIONS BUTTON
-    if(!self.paymetnObj.wasPurshaised){
-        //add background for trial stackView
-        UIView* trialBackgroundView = [[UIView alloc]initWithFrame:self.trailStackView.bounds];
-        trialBackgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                                UIViewAutoresizingFlexibleHeight);
-        trialBackgroundView.backgroundColor = [UIColor colorWithWhite:1. alpha:0.2];
-        trialBackgroundView.layer.cornerRadius = 15.;        
-        [self.trailStackView insertSubview:trialBackgroundView atIndex:0];
-        
-        
-        self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        self.buyAdditionsButton.titleLabel.numberOfLines = 0;
-        [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
-        
-        self.buyAdditionsButton.enabled = NO;
-        [self.buyAdditionsButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-
-        //setProcessSpine
-        UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
-        [processSpinner startAnimating];
-        [self.buyAdditionsButton addSubview:processSpinner];
-        [processSpinner setCenter:self.buyAdditionsButton.center];
-        self.processSpinner = processSpinner;
-        processSpinner.hidesWhenStopped = YES;
-        [self.processSpinner startAnimating];
-
-        //make product request
-        if(![self.paymetnObj canMakePaymentRequest]) {
-            //if cant make purchaising stop and remove spinner
-            [self.processSpinner stopAnimating];
-            [self.processSpinner removeFromSuperview];
-            self.buyAdditionsButton.enabled = NO;
-        }
-        
-        self.trailPeriodLabel.text = TRIAL_PERIOD;
-        [self.extendTrailButton setTitle:LEAVE_A_REVIEW_FOR_EXTEND forState:UIControlStateNormal];
-        
-        self.extendTrailButton.enabled = [self.paymetnObj canConnectItunes];
-        [self.extendTrailButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-        self.leftTrailLabel.text =LEFT;
-        self.daysLabel.text =DAYS;
-    }
 }
 
 -(void)viewDidLayoutSubviews{
@@ -363,17 +365,15 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 ;
         }
     }
-    if(self.processSpinner){
-        
-        [self.processSpinner setCenter:CGPointMake(self.buyAdditionsButton.bounds.size.width/2., self.buyAdditionsButton.bounds.size.height/2.)];
-    }
-    [self updateViewConstraints];
+   // [self setShowedNecessaryViews];
+    //[self updateViewConstraints];
     if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
 
 -(void) setShowedNecessaryViews{
     if(self.paymetnObj.wasPurshaised){
         self.buyAdditionsButton.hidden = YES;
+        self.infoButton.hidden = YES;
         self.trailPeriodLabel.hidden = YES;
         self.trialClockView.hidden = YES;
         self.extendTrailButton.hidden = YES;
@@ -399,14 +399,26 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         self.trialClockView.outTrialDays = (CGFloat) (self.paymetnObj.totalTrialDays - leftDays);
         self.trialClockView.totalTrialDays =(CGFloat) self.paymetnObj.totalTrialDays;
     }
+    
+    if(!self.paymetnObj.wasPurshaised){
+        self.buyAdditionsButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        self.buyAdditionsButton.titleLabel.numberOfLines = 0;
+        [self.buyAdditionsButton setTitle:BUY_REQUEST_BUTTON forState:UIControlStateNormal];
+        //self.buyAdditionsButton.enabled = NO;
+        [self.buyAdditionsButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+        
+        self.trailPeriodLabel.text = TRIAL_PERIOD;
+        [self.extendTrailButton setTitle:LEAVE_A_REVIEW_FOR_EXTEND forState:UIControlStateNormal];
+        
+        self.extendTrailButton.enabled = [self.paymetnObj canConnectItunes];
+        [self.extendTrailButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+        self.leftTrailLabel.text =LEFT;
+        self.daysLabel.text =DAYS;
+    }
+    [self updateViewConstraints];
 }
 
 -(void)viewDidLoad{
-    if(!self.paymetnObj.wasPurshaised){
-        self.paymetnObj.delegate = self;
-        self.paymetnObj.askedController = self;
-    }
-    
     [super viewDidLoad];
     if(IS_X){
         self.topViewConstrain.constant = 84;
@@ -417,10 +429,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                                                selector:@selector(applicationDidEnterBackground:)
                                                    name:UIApplicationDidEnterBackgroundNotification
                                                  object:[UIApplication sharedApplication]];
-    [[NSNotificationCenter defaultCenter]   addObserver:self
-                                               selector:@selector(applicationWillEnterBackground:)
-                                                   name:UIApplicationWillResignActiveNotification
-                                                 object:[UIApplication sharedApplication]];
+
     for (UIViewController *childViewController in [self childViewControllers])
     {
         if ([childViewController isKindOfClass:[CildDesignViewController class]])
@@ -431,7 +440,16 @@ animationControllerForDismissedController:(UIViewController *)dismissed
             break;
         }
     }
-    [self setShowedNecessaryViews];
+    if(!self.paymetnObj.wasPurshaised){
+        [self.paymetnObj startTransationObserving];
+        //add background for trial stackView
+        UIView* trialBackgroundView = [[UIView alloc]initWithFrame:self.trailStackView.bounds];
+        trialBackgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                                UIViewAutoresizingFlexibleHeight);
+        trialBackgroundView.backgroundColor = [UIColor colorWithWhite:1. alpha:0.2];
+        trialBackgroundView.layer.cornerRadius = 15.;
+        [self.trailStackView insertSubview:trialBackgroundView atIndex:0];
+    }
 }
 #pragma mark DESIGN CONTROLLER DELEGATE
 -(void)designViewControllerDidCloseWithString:(NSString*) str
@@ -457,34 +475,40 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 -(void) dismis
 {
     [self.paymetnObj stopTransactionObserving];
-    [self.processSpinner stopAnimating];
-    [self.processSpinner removeFromSuperview];
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dismis];
 }
+-(void) viewWillAppear:(BOOL)animated{
+    if(!self.paymetnObj.wasPurshaised){
+        self.paymetnObj.delegate = self;
+        self.paymetnObj.askedController = self;
+        if(self.paymetnObj.CanMakeAPayment){
+            self.buyAdditionsButton.enabled = YES;
+        } else {
+            //setProcessSpine
+            if(!self.processSpinner){
+                UIActivityIndicatorView *processSpinner = [[UIActivityIndicatorView alloc]init];
+                [self.buyAdditionsButton addSubview:processSpinner];
+                processSpinner.hidesWhenStopped = YES;
+                self.processSpinner = processSpinner;
+                [self.processSpinner setCenter:CGPointMake(self.buyAdditionsButton.bounds.size.width/2., self.buyAdditionsButton.bounds.size.height/2.)];
+            }
+            [self.processSpinner startAnimating];
+            self.buyAdditionsButton.enabled = NO;
+        }
+    }
+    [self setShowedNecessaryViews];
+}
 
 -(void)applicationDidEnterBackground:(NSNotification *)note{
-   // if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
-        
-    //} else {
-       // [self dismisAnimated:NO];
     [self dismis];
-    //}
-   // NSLog(@"appWillGoToBackground");
 }
 
--(void)applicationWillEnterBackground:(NSNotification *)note{
-    // if([[self presentedViewController] isKindOfClass:[DesignViewController class]]){
-    
-    //} else {
-    //[self dismis];
-    //}
-    // NSLog(@"appWillGoToBackground");
-}
-
--(void)viewDidDisappear:(BOOL)animated{
-    //if(DEBUG_MODE) NSLog(@"setting view disapear");
-    //[self dismis];
+-(void)viewWillDisappear:(BOOL)animated{
+    if(!self.processSpinner){
+        [self.processSpinner stopAnimating];
+        [self.processSpinner removeFromSuperview];
+    }
+    [self visualBuingProccesStart:NO];
 }
 @end
