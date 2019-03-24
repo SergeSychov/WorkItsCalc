@@ -210,7 +210,7 @@
     return [UIColor colorWithRed:.518 green:0.518 blue:0.588 alpha:1];
 }
 
-#pragma mark PINK
+#pragma mark PINK //Height tech
 +(UIColor*)pinkDisplay{
     return [UIColor colorWithRed:.424 green:0.122 blue:0.133 alpha:1];
 }

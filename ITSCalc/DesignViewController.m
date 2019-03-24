@@ -209,7 +209,7 @@
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(appDidGoToBackground:)
-                                                   name:UIApplicationDidEnterBackgroundNotification
+                                                   name:UIApplicationWillResignActiveNotification//UIApplicationDidEnterBackgroundNotification
                                                  object:[UIApplication sharedApplication]];
     [super viewWillAppear:animated];
 }
@@ -237,11 +237,14 @@
     [self updateViewConstraints];
     //if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
+
+
 -(void)appDidGoToBackground:(NSNotification *)note
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self dismissViewControllerAnimated:NO completion:^{
-        [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self];
+   [self dismissViewControllerAnimated:NO completion:^{
+        // [self dismis];
+    [self.delegate designViewControllerDidCloseWithString:@"BACKGROUND"];
     }];
 }
 

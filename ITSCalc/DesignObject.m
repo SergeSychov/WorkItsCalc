@@ -504,7 +504,7 @@
             self.historySwiperColorIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];
             self.historyTableColorIn =[UIColor clearColor];// [Clr pinkFirstGradient];
             self.colorSelectedHistoryRowIn = [UIColor clearColor];//[Clr pinkFirstGradient];
-            self.colorUnselectedHistoryRowIn = [[UIColor whiteColor] colorWithAlphaComponent:0.2];// [Clr pinkFirstGradient];
+            self.colorUnselectedHistoryRowIn = [UIColor clearColor];//[[UIColor whiteColor] colorWithAlphaComponent:0.2];// [Clr pinkFirstGradient];
             self.colorForSelectedTextIn = [UIColor whiteColor];//[Clr pinkText];
             self.colorForUnselectedTextIn = [[UIColor whiteColor] colorWithAlphaComponent:0.4];//[[Clr pinkDisplay] colorWithAlphaComponent:0.6];
             

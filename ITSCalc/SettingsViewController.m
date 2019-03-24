@@ -32,6 +32,7 @@
 //transition
 @property (weak,nonatomic) Transition* rightTransition;
 @property (weak,nonatomic) DesignViewController *designViewController;
+@property (nonatomic) CildDesignViewController* childDesignController;
 
 @property (weak, nonatomic) IBOutlet newButtonView *smallButtonView;
 @property (weak, nonatomic) IBOutlet newButtonView *bigButtonView;
@@ -255,6 +256,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 -(void)userHaveLivedReview{
     
     if(DEBUG_MODE) NSLog(@"userHaveLivedReview from setting controller");
+    if(self.childDesignController){
+        [self.childDesignController userHaveLivedReview];
+    } else {// only for test
+        NSLog(@"There is no child controller");
+    }
     [UIView animateWithDuration:0.4
                      animations:^{
                          self.extendTrailButton.alpha = 0;
@@ -269,6 +275,11 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 {
    // [self setNeedViews];
     [self visualBuingProccesStart:NO];
+    if(self.childDesignController){
+        [self.childDesignController wasSuccesTransaction];
+    } else {// only for test
+        NSLog(@"There is no child controller");
+    }
     [UIView animateWithDuration:0.4
                      animations:^{
                          self.trailStackView.alpha = 0;
@@ -437,6 +448,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
             CildDesignViewController *cildDesignViewController = (CildDesignViewController *)childViewController;
             cildDesignViewController.designObj = self.designObj;
             cildDesignViewController.paymetObj = self.paymetnObj;
+            self.childDesignController = cildDesignViewController;
             break;
         }
     }
