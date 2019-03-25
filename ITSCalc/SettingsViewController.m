@@ -252,6 +252,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 -(void)rejectedByUserAlert{
      if(DEBUG_MODE) NSLog(@"Was rejectedByUser transaction from setting controller");
+    [self visualBuingProccesStart:NO];
 }
 -(void)userHaveLivedReview{
     
