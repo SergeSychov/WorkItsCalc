@@ -28,7 +28,6 @@
 @property (nonatomic,strong) UIColor *cColor;
 @property (nonatomic) CGFloat fotnWeight;
 @property (nonatomic) CGFloat borderVSRadius;
-@property (nonatomic) BOOL fillButton;
 @property (nonatomic,strong) UIColor *shadowColor;
 @property (nonatomic) CGFloat shadowBlur;
 @property (nonatomic) CGSize shadowSize;
@@ -59,7 +58,25 @@
     _isTaped = isTaped;
     [self setNeedsDisplay];
 }
-
+#pragma mark SET DEFAULT COLORS
+-(UIColor*) textNeedColor{
+    if(!_textNeedColor){
+        _textNeedColor = [UIColor whiteColor];
+    }
+    return _textNeedColor;
+}
+-(UIColor*) borderNeedColor{
+    if(!_borderNeedColor){
+        _borderNeedColor = [UIColor whiteColor];
+    }
+    return _borderNeedColor;
+}
+-(UIColor*) fillNeedColor{
+    if(!_fillNeedColor){
+        _fillNeedColor = [UIColor blackColor];
+    }
+    return _fillNeedColor;
+};
 //self.fotnWeight = UIFontWeightLight;
 #pragma mark DESIGN PROPERTIES
 //set buttons design behaviours
@@ -82,17 +99,36 @@
     return self.designObj.borderVSRadius;
 }
 -(BOOL)fillButton{
-    return self.designObj.fillButton;
+    if(self.designObj){
+        return self.designObj.fillButton;
+    } else if (_fillButton){
+        return _fillButton;
+    } else {
+        return NO;
+    }
+    
 }
 -(UIColor*)shadowColor{
+    if(self.designObj){
     return self.designObj.shadowColor;
+    } else {
+        return [UIColor clearColor];
+    }
 }
 
 -(CGFloat)shadowBlur{
-    return self.designObj.shadowBlur;
+    if(self.designObj){
+        return self.designObj.shadowBlur;
+    } else {
+        return 0.;
+    }
 }
 -(CGSize)shadowSize{
-    return self.designObj.shadowSize;
+    if(self.designObj){
+        return self.designObj.shadowSize;
+    } else {
+        return CGSizeMake(0., 0.);
+    }
 }
 
 -(void)setDesignObj:(DesignObject *)designObj{
@@ -125,8 +161,7 @@
     self.isOnsuperView = NO;
     self.symbolsToMakeBigger = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=",@"-"/*,@"∓"*/, nil];//, @"-"
     self.pointsToMakeBigger = [NSArray arrayWithObjects: @".", @",", nil];
-    
-
+    self.needStorkeWithFill = NO;
 }
 
 
@@ -292,7 +327,7 @@
         if(self.designObj){
             textColor = self.designObj.buttonTextColor;//[UIColor whiteColor];//
         } else {
-            textColor = [UIColor whiteColor];
+            textColor = self.textNeedColor;
         }
     }
     [mutAtrStr beginEditing];
@@ -319,7 +354,7 @@
         strColor = self.buttonColor;
         borderVsRadius = self.borderVSRadius;
     } else {
-        strColor = [UIColor whiteColor];
+        strColor = self.borderNeedColor;
         borderVsRadius = BORDER_VS_RADIUS;
     }
     if(IS_IPAD){
@@ -371,6 +406,13 @@
         CGContextSetLineWidth(context, borderWidth*3);
         CGContextSetShadowWithColor(context, self.shadowSize, self.shadowBlur, [UIColor clearColor].CGColor);
        // CGPathRef patchToStorke;
+        CGContextAddPath(context, drawStrokePath.CGPath);
+        CGContextDrawPath(context, kCGPathStroke);
+    } else if(self.needStorkeWithFill){
+        UIBezierPath *drawStrokePath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(self.radiusCorner)];
+        CGContextSetStrokeColorWithColor(context, self.fillNeedColor.CGColor);
+        CGContextSetLineWidth(context, borderWidth*3);
+        // CGPathRef patchToStorke;
         CGContextAddPath(context, drawStrokePath.CGPath);
         CGContextDrawPath(context, kCGPathStroke);
     }

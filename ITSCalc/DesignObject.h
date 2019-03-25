@@ -20,13 +20,13 @@
 #define DESIGN_COLOR_GRAY 34
 #define DESIGN_PHOTO 4
 
-#define DESIGN_CLASSIC_STR @"CLASSIC"
-#define DESIGN_PAPER_STR @"PAPER"
-#define DESIGN_COLOR_STR @"COLOR"
-#define DESIGN_MARTINI_STR @"PEPSI"
-#define DESIGN_ADVENTURE_TIME_STR @"ADV  TIME"
-#define DESIGN_OLD_SCOOL_STR @"OLD  SCOOL"
-#define DESIGN_HIGH_TECH_STR @"HIGHT  TECH"
+#define DESIGN_CLASSIC_STR @"Classic"
+#define DESIGN_PAPER_STR @"Paper"
+#define DESIGN_COLOR_STR @"Plastic"
+#define DESIGN_MARTINI_STR @"Cola"
+#define DESIGN_ADVENTURE_TIME_STR @"Adventure"
+#define DESIGN_OLD_SCOOL_STR @"Old school"
+#define DESIGN_HIGH_TECH_STR @"Stone"
 
 //types of calculator buttons
 #define MAIN_BUTTON 1

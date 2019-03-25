@@ -23,6 +23,12 @@
 @property (nonatomic) BOOL isTaped;// ONLY FOR SET SHADOW
 
 @property (nonatomic) DesignObject* designObj;
+
+@property (nonatomic) UIColor* textNeedColor;
+@property (nonatomic) UIColor* borderNeedColor;
+@property (nonatomic) UIColor* fillNeedColor;
+@property (nonatomic) BOOL fillButton;
+@property (nonatomic) BOOL needStorkeWithFill;
 //@property (nonatomic) NSInteger design; //number of design
 
 

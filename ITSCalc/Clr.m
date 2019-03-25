@@ -171,6 +171,7 @@
 }
 
 #pragma mark YELLOW
+//ADV TIME
 +(UIColor*)yellowDisplay{
     //return [UIColor colorWithRed:.659 green:0.455 blue:.745 alpha:1.];//violet
     return [UIColor colorWithRed:.345 green:0.722 blue:.647 alpha:1.];//green
@@ -219,7 +220,7 @@
     return [UIColor colorWithRed:.82 green:0.42 blue:0.53 alpha:1];
 }
 +(UIColor*)pinkDigits{
-    return [UIColor colorWithRed:.87 green:0.68 blue:0.67 alpha:1];
+    return [[UIColor whiteColor] colorWithAlphaComponent:0.35];//[UIColor colorWithRed:.87 green:0.68 blue:0.67 alpha:1];
 }
 +(UIColor*)pinkC{
     return [UIColor colorWithRed:.65 green:0.36 blue:0.37 alpha:1];
