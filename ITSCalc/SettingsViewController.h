@@ -17,14 +17,14 @@
 @interface SettingsViewController : SecondViewController <DesignViewControllerProtocol,InfoViewControllerProtocol, UIViewControllerTransitioningDelegate,PaymentDelegateProtocol>
 
 
-@property (weak, nonatomic) IBOutlet UIView *cView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewWidthConstrain;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cViewHeigthConstrain;
+@property (weak, nonatomic) IBOutlet UIView * _Nullable cView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint * _Nullable cViewWidthConstrain;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint * _Nullable cViewHeigthConstrain;
 //need for size controllers transition
-@property (weak, nonatomic) IBOutlet UIView *backGroundView;
+@property (weak, nonatomic) IBOutlet UIView * _Nullable backGroundView;
 @property (nonatomic) BOOL isSoundOn;
 @property (nonatomic) BOOL isBigSizeButtons; //to set big size buttons
-@property (nonatomic) DesignObject* designObj;
+@property (nonatomic) DesignObject* _Nullable designObj;
 @property (nonatomic, nullable) PaymentObj* paymetnObj;
 
 
