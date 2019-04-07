@@ -176,7 +176,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [self presentViewController:infoVC animated:YES completion:nil];
 }
 - (IBAction)extendTrialPressed:(id)sender {
-    NSLog(@"Extend Trial Button Tapped");
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ITUNES_LINK] options:@{}
                              completionHandler:^(BOOL success) {
@@ -251,16 +250,13 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 }
 
 -(void)rejectedByUserAlert{
-     if(DEBUG_MODE) NSLog(@"Was rejectedByUser transaction from setting controller");
     [self visualBuingProccesStart:NO];
 }
 -(void)userHaveLivedReview{
-    
-    if(DEBUG_MODE) NSLog(@"userHaveLivedReview from setting controller");
     if(self.childDesignController){
         [self.childDesignController userHaveLivedReview];
     } else {// only for test
-        NSLog(@"There is no child controller");
+        //NSLog(@"There is no child controller");
     }
     [UIView animateWithDuration:0.4
                      animations:^{
@@ -279,7 +275,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     if(self.childDesignController){
         [self.childDesignController wasSuccesTransaction];
     } else {// only for test
-        NSLog(@"There is no child controller");
+        //NSLog(@"There is no child controller");
     }
     [UIView animateWithDuration:0.4
                      animations:^{
@@ -377,9 +373,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 ;
         }
     }
-   // [self setShowedNecessaryViews];
-    //[self updateViewConstraints];
-    if(DEBUG_MODE) NSLog(@"viewDidLayoutSubviews settings VC");
 }
 
 -(void) setShowedNecessaryViews{

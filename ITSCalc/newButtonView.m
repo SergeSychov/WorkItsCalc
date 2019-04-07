@@ -41,7 +41,6 @@
     self.isOnsuperView = YES;
 }
 
-
 -(NSAttributedString*)attrbutedTitle
 {
     if(!_attrbutedTitle){
@@ -146,18 +145,6 @@
     } else {
         self.radiusCorner =(self.frame.size.height-4)/ 2.8;
     }
-    
-    //self.digitsColor = [Clr digitsButton];
-    //self.cColor = [Clr cButton];
-    //self.equalColor = [Clr equalButton];
-    //self.mainColor = [Clr button];
-    //self.fotnWeight = UIFontWeightLight;
-    //self.borderVSRadius = 8.2;
-    //self.fillButton = NO;
-    //self.shadowColor = [UIColor clearColor];
-    //self.shadowBlur = 0.;
-    //self.shadowSize = CGSizeMake(0, 0);
-
     self.isOnsuperView = NO;
     self.symbolsToMakeBigger = [NSArray arrayWithObjects:@"÷", @"×", @"+",@"=",@"-"/*,@"∓"*/, nil];//, @"-"
     self.pointsToMakeBigger = [NSArray arrayWithObjects: @".", @",", nil];
@@ -391,7 +378,6 @@
     CGFloat width = rect.size.width - borderWidth;
     CGFloat height = rect.size.height -borderWidth;
     cornerRect = CGRectMake(x,y,width,height); //CGRectInset(rect, borderWidth, borderWidth);//
-        
     drawRectPath = [UIBezierPath bezierPathWithRoundedRect:cornerRect cornerRadius:(self.radiusCorner)];
     CGContextSetLineWidth(context, borderWidth);
 
@@ -416,9 +402,6 @@
         CGContextAddPath(context, drawStrokePath.CGPath);
         CGContextDrawPath(context, kCGPathStroke);
     }
-    
-    
-    
 }
 
 - (void)drawRect:(CGRect)rect

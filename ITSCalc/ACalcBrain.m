@@ -46,7 +46,6 @@
         [extractedArray removeLastObject];
         top = [extractedArray lastObject];
     } else {
-        // NSLog(@"not String paremaeter at extracting");
     }
     
     if(top && [top isKindOfClass:[NSNumber class]]){
@@ -54,7 +53,7 @@
         [extractedArray removeLastObject];
         top = [extractedArray lastObject];
     } else {
-       // NSLog(@"not BOOL paremaeter at extracting");
+       
     }
     
     if(top && [top isKindOfClass:[NSNumber class]]){
@@ -62,7 +61,7 @@
         [extractedArray removeLastObject];
          top = [extractedArray lastObject];
     } else {
-       // NSLog(@"not INT paremaeter at extracting");
+       
     }
     
     if(top && [top isKindOfClass:[NSArray class]]){
@@ -70,13 +69,13 @@
         [extractedArray removeLastObject];
          top = [extractedArray lastObject];
     } else {
-        //NSLog(@"not Array paremaeter at extracting");
+        
     }
     
     if(top && [top isKindOfClass:[NSArray class]]){
         prog = top;
     } else {
-        //NSLog(@"not Array paremaeter at extracting");
+    
     }
     
     return [ACalcBrain initWithProgram:prog withArgu:arg withOpenBracets:numBracets andIsStrongluArgu:isStrongArgu countAttrStr:countAttrStr];
@@ -126,7 +125,6 @@
         _arguStack = [[NSArray alloc] init];
         
     }
-    //NSLog(@"Argutack %@",_arguStack);
     return _arguStack;
 }
 
@@ -171,15 +169,6 @@
 
 -(void) pushOperand:(id) operand
 {
-    /*
-    if([operand isKindOfClass:[NSNumber class]]){
-        NSLog(@"Push number class");
-    } else if([operand isKindOfClass:[NSArray class]]){
-        NSLog(@"Push array class");
-    }else if([operand isKindOfClass:[NSString class]]){
-        NSLog(@"Push string class");
-    }
-    */
     //available to piush operand only in argu stack
     //1. if insert operant to argu stack - stack need be cleared
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
@@ -203,19 +192,14 @@
     }
 
     self.arguStack = [copyArgu copy];
-    //NSLog(@"arguStack %@",self.arguStack);
 }
 
 -(id) performOperationInArgu:(id)operation
 {
     NSInteger operationPriority;
-    //NSLog(@"Operation %@",operation);
-    //NSLog(@"self.arguStack before %@",self.arguStack);
     NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
-   // NSString *stringOperation = (NSString*)operation;
     [copyArgu addObject:operation];
     self.arguStack = [copyArgu copy];
-    //NSLog(@"brain argustack a: %@", self.arguStack);
     if([operation isKindOfClass:[NSString class]]){
         operationPriority = [ACalcBrain getPriorityOf:operation];
     } else {
@@ -235,7 +219,6 @@
         }
     }
     */
-    //NSLog(@"performOperationInArgu self.argu %@", self.argu);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority withCountAttr:self.countAttributeStr];
         

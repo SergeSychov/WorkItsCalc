@@ -120,7 +120,6 @@
 }
 
 -(void)setDesignString:(NSString *)designString{
-    //NSLog(@"Design obj set design:%@",designString);
     _designString = designString;
     if([designString isEqualToString:DESIGN_CLASSIC_STR]){
         self.designNumber = DESIGN_CLASSIC;
@@ -878,7 +877,6 @@
     return self.atrforHistoryTableIn;
 }
 -(NSDictionary*)atrForLabelHistoryTable{
-    //NSLog(@"atrForLabelHistoryTable %@", [self.atrForLabelHistoryTableIn objectForKey:NSFontAttributeName]);
     return self.atrForLabelHistoryTableIn;
 }
 

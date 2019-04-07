@@ -21,6 +21,7 @@
 @end
 
 @protocol CellButtonActionDelegate <NSObject>
+@optional
 -(void) tapCloseCheckButton:(UIButton *)sender;
 - (void)tapRemoveItsButton:(UIButton *)sender;
 @end

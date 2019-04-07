@@ -63,7 +63,6 @@
             }
         }
     }
-    //NSLog(@"DisplayScreenLabel atribut: %@",[mutAttrString attributesAtIndex:0 effectiveRange:NULL]);
 
     self.attributedText = [mutAttrString copy];
 }

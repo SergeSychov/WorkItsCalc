@@ -155,8 +155,6 @@
 
 -(void)drawRect:(CGRect)rect
 {
-    //NSLog(@"Draw rect history cell");
-    //self.contentView.frame = self.bounds;
     if(self.selected){
 
         self.contentView.backgroundColor = self.design.colorSelectedHistoryRow;
@@ -168,7 +166,6 @@
         [self.infoLabel setTextColor:self.design.colorForUnselectedText];
         
         [self.mainProgrammLabel setTextColor:self.design.colorForUnselectedText];
-        //NSLog(@"Color for %@",self.design.colorForSelectedText);
     }
 }
 /*

@@ -10,7 +10,7 @@
 #import "ButtonsStore.h"
 #import "CreateNewButtonViewController.h"
 
-#define DEBUG_MODE YES
+#define DEBUG_MODE NO
 
 @interface ButtonsStore() <CreateNewButtonController>
 
@@ -606,9 +606,7 @@
 
 -(void) moveButton:(Buttons *)btn fromPosition:(NSNumber *)posFrom toPosition:(NSNumber *)posTo
 {
-    if(DEBUG_MODE){
-       NSLog(@"moveButton:(Buttons *)btn fromPosition:");
-    }
+
     [Buttons moveButton:btn fromPosition:posFrom toPosition:posTo inManageObjectContext:self.buttonManagedObjectContext];
     [self makeTwoArraysWithReloadOperation:CHANGE_BUTTON_POISTION];
 }
@@ -616,10 +614,6 @@
 -(void) setEnablingForButton:(Buttons*)button{
     NSMutableArray *mutableChangebleButtonObjs = [self.changebleButtonObjs mutableCopy];
     NSMutableArray *mutableDeletedButtonObjs = [self.delettedButtonObjs mutableCopy];
-    if(DEBUG_MODE){
-        NSLog(@"setEnablingForButton Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
-    }
-
     
     [mutableDeletedButtonObjs removeObject:button];
 
@@ -638,10 +632,6 @@
     
     self.changebleButtonObjs = [mutableChangebleButtonObjs copy];
     self.delettedButtonObjs = [mutableDeletedButtonObjs copy];
-
-    if(DEBUG_MODE){
-        NSLog(@"Changeble buttons count %lu, deleted button count %lu", (unsigned long)self.changebleButtonObjs.count, (unsigned long)self.delettedButtonObjs.count);
-    }
     
     [self makeTwoArraysWithReloadOperation:MOVE_TO_ENABLE];
 }

@@ -202,7 +202,6 @@
     }
     if([symbol isKindOfClass:[NSNumber class]]){
         if(self.isGradMinutesSecons == 0){
-           // NSLog(@"symbol %@",symbol);
             if([self.resultString length] < self.displayLenght){
 
                 if(([symbol doubleValue] == 0) && self.isFloat){
@@ -586,8 +585,6 @@
             NSString *substractedString = [resStr substringToIndex:resStr.length -3];
             NSString *restNameOfCurrency = [@" " stringByAppendingString:[resStr substringFromIndex:resStr.length -3]];
             NSNumber* substractedCurrency = [NSNumber numberWithDouble:[substractedString doubleValue]];
-            
-            NSLog(@"restCurrency str %@", restNameOfCurrency);
             str = [[self setResult:substractedCurrency] stringByAppendingString:restNameOfCurrency];
             
         }
@@ -605,7 +602,7 @@
         }
         
     }else {
-        NSLog(@"DisplayRam setResult: not number, not string" );
+        //NSLog(@"DisplayRam setResult: not number, not string" );
     }
     //if([str length] > self.displayLenght){
     //    str = [str substringToIndex:self.displayLenght];

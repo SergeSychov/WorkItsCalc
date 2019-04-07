@@ -114,7 +114,6 @@
 +(NSAttributedString*)resizeAttrString:(NSAttributedString *)inputStr WithInitPointSize:(CGFloat)pointSize accordingBound:(CGSize)boundSize byHeight:(BOOL)isForHeight{
 
     NSAttributedString *retAtrStr = [AtrStrStore resizeAttrString:inputStr toPointSize:pointSize];
-    //NSLog(@"retAtrStr before : %@", [retAtrStr attributesAtIndex:0 effectiveRange:NULL]);
     
     if(isForHeight){
         CGSize bigHeightsize = CGSizeMake(boundSize.width*0.7f, 10000.f);
@@ -146,7 +145,6 @@
             }
         }
     }
-    //NSLog(@"retAtrStr after : %@", [retAtrStr attributesAtIndex:0 effectiveRange:NULL]);
     
     return retAtrStr;
 }
