@@ -62,7 +62,7 @@
     
     CGContextAddPath(contex, pathOfRect);
     if(self.isShadow){
-        CGContextSetShadowWithColor(contex, self.shadowOffset, self.shadowBlur, self.shadowColor.CGColor);
+        CGContextSetShadowWithColor(contex, SHADOW_OFFSET, self.shadowBlur, self.shadowColor.CGColor);
     }
     CGContextDrawPath(contex, kCGPathFillStroke);
 }

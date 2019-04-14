@@ -109,22 +109,22 @@
 }
 -(UIColor*)shadowColor{
     if(self.designObj){
-    return self.designObj.shadowColor;
+    return self.designObj.buttonShadowColor;
     } else {
-        return [UIColor clearColor];
+        return SHADOW_CLEAR;
     }
 }
 
 -(CGFloat)shadowBlur{
     if(self.designObj){
-        return self.designObj.shadowBlur;
+        return self.designObj.buttonShadowBlur;
     } else {
         return 0.;
     }
 }
 -(CGSize)shadowSize{
     if(self.designObj){
-        return self.designObj.shadowSize;
+        return self.designObj.buttonShadowSize;
     } else {
         return CGSizeMake(0., 0.);
     }
@@ -299,7 +299,7 @@
     
     neededRect.origin.y = (rect.size.height - neededRect.size.height)/2;
     neededRect.origin.x = (rect.size.width - neededRect.size.width) /2+0.5;
-    if(self.designObj.designNumber  == DESIGN_COLOR_BLUE || self.designObj.designNumber == DESIGN_COLOR_GRAY || self.designObj.designNumber == DESIGN_COLOR_GREEN){
+    if(self.designObj.designNumber  == DESIGN_COLOR || self.designObj.designNumber == DESIGN_OLD_SCOOL || self.designObj.designNumber == DESIGN_MARTINI){
         CGContextSetShadowWithColor(context, CGSizeMake(-1., -1.), 1,[UIColor colorWithWhite:0 alpha:0.3].CGColor);
     }
 
@@ -308,7 +308,7 @@
     UIColor *textColor;
     if(self.designObj.designNumber == DESIGN_PAPER){
         textColor = self.buttonColor;
-    } else if(self.designObj.designNumber==DESIGN_COLOR_PINK && [self.title isEqualToString:@"C"]){
+    } else if(self.designObj.designNumber==DESIGN_HIGH_TECH && [self.title isEqualToString:@"C"]){
         textColor = [UIColor blackColor];
     } else {
         if(self.designObj){

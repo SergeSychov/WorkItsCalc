@@ -7,16 +7,6 @@
 //
 
 //define design numbers
-#define DESIGN_CLASSIC 1
-#define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
-#define DESIGN_PHOTO 4
-
-#define IS_BLACK_MODE NO
 #import "HistoryTableSviper.h"
 
 @interface HistoryTableSviper()

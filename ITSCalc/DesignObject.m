@@ -89,29 +89,28 @@
         self.delegate = controller;
         switch (designIndex) {
             case DESIGN_CLASSIC:
-                self.designString =DESIGN_CLASSIC_STR;
+                _designString =DESIGN_CLASSIC_STR;
                 break;
             case DESIGN_PAPER:
-                self.designString =DESIGN_PAPER_STR;
+                _designString =DESIGN_PAPER_STR;
                 break;
-            case DESIGN_COLOR_BLUE:
-                self.designString =DESIGN_COLOR_STR;
+            case DESIGN_COLOR:
+                _designString =DESIGN_COLOR_STR;
                 break;
-            case DESIGN_COLOR_GREEN:
-                self.designString =DESIGN_MARTINI_STR;
+            case DESIGN_MARTINI:
+                _designString =DESIGN_MARTINI_STR;
                 break;
-            case DESIGN_COLOR_YELOW:
-                self.designString =DESIGN_ADVENTURE_TIME_STR;
+            case DESIGN_ADVENTURE_TIME:
+                _designString =DESIGN_ADVENTURE_TIME_STR;
                 break;
-            case DESIGN_COLOR_GRAY:
-                self.designString =DESIGN_OLD_SCOOL_STR;
+            case DESIGN_OLD_SCOOL:
+                _designString =DESIGN_OLD_SCOOL_STR;
                 break;
-            case DESIGN_COLOR_PINK:
-                self.designString =DESIGN_HIGH_TECH_STR;
+            case DESIGN_HIGH_TECH:
+                _designString =DESIGN_HIGH_TECH_STR;
                 break;
-
             default:
-                self.designString =DESIGN_CLASSIC_STR;
+                _designString =DESIGN_CLASSIC_STR;
                 break;
         }
         self.designNumber = designIndex;
@@ -126,15 +125,15 @@
     } else if([designString isEqualToString:DESIGN_PAPER_STR]){
         self.designNumber = DESIGN_PAPER;
     }else if([designString isEqualToString:DESIGN_COLOR_STR]){
-        self.designNumber= DESIGN_COLOR_BLUE;
+        self.designNumber= DESIGN_COLOR;
     }else if([designString isEqualToString:DESIGN_MARTINI_STR]){
-        self.designNumber = DESIGN_COLOR_GREEN;
+        self.designNumber = DESIGN_MARTINI;
     }else if([designString isEqualToString:DESIGN_ADVENTURE_TIME_STR]){
-        self.designNumber = DESIGN_COLOR_YELOW;
+        self.designNumber = DESIGN_ADVENTURE_TIME;
     }else if([designString isEqualToString:DESIGN_OLD_SCOOL_STR]){
-        self.designNumber = DESIGN_COLOR_GRAY;
+        self.designNumber = DESIGN_OLD_SCOOL;
     }else if([designString isEqualToString:DESIGN_HIGH_TECH_STR]){
-        self.designNumber = DESIGN_COLOR_PINK;
+        self.designNumber = DESIGN_HIGH_TECH;
     } else {
         self.designNumber = DESIGN_CLASSIC;
     }
@@ -172,15 +171,10 @@
             self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
+            self.buttonShadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = BUTTON_SHADOW_OFFSET;
             self.buttonShadowBlurIn = 0.;
-            /*
-            if(self.lineView){
-                [self.lineView removeFromSuperview];
-                self.lineView = nil;
-            }*/
-            
+
             //ButtonsCollection
             self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr digitsButton];
@@ -192,7 +186,7 @@
             self.fillButtonIn = NO;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor clearColor];
+            self.shadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
             self.shadowBlurIn = 0.;
             self.shadowSizeIn = CGSizeMake(0, 0);
             self.ButtonIndentIn = BUTTON_INDENT;
@@ -234,25 +228,14 @@
             self.colorUnselectedHistoryRowIn = [UIColor clearColor];
             self.colorForSelectedTextIn = [Clr paperDigits];
             self.colorForUnselectedTextIn = [[Clr paperDigits] colorWithAlphaComponent:0.4];
-            /*if(!self.lineView){
-                LineView *lineView = [[LineView alloc] init];
-                lineView.backgroundColor = [UIColor clearColor];
-                [self.contentView addSubview:lineView];
-                self.lineView = lineView;
-            }
-            
-            self.lineView.color = self.colorForUnselectedText;
-            self.lineView.shadowColor = [UIColor whiteColor];
-            self.lineView.shadowBlur = 0.5;
-            self.lineView.shadowSize = CGSizeMake(1., 1.);
-            */
+
             self.moreButtonColorIn = [Clr paperEqual];
             self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
             self.buttonShadowColorIn = [UIColor whiteColor];
-            self.buttonShadowSizeIn = CGSizeMake(1., 1.);
-            self.buttonShadowBlurIn = 0.5;
+            self.buttonShadowSizeIn = BUTTON_SHADOW_OFFSET;//CGSizeMake(1., 1.);
+            self.buttonShadowBlurIn = BUTTON_SHADOW_RADIUS;//0.5;
             //ButtonsCollection
             self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr paperDigits];
@@ -264,9 +247,9 @@
             self.fillButtonIn = NO;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor whiteColor];
-            self.shadowBlurIn = 0.5;
-            self.shadowSizeIn = CGSizeMake(1, 1);
+            self.shadowColorIn = SHADOW_COLOR;//[UIColor whiteColor];
+            self.shadowBlurIn = SHADOW_RADIUS;//0.5;
+            self.shadowSizeIn = SHADOW_OFFSET;// CGSizeMake(1, 1);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
@@ -274,15 +257,11 @@
             self.displayContainerColorIn = [UIColor colorWithPatternImage:[UIImage imageNamed:@"myTextureSych 3.png"]];
             self.screenTextColorIn = [Clr paperDigits];
             self.isScreenShadowIn = YES;
-            self.screenShadowOpasityIn = 0.15;
-            self.screenShadowRadiusIn = 8.;
+            self.screenShadowOpasityIn = SHADOW_OPACITY;// 0.15;
+            self.screenShadowRadiusIn = SHADOW_RADIUS;// 8.;
             self.screenButtonsEnabledColorIn = [Clr paperDigits];
             self.screenButtonsDisabledColorIn = [[Clr paperDigits] colorWithAlphaComponent:0.4];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor blackColor];;
-            //self.screenButtonShadowOpacityIn = 0.15;
-            //self.screenButtonShadowBlurIn = 6.;
-            
+
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
@@ -291,7 +270,7 @@
             
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             //for attr text
             self.mainAtrTextColorIn = [UIColor lightTextColor];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
@@ -309,20 +288,13 @@
             self.colorForUnselectedTextIn =  [[Clr blueDisplay] colorWithAlphaComponent:0.4];
             
             self.moreButtonColorIn = [UIColor whiteColor];
-            //self.moreButtonBackgroundColorIn = [Clr blueMoreButton];
-           // self.deleteButtonColorIn = [UIColor whiteColor];
-           // self.deleteButtonBackgroundColorIn = [Clr blueDelButton];
             self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [UIColor colorWithRed:1. green:0.231 blue:0.188 alpha:0.9];
-            self.buttonShadowColorIn = [UIColor whiteColor];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
-            self.buttonShadowBlurIn = 0.;
-            /*if(self.lineView){
-                [self.lineView removeFromSuperview];
-                self.lineView = nil;
-            }*/
+            self.buttonShadowColorIn = BUTTON_SHADOW_COLOR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = BUTTON_SHADOW_OFFSET;//CGSizeMake(0, 0.);
+            self.buttonShadowBlurIn = BUTTON_SHADOW_RADIUS;
+
             //ButtonsCollection
             self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr blueDigits];
@@ -334,9 +306,9 @@
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = 3.;
-            self.shadowSizeIn = CGSizeMake(2, 2);
+            self.shadowColorIn = SHADOW_COLOR;// [UIColor colorWithWhite:0 alpha:0.5];
+            self.shadowBlurIn = SHADOW_RADIUS;//3.;
+            self.shadowSizeIn = SHADOW_OFFSET;// CGSizeMake(2, 2);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
@@ -344,14 +316,10 @@
             self.displayContainerColorIn = [Clr blueDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
             self.isScreenShadowIn = YES;
-            self.screenShadowOpasityIn = 0.85;
-            self.screenShadowRadiusIn = 4;
+            self.screenShadowOpasityIn = SHADOW_OPACITY;// 0.85;
+            self.screenShadowRadiusIn = SHADOW_RADIUS;// 4;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-           // self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
@@ -360,7 +328,7 @@
 
             
             break;
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             //for attr text
             self.mainAtrTextColorIn = [Clr greenText];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
@@ -381,9 +349,9 @@
             self.moreButtonBackgroundColorIn = [Clr greenMoreButton];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [Clr greenDelButton];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
-            self.buttonShadowBlurIn = 0.;
+            self.buttonShadowColorIn = BUTTON_SHADOW_COLOR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = BUTTON_SHADOW_OFFSET;//CGSizeMake(0, 0.);
+            self.buttonShadowBlurIn = BUTTON_SHADOW_RADIUS;// 0.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
@@ -399,8 +367,8 @@
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn =[Clr greenStorkeAndScreenColor];
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = 3.;
+            self.shadowColorIn = SHADOW_COLOR;//[UIColor colorWithWhite:0 alpha:0.5];
+            self.shadowBlurIn = SHADOW_RADIUS;//3.;
             self.shadowSizeIn = CGSizeMake(2, 2);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
@@ -409,15 +377,11 @@
             self.displayContainerColorIn =[Clr greenDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
             self.isScreenShadowIn = YES;
-            self.screenShadowOpasityIn = 0.75;//0.85;
-            self.screenShadowRadiusIn = 12;
+            self.screenShadowOpasityIn = SHADOW_OPACITY;// 0.75;//0.85;
+            self.screenShadowRadiusIn = SHADOW_RADIUS;//12;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
-            
+
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
@@ -425,7 +389,7 @@
 
             
             break;
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             //for attr text
             self.mainAtrTextColorIn = [Clr yellowText];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
@@ -446,8 +410,8 @@
             self.moreButtonBackgroundColorIn = [Clr yellowMoreButton];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [Clr yellowDelButton];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
+            self.buttonShadowColorIn =  SHADOW_CLEAR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = SHADOW_OFFSET;//CGSizeMake(0, 0.);
             self.buttonShadowBlurIn = 0.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
@@ -464,8 +428,8 @@
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn = [Clr yellowText];
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = 3.;
+            self.shadowColorIn = SHADOW_COLOR;//[UIColor colorWithWhite:0 alpha:0.5];
+            self.shadowBlurIn = SHADOW_RADIUS;//3.;
             self.shadowSizeIn = CGSizeMake(2, 2);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
@@ -474,15 +438,11 @@
             self.displayContainerColorIn = [Clr yellowDisplay];
             self.screenTextColorIn = [Clr yellowText];
             self.isScreenShadowIn = NO;
-            self.screenShadowOpasityIn = 0.5;
-            self.screenShadowRadiusIn = 8.0;
+            self.screenShadowOpasityIn = SHADOW_OPACITY;// 0.5;
+            self.screenShadowRadiusIn = SHADOW_RADIUS;//8.0;
             self.screenButtonsEnabledColorIn = [Clr yellowText];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
-            
+
             //for showed view
             self.infoShowViewColor =[Clr yellowText];
             self.explShowViewColor =[Clr yellowText];
@@ -490,7 +450,7 @@
 
             
             break;
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             //for attr text
             self.mainAtrTextColorIn = [UIColor lightTextColor];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
@@ -511,8 +471,8 @@
             self.moreButtonBackgroundColorIn = [Clr pinkMoreButton];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [Clr pinkDelButton];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
+            self.buttonShadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = SHADOW_OFFSET;//CGSizeMake(0, 0.);
             self.buttonShadowBlurIn = 0.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
@@ -529,7 +489,7 @@
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.0];
+            self.shadowColorIn = SHADOW_CLEAR;//[UIColor colorWithWhite:0 alpha:0.0];
             self.shadowBlurIn = 0.;
             self.shadowSizeIn = CGSizeMake(0, 0);
             self.ButtonIndentIn = BUTTON_INDENT;
@@ -539,22 +499,18 @@
             self.displayContainerColorIn =[[UIColor whiteColor] colorWithAlphaComponent:0.0];//[Clr pinkDisplay];
             self.screenTextColorIn = [UIColor whiteColor];
             self.isScreenShadowIn = YES;
-            self.screenShadowOpasityIn = 0.8;
-            self.screenShadowRadiusIn = 12;
+            self.screenShadowOpasityIn = SHADOW_OPACITY;// 0.8;
+            self.screenShadowRadiusIn = SHADOW_RADIUS;//12;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
-            
+
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
             self.resultShowViewColor=[UIColor darkTextColor];
 
             break;
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             //for attr text
             self.mainAtrTextColorIn = [UIColor lightTextColor];
             self.compactTextStyleIn = UIFontTextStyleTitle2;
@@ -575,8 +531,8 @@
             self.moreButtonBackgroundColorIn = [Clr grayMoreButton];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [Clr grayDelButton];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
+            self.buttonShadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = SHADOW_OFFSET;//CGSizeMake(0, 0.);
             self.buttonShadowBlurIn = 0.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
@@ -593,8 +549,8 @@
             self.fillButtonIn = YES;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = 3.;
+            self.shadowColorIn = SHADOW_COLOR;//[UIColor colorWithWhite:0 alpha:0.5];
+            self.shadowBlurIn = SHADOW_RADIUS;//3.;
             self.shadowSizeIn = CGSizeMake(2, 2);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
@@ -607,10 +563,6 @@
             self.screenShadowRadiusIn = 0;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
             
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
@@ -640,9 +592,9 @@
             self.moreButtonBackgroundColorIn = [UIColor colorWithWhite:0 alpha:0.1];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [UIColor colorWithWhite:0 alpha:0.1];
-            self.buttonShadowColorIn = [UIColor grayColor];
-            self.buttonShadowSizeIn = CGSizeMake(2, 2.);
-            self.buttonShadowBlurIn = 3.;
+            self.buttonShadowColorIn = SHADOW_COLOR;//[UIColor grayColor];
+            self.buttonShadowSizeIn = SHADOW_OFFSET;//CGSizeMake(2, 2.);
+            self.buttonShadowBlurIn = SHADOW_RADIUS;//3.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
                 self.lineView = nil;
@@ -658,9 +610,9 @@
             self.fillButtonIn = NO;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor colorWithWhite:0 alpha:0.5];
-            self.shadowBlurIn = BORDER_VS_RADIUS;
-            self.shadowSizeIn = CGSizeMake(2, 2);
+            self.shadowColorIn = SHADOW_COLOR;//[UIColor colorWithWhite:0 alpha:0.5];
+            self.shadowBlurIn = SHADOW_RADIUS;//BORDER_VS_RADIUS;
+            self.shadowSizeIn = SHADOW_OFFSET;// CGSizeMake(2, 2);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
@@ -672,11 +624,7 @@
             self.screenShadowRadiusIn = 0;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
-            
+
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
@@ -708,8 +656,8 @@
             self.moreButtonBackgroundColorIn = [UIColor colorWithRed:0.68f green:0.68f blue:0.7f alpha:1.0f];
             self.deleteButtonColorIn = [UIColor whiteColor];
             self.deleteButtonBackgroundColorIn = [UIColor colorWithRed:0.68 green:0.13 blue:0. alpha:0.9];
-            self.buttonShadowColorIn = [UIColor clearColor];
-            self.buttonShadowSizeIn = CGSizeMake(0, 0.);
+            self.buttonShadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
+            self.buttonShadowSizeIn = SHADOW_OFFSET;//CGSizeMake(0, 0.);
             self.buttonShadowBlurIn = 0.;
             /*if(self.lineView){
                 [self.lineView removeFromSuperview];
@@ -726,9 +674,9 @@
             self.fillButtonIn = NO;
             self.storkeButtonWithFillIn = nil;
             
-            self.shadowColorIn = [UIColor clearColor];
+            self.shadowColorIn = SHADOW_CLEAR;//[UIColor clearColor];
             self.shadowBlurIn = 0.;
-            self.shadowSizeIn = CGSizeMake(0, 0);
+            self.shadowSizeIn = SHADOW_OFFSET;// CGSizeMake(0, 0);
             self.ButtonIndentIn = BUTTON_INDENT;
             self.radiusOfHeightIn = IS_IPAD ? BUTTON_RADIUS_OF_HEIGHT_IPAD : BUTTON_RADIUS_OF_HEIGHT_IPHONE;
             
@@ -740,11 +688,7 @@
             self.screenShadowRadiusIn = 0;
             self.screenButtonsEnabledColorIn = [UIColor whiteColor];
             self.screenButtonsDisabledColorIn = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-            //self.screenBlurEffectIn = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            //self.screenButtonShadowColorIn = [UIColor clearColor];;
-            //self.screenButtonShadowOpacityIn = 0.;
-            //self.screenButtonShadowBlurIn = 0;
-            
+
             //for showed view
             self.infoShowViewColor =[UIColor darkTextColor];
             self.explShowViewColor =[UIColor darkTextColor];
@@ -1025,20 +969,7 @@
 -(UIColor*)screenButtonsDisabledColor{
     return self.screenButtonsDisabledColorIn;
 }
-/*
--(UIBlurEffect*)screenBlurEffect{
-    return self.screenBlurEffectIn;
-}
--(UIColor*)screenButtonShadowColor{
- return self.screenButtonShadowColorIn;
-}
--(CGFloat)screenButtonShadowOpacity{
-    return self.screenButtonShadowOpacityIn;
-}
--(CGFloat)screenButtonShadowBlur{
-    return self.screenButtonShadowBlurIn;
-}
-*/
+
 -(NSDictionary*)attributesInfo{
     return self.attributesInfoIn;
 }
@@ -1072,24 +1003,24 @@
             title = @"бумажный";
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             title = @"цветной";
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
+            title = @"Martini";
+            break;
+            
+        case DESIGN_ADVENTURE_TIME:
             title = @"цветной";
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_HIGH_TECH:
             title = @"цветной";
             break;
             
-        case DESIGN_COLOR_PINK:
-            title = @"цветной";
-            break;
-            
-        case DESIGN_COLOR_GRAY:
-            title = @"цветной";
+        case DESIGN_OLD_SCOOL:
+            title = @"old scool";
             break;
             
         case DESIGN_PHOTO:
@@ -1116,23 +1047,23 @@
             titleColor = [UIColor darkTextColor];
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             titleColor = [UIColor whiteColor];
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             titleColor = [UIColor whiteColor];
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             titleColor = [UIColor whiteColor];
             break;
             
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             titleColor = [UIColor whiteColor];
             break;
             
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             titleColor = [UIColor whiteColor];
             break;
             
@@ -1159,23 +1090,23 @@
             isNeedTitleShadow = YES;
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             isNeedTitleShadow = NO;
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             isNeedTitleShadow = NO;
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             isNeedTitleShadow = NO;
             break;
             
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             isNeedTitleShadow = NO;
             break;
             
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             isNeedTitleShadow = NO;
             break;
             
@@ -1201,23 +1132,23 @@
             borderColor = [UIColor darkTextColor];
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             borderColor = [UIColor clearColor];
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             borderColor = [UIColor clearColor];
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             borderColor = [UIColor clearColor];
             break;
             
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             borderColor = [UIColor clearColor];
             break;
             
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             borderColor = [UIColor clearColor];
             break;
             
@@ -1243,23 +1174,23 @@
             bodyColor = [UIColor clearColor];
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             bodyColor = [Clr blueButton];
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             bodyColor = [Clr greenButton];
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             bodyColor = [Clr yellowButton];
             break;
             
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             bodyColor =[Clr pinkButton];
             break;
             
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             bodyColor = [Clr grayButton];
             break;
             
@@ -1285,23 +1216,23 @@
             borderVsRadius = 12.2;
             break;
             
-        case DESIGN_COLOR_BLUE:
+        case DESIGN_COLOR:
             borderVsRadius = 12.2;
             break;
             
-        case DESIGN_COLOR_GREEN:
+        case DESIGN_MARTINI:
             borderVsRadius = 12.2;
             break;
             
-        case DESIGN_COLOR_YELOW:
+        case DESIGN_ADVENTURE_TIME:
             borderVsRadius = 12.2;
             break;
             
-        case DESIGN_COLOR_PINK:
+        case DESIGN_HIGH_TECH:
             borderVsRadius = 12.2;
             break;
             
-        case DESIGN_COLOR_GRAY:
+        case DESIGN_OLD_SCOOL:
             borderVsRadius = 12.2;
             break;
             
@@ -1320,39 +1251,39 @@
     UIColor* shadowColor;
     switch (design) {
         case DESIGN_CLASSIC:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0];
+            SHADOW_CLEAR;// shadowColor = [UIColor colorWithWhite:0 alpha:0];
             break;
             
         case DESIGN_PAPER:
-            shadowColor = [UIColor colorWithWhite:1 alpha:1.];
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:1 alpha:1.];
             break;
             
-        case DESIGN_COLOR_BLUE:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
+        case DESIGN_COLOR:
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             break;
             
-        case DESIGN_COLOR_GREEN:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
+        case DESIGN_MARTINI:
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             break;
             
-        case DESIGN_COLOR_YELOW:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
+        case DESIGN_ADVENTURE_TIME:
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             break;
             
-        case DESIGN_COLOR_PINK:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
+        case DESIGN_HIGH_TECH:
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             break;
             
-        case DESIGN_COLOR_GRAY:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
+        case DESIGN_OLD_SCOOL:
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.3];
             break;
             
         case DESIGN_PHOTO:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
+            SHADOW_COLOR;//shadowColor = [UIColor colorWithWhite:0 alpha:0.5];
             break;
             
         default:
-            shadowColor = [UIColor colorWithWhite:0 alpha:0];
+            SHADOW_CLEAR;//shadowColor = [UIColor colorWithWhite:0 alpha:0];
             break;
     }
     return shadowColor;
@@ -1363,39 +1294,39 @@
     
     switch (design) {
         case DESIGN_CLASSIC:
-            shadowOffset = CGSizeMake(0, 0);
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(0, 0);
             break;
             
         case DESIGN_PAPER:
-            shadowOffset = CGSizeMake(1, 1);
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(1, 1);
             break;
             
-        case DESIGN_COLOR_BLUE:
-            shadowOffset = CGSizeMake(3, 3);
+        case DESIGN_COLOR:
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(3, 3);
             break;
             
-        case DESIGN_COLOR_GREEN:
-            shadowOffset = CGSizeMake(3, 3);
+        case DESIGN_MARTINI:
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(3, 3);
             break;
             
-        case DESIGN_COLOR_YELOW:
-            shadowOffset = CGSizeMake(3, 3);
+        case DESIGN_ADVENTURE_TIME:
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(3, 3);
             break;
             
-        case DESIGN_COLOR_PINK:
-            shadowOffset = CGSizeMake(3, 3);
+        case DESIGN_HIGH_TECH:
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(3, 3);
             break;
             
-        case DESIGN_COLOR_GRAY:
-            shadowOffset = CGSizeMake(3, 3);
+        case DESIGN_OLD_SCOOL:
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(3, 3);
             break;
             
         case DESIGN_PHOTO:
-            shadowOffset = CGSizeMake(1, 1);
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(1, 1);
             break;
             
         default:
-            shadowOffset = CGSizeMake(0, 0);
+            shadowOffset = SHADOW_OFFSET;//CGSizeMake(0, 0);
             break;
     }
     return shadowOffset;
@@ -1409,31 +1340,31 @@
             break;
             
         case DESIGN_PAPER:
-            shadowBlur = 0.5;
+            shadowBlur = SHADOW_RADIUS;//0.5;
             break;
             
-        case DESIGN_COLOR_BLUE:
-            shadowBlur = 6;
+        case DESIGN_COLOR:
+            shadowBlur = SHADOW_RADIUS;//6;
             break;
             
-        case DESIGN_COLOR_GREEN:
-            shadowBlur = 6;
+        case DESIGN_MARTINI:
+            shadowBlur = SHADOW_RADIUS;//6;
             break;
             
-        case DESIGN_COLOR_YELOW:
-            shadowBlur = 6;
+        case DESIGN_ADVENTURE_TIME:
+            shadowBlur = SHADOW_RADIUS;//6;
             break;
             
-        case DESIGN_COLOR_PINK:
-            shadowBlur = 6;
+        case DESIGN_HIGH_TECH:
+            shadowBlur = SHADOW_RADIUS;//6;
             break;
             
-        case DESIGN_COLOR_GRAY:
-            shadowBlur = 6;
+        case DESIGN_OLD_SCOOL:
+            shadowBlur = SHADOW_RADIUS;//6;
             break;
             
         case DESIGN_PHOTO:
-            shadowBlur = 0.5;
+            shadowBlur = SHADOW_RADIUS;//0.5;
             break;
             
         default:
@@ -1451,31 +1382,31 @@
             break;
             
         case DESIGN_PAPER:
-            shadowOpacity = 1;
+            shadowOpacity = SHADOW_OPACITY;// 1;
             break;
             
-        case DESIGN_COLOR_BLUE:
-            shadowOpacity = 0.3;
+        case DESIGN_COLOR:
+            shadowOpacity = SHADOW_OPACITY;// 0.3;
             break;
             
-        case DESIGN_COLOR_GREEN:
-            shadowOpacity = 0.3;
+        case DESIGN_MARTINI:
+            shadowOpacity = SHADOW_OPACITY;// 0.3;
             break;
             
-        case DESIGN_COLOR_YELOW:
-            shadowOpacity = 0.3;
+        case DESIGN_ADVENTURE_TIME:
+            shadowOpacity = SHADOW_OPACITY;// 0.3;
             break;
             
-        case DESIGN_COLOR_PINK:
-            shadowOpacity = 0.3;
+        case DESIGN_HIGH_TECH:
+            shadowOpacity = SHADOW_OPACITY;// 0.3;
             break;
             
-        case DESIGN_COLOR_GRAY:
-            shadowOpacity = 0.3;
+        case DESIGN_OLD_SCOOL:
+            shadowOpacity = SHADOW_OPACITY;// 0.3;
             break;
             
         case DESIGN_PHOTO:
-            shadowOpacity = 0.5;
+            shadowOpacity = SHADOW_OPACITY;// 0.5;
             break;
             
         default:

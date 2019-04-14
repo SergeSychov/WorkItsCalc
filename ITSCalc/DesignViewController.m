@@ -18,20 +18,6 @@
 #import "Clr.h"
 
 
-//NSString *const DesignSendChangedNotification=@"SendChangedNotification";
-
-//#define IS_IPAD ([[UIDevice currentDevice].model hasPrefix:@"iPad"])
-//#define INDENT 20.0f
-//define design numbers
-//#define DESIGN_CLASSIC 1
-//#define DESIGN_PAPER 2
-//#define DESIGN_COLOR_BLUE 30
-//#define DESIGN_COLOR_GREEN 31
-//#define DESIGN_COLOR_PINK 32
-//#define DESIGN_COLOR_YELOW 33
-//#define DESIGN_COLOR_GRAY 34
-//#define DESIGN_PHOTO 4
-
 @interface DesignViewController() <UIImagePickerControllerDelegate, UINavigationControllerDelegate>//need for choosingn new photo at design
 
 //@property (nonatomic, weak) UIView *cView;
@@ -126,9 +112,9 @@
                 [self setNewBackgroundImageForColor:[Clr grayGround]];
             }else if (design == DESIGN_COLOR_GREEN){
                 [self setNewBackgroundImageForColor:[Clr greenGround]];
-            }else if (design == DESIGN_COLOR_PINK){
+            }else if (design == DESIGN_HIGH_TECH){
                 [self setNewBackgroundImageForColor:[Clr pinkGround]];
-            }else if (design == DESIGN_COLOR_YELOW){
+            }else if (design == DESIGN_ADVENTURE_TIME){
                 [self setNewBackgroundImageForColor:[Clr yellowGround]];
             }
             [self sendNoteChangeDesign:design];

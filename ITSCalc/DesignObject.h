@@ -13,11 +13,11 @@
 
 #define DESIGN_CLASSIC 1
 #define DESIGN_PAPER 2
-#define DESIGN_COLOR_BLUE 30
-#define DESIGN_COLOR_GREEN 31
-#define DESIGN_COLOR_PINK 32
-#define DESIGN_COLOR_YELOW 33
-#define DESIGN_COLOR_GRAY 34
+#define DESIGN_COLOR 30
+#define DESIGN_MARTINI 31
+#define DESIGN_HIGH_TECH 32
+#define DESIGN_ADVENTURE_TIME 33
+#define DESIGN_OLD_SCOOL 34
 #define DESIGN_PHOTO 4
 
 #define DESIGN_CLASSIC_STR @"Classic"
@@ -50,6 +50,17 @@
 #define PHONE_HISTORY_CELL_HEIGHT_VS_WIDTH 0.1875
 #define MOTION_IPAD 0.//30.
 #define MOTION_IPHONE 0.//20.
+
+#define SHADOW_OFFSET CGSizeMake(0.,0)
+#define BUTTON_SHADOW_OFFSET CGSizeMake(1.5,1.5)
+#define SHADOW_OPACITY 0.4
+#define SHADOW_RADIUS 12.
+#define BUTTON_SHADOW_RADIUS 4.
+#define SHADOW_COLOR [UIColor blackColor]
+#define BUTTON_SHADOW_COLOR [UIColor colorWithWhite:0 alpha:0.5];
+
+#define SHADOW_CLEAR [UIColor clearColor]
+
 @class DesignObject;
 @protocol DesignStrDelegate <NSObject>
 -(UIUserInterfaceSizeClass)currentInterfaceClassSize;
