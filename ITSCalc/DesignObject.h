@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-//#define DEBUG_MODE NO
+#define DEBUG_MODE YES
 
 #define DESIGN_CLASSIC 1
 #define DESIGN_PAPER 2

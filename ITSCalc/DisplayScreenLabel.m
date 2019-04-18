@@ -63,7 +63,6 @@
             }
         }
     }
-
     self.attributedText = [mutAttrString copy];
 }
 

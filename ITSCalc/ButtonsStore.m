@@ -10,7 +10,7 @@
 #import "ButtonsStore.h"
 #import "CreateNewButtonViewController.h"
 
-#define DEBUG_MODE NO
+//#define DEBUG_MODE NO
 
 @interface ButtonsStore() <CreateNewButtonController>
 

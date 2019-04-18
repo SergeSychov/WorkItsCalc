@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "Buttons.h"
 #import "Buttons+Buttons_Maker.h"
+#import "DesignObject.h" //for definitions
 //#import "ButtonObject.h"
 
 @class ButtonsStore;

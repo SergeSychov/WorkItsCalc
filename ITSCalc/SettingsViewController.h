@@ -12,7 +12,7 @@
 #import "InfoViewController.h"
 #import "PaymentObj.h"
 
-#define DEBUG_MODE NO
+//#define DEBUG_MODE NO
 
 @interface SettingsViewController : SecondViewController <DesignViewControllerProtocol,InfoViewControllerProtocol, UIViewControllerTransitioningDelegate,PaymentDelegateProtocol>
 
