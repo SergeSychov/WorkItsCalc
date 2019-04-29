@@ -237,7 +237,7 @@
             self.buttonShadowSizeIn = BUTTON_SHADOW_OFFSET;//CGSizeMake(1., 1.);
             self.buttonShadowBlurIn = BUTTON_SHADOW_RADIUS;//0.5;
             //ButtonsCollection
-            self.buttonTextColorIn = [UIColor colorWithWhite:1. alpha:1];
+            self.buttonTextColorIn = [Clr paperDigits];;//[UIColor colorWithWhite:1. alpha:1];
             self.digitsColorIn = [Clr paperDigits];
             self.cColorIn = [Clr paperC];
             self.equalColorIn = [Clr paperEqual];

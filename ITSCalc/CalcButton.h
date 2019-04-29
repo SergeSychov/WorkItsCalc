@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface CalcButton : UIButton
+@property (nonatomic, weak) UIColor* disabledColor;
 
 @end

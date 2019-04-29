@@ -9,7 +9,6 @@
 #import "CalcButton.h"
 
 @interface CalcButton()
-@property (nonatomic,strong) UIColor* storkeColor;
 @property (nonatomic,strong) UIColor *touchedColor;
 
 @end
@@ -57,15 +56,6 @@
     return _touchedColor;
     
 }
--(UIColor*) storkeColor
-{
-    
-    if(!_storkeColor){
-        _storkeColor = self.currentTitleColor;
-    }
-    
-    return _storkeColor;
-}
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -78,11 +68,14 @@
     UIColor *fillColor = [UIColor clearColor];
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
+    UIColor *color;
     if(self.state == UIControlStateNormal){
-        CGContextSetStrokeColorWithColor(context, self.storkeColor.CGColor);
-    } else {
-        CGContextSetStrokeColorWithColor(context, [UIColor grayColor].CGColor);
+        color = self.tintColor;
+        
+    }else if (self.state == UIControlStateDisabled){
+        color = self.disabledColor;
     }
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
     
     CGPoint center = CGPointMake(rect.size.width/2, rect.size.height/2);
 
