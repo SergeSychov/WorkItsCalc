@@ -703,7 +703,19 @@
             currStr = [currStr stringByAppendingString:@"/"];
             currStr = [currStr stringByAppendingString:currPair[2]];
             currStr = [currStr stringByAppendingString:@"="];
-            currStr = [currStr stringByAppendingString:[currPair[3] stringValue]];
+            if([currPair[3] isKindOfClass:[NSNumber class]]){
+                NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+                [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+                double intPartLenght = log10(fabs([currPair[3] doubleValue]));
+                double intPart;//fractPart,
+                modf(intPartLenght, &intPart);// fractPart =
+                if(intPart <0) intPart = 0;
+                [numberFormatter setMaximumFractionDigits:(5 - (int)intPart)];
+                currStr = [currStr stringByAppendingString:[numberFormatter stringFromNumber:currPair[3]]];
+            } else {
+                currStr = [currStr stringByAppendingString:[currPair[3] stringValue]];
+            }
+            
             currStr = [currStr stringByAppendingString:@" "];
         }
         returnString = [[NSAttributedString alloc] initWithString:currStr attributes:atrbutes];
