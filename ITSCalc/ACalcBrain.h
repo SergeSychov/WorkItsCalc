@@ -66,7 +66,7 @@
 
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
-+(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)curArray withAtrtributes:(NSDictionary*)atrbutes;
++(NSString*)stringCurrensiesInProgram:(NSDictionary*)currDict;
 
 +(NSArray*)gradArrayFromNumber:(NSNumber*)number withCountAttr:(NSString*)countAttr;
 +(NSString*) resultStringFromCountResult:(id) countResult;
@@ -78,6 +78,7 @@
 
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;
++(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu andCurrensiesDictionary:(NSDictionary*)currDic;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu countAttrStr:(NSString*)countAttrStr andCurrensiesDictionary:(NSDictionary*)currDic;
 
 @end

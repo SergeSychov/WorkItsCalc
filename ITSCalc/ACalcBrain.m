@@ -98,6 +98,11 @@
     return [ACalcBrain initWithProgram:program withArgu:argu withOpenBracets:0 andIsStrongluArgu:YES countAttrStr:NO_COUNT_ATTR andCurrensiesDictionary:[[NSDictionary alloc]init]];
 }
 
++(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu andCurrensiesDictionary:(NSDictionary*)currDic
+{
+    return [ACalcBrain initWithProgram:program withArgu:argu withOpenBracets:0 andIsStrongluArgu:YES countAttrStr:NO_COUNT_ATTR andCurrensiesDictionary:currDic];
+}
+
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu withOpenBracets:(int)openBracets andIsStrongluArgu:(BOOL)isStronglyArgu countAttrStr:(NSString*)countAttrStr andCurrensiesDictionary:(NSDictionary*)currDic
 {
     //add from this
@@ -219,6 +224,16 @@
         operationPriority = 3;
     }
     
+    if([operation isKindOfClass:[NSArray class]] && [(NSArray*)operation count]==4 && [(NSString*)operation[0] isEqualToString:@"$"]){
+        NSString *keyExhangeString = [[[@"$" stringByAppendingString:(NSString*)operation[1]] stringByAppendingString:@"/"] stringByAppendingString:(NSString*)operation[2]];
+        NSMutableDictionary* mutDict = [self.currDict mutableCopy];
+        [mutDict setValue:operation[3] forKey:keyExhangeString];
+        NSLog(@"mutDict:%@", mutDict);
+        self.currDict = [mutDict copy];
+    } else if ([operation isKindOfClass:[NSString class]] && [[(NSString*)operation substringToIndex:1] isEqualToString:@"$"]){
+
+        
+    }
     /*
     if([operation isKindOfClass:[NSString class]]){
         NSMutableArray *copyArgu = [ACalcBrain deepArrayCopy:self.arguStack];
@@ -232,6 +247,7 @@
         }
     }
     */
+    //NSLog(@"performOperationInArgu curDict:%@", self.currDict);
     
     return [ACalcBrain runProgram:self.argu usingVariableValue:self.variableValue withPriority:operationPriority withCountAttr:self.countAttributeStr andCurrDictionary:self.currDict];
         
@@ -573,7 +589,7 @@
             }
         }else if([obj isKindOfClass:[NSArray class]]){
                 if([ACalcBrain checkForFunctionsInProgramm:obj]){
-                    [mutableFunctionsArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:obj]];
+                    [mutableFunctionsArray addObjectsFromArray:[ACalcBrain checkForFunctionsInProgramm:obj]];
                 }
         }
     }
@@ -728,10 +744,29 @@
 
     return currenciesArray;
 }
-
-+(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
-    NSAttributedString *returnString = nil;
++(NSString*)stringCurrensiesInProgram:(NSDictionary*)currDict{
+//+(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
+    //NSAttributedString *returnString = nil;
+    NSString *currStr = [[NSString alloc]init];
+    for(NSString* key in [currDict allKeys]){
+        NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+        
+        if([[key substringToIndex:1]isEqualToString:@"$"]){
+            currStr = [[currStr stringByAppendingString:[key substringFromIndex:1]] stringByAppendingString:@"="];
+            NSNumber *rateValue = [currDict valueForKey:key];
+            double intPartLenght = log10(fabs([rateValue doubleValue]));
+            double intPart;//fractPart,
+            modf(intPartLenght, &intPart);// fractPart =
+            if(intPart <0) intPart = 0;
+            [numberFormatter setMaximumFractionDigits:(5 - (int)intPart)];
+            currStr = [currStr stringByAppendingString:[numberFormatter stringFromNumber:rateValue]];
+            
+            currStr = [currStr stringByAppendingString:@" "];
+        }
+    }
     
+    /*
     //if programm has currensies, get currencies array
     NSArray* currensies = [ACalcBrain chekForCurrensiesProgramm:[programm copy]];
 
@@ -759,9 +794,9 @@
             currStr = [currStr stringByAppendingString:@" "];
         }
         returnString = [[NSAttributedString alloc] initWithString:currStr attributes:atrbutes];
-    }
+    }*/
     
-    return returnString;
+    return currStr;
 }
 
 //replace arrays with currencies in program with new values of currencies exhange
@@ -884,6 +919,7 @@
     [programCopy addObject:newLast];
     self.programStacks = [programCopy copy];
     self.countAttributeStr = NO_COUNT_ATTR;
+    self.currDict = [[NSDictionary alloc]init];
 }
 
 //to exeprt double operation
