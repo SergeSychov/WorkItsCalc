@@ -12,7 +12,6 @@
 +(History *) storyWithProgram:(NSArray*)program atDate:(NSDate*)date currensyRate:(NSString*)currensyRate variabledescription:(NSString*)variableDescription inManageObjectContext:(NSManagedObjectContext*) context
 {
     History *history = nil;
-    
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
     request.predicate = [NSPredicate predicateWithFormat:@"date = %@", date];
     

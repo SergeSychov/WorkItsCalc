@@ -48,6 +48,7 @@
 @property (readonly) id deepArgu;
 @property (readonly) BOOL isOpenBracets;
 @property (readonly) int openBracets;
+@property (nonatomic, strong) NSDictionary* currDict;
 @property (readonly) NSDictionary* savedCurrensies;
 
 
@@ -67,6 +68,7 @@
 //check if programm has currencies array take it ans return currensies arrays:USD/EUR/Value othercase retun nil
 +(NSArray*) chekForCurrensiesProgramm:(NSArray*)programm;
 +(NSString*)stringCurrensiesInProgram:(NSDictionary*)currDict;
++(NSDictionary*)dictionaryFromCurrensiesString:(NSString*)currStr;
 
 +(NSArray*)gradArrayFromNumber:(NSNumber*)number withCountAttr:(NSString*)countAttr;
 +(NSString*) resultStringFromCountResult:(id) countResult;
@@ -74,7 +76,7 @@
 //+(NSString*)resultStringFromGradArray:(NSArray*)array;
 
 //replace arrays with currencies in program with new values of currencies exhange
-+(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
+//+(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies;
 
 +(ACalcBrain*) brainFromSavedArray:(NSArray*)array;
 +(ACalcBrain*) initWithProgram:(NSArray*)program withArgu:(NSArray*)argu;

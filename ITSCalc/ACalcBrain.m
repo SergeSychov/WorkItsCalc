@@ -14,7 +14,6 @@
 @property (nonatomic, strong) NSArray *arguStack;
 @property (nonatomic, strong) NSDictionary *variableValue;
 @property (nonatomic) int numberOfOpenBrackets;
-@property (nonatomic, strong) NSDictionary* currDict;
 
 -(id) countWithStack:(id) stack;
 @end
@@ -225,9 +224,10 @@
     }
     
     if([operation isKindOfClass:[NSArray class]] && [(NSArray*)operation count]==4 && [(NSString*)operation[0] isEqualToString:@"$"]){
-        NSString *keyExhangeString = [[[@"$" stringByAppendingString:(NSString*)operation[1]] stringByAppendingString:@"/"] stringByAppendingString:(NSString*)operation[2]];
+        NSString *keyExhangeString = [[[@"$" stringByAppendingString:(NSString*)operation[1]] stringByAppendingString:[NSString stringWithFormat:@"/%@", @"\u2060"]] stringByAppendingString:(NSString*)operation[2]];
         NSMutableDictionary* mutDict = [self.currDict mutableCopy];
         [mutDict setValue:operation[3] forKey:keyExhangeString];
+        NSLog(@"keyExhangeString %@", keyExhangeString);
         NSLog(@"mutDict:%@", mutDict);
         self.currDict = [mutDict copy];
     } else if ([operation isKindOfClass:[NSString class]] && [[(NSString*)operation substringToIndex:1] isEqualToString:@"$"]){
@@ -747,6 +747,7 @@
 +(NSString*)stringCurrensiesInProgram:(NSDictionary*)currDict{
 //+(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
     //NSAttributedString *returnString = nil;
+    NSLog(@"stringCurrensiesInProgram inputDictionary:%@",currDict );
     NSString *currStr = [[NSString alloc]init];
     for(NSString* key in [currDict allKeys]){
         NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -765,76 +766,31 @@
             currStr = [currStr stringByAppendingString:@" "];
         }
     }
-    
-    /*
-    //if programm has currensies, get currencies array
-    NSArray* currensies = [ACalcBrain chekForCurrensiesProgramm:[programm copy]];
-
-    //if currensies was, make string from each pair in array and add to currString
-    if(currensies){
-        NSString *currStr = @"";
-        for(NSArray* currPair in currensies){
-            currStr = [currStr stringByAppendingString:currPair[1]];
-            currStr = [currStr stringByAppendingString:@"/"];
-            currStr = [currStr stringByAppendingString:currPair[2]];
-            currStr = [currStr stringByAppendingString:@"="];
-            if([currPair[3] isKindOfClass:[NSNumber class]]){
-                NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-                [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-                double intPartLenght = log10(fabs([currPair[3] doubleValue]));
-                double intPart;//fractPart,
-                modf(intPartLenght, &intPart);// fractPart =
-                if(intPart <0) intPart = 0;
-                [numberFormatter setMaximumFractionDigits:(5 - (int)intPart)];
-                currStr = [currStr stringByAppendingString:[numberFormatter stringFromNumber:currPair[3]]];
-            } else {
-                currStr = [currStr stringByAppendingString:[currPair[3] stringValue]];
-            }
-            
-            currStr = [currStr stringByAppendingString:@" "];
-        }
-        returnString = [[NSAttributedString alloc] initWithString:currStr attributes:atrbutes];
-    }*/
-    
+    //NSLog(@"stringCurrensiesInProgram return str:%@",currStr );
     return currStr;
 }
 
-//replace arrays with currencies in program with new values of currencies exhange
-//for each element chek if array
-// if - currencies - replace, else - recrucive call
-+(NSArray*) programm:(NSArray*)programm withReplaceWithCurrencies:(NSArray*)currensies{
-
-    NSArray *retProgramm = nil;
-    NSMutableArray *mutableProgramm = [programm mutableCopy];
-    if(currensies ) {
-        @autoreleasepool {
-
-            for(NSInteger i = 0; i < mutableProgramm.count; i++){
-                id obj = [mutableProgramm objectAtIndex:i];
-
-                if([obj isKindOfClass:[NSArray class]]){
-
-                    if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
-                        
-                        for(NSArray* currPair in currensies){ //check for each exchange pair
-                            if([(NSString*)obj[1] isEqualToString:(NSString*)currPair[1]] && [(NSString*)obj[2] isEqualToString:(NSString*)currPair[2]] ){
-                                [mutableProgramm replaceObjectAtIndex:i withObject:currPair];
-                            }
-                        }
-
-                    } else {
-                        [mutableProgramm replaceObjectAtIndex:i withObject:[ACalcBrain programm:obj withReplaceWithCurrencies:currensies]];
-                    }
-                } else {
-
-                }
++(NSDictionary*)dictionaryFromCurrensiesString:(NSString*)currStr{
+    //NSLog(@"dictionaryFromCurrensiesString inputStr str:%@",currStr );
+    NSMutableDictionary *mutCurrDict = [[NSMutableDictionary alloc]init];
+    // Create Keys and values for Dictionary from saved string
+    if(currStr){
+        NSArray *testCurrStrings = [currStr componentsSeparatedByString:@" "];
+        
+        NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+        
+        for(NSString* str in testCurrStrings){
+            NSRange equalRange = [str rangeOfString:@"="];
+            if(equalRange.length>0){
+                [mutCurrDict setObject:[numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]] forKey:[@"$" stringByAppendingString:[str substringToIndex:equalRange.location]]];
+                //NSLog(@"Pair: %@ has value: %@",[str substringToIndex:equalRange.location], [numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]]);
             }
-            retProgramm = [mutableProgramm copy];
         }
-    
     }
-  
-    return retProgramm;
+   // NSLog(@"dictionaryFromCurrensiesString return dict:%@",[mutCurrDict copy] );
+    //-------------------------------------------------------------------
+    return [mutCurrDict copy];
 }
 
 +(BOOL) needBractesForStack: (NSMutableArray*) stack SymbYesArray: (NSArray*) plusOrMinuslySymbols SymbNOArray: (NSArray*)divideOrMultiplySymbols
@@ -1174,19 +1130,27 @@
         
         
         if([(NSArray*)topOfStack count]==4 && [topOfStack[0] isKindOfClass:[NSString class]]&&[topOfStack[0] isEqualToString:@"$"]){
-            //if there is exhange currency rate
-            NSNumber *exchangeRate = (NSNumber*)[topOfStack lastObject];
+            NSString *keyExhangeString = [[[@"$" stringByAppendingString:(NSString*)topOfStack[1]] stringByAppendingString:[NSString stringWithFormat:@"/%@", @"\u2060"]] stringByAppendingString:(NSString*)topOfStack[2]];
+            NSNumber *exchangeRate;
+            exchangeRate = [currDict objectForKey:keyExhangeString];
+            if(!exchangeRate){
+                exchangeRate = (NSNumber*)[topOfStack lastObject];
+            }
+            
             dicResult = [self popOperandOfStack:stack withPreviousValue:nil accordingPriority:3 withCountAttr:attrStr andCurrDictionary:currDict];
             double arg = [[dicResult valueForKeyPath:VALUE] doubleValue];
+            double exchangeRateDouble = [exchangeRate doubleValue];
+            NSString *resStr;
             if(arg == 0.0) {
                 dicResult = [self popOperandOfStack:stack withPreviousValue:exchangeRate accordingPriority:priority withCountAttr:attrStr andCurrDictionary:currDict];
                 result = [[dicResult valueForKeyPath:VALUE] doubleValue];
+                resStr = [NSString stringWithFormat:@"%.5f",result];
             } else {
-                double exchangeRateDouble = [exchangeRate doubleValue];
+                
                 dicResult = [self popOperandOfStack:stack withPreviousValue:[NSNumber numberWithDouble:(arg * exchangeRateDouble)] accordingPriority:priority withCountAttr:attrStr andCurrDictionary:currDict];
                 result = [[dicResult valueForKeyPath:VALUE] doubleValue];
+                resStr = [NSString stringWithFormat:@"%.2f",result];
             }
-            NSString *resStr = [NSString stringWithFormat:@"%.2f",result];
             result = [resStr doubleValue];
             showGrad = NOT_SHOW_GRAD;
         } else {

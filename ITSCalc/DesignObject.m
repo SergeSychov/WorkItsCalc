@@ -743,11 +743,13 @@
         fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.compactTextStyleIn];
         font  = [UIFont fontWithDescriptor:fontDescriptor size:12];
         style.alignment = NSTextAlignmentLeft;
+        style.lineBreakMode = NSLineBreakByWordWrapping;
     }else {
         fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:self.regularTextStyle];
         font  = [UIFont fontWithDescriptor:fontDescriptor size:16];
         // font  = [UIFont preferredFontForTextStyle:self.regularTextStyle];
         style.alignment = NSTextAlignmentRight;
+        style.lineBreakMode = NSLineBreakByWordWrapping;
     }
     self.atrForLabelHistoryTableIn = [[NSDictionary alloc] initWithObjectsAndKeys:[style copy], NSParagraphStyleAttributeName,self.colorForUnselectedText, NSForegroundColorAttributeName, font, NSFontAttributeName , nil];
     
