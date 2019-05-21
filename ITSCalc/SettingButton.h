@@ -10,8 +10,5 @@
 
 @interface SettingButton : UIButton
 @property (nonatomic, weak) UIColor* disabledColor;
-//@property (nonatomic,weak) UIColor *shadowColor;
-//@property (nonatomic) CGSize shadowSize;
-//@property (nonatomic) CGFloat shadowBlur;
 
 @end
