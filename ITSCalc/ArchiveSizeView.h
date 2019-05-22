@@ -11,5 +11,7 @@
 @interface ArchiveSizeView : UIView
 
 @property(nonatomic) BOOL isBig;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

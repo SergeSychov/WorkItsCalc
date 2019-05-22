@@ -12,5 +12,7 @@
 @interface designButtonView : UIView
 @property (nonatomic,weak) NSString* title;
 @property (nonatomic) NSInteger designIndex;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

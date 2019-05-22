@@ -29,6 +29,8 @@
 @property (nonatomic) UIColor* fillNeedColor;
 @property (nonatomic) BOOL fillButton;
 @property (nonatomic) BOOL needStorkeWithFill;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 //@property (nonatomic) NSInteger design; //number of design
 
 

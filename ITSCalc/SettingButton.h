@@ -10,5 +10,7 @@
 
 @interface SettingButton : UIButton
 @property (nonatomic, weak) UIColor* disabledColor;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

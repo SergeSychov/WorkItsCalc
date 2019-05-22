@@ -11,6 +11,8 @@
 
 @interface DisplayScreenLabel : UILabel
 @property (nonatomic) DesignObject* designObj;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 -(void) showString:(NSString*) str;
 
 @end

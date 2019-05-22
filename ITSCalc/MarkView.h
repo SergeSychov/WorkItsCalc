@@ -17,4 +17,6 @@
 @property (nonatomic) CGSize shadowOffset;
 @property (nonatomic) CGFloat shadowBlur;
 @property (nonatomic) BOOL isShadow;
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 @end

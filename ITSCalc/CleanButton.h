@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface CleanButton : UIButton
+-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

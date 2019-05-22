@@ -480,7 +480,9 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 
 -(void) dismis
 {
-    [self.paymetnObj stopTransactionObserving];
+    if(self.paymetnObj.isObservTransactions){
+        [self.paymetnObj stopTransactionObserving];
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dismis];
 }
