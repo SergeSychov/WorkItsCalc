@@ -160,6 +160,12 @@
 {
     _isStronglyArgu = isStronglyArgu;
 }
+-(NSDictionary*)currDict{
+    if(!_currDict){
+        _currDict = [[NSDictionary alloc]init];
+    }
+    return _currDict;
+}
 
 -(void) setVariableValue:(NSArray *)values atKey:(NSArray *)keys
 {
@@ -230,6 +236,7 @@
         NSLog(@"keyExhangeString %@", keyExhangeString);
         NSLog(@"mutDict:%@", mutDict);
         self.currDict = [mutDict copy];
+        mutDict = nil;
     } else if ([operation isKindOfClass:[NSString class]] && [[(NSString*)operation substringToIndex:1] isEqualToString:@"$"]){
 
         
@@ -772,25 +779,29 @@
 
 +(NSDictionary*)dictionaryFromCurrensiesString:(NSString*)currStr{
     //NSLog(@"dictionaryFromCurrensiesString inputStr str:%@",currStr );
-    NSMutableDictionary *mutCurrDict = [[NSMutableDictionary alloc]init];
-    // Create Keys and values for Dictionary from saved string
-    if(currStr){
-        NSArray *testCurrStrings = [currStr componentsSeparatedByString:@" "];
-        
-        NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-        
-        for(NSString* str in testCurrStrings){
-            NSRange equalRange = [str rangeOfString:@"="];
-            if(equalRange.length>0){
-                [mutCurrDict setObject:[numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]] forKey:[@"$" stringByAppendingString:[str substringToIndex:equalRange.location]]];
-                //NSLog(@"Pair: %@ has value: %@",[str substringToIndex:equalRange.location], [numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]]);
+    NSDictionary *returnDict;
+
+        NSMutableDictionary *mutCurrDict = [[NSMutableDictionary alloc]init];
+        // Create Keys and values for Dictionary from saved string
+        if(currStr){
+            NSArray *testCurrStrings = [currStr componentsSeparatedByString:@" "];
+            
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+            
+            for(NSString* str in testCurrStrings){
+                NSRange equalRange = [str rangeOfString:@"="];
+                if(equalRange.length>0){
+                    [mutCurrDict setObject:[numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]] forKey:[@"$" stringByAppendingString:[str substringToIndex:equalRange.location]]];
+                    //NSLog(@"Pair: %@ has value: %@",[str substringToIndex:equalRange.location], [numberFormatter numberFromString:[str substringFromIndex:equalRange.location+1]]);
+                }
             }
         }
-    }
+            returnDict = [mutCurrDict copy];
+    mutCurrDict = nil;
    // NSLog(@"dictionaryFromCurrensiesString return dict:%@",[mutCurrDict copy] );
     //-------------------------------------------------------------------
-    return [mutCurrDict copy];
+    return returnDict;
 }
 
 +(BOOL) needBractesForStack: (NSMutableArray*) stack SymbYesArray: (NSArray*) plusOrMinuslySymbols SymbNOArray: (NSArray*)divideOrMultiplySymbols

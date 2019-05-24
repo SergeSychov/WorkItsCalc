@@ -129,10 +129,6 @@
 @property (nonatomic, readonly) CGFloat screenShadowRadius;
 @property (nonatomic, readonly) UIColor *screenButtonsEnabledColor;
 @property (nonatomic, readonly) UIColor *screenButtonsDisabledColor;
-//@property (nonatomic, readonly) UIBlurEffect* screenBlurEffect;
-//@property (readonly) UIColor* screenButtonShadowColor;
-//@property (readonly) CGFloat screenButtonShadowOpacity;
-//@property (readonly) CGFloat screenButtonShadowBlur;
 
 //for showed view
 @property (nonatomic,readonly)NSDictionary* attributesInfo;
