@@ -112,6 +112,8 @@ NSDate *methodStart;
             paperFillView.backgroundColor = self.cellSubView.buttonColor;
             paperFillView.alpha = 0;
             [self addSubview:paperFillView];*/
+            
+            /*
             CGColorRef color = [self.cellSubView.buttonColor CGColor];
             
             NSInteger numComponents = CGColorGetNumberOfComponents(color);
@@ -128,7 +130,7 @@ NSDate *methodStart;
                 blue = components[2];
                 alpha = components[3];
             }
-            
+            */
             //paperFillView.backgroundColor = self.cellSubView.buttonColor;
            // self.backgroundColor = [UIColor colo]
             

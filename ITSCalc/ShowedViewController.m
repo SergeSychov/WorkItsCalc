@@ -82,7 +82,7 @@ static BOOL isStringsBuzy;
         CGFloat infFontPoint;
         CGFloat expFontPoint;
         CGFloat resFontPoint;
-        CGFloat redLineBeizerPatchWidth;
+        //CGFloat redLineBeizerPatchWidth;
         if(isCompactClassSize ){
             infFontPoint = 24.;
             expFontPoint = 54.;
@@ -92,7 +92,7 @@ static BOOL isStringsBuzy;
             expFontPoint = 74.;
             resFontPoint = 120.;
         }
-        redLineBeizerPatchWidth = expFontPoint*0.8;
+        //redLineBeizerPatchWidth = expFontPoint*0.8;
         
         if(self.descrString){
             self.descrString = [AtrStrStore resizeAttrString:self.descrString
@@ -106,7 +106,7 @@ static BOOL isStringsBuzy;
                              WithInitPointSize:expFontPoint
                                 accordingBound:exprSize
                                       byHeight:YES];
-        redLineBeizerPatchWidth = [AtrStrStore pointSizeOfAtrString:self.expressionString ];
+        //redLineBeizerPatchWidth = [AtrStrStore pointSizeOfAtrString:self.expressionString ];
         
         self.resultString = [AtrStrStore resizeAttrString:self.resultString
                              WithInitPointSize:resFontPoint
@@ -119,8 +119,8 @@ static BOOL isStringsBuzy;
             self.expressionLabel.attributedText = self.expressionString;
             self.resultLabel.attributedText = self.resultString;
 
-            self.beizerPatchView.lineWidth = redLineBeizerPatchWidth;
-            [self cleanBeizerPatch];
+            //self.beizerPatchView.lineWidth = redLineBeizerPatchWidth;
+           // [self cleanBeizerPatch];
             isStringsBuzy = NO;
             //NSLog(@"Finish");
         });

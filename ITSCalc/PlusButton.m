@@ -88,19 +88,20 @@
 
 -(void) drawHistoryTrashWithContect:(CGContextRef)context inRect:(CGRect)rect
 {
+    /*
     //calculate border width
-    CGFloat borderWidth;
-    CGFloat radiusCorner;
-    CGFloat borderVsRadius = 6.2;
+    //CGFloat borderWidth;
+    //CGFloat radiusCorner;
+   // CGFloat borderVsRadius = 6.2;
     if(IS_IPAD){
         radiusCorner = ((rect.size.height)/1.2)/ 3.;
         
-        borderWidth = radiusCorner / 4.9;//9.2;
+       // borderWidth = radiusCorner / 4.9;//9.2;
     } else {
         radiusCorner = ((rect.size.height)/1.2)/ 3.2;
         
-        borderWidth = radiusCorner / borderVsRadius;
-    }
+      //  borderWidth = radiusCorner / borderVsRadius;
+    } */
     
     UIBezierPath *patch = [UIBezierPath bezierPath];
     CGPathRef pathOfRect;

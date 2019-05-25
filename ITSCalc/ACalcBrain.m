@@ -2066,9 +2066,10 @@
                 if(nextTopOfStack) [arguArray removeLastObject];
 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                //testArray = [arguArray copy];
+                //if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2090,9 +2091,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@" × (-1)" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+               // NSArray *testArray = [[NSArray alloc] init];
+               // testArray = [arguArray copy];
+               // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2124,9 +2126,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"!" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+               // NSArray *testArray = [[NSArray alloc] init];
+               // testArray = [arguArray copy];
+               // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2157,9 +2160,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 //NSString *arg = @"";
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+               // testArray = [arguArray copy];
+                //if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2186,9 +2190,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"²" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+               // NSArray *testArray = [[NSArray alloc] init];
+               // testArray = [arguArray copy];
+               // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2212,9 +2217,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"³" attributes:attributes];
 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+               // testArray = [arguArray copy];
+               // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2238,9 +2244,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2273,9 +2280,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2307,9 +2315,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2341,9 +2350,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2369,9 +2379,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2397,9 +2408,10 @@
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
@@ -2423,9 +2435,10 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
@@ -2449,9 +2462,10 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
@@ -2476,9 +2490,10 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@")" attributes:attributes];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
                                                        withNextArguString:empty
@@ -2515,9 +2530,10 @@
                 
                 [resultStr insertAttributedString:mutAttArg atIndex:0];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2543,9 +2559,10 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2587,9 +2604,10 @@
                 }
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2644,9 +2662,10 @@
                 
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
                 NSMutableAttributedString *arg = [[NSMutableAttributedString alloc] initWithString:@""];
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [arg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2680,9 +2699,10 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:nextOperations];
 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2734,9 +2754,10 @@
                 value = [value initWithString:@"² + " attributes:attributes];
                 [resultStr insertAttributedString:value atIndex:0];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                // testArray = [arguArray copy];
+                // if([testArray count] > 1){
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [resultStr insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
@@ -2763,9 +2784,9 @@
                 NSMutableArray *arguArray = [self getNextArguInStack:stack accordingOperation:operations];
                 NSMutableAttributedString *attArg = [[NSMutableAttributedString alloc] initWithString:@"" attributes:attributes];
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if(([testArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]] &&  ![testArray[0] containsObject:@"°"]){
+                //NSArray *testArray = [[NSArray alloc] init];
+                //testArray = [arguArray copy];
+                if(([arguArray count] == 1) && [[arguArray lastObject] isKindOfClass:[NSArray class]] &&  ![arguArray[0] containsObject:@"°"]){
                     //![testArray[0] containsObject:@"°"] - if it's not grad array - another way it need brackets
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];
                     [attArg insertAttributedString:[self popStringOfStack:arguArray
@@ -2824,9 +2845,9 @@
                 [attArg endEditing];
                 
                 //check the lenght of argu stack if more then one add brackets
-                NSArray *testArray = [[NSArray alloc] init];
-                testArray = [arguArray copy];
-                if([testArray count] > 1){
+                //NSArray *testArray = [[NSArray alloc] init];
+                //testArray = [arguArray copy];
+                if([arguArray count] > 1){
                     NSAttributedString* bracet = [[NSAttributedString alloc] initWithString:@")" attributes:attributes];
                     [attArg insertAttributedString:bracet atIndex:0];
                     NSAttributedString* empty = [[NSAttributedString alloc] initWithString:@"" attributes:attributes];

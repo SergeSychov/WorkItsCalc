@@ -9,7 +9,6 @@
 #import "SettingsViewController.h"
 #import "CalcButton.h"
 #import "SoundView.h"
-#import "ArchiveSizeView.h"
 #import "CloudView.h"
 #import "ClearHistoryButton.h"
 #import "DesignButton.h"
@@ -232,6 +231,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         [self.processSpinnerBuing startAnimating];
     } else {
         if(self.processSpinnerBuing){
+            //self.processSpinner.isHidden = YES;
             [self.processSpinnerBuing stopAnimating];
             [self.processSpinnerBuing removeFromSuperview];
         }
@@ -295,6 +295,10 @@ animationControllerForDismissedController:(UIViewController *)dismissed
                      }];
 }
 
+-(void)transactionFiled{
+    [self visualBuingProccesStart:NO];
+}
+
 
 #pragma mark SWITCHER ACTIONS
 - (IBAction)isBigSizeButtonSwitch:(UISwitch*)sender {
@@ -316,9 +320,9 @@ animationControllerForDismissedController:(UIViewController *)dismissed
 #pragma mark OVERRIDE ABSTRACT FUNCTION
 -(void)setNeedViews
 {
-    self.backGroundView.backgroundColor = self.cView.backgroundColor;
+    //self.backGroundView.backgroundColor = self.cView.backgroundColor;
 
-    [self.calcButton setTintColor:[UIColor whiteColor]];
+    //[self.calcButton setTintColor:[UIColor whiteColor]];
     
     //SIZE BUTTON
     [self.isBigSizeSwitcher setOn:self.isBigSizeButtons];
@@ -487,6 +491,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     [super dismis];
 }
 -(void) viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     if(!self.paymetnObj.wasPurshaised){
         self.paymetnObj.delegate = self;
         self.paymetnObj.askedController = self;
@@ -506,6 +511,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         }
     }
     [self setShowedNecessaryViews];
+
 }
 
 -(void)applicationDidEnterBackground:(NSNotification *)note{
@@ -518,5 +524,6 @@ animationControllerForDismissedController:(UIViewController *)dismissed
         [self.processSpinner removeFromSuperview];
     }
     [self visualBuingProccesStart:NO];
+    [super viewWillDisappear:animated];
 }
 @end
