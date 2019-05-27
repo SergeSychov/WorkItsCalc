@@ -105,11 +105,6 @@
     [mutArray addObject:[NSNumber numberWithInteger:(5*columsNumber - 1)]];//@"+"
     
     [mutArray addObject:[NSNumber numberWithInteger:(6*columsNumber - 1)]];//@"="
-    /*if(DEBUG_MODE){
-        NSLog(@"colums number: %@", [NSNumber numberWithInteger: columsNumber]);
-        NSLog(@"_mainButtonsStarPosition: %@",mutArray);
-    }*/
-    
     
     _mainButtonsStartWithPosition = [[NSDictionary alloc] initWithObjects:[mutArray copy]forKeys:[self mainButtonNames]];
     
@@ -510,9 +505,6 @@
 -(void) makeTwoArraysWithReloadOperation:(NSInteger)operation;
 {
     // self.buttonsCollection.scrollEnabled = NO;
-    if(DEBUG_MODE){
-        NSLog(@"makeTwoArraysWithReload");
-    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSMutableArray *allButtonsArray = [[NSMutableArray alloc] init];
@@ -547,10 +539,6 @@
 
 #pragma mark DELEGATE CreateNewButtonController
 -(BOOL)createNewButtonWith:(NSString*)name andProgramm:(NSArray*)programm {
-    
-    if(DEBUG_MODE){
-        NSLog(@"createNewButtonWith Assking to make new button with name:%@ and program: %@", name, programm);
-    }
 
     Buttons *newButton = [Buttons buttonWithName:name
                                         position:[NSNumber numberWithInteger:[self.changebleButtonObjs count]]

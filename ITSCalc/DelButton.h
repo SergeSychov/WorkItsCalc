@@ -10,8 +10,8 @@
 
 @interface DelButton : UIButton
 @property (nonatomic) UIColor* disabledColor;
--(CGPathRef)makeToPath CF_RETURNS_RETAINED;
--(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 //@property (nonatomic,weak) UIColor *shadowColor;
 //@property (nonatomic) CGSize shadowSize;
 //@property (nonatomic) CGFloat shadowBlur;

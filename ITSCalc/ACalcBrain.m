@@ -233,8 +233,6 @@
         NSString *keyExhangeString = [[[@"$" stringByAppendingString:(NSString*)operation[1]] stringByAppendingString:[NSString stringWithFormat:@"/%@", @"\u2060"]] stringByAppendingString:(NSString*)operation[2]];
         NSMutableDictionary* mutDict = [self.currDict mutableCopy];
         [mutDict setValue:operation[3] forKey:keyExhangeString];
-        NSLog(@"keyExhangeString %@", keyExhangeString);
-        NSLog(@"mutDict:%@", mutDict);
         self.currDict = [mutDict copy];
         mutDict = nil;
     } else if ([operation isKindOfClass:[NSString class]] && [[(NSString*)operation substringToIndex:1] isEqualToString:@"$"]){
@@ -682,9 +680,6 @@
         if([obj isKindOfClass:[NSArray class]]){
             
             if([[obj firstObject] isKindOfClass:[NSString class]] && [[obj firstObject] isEqualToString:@"$"]){
-                
-                NSLog(@"YES this have a curr");
-                
                 [mutableCurrenciesArray addObject:obj];
             } else {
                 if([ACalcBrain chekForCurrensiesProgramm:obj]){
@@ -706,55 +701,9 @@
         }
         currenciesArray = [clearMutArray copy];
     }
-    /*
-    //delete double pair
-    if([mutableCurrenciesArray lastObject]){//if there is currencies
-        NSMutableArray* clearMutArray = [[NSMutableArray alloc]init];
-        for(NSArray* pair in mutableCurrenciesArray){
-            for(NSArray* existingPair in clearMutArray){
-                if(!([(NSString*)pair[1] isEqualToString:(NSString*)existingPair[1]] && [(NSString*)pair[2] isEqualToString:(NSString*)existingPair[2]]) ){
-                    [clearMutArray addObject:pair];
-                }
-            }
-        }
-        currenciesArray = [clearMutArray copy];
-    }
-    
-    
-    
-    
-    @autoreleasepool {
-        NSMutableArray *mutableProgramm = [programm mutableCopy];
-
-        NSMutableArray *mutableCurrenciesArray = [[NSMutableArray alloc]init];
-        id top = [mutableProgramm lastObject];
-        while(top) {
-            [mutableProgramm removeLastObject];
-        
-
-            if([top isKindOfClass:[NSArray class]]){
-           
-                if([[top firstObject] isKindOfClass:[NSString class]] && [[top firstObject] isEqualToString:@"$"]){
-                    
-                    [mutableCurrenciesArray addObject:top];
-                } else {
-                    [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:top]];
-                }
-            }
-            [mutableCurrenciesArray addObjectsFromArray:[ACalcBrain chekForCurrensiesProgramm:[mutableProgramm copy]]];
-       
-            top = [mutableProgramm lastObject];
-            if([mutableCurrenciesArray lastObject]) currenciesArray = [mutableCurrenciesArray copy];
-        }
-    }
-    */
-
     return currenciesArray;
 }
 +(NSString*)stringCurrensiesInProgram:(NSDictionary*)currDict{
-//+(NSAttributedString*)stringCurrensiesInProgram:(NSArray*)programm withAtrtributes:(NSDictionary*)atrbutes{
-    //NSAttributedString *returnString = nil;
-    NSLog(@"stringCurrensiesInProgram inputDictionary:%@",currDict );
     NSString *currStr = [[NSString alloc]init];
     for(NSString* key in [currDict allKeys]){
         NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -773,12 +722,10 @@
             currStr = [currStr stringByAppendingString:@" "];
         }
     }
-    //NSLog(@"stringCurrensiesInProgram return str:%@",currStr );
     return currStr;
 }
 
 +(NSDictionary*)dictionaryFromCurrensiesString:(NSString*)currStr{
-    //NSLog(@"dictionaryFromCurrensiesString inputStr str:%@",currStr );
     NSDictionary *returnDict;
 
         NSMutableDictionary *mutCurrDict = [[NSMutableDictionary alloc]init];
@@ -799,8 +746,6 @@
         }
             returnDict = [mutCurrDict copy];
     mutCurrDict = nil;
-   // NSLog(@"dictionaryFromCurrensiesString return dict:%@",[mutCurrDict copy] );
-    //-------------------------------------------------------------------
     return returnDict;
 }
 
@@ -1108,7 +1053,6 @@
     }
     if([topOfStack isKindOfClass:[NSDictionary class]]){
         //if it is constant or function
-        //NSLog(@"there is constant or function in popOperandOfStack");
         NSString *key = [[topOfStack allKeys]firstObject];
         //NSLog(@"keyTitle: %@",key);
         id valueProg = [topOfStack objectForKey:key];

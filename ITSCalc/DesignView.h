@@ -10,7 +10,7 @@
 
 @interface DesignView : UIView
 @property (nonatomic,weak) UIColor *storkeColor;
--(CGPathRef)makeToPath CF_RETURNS_RETAINED;
--(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

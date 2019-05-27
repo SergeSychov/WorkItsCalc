@@ -11,7 +11,7 @@
 @interface SoundView : UIView
 
 @property (nonatomic) BOOL on;
--(CGPathRef)makeToPath CF_RETURNS_RETAINED;
--(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end

@@ -12,7 +12,7 @@
 
 @property (nonatomic) BOOL isClose;
 @property (nonatomic) BOOL isRemoveButton;
--(CGPathRef)makeToPath CF_RETURNS_RETAINED;
--(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeToPath CF_RETURNS_RETAINED;
+//-(CGPathRef)makeFromPath CF_RETURNS_RETAINED;
 
 @end
