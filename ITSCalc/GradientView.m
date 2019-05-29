@@ -43,6 +43,8 @@
     CGContextDrawLinearGradient(context, gradient, CGPointMake(viewSize.width/2, 0),           CGPointMake(viewSize.width/2, viewSize.height), kCGGradientDrawsBeforeStartLocation);
     
     CGContextRestoreGState(context);
+    
+    CGGradientRelease(gradient);
 }
 
 
