@@ -29,7 +29,7 @@
 
 -(NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext
 {
-    return .5;
+    return 1.2;
 }
 
 -(void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext
@@ -44,76 +44,66 @@
     
     //self.containerView = [transitionContext containerView];
     if(!self.isGravity){
+        UIView *fromView = fromVC.view;
+        UIView *toView = toVC.view;
         //------for test transition------------
         if(!self.isForward){
-            [transitionContext.containerView addSubview:toVC.view];
-            [transitionContext.containerView addSubview:fromVC.view];
-            [toVC.view setTransform:CGAffineTransformMakeScale(0.8, .8)];
+            [transitionContext.containerView addSubview:toView];
+            [transitionContext.containerView addSubview:fromView];
+            [toView setTransform:CGAffineTransformMakeScale(0.8, .8)];
             
             [UIView animateWithDuration:[self transitionDuration:transitionContext]
-                     animations:^{
-                         [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
-                         [fromVC.view setTransform:CGAffineTransformMakeScale(4., 4.)];
-                        fromVC.view.alpha = 0;
-                     } completion:^(BOOL finished) {
-                         [fromVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
-                         [self.context completeTransition:YES];
-                     }];
+                                  delay:0.0
+                 usingSpringWithDamping:0.5
+                  initialSpringVelocity:0
+                                options:UIViewAnimationOptionCurveEaseIn
+                             animations:^{
+                [toView setTransform:CGAffineTransformMakeScale(1., 1.)];
+                 [fromView setTransform:CGAffineTransformMakeScale(4., 4.)];
+                fromView.alpha = 0;
+            } completion:^(BOOL finished) {
+                [fromView setTransform:CGAffineTransformMakeScale(1., 1.)];
+                [self.context completeTransition:YES];
+            }];
         } else {
-            [transitionContext.containerView addSubview:fromVC.view];
-            [transitionContext.containerView addSubview:toVC.view];
+            [transitionContext.containerView addSubview:fromView];
+            [transitionContext.containerView addSubview:toView];
             
-            [toVC.view setTransform:CGAffineTransformMakeScale(4., 4.)];
-            toVC.view.alpha = 0;
+            [toView setTransform:CGAffineTransformMakeScale(4., 4.)];
+            toView.alpha = 0;
             
             [UIView animateWithDuration:[self transitionDuration:transitionContext]
                              animations:^{
-                                 [toVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
-                                 [fromVC.view setTransform:CGAffineTransformMakeScale(.8, .8)];
-                                 toVC.view.alpha = 1;
+                                 [toView setTransform:CGAffineTransformMakeScale(1., 1.)];
+                                 [toView setTransform:CGAffineTransformMakeScale(.8, .8)];
+                                 toView.alpha = 1;
                              } completion:^(BOOL finished) {
-                                 [fromVC.view setTransform:CGAffineTransformMakeScale(1., 1.)];
+                                 [fromView setTransform:CGAffineTransformMakeScale(1., 1.)];
                                  [self.context completeTransition:YES];
                              }];
             
         }
         
     } else {
-        [transitionContext.containerView addSubview:fromVC.view];
-        [transitionContext.containerView addSubview:toVC.view];
+        UIView *fromView = fromVC.view;
+        UIView *toView = toVC.view;
         
-        CGRect rct = transitionContext.containerView.bounds;
-        [toVC.view setFrame:CGRectMake(0, -1.5*rct.size.height, rct.size.width, rct.size.height)];
-        
-        self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:transitionContext.containerView];
-        
-        UIDynamicItemBehavior *dynamicItem = [[UIDynamicItemBehavior alloc] initWithItems:@[toVC.view]];
-        UIGravityBehavior *gravity = [[UIGravityBehavior alloc] initWithItems:@[toVC.view]];
-        UICollisionBehavior *collisionBehavior = [[UICollisionBehavior alloc] initWithItems:@[toVC.view]];
-        
-        gravity.gravityDirection = CGVectorMake(.0, 4.0);
-        [self.animator addBehavior:gravity];
-        [collisionBehavior addBoundaryWithIdentifier:@"Bottom"
-                                           fromPoint:CGPointMake(0,rct.size.height+0.5)
-                                             toPoint:CGPointMake(rct.size.width,rct.size.height+0.5)];
-        [self.animator addBehavior:collisionBehavior];
-        
-        UIDynamicItemBehavior *elastic = [[UIDynamicItemBehavior alloc] initWithItems:@[toVC.view]];
-        elastic.elasticity = 0.4;
-        [self.animator addBehavior:elastic];
-        
-        __weak typeof(self) weakSelf = self;
-        
-        gravity.action = ^{
-            typeof(self) strongSelf = weakSelf;
-            UIView *view = strongSelf.viewBeginDismissed;
-            if(ABS(strongSelf.viewBeginDismissed.frame.origin.y)< 1.1  && [dynamicItem linearVelocityForItem:view].y < 0.01){
-                
-                [strongSelf.animator removeAllBehaviors];
-                [strongSelf.context completeTransition:YES];
-            }
-        };
+        [transitionContext.containerView addSubview:fromView];
+        [transitionContext.containerView addSubview:toView];
+            
+            CGRect rct = transitionContext.containerView.bounds;
+            [toView setFrame:CGRectMake(0, -1.5*rct.size.height, rct.size.width, rct.size.height)];
+            
+            [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                                  delay:0.0
+                 usingSpringWithDamping:0.5
+                  initialSpringVelocity:0.8
+                                options:UIViewAnimationOptionCurveEaseIn
+                             animations:^{
+                [toView setFrame:CGRectMake(0, 0, rct.size.width, rct.size.height)];
+            } completion:^(BOOL finished) {
+                    [self.context completeTransition:YES];
+                }];
     }
-    
 }
 @end

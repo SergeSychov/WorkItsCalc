@@ -39,6 +39,11 @@ NSString *const ShowedViewIsDirtyNotification = @"ShowedViewIsDirtyNotification"
 
 @implementation ShowedViewController
 
+-(BOOL) prefersStatusBarHidden
+{
+    return YES;
+}
+
 static BOOL isCompactClassSize;
 
 -(void) willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{

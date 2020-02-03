@@ -106,6 +106,7 @@ animationControllerForDismissedController:(UIViewController *)dismissed
     self.designViewController = designVC;
     self.designViewController.transitioningDelegate = self;
     self.designViewController.paymentObj = self.paymetnObj;
+    self.designViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:self.designViewController animated:YES completion:nil];    
 }
 
